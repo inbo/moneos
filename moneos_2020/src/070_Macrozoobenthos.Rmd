@@ -25,7 +25,7 @@ Naast de gegevens van 2016, worden ook de gegevens van Dijle, Nete en Zenne van 
 
 ### Strategie
 
-Sinds 2008 wordt een stratified random sampling design toegepast. Als hoogste hiërarchisch niveau binnen de stratificatie worden de 7 waterlichamen genomen, zoals deze voor monitoring en beoordeling in de context van de Kaderrichtlijn Water (KRW) worden onderscheiden (Figuur 1-1**XXX**). In Zeeschelde III wordt de Rupel echter apart beschouwd en ook de Dijle en Zenne worden als aparte eenheden behandeld. Per waterlichaam wordt vervolgens een opdeling gemaakt per fysiotoop (\@ref(tab:tabel-staalnamelocaties)), met de uitzondering dat hoog slik en slik in het supralitoraal (potentiële pionierzone) samen genomen worden. Dit resulteert in een gelijkmatige spreiding van de staalnamelocaties. Jaarlijks worden nieuwe random vastgelegde staalnamelocaties gekozen. 
+Sinds 2008 wordt een stratified random sampling design toegepast. Als hoogste hiërarchisch niveau binnen de stratificatie worden de 7 waterlichamen genomen, zoals deze voor monitoring en beoordeling in de context van de Kaderrichtlijn Water (KRW) worden onderscheiden (Figuur \@ref(fig:figuur-waterlichamen)). In Zeeschelde III wordt de Rupel echter apart beschouwd en ook de Dijle en Zenne worden als aparte eenheden behandeld. Per waterlichaam wordt vervolgens een opdeling gemaakt per fysiotoop (Tabel \@ref(tab:tabel-staalnamelocaties)), met de uitzondering dat hoog slik en slik in het supralitoraal (potentiële pionierzone) samen genomen worden. Dit resulteert in een gelijkmatige spreiding van de staalnamelocaties. Jaarlijks worden nieuwe random vastgelegde staalnamelocaties gekozen. 
 
 In principe worden 5 locaties per fysiotoop bemonsterd. Dit aantal wordt aangepast in sommige gevallen in functie van de relatieve en absolute areaalgrootte van de fysiotopen. Voor de Durme en de bovenlopen van Netes en Zenne is geen fysiotopenkaart beschikbaar, waardoor een aantal staalnamepunten gekozen zijn los van een fysiotoop-gebaseerde stratificatie.
 
@@ -34,21 +34,15 @@ De fysiotoop fungeert als kleinste eenheid van informatie. De stalen van verschi
 
 ```{r tabel-staalnamelocaties}
 
-knitr::kable(caption = "Aantal staalnamelocaties per waterlichaam (sectie) - monitoringscampagne 2016XXX.",
-             data.frame(sectie = c("Zeeschelde IV", "Zeeschelde III", "Zeeschelde II", "Zeeschelde I", 
-                                  "Rupel", "Durme", "Nete", "Dijle", "Zenne", "all"), 
-                        hoog = c(9, 4, 4, 6, 0, 5, 4, 6, 3, 41), 
-                        middelhoog = c(9, 4, 4, 6, 4, 4, 5, 6, 3, 45), 
-                        laag = c(9, 4, 4, 6, 4, 5, 5, 6, 3, 46), 
-                        hard = c(3, 3, 3, 6, 3, 0, 0, 0, 0, 18), 
-                        "inter indet." = c(0, 0, 0, 0, 0, 0, 3, 0, 2, 5),  
-                        ondiep = c(10, 5, 5, 6, 4, 5, 5, 6, 3, 49), 
-                        "matig diep" = c(10, 3, 5, 4, 5, 5, 4, 3, 3, 42),
-                        diep = c(10, 3, 5, 4, 5, 0, 0, 0, 0, 27),
-                        "sub indet." = c(0, 0, 0, 0, 0, 0, 6, 0, 4, 10),
-                        all = c(60, 26, 30, 38, 25, 24, 32, 27, 21, 283)), 
-             "latex", booktabs = T) %>%
-  kable_styling(latex_options = "striped")
+tabel_staalnamelocaties <- read_excel("../tabellen/070_Macrobenthos_tabellen.xlsx", 
+    sheet = "staalnamelocaties", .name_repair = "minimal")
+
+tabel_staalnamelocaties %>% 
+  knitr::kable(caption = "Aantal staalnamelocaties per waterlichaam (sectie) - monitoringscampagne 2016XXX.",
+             # "latex", 
+             booktabs = T) %>% 
+    kable_styling(latex_options = c("scale_down"),
+                  font_size = 12)
 
 ```
 
