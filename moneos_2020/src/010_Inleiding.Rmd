@@ -120,7 +120,9 @@ Thema Fauna & Flora en thema Ecologisch Functioneren
 -	Zoogdieren
 
 
-De aangeleverde data omvatten enkel gegevens van de Zeeschelde en getijgebonden zijrivieren. Tenzij anders vermeld kunnen ze gebruikt worden tot op niveau 3 van de Evaluatiemethodiek wat overeenkomt met de saliniteitszones aangevuld met de getijdenzijrivieren (Durme, Netes, Dijle en Zenne (Tabel \@ref(tab:tabel-indeling-schelde-estuarium)). Deze indeling valt samen met de indeling in waterlichamen van de Kaderrichtlijn Water (KRW) (Figuur \@ref(fig:figuur-waterlichamen)).  
+De aangeleverde data omvatten enkel gegevens van de Zeeschelde en getijgebonden zijrivieren. Tenzij anders vermeld kunnen ze gebruikt worden tot op niveau 3 van de Evaluatiemethodiek wat overeenkomt met de saliniteitszones aangevuld met de getijdenzijrivieren (Durme, Netes, Dijle en Zenne (Tabel \@ref(tab:tabel-indeling-schelde-estuarium))[^footnote-3]. Deze indeling valt samen met de indeling in waterlichamen van de Kaderrichtlijn Water (KRW) (Figuur \@ref(fig:figuur-waterlichamen)).  
+
+[^footnote-3]: Het deel van de Zeeschelde niet beschouwd in de Evaluatiemethodiek zou onderdeel kunnen worden van Z7. Ook wordt het traject Melle-Zwijnaarde (getijde Zeeschelde) niet gerekend tot Zeeschelde I in de KRW indeling. Dit zou beter wel deel worden van deze zone.
 
 Bij elk hoofdstuk is er een verwijzing naar de datafiches waarin de metadata beschreven zijn. Zie hiervoor op http://www.scheldemonitor.be/nl.  
 
@@ -137,14 +139,18 @@ options(knitr.kable.NA = '')
 
 tabel_indeling_schelde_estuarium %>% 
   knitr::kable(caption = "Ruimtelijke indeling van het Schelde-estuarium volgens de Evaluatie methodiek (EM), KRW en saliniteitszones.",
-             # "latex", 
-             booktabs = T) %>%
-  # kable_styling(latex_options = c("striped", "scale_down")) %>%
+               # "latex",
+               booktabs = T) %>%
+  # kable_styling(latex_options = c("scale_down")) %>%
   kable_styling(latex_options = c("scale_down"),
-                font_size = 9) %>%
-  collapse_rows(columns = 1:7, latex_hline = "full", valign = "middle")
+                font_size = 10) %>% 
+  column_spec(2,width = "0.7in") %>%
+  collapse_rows(columns = 1:7, latex_hline = "full", valign = "middle") %>%
+  footnote(symbol = "Deel van Zeeschelde niet beschouwd in Evaluatiemethodiek. Zou onderdeel kunnen worden van Z7. Ook wordt het traject Melle-Zwijnaarde (getijde Zeeschelde) niet gerekend tot Zeeschelde I in de KRW indeling. Dit zou beter wel deel worden van deze zone.",
+           threeparttable = TRUE)
 
 ```
+
 
 
 ```{r figuur-waterlichamen, fig.cap = "Overzicht van de Kaderrichtlijn Water waterlichamen."}
