@@ -52,7 +52,6 @@ tabel_staalnamelocaties %>%
 ```
 
 
-
 In de Zeeschelde en de Rupel werden de anthropogene harde zones (steenbestortingen) afzonderlijk onderscheiden. Ook werden twee delen van waterlichamen opgedeeld omwille van de heterogene aard van hun habitats en fauna. Zeeschelde I werd opgedeeld in het traject Melle-Gentbrugge versus de rest van het KRW-waterlichaam, terwijl de Dijle stroomaf van de Zennemonding (Zennegat) ook afzonderlijk werd onderscheiden van de rest van de Dijle. In de grafieken in de data-exploratie worden deze echter samengevoegd.
 
 
@@ -130,45 +129,32 @@ data_macrobenthos_locaties <- read_excel("G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_S
 
 ###	Densiteit en biomassa
 
-De densiteit en biomassa in de Zeeschelde s.s. (zonder zijrivieren) zijn relatief stabiel (Figuur \@ref(fig:figuur-densiteit-waterlichaam)). Rupel en Durme lijken een toename te laten zien.
+De densiteit (Figuur \@ref(fig:figuur-densiteit-waterlichaam)) en biomassa (Figuur \@ref(fig:figuur-biomassa-waterlichaam)) in de Zeeschelde s.s. (zonder zijrivieren) zijn relatief stabiel. Rupel en Durme lijken een toename te laten zien.
+
 De hogere densiteiten en biomassa in het subtidaal van Zeeschelde I in 2015 en 2016 zijn voornamelijk te wijten aan een relatief groter aandeel stalen in het traject Gentbrugge-Melle, en de aanwezigheid van driekhoeksmossel (Dreissena polymorpha) in één van de stalen. De Rupel (na een scherpe terugval vanaf de waterzuivering in 2007) kende tot 2015 nog steeds lage densiteiten in het subtidaal, maar lijkt toe te nemen in 2016. De intertidale toename sinds 2013 in de Durme zet zich door en lijkt nu ook in het subtidaal waarneembaar. In 2016 was de hoogste densiteit en biomassa aan bodemdieren in het intertidaal van de zijrivieren opnieuw te vinden in de Durme. Subtidaal werd de hoogste densiteit en biomassa gevonden in de Nete. Terwijl de densiteiten in de subtidale Zenne en Nete vrij hoog en fluctuerend lijken te blijven sinds ca. 2011, zijn deze in de Dijle weliswaar ook fluctuerend maar lager. 
+
 De variabele biomassa in het subtidaal van de Zeeschelde, met uitzondering van Zeeschelde IV, is enigszins opmerkelijk, zoals bv. duidelijk in Zeeschelde III. Mogelijk hangt dit samen met een variabel reproductiesucces onder omstandigheden met hoge omgevingsstress, maar ook de lage trefkans van bepaalde kensoorten (Marenzelleria neglecta, Bathyporeia pilosa) speelt wellicht ook een rol.
 
 
 
-```{r figuur-densiteit-waterlichaam, fig.cap = "Densiteit per waterlichaam."}
-
-# bxp_ZS <- data_macrobenthos_densiteit %>% 
-#   filter(waterloop %in% c("Zeeschelde I", "Zeeschelde II", "Zeeschelde III", "Zeeschelde IV")) %>% 
-#   ggplot(aes(waterloop, densiteit, fill = ordered(jaar))) +
-#   geom_boxplot(aes(group = interaction(jaar, waterloop)), position = "dodge") +
-#   # geom_boxplot(position = "dodge") +
-#   scale_y_log10() +
-#   facet_wrap(~tidaal)
-# bxp_ZS
-# 
-# bxp_ZR <- data_macrobenthos_densiteit %>% 
-#   filter(waterloop %in% c("Rupel", "Durme", "Nete", "Dijle", "Zenne")) %>%
-#   ggplot(aes(waterloop, densiteit, fill = ordered(jaar))) +
-#   geom_boxplot(aes(group = interaction(jaar, waterloop)), position = "dodge") +
-#   # geom_boxplot(position = "dodge") +
-#   scale_y_log10() +
-#   facet_wrap(~tidaal)
-# bxp_ZR
-# 
-# plot_grid(bxp_ZS + rremove("xlab"), bxp_ZR + rremove("xlab"), 
-#           nrow = 2)
-
+```{r figuur-densiteit-waterlichaam, fig.cap="Densiteit per waterlichaam.", fig.height=18/2.54, fig.width=18/2.54, warning=FALSE}
 
 # pltte <- "jco"
 pltte <- "simpsons"
 # pltte <- "uchicago"
 
+fnt <- 8
+
+ylb <- expression(paste("densiteit ", (ind/m^2) + 1))
+
 bxp_ZS <- data_macrobenthos_densiteit %>% 
   filter(waterloop %in% c("Zeeschelde I", "Zeeschelde II", "Zeeschelde III", "Zeeschelde IV")) %>%
-  mutate(jaar = ordered(jaar)) %>% 
+  mutate(jaar = ordered(jaar),
+         densiteit = densiteit + 1) %>% 
   ggboxplot(x = "waterloop", y = "densiteit",
+            order = c("Zeeschelde IV", "Zeeschelde III", "Zeeschelde II", "Zeeschelde I"),
             fill = "jaar", palette = pltte,
+            ylab = ylb,
             facet.by = "tidaal") %>% 
   ggpar(yscale = "log10")
 # bxp_ZS
@@ -177,18 +163,72 @@ bxp_ZR <- data_macrobenthos_densiteit %>%
   filter(waterloop %in% c("Rupel", "Durme", "Nete", "Dijle", "Zenne")) %>%
   mutate(jaar = ordered(jaar)) %>% 
   ggboxplot(x = "waterloop", y = "densiteit",
+            order = c("Rupel", "Durme", "Nete", "Dijle", "Zenne"),
             fill = "jaar", palette = pltte,
+            ylab = ylb,
             facet.by = "tidaal") %>% 
   ggpar(yscale = "log10")
 # bxp_ZR
 
-plot_grid(bxp_ZS + rremove("xlab"), bxp_ZR + rremove("xlab") + rremove("legend"), 
-          nrow = 2)
+ggarrange(bxp_ZS + rremove("xlab") + font("xy.text", size = fnt), 
+          bxp_ZR + rremove("xlab") + font("xy.text", size = fnt), 
+          nrow = 2,
+          common.legend = TRUE)
 
 ```
 
 
-```{r figuur-biomassa-waterlichaam, fig.cap = "Biomassa per waterlichaam."}
+```{r figuur-biomassa-waterlichaam, fig.cap = "Biomassa per waterlichaam.", fig.height=18/2.54, fig.width=18/2.54, warning=FALSE}
+
+# pltte <- "jco"
+pltte <- "simpsons"
+# pltte <- "uchicago"
+
+fnt <- 8
+
+ylb <- expression(paste("biomassa (g AFD/", m^2, ")"))
+
+bxp_ZS <- data_macrobenthos_biomassa %>% 
+  filter(waterloop %in% c("Zeeschelde I", "Zeeschelde II", "Zeeschelde III", "Zeeschelde IV")) %>%
+  mutate(jaar = ordered(jaar)) %>% 
+  ggboxplot(x = "waterloop", y = "biomassa",
+            order = c("Zeeschelde IV", "Zeeschelde III", "Zeeschelde II", "Zeeschelde I"),
+            fill = "jaar", palette = pltte,
+            ylab = ylb,
+            facet.by = "tidaal")
+# bxp_ZS
+
+bxp_ZR <- data_macrobenthos_biomassa %>% 
+  filter(waterloop %in% c("Rupel", "Durme", "Nete", "Dijle", "Zenne")) %>%
+  mutate(jaar = ordered(jaar)) %>% 
+  ggboxplot(x = "waterloop", y = "biomassa",
+            order = c("Rupel", "Durme", "Nete", "Dijle", "Zenne"),
+            fill = "jaar", palette = pltte,
+            ylab = ylb,
+            facet.by = "tidaal")
+# bxp_ZR
+
+ggarrange(bxp_ZS + rremove("xlab") + font("xy.text", size = fnt), 
+          bxp_ZR + rremove("xlab") + font("xy.text", size = fnt), 
+          nrow = 2,
+          common.legend = TRUE)
 
 ```
+
+
+Door de vastgestelde biomassawaarden (in g per m²) te vermenigvuldigen met de aanwezige oppervlakte aan verschillende ecotopen, kunnen we de totale, in het systeem beschikbare, biomassa berekenen. De hiertoe beschikbare ecotopenkaarten zijn afhankelijk van de afgesproken frequentie waarmee deze voor de verschillende delen van het estuarium gemaakt worden (Tabel \@ref(tab:tabel-ecotopenkaarten)).
+
+
+```{r tabel-ecotopenkaarten}
+
+tabel_ecotopenkaarten <- read_excel("../tabellen/070_Macrobenthos_tabellen.xlsx", 
+    sheet = "ecotopenkaarten", .name_repair = "minimal")
+
+tabel_ecotopenkaarten %>% 
+  knitr::kable(caption = "Gebruikte ecotopenkaarten voor berekening van systeembiomassa per benthoscampagne.",
+               # "latex", 
+               booktabs = T)
+
+```
+
 
