@@ -1,0 +1,194 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Macrozoöbenthos 
+
+Fichenummer: S-DS-V-002
+
+__Jeroen Speybroeck__
+
+
+## Inleiding 
+
+Een beschrijving van de historische benthosgegevens (1999, 2002, 2005) is te vinden in @speybroeckMonitoringVanHet2014. Sinds 2008 wordt jaarlijks op basis van een random stratified design benthos bemonsterd.
+
+De gegevens van 2008 tot en met 2016 worden geleverd in een Excel-bestand (_S_DS_V_002_benthos_data2008-2016_rapportage2018.xlsx_) met volgende werkbladen.
+
+densiteit – densiteit per staalnamelocatie
+
+biomassa – biomassa per staalnamelocatie
+
+locaties – de Lambert-coördinaten van de bemonsterde locaties
+
+Naast de gegevens van 2016, worden ook de gegevens van Dijle, Nete en Zenne van 2015 aangeleverd, die bij de vorige rapportage ontbraken.
+
+
+## Materiaal en methode
+
+### Strategie
+
+Sinds 2008 wordt een stratified random sampling design toegepast. Als hoogste hiërarchisch niveau binnen de stratificatie worden de 7 waterlichamen genomen, zoals deze voor monitoring en beoordeling in de context van de Kaderrichtlijn Water (KRW) worden onderscheiden (Figuur \@ref(fig:figuur-waterlichamen)). In Zeeschelde III wordt de Rupel echter apart beschouwd en ook de Dijle en Zenne worden als aparte eenheden behandeld. Per waterlichaam wordt vervolgens een opdeling gemaakt per fysiotoop (Tabel \@ref(tab:tabel-staalnamelocaties)), met de uitzondering dat hoog slik en slik in het supralitoraal (potentiële pionierzone) samen genomen worden. Dit resulteert in een gelijkmatige spreiding van de staalnamelocaties. Jaarlijks worden nieuwe random vastgelegde staalnamelocaties gekozen. 
+
+In principe worden 5 locaties per fysiotoop bemonsterd. Dit aantal wordt aangepast in sommige gevallen in functie van de relatieve en absolute areaalgrootte van de fysiotopen. Voor de Durme en de bovenlopen van Netes en Zenne is geen fysiotopenkaart beschikbaar, waardoor een aantal staalnamepunten gekozen zijn los van een fysiotoop-gebaseerde stratificatie.
+
+De fysiotoop fungeert als kleinste eenheid van informatie. De stalen van verschillende locaties binnen een zelfde fysiotoop worden dan ook als replica’s voor dat fysiotoop beschouwd.
+ 
+
+```{r tabel-staalnamelocaties}
+
+tabel_staalnamelocaties <- read_excel("../tabellen/070_Macrobenthos_tabellen.xlsx", 
+    sheet = "staalnamelocaties", .name_repair = "minimal")
+
+tabel_staalnamelocaties %>% 
+  knitr::kable(caption = "Aantal staalnamelocaties per waterlichaam (sectie) - monitoringscampagne 2016**XXX**.",
+             # "latex", 
+             booktabs = T) %>% 
+    kable_styling(latex_options = c("scale_down"),
+                  font_size = 12)
+
+```
+
+
+
+In de Zeeschelde en de Rupel werden de anthropogene harde zones (steenbestortingen) afzonderlijk onderscheiden. Ook werden twee delen van waterlichamen opgedeeld omwille van de heterogene aard van hun habitats en fauna. Zeeschelde I werd opgedeeld in het traject Melle-Gentbrugge versus de rest van het KRW-waterlichaam, terwijl de Dijle stroomaf van de Zennemonding (Zennegat) ook afzonderlijk werd onderscheiden van de rest van de Dijle. In de grafieken in de data-exploratie worden deze echter samengevoegd.
+
+
+### Staalname
+
+We onderscheiden twee soorten benthosstalen.
+
+__basisstaal (BS)__: jaarlijks
+
+-	intertidaal: 1 steekbuisstaal (diameter: 4,5cm) tot op een diepte van 15cm
+-	subtidaal: 1 steekbuisstaal uit een Reineck box-corer staal (diameter: 4,5cm) tot op een diepte van 15cm (in het box-corer staal)
+
+__Oligochaetenidentificatiestaal (OID)__: elke drie jaar (2008, 2011, 2014, …) wordt aanvullend een tweede benthosstaal genomen. Dit staal wordt genomen in functie van de identificatie van oligochaeten (OID). 
+
+-	intertidaal: 1 steekbuisstaal (diameter: 4,5cm) tot op een diepte van 15cm
+-	subtidaal: 1 steekbuisstaal uit een Reineck box-corer staal (diameter: 4,5cm) tot op een diepte van 15cm (in het box-corer staal)
+
+Beide benthosstalen (BS, OID) worden gefixeerd (formaldehyde 4%). 
+
+Bij elk benthosstaal wordt jaarlijks ook een __sedimentstaal__ genomen en dit tot 10cm diepte met een sedimentcorer (diameter 2 cm zie ook hoofdstuk 6.2**XXX**) in het substraat (intertidaal) of in het box-corer sample (subtidaal). Dit wordt vervolgens ter bewaring ingevroren.
+
+
+###	Verwerking
+
+Hieronder geven we de chronologie van handelingen bij de verwerking van elk type staal.
+
+__BS__
+
+*	spoelen en zeven over twee zeven met maaswijdtes 1mm en 500µm => twee zeeffracties.
+*	uitselecteren van fauna
+*	determineren van alle individuen tot op het laagst mogelijke taxonomische niveau + tellen (maar de Oligochaeta worden als 1 taxon gerekend)
+*	biomassabepaling = verassing (‘loss on ignition’):
+    +	per taxon (= soort of een hoger niet nader te determineren taxonomisch niveau) per stratum (= per taxon samenvoegen van zeeffracties en van locaties binnen één fysiotoop))
+    +	__Uitzondering__: waterlichaam Zeeschelde IV : biomassabepaling per zeeffractie om vergelijking toe te laten met stalen uit de Westerschelde (die op 1mm gezeefd worden)
+    +	drogen (12h bij 105°C) => drooggewicht (DW)
+    +	verassen (2h bij 550°C) => asgewicht (AW)
+    +	biomassa: asvrij drooggewicht AFDW = DW - AW
+  
+__OID__
+
+-	spoelen en zeven over twee zeven met maaswijdtes 1mm en 500µm => 2 zeeffracties
+-	uitselecteren van fauna 
+-	determineren van 25 individuen Oligochaeta per zeeffractie tot op het laagst mogelijke taxonomische niveau + tellen
+-	geen biomassabepaling per soort; totale oligochaetenbiomassa wordt bepaald in BS
+! Dit staal dient dus enkel voor het determineren van oligochaeten!
+
+__Sedimentstaal__  - zie hoofdstuk **XXX**
+
+-	granulometrie: korrelgrootteverdeling bepalen aan de hand van laserdiffractie
+-	gehalte aan organisch materiaal: zoals biomassabepaling door verassing (zie hoger)
+
+In Hoofdstuk 6**XXX** worden de sedimentgegevens besproken.
+
+
+##	Exploratieve data-analyse
+
+
+```{r data-macrobenthos}
+
+data_macrobenthos_densiteit <- read_excel("G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Projectgroep_Monitoring&Databeheer/Data_aanleveringen/2019/S_DS_V_002_macrobenthos_data2008-2017_rapportage2019_3.xlsx", 
+    sheet = "densiteit") %>% 
+  mutate(tidaal = if_else(tidaal == "inter", "intertidaal", "subtidaal"),
+         rivier = if_else(str_detect(waterloop, "Zeeschelde"), "Zeeschelde", "zijrivieren"))
+
+data_macrobenthos_biomassa <- read_excel("G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Projectgroep_Monitoring&Databeheer/Data_aanleveringen/2019/S_DS_V_002_macrobenthos_data2008-2017_rapportage2019_3.xlsx", 
+    sheet = "biomassa") %>% 
+  mutate(tidaal = if_else(tidaal == "inter", "intertidaal", "subtidaal"),
+         rivier = if_else(str_detect(waterloop, "Zeeschelde"), "Zeeschelde", "zijrivieren"))
+
+data_macrobenthos_locaties <- read_excel("G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Projectgroep_Monitoring&Databeheer/Data_aanleveringen/2019/S_DS_V_002_macrobenthos_data2008-2017_rapportage2019_3.xlsx", 
+    sheet = "locaties")
+
+```
+
+
+###	Densiteit en biomassa
+
+De densiteit en biomassa in de Zeeschelde s.s. (zonder zijrivieren) zijn relatief stabiel (Figuur \@ref(fig:figuur-densiteit-waterlichaam)). Rupel en Durme lijken een toename te laten zien.
+De hogere densiteiten en biomassa in het subtidaal van Zeeschelde I in 2015 en 2016 zijn voornamelijk te wijten aan een relatief groter aandeel stalen in het traject Gentbrugge-Melle, en de aanwezigheid van driekhoeksmossel (Dreissena polymorpha) in één van de stalen. De Rupel (na een scherpe terugval vanaf de waterzuivering in 2007) kende tot 2015 nog steeds lage densiteiten in het subtidaal, maar lijkt toe te nemen in 2016. De intertidale toename sinds 2013 in de Durme zet zich door en lijkt nu ook in het subtidaal waarneembaar. In 2016 was de hoogste densiteit en biomassa aan bodemdieren in het intertidaal van de zijrivieren opnieuw te vinden in de Durme. Subtidaal werd de hoogste densiteit en biomassa gevonden in de Nete. Terwijl de densiteiten in de subtidale Zenne en Nete vrij hoog en fluctuerend lijken te blijven sinds ca. 2011, zijn deze in de Dijle weliswaar ook fluctuerend maar lager. 
+De variabele biomassa in het subtidaal van de Zeeschelde, met uitzondering van Zeeschelde IV, is enigszins opmerkelijk, zoals bv. duidelijk in Zeeschelde III. Mogelijk hangt dit samen met een variabel reproductiesucces onder omstandigheden met hoge omgevingsstress, maar ook de lage trefkans van bepaalde kensoorten (Marenzelleria neglecta, Bathyporeia pilosa) speelt wellicht ook een rol.
+
+
+
+```{r figuur-densiteit-waterlichaam, fig.cap = "Densiteit per waterlichaam."}
+
+# bxp_ZS <- data_macrobenthos_densiteit %>% 
+#   filter(waterloop %in% c("Zeeschelde I", "Zeeschelde II", "Zeeschelde III", "Zeeschelde IV")) %>% 
+#   ggplot(aes(waterloop, densiteit, fill = ordered(jaar))) +
+#   geom_boxplot(aes(group = interaction(jaar, waterloop)), position = "dodge") +
+#   # geom_boxplot(position = "dodge") +
+#   scale_y_log10() +
+#   facet_wrap(~tidaal)
+# bxp_ZS
+# 
+# bxp_ZR <- data_macrobenthos_densiteit %>% 
+#   filter(waterloop %in% c("Rupel", "Durme", "Nete", "Dijle", "Zenne")) %>%
+#   ggplot(aes(waterloop, densiteit, fill = ordered(jaar))) +
+#   geom_boxplot(aes(group = interaction(jaar, waterloop)), position = "dodge") +
+#   # geom_boxplot(position = "dodge") +
+#   scale_y_log10() +
+#   facet_wrap(~tidaal)
+# bxp_ZR
+# 
+# plot_grid(bxp_ZS + rremove("xlab"), bxp_ZR + rremove("xlab"), 
+#           nrow = 2)
+
+
+# pltte <- "jco"
+pltte <- "simpsons"
+# pltte <- "uchicago"
+
+bxp_ZS <- data_macrobenthos_densiteit %>% 
+  filter(waterloop %in% c("Zeeschelde I", "Zeeschelde II", "Zeeschelde III", "Zeeschelde IV")) %>%
+  mutate(jaar = ordered(jaar)) %>% 
+  ggboxplot(x = "waterloop", y = "densiteit",
+            fill = "jaar", palette = pltte,
+            facet.by = "tidaal") %>% 
+  ggpar(yscale = "log10")
+# bxp_ZS
+
+bxp_ZR <- data_macrobenthos_densiteit %>% 
+  filter(waterloop %in% c("Rupel", "Durme", "Nete", "Dijle", "Zenne")) %>%
+  mutate(jaar = ordered(jaar)) %>% 
+  ggboxplot(x = "waterloop", y = "densiteit",
+            fill = "jaar", palette = pltte,
+            facet.by = "tidaal") %>% 
+  ggpar(yscale = "log10")
+# bxp_ZR
+
+plot_grid(bxp_ZS + rremove("xlab"), bxp_ZR + rremove("xlab") + rremove("legend"), 
+          nrow = 2)
+
+```
+
+
+```{r figuur-biomassa-waterlichaam, fig.cap = "Biomassa per waterlichaam."}
+
+```
+

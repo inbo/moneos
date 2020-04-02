@@ -24,6 +24,7 @@ output:
     lof: TRUE
     lot: TRUE
     floatbarrier: subsection
+    # header-includes: \usepackage{xcolor}
   bookdown::epub_book:
     stylesheet: "css/inbo_rapport.css"
     template: !expr INBOmd::inbo_rapport_css("epub")
@@ -42,7 +43,10 @@ opts_chunk$set(
   error = FALSE,
   message = TRUE
 )
+library(kableExtra)
 library(tidyverse)
+library(ggpubr)
+library(cowplot)
 library(readxl)
 library(INBOtheme)
 if (interactive()) {
