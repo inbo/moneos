@@ -1,0 +1,130 @@
+---
+params:
+  hoofdstuk: "000_template"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = {
+                            source("../pad.R");
+                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
+                          }
+                          )})
+title: "Rmarkdown template MONEOS analyse"
+output:
+  bookdown::word_document2
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(writexl)
+library(INBOtheme)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source("../pad.R")
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r data}
+
+template_data <- 
+  read_delim(paste0(pad_data, "template_data.csv"),
+              delim = ";")
+
+kleinste_x <- 
+  template_data$x %>% 
+  min()
+
+grootste_x <- 
+  template_data$x %>% 
+  max()
+
+kleinste_y <- 
+  template_data$y %>% 
+  min()
+
+grootste_y <- 
+  template_data$y %>% 
+  max()
+
+```
+
+
+##### beschrijving van de data
+
+  - Er zijn `r ncol(template_data)` variabelen
+    + `r paste(names(template_data), sep = ", ")`
+  - Er zijn `r nrow(template_data)` metingen
+  - Er zijn `r count(template_data %>% filter(y <= 0))$n` y waarden <= 0
+
+
+
+##### overzicht x waarden 
+
+```{r 000-tabel-x-waarden}
+
+tabel_x_waarden <- 
+  template_data %>% 
+  mutate(x_cat = cut(x, floor(kleinste_x-1):ceiling(grootste_x+1))) %>% 
+  count(x_cat)
+
+knitr::kable(tabel_x_waarden)
+
+write_xlsx(list(x_waarden = tabel_x_waarden),
+           paste0(pad_tabellen, "template_tabellen.xlsx"))
+
+```
+
+
+##### figuur regressie
+
+```{r 000-figuur-regressie, fig.height=5, fig.width=8}
+
+template_data %>% 
+  ggplot(aes(x, y)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+ggsave(paste0(pad_figuren, "000_figuur_regressie.jpg"))
+
+```
+
+
+```{r meta-data}
+
+meta_data <- 
+  enframe(c(kleinste_x = kleinste_x, 
+            grootste_x = grootste_x, 
+            kleinste_y = kleinste_y,
+            grootste_y = grootste_y,
+            metingen = nrow(template_data)),
+          name = "naam", value = "waarde")
+
+meta_data %>% 
+  write_delim(paste0(pad_data, "meta_data.csv"),
+              delim = ";")
+
+```
+
