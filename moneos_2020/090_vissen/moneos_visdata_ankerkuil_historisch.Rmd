@@ -1,0 +1,279 @@
+---
+title: "visdata historisch"
+knit: (function(inputFile, encoding) { 
+        rmarkdown::render(inputFile,
+                          encoding=encoding, 
+                          output_dir = "../../../output")})
+output:
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+
+```
+
+
+```{r pad}
+
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source("../pad.R")
+
+```
+
+
+##### datasets voor aantal en gewicht gebaseerd op:
+
+  - _C:/Users/joost_vanoverbeke/AppData/Local/Temp/Temp1_VisdataAnkerkuil_KRW_Vrijwilligers_2018.zip/VisdataAnkerkuil_KRW_Vrijwilligers_2018/aantal ankerkuil (1).xlsx_
+  - _C:/Users/joost_vanoverbeke/AppData/Local/Temp/Temp1_VisdataAnkerkuil_KRW_Vrijwilligers_2018.zip/VisdataAnkerkuil_KRW_Vrijwilligers_2018/gewicht ankerkuil (1).xlsx_
+
+
+```{r inlezen-data}
+
+ankerkuil_aantal_historisch <- 
+  read_delim(paste0(pad_data, "overzicht ankerkuil 2012-2017 aantal.csv"),
+             delim = ";") %>% 
+  select(jaar = datum, seizoen, locatie, uren, volume,
+         everything(),
+         -campagne, -code) %>% 
+  rename_all(tolower)
+
+ankerkuil_gewicht_historisch <- 
+  read_delim(paste0(pad_data, "overzicht ankerkuil 2012-2017 gewicht.csv"),
+             delim = ";") %>% 
+  select(jaar, seizoen, locatie = locatienummer, uren, volume,
+         everything(),
+         -datum) %>% 
+  rename_all(tolower)
+
+```
+
+
+##### unieke soorten:
+
+```{r unieke-soorten}
+
+unieke_soorten_aantal <- 
+  setdiff(names(ankerkuil_aantal_historisch)[-(1:5)], 
+          names(ankerkuil_gewicht_historisch)[-(1:5)])
+
+unieke_soorten_gewicht <- 
+  setdiff(names(ankerkuil_gewicht_historisch)[-(1:5)], 
+          names(ankerkuil_aantal_historisch)[-(1:5)])
+
+
+uniek_aantal_niet_nul <- 
+  if(length(unieke_soorten_aantal) > 0) {
+    ankerkuil_aantal_historisch %>% 
+      select(unieke_soorten_aantal) %>% 
+      summarise_all(~sum(., na.rm = TRUE)) %>% 
+      gather(soort, aantal) %>% 
+      filter(aantal > 0) %>% 
+      pull(soort)
+  } else {
+    NULL
+  }
+
+uniek_gewicht_niet_nul <- 
+  if(length(unieke_soorten_gewicht) > 0) {
+    ankerkuil_gewicht_historisch %>% 
+      select(unieke_soorten_gewicht) %>% 
+      summarise_all(~sum(., na.rm = TRUE)) %>% 
+      gather(soort, gewicht) %>% 
+      filter(gewicht > 0) %>% 
+      pull(soort)
+  } else {
+    NULL
+  }
+
+```
+
+
+  - `r length(unieke_soorten_aantal)` soorten komen voor in de dataset aantallen en niet in gewicht 
+    + `r unieke_soorten_aantal`
+    + van deze soorten hebben `r uniek_aantal_niet_nul` aantallen > 0
+
+  - `r length(unieke_soorten_gewicht)` soorten komen voor in de dataset gewicht en niet in aantallen 
+    + `r unieke_soorten_gewicht`
+    + van deze soorten hebben `r uniek_gewicht_niet_nul` gewicht > 0
+
+
+
+De soorten die niet in de data voor aantallen voorkomen worden verwijderd
+
+```{r verwijderen-unieke-soorten-gewicht}
+
+ankerkuil_gewicht_historisch <-
+  ankerkuil_gewicht_historisch %>%
+  select(-unieke_soorten_gewicht)
+
+```
+
+
+##### unieke stalen: 
+
+```{r unieke-stalen}
+
+stalen_aantal <- 
+  ankerkuil_aantal_historisch %>% 
+  distinct(jaar, seizoen, locatie)
+
+stalen_gewicht <- 
+  ankerkuil_gewicht_historisch %>% 
+  distinct(jaar, seizoen, locatie)
+
+unieke_stalen_aantal <- 
+  anti_join(stalen_aantal,
+            stalen_gewicht) %>% 
+  arrange(jaar, seizoen, locatie)
+
+unieke_stalen_gewicht <- 
+  anti_join(stalen_gewicht,
+            stalen_aantal) %>% 
+  arrange(jaar, seizoen, locatie)
+
+```
+
+
+  - `r nrow(unieke_stalen_aantal)` stalen komen voor in de dataset aantallen en niet in gewicht
+    + `r if(nrow(unieke_stalen_aantal) > 0) knitr::kable(unieke_stalen_aantal) else NULL`
+
+  - `r nrow(unieke_stalen_gewicht)` stalen komen voor in de dataset gewicht en niet in aantallen
+    + `r if(nrow(unieke_stalen_gewicht) > 0) knitr::kable(unieke_stalen_gewicht) else NULL`
+    
+
+##### unieke uren - volume:
+
+```{r unieke-uren-volume}
+
+precisie_uren <- 1
+precisie_volume <- 0
+
+ankerkuil_aantal_historisch <-
+  ankerkuil_aantal_historisch %>% 
+  mutate(uren = round(uren, precisie_uren),
+         volume = round(volume, precisie_volume))
+
+ankerkuil_gewicht_historisch <-
+  ankerkuil_gewicht_historisch %>% 
+  mutate(uren = round(uren, precisie_uren),
+         volume = round(volume, precisie_volume))
+
+stalen_aantal <- 
+  ankerkuil_aantal_historisch %>% 
+  distinct(jaar, seizoen, locatie, uren, volume)
+
+stalen_gewicht <- 
+  ankerkuil_gewicht_historisch %>% 
+  distinct(jaar, seizoen, locatie, uren, volume)
+
+unieke_stalen_aantal <- 
+  anti_join(stalen_aantal,
+            stalen_gewicht) %>% 
+  arrange(jaar, seizoen, locatie)
+
+unieke_stalen_gewicht <- 
+  anti_join(stalen_gewicht,
+            stalen_aantal) %>% 
+  arrange(jaar, seizoen, locatie)
+
+```
+
+
+uren afgerond naar `r precisie_uren` cijfers na de comma  
+volume afgerond naar `r precisie_volume` cijfers na de comma
+
+
+  - `r nrow(unieke_stalen_aantal)` uren/volume komen voor in de dataset aantallen en niet in gewicht
+    + `r if(nrow(unieke_stalen_aantal) > 0) knitr::kable(unieke_stalen_aantal) else NULL`
+
+  - `r nrow(unieke_stalen_gewicht)` uren/volume komen voor in de dataset gewicht en niet in aantallen
+    + `r if(nrow(unieke_stalen_gewicht) > 0) knitr::kable(unieke_stalen_gewicht) else NULL`
+    
+
+##### jaren in de dataset:
+
+```{r jaren}
+
+jaren <-
+  ankerkuil_aantal_historisch %>% 
+  distinct(jaar) %>% 
+  pull(jaar)
+
+jaar_range <-
+  range(jaren)
+
+```
+
+
+  - `r jaren`
+
+
+##### locaties in de dataset:
+
+```{r locaties}
+
+locaties <-
+  ankerkuil_aantal_historisch %>% 
+  distinct(locatie) %>% 
+  pull(locatie)
+
+```
+
+  - `r locaties`
+
+
+##### stalen per jaar seizoen en locatie  
+  
+```{r stalen-seizoen-locatie}
+
+stalen <- 
+  ankerkuil_aantal_historisch %>% 
+  count(jaar, seizoen, locatie) %>% 
+  spread(locatie, n)
+
+knitr::kable(stalen)
+
+```
+
+
+
+##### finale data weggeschreven naar:
+
+```{r filenames}
+
+file_aantallen <-
+  paste0(pad_data, "ankerkuil_aantallen_", paste(jaar_range, collapse = "_"), ".csv")
+
+file_gewicht <-
+  paste0(pad_data, "ankerkuil_gewicht_", paste(jaar_range, collapse = "_"), ".csv")
+
+```
+
+  - `r file_aantallen`
+  - `r file_gewicht`
+  
+
+```{r wegschrijven-data, eval=FALSE}
+
+ankerkuil_aantal_historisch %>% 
+  write_delim(file_aantallen, delim = ";")
+
+ankerkuil_gewicht_historisch %>% 
+  write_delim(file_gewicht, delim = ";")
+
+```
+

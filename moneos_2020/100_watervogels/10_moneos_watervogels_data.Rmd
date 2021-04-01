@@ -1,0 +1,593 @@
+---
+params:
+  hoofdstuk: "100_watervogels"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = {
+                            source("../pad.R");
+                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
+                          }
+                          )})
+title: "watervogeldata"
+output:
+  bookdown::word_document2
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+#library(inborutils)  ## moet dat nu inbodb worden??
+library(inbodb)
+library(DBI)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source("../pad.R")
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r benodigde-seizoenen}
+
+vroegste_seizoen <- "1991/1992"
+laatste_seizoen <- "2019/2020"
+
+seizoenen <-
+  (vroegste_seizoen %>% str_sub(0, 4) %>% as.numeric):(laatste_seizoen %>% str_sub(0, 4) %>% as.numeric) %>% 
+  paste(., {.+1} %>% as.character() %>% str_sub(3, 5), sep = "/")
+
+seizoenen_query <-
+  paste0("'", seizoenen, "'", collapse = ",") %>% 
+  paste0("(", ., ")")
+
+```
+
+
+```{r gebiedsgroepen}
+
+gebiedsgroepen <- 
+  read_delim(paste0(pad_data, "Zeeschelde_gebiedsgroepen.csv"),
+             delim = ";") %>% 
+  filter(gebiedsgroeptype_code == "KRWZS") %>% 
+  mutate(gebiedscode = as.character(gebiedscode))
+
+```
+
+
+```{r basis-query-tellingen}
+
+query_tellingen <- 
+"SELECT 
+  su.SurveyCode AS ProjectCode
+, su.SurveyNaam AS Project
+, a.AnalyseSetKey AS AnalyseSetCode
+, a.AnalyseSetNaam AS AnalyseSet
+, l.RegioWVNaam AS Regio
+, l.LocationWVCode AS GebiedsCode
+, l.LocationWVNaam AS Gebied
+, ss.Seasonname AS Telseizoen
+, e.EventLabel AS Telling
+, e.SortOrder AS TellingSortOrder
+, f.SampleDate AS Teldatum
+, s.CoverageCode AS TelvolledigheidCode
+, s.CoverageDescription AS Telvolledigheid
+, s.IsNulTelling AS Nultelling
+FROM FactAnalyseSetOccurrence f
+  INNER JOIN DimSurvey su ON su.surveykey = f.surveykey
+  INNER JOIN DimAnalyseSet a ON a.AnalyseSetKey = f.AnalyseSetKey
+  INNER JOIN DimLocationWV l ON l.locationwvkey = f.locationwvkey
+  INNER JOIN DimSeason ss ON ss.Seasonkey = f.seasonkey
+  INNER JOIN DimEvent e ON e.eventkey = f.eventkey
+  INNER JOIN DimSample s ON s.SampleKey = f.SampleKey
+WHERE 1=1
+  AND s.samplestatus = 'CHECKED' /**alleen gevalideerde records**/
+  AND s.coveragecode not in ('-', 'N')  /**niet getelde tellingen zijn irrelevant**/
+;"
+
+query_grouping <- 
+"GROUP BY 
+  su.SurveyCode
+, su.SurveyNaam
+, a.AnalyseSetKey
+, a.AnalyseSetNaam
+, l.RegioWVCode
+, l.RegioWVNaam
+, l.LocationWVCode
+, l.LocationWVNaam
+, ss.Seasonname
+, e.EventCode
+, e.EventLabel
+, e.SortOrder
+, f.SampleDate
+, s.CoverageCode
+, s.CoverageDescription
+, s.IsNulTelling;"
+
+
+query_tellingen <- 
+"SELECT 
+  su.SurveyCode AS ProjectCode
+, su.SurveyNaam AS Project
+, a.AnalyseSetKey AS AnalyseSetCode
+, a.AnalyseSetNaam AS AnalyseSet
+, l.RegioWVNaam AS Regio
+, l.LocationWVCode AS GebiedsCode
+, l.LocationWVNaam AS Gebied
+, ss.Seasonname AS Telseizoen
+, e.EventLabel AS Telling
+, e.SortOrder AS TellingSortOrder
+, s.SampleDate AS Teldatum
+, s.CoverageCode AS TelvolledigheidCode
+, s.CoverageDescription AS Telvolledigheid
+, s.IsNulTelling AS Nultelling
+FROM DimSample s
+  INNER JOIN DimSurvey su ON su.surveykey = s.surveykey
+  INNER JOIN DimAnalyseSet a ON a.AnalyseSetKey = s.AnalyseSetKey
+  INNER JOIN DimLocationWV l ON l.locationwvkey = s.locationwvkey
+  INNER JOIN DimSeason ss ON ss.Seasonkey = s.seasonkey
+  INNER JOIN DimEvent e ON e.eventkey = s.eventkey
+WHERE 1=1
+  AND s.samplestatus = 'CHECKED' /**alleen gevalideerde records**/
+  AND s.coveragecode not in ('-', 'N')  /**niet getelde tellingen zijn irrelevant**/
+;"
+
+```
+
+
+```{r bevragen-warehouse-zeeschelde-tellingen}
+
+query <-
+  paste0(str_sub(query_tellingen, end=-2),
+         " AND f.AnalyseSetKey = 1 /**alleen Zeescheldetellingen**/",
+         " AND ss.seasonname in ",
+         seizoenen_query,
+         str_sub(query_grouping, end=-2),
+         ";"
+  )
+
+# con <- connect_inbo_dbase("W0004_00_Waterbirds")
+overzicht_tellingen <- 
+  dbGetQuery(con,
+             query)
+# dbDisconnect(con)
+
+# selectie van de telgebieden gespecifieerd in de Zeeschelde_gebiedsgroepen - KRWZS
+overzicht_tellingen <-
+  overzicht_tellingen %>% 
+  filter(GebiedsCode %in% gebiedsgroepen$gebiedscode)
+
+overzicht_tellingen %>% 
+  distinct(Nultelling)
+
+```
+
+
+
+```{r basis-query}
+
+basis_query <- 
+  paste0(
+"SELECT
+  SU.SurveyCode as ProjectCode
+, SU.SurveyNaam as Project
+, L.RegioWVCode as RegioCode
+, L.RegioWVNaam as Regio
+, L.LocationWVCode as GebiedsCode
+, L.LocationWVNaam as Gebied
+, SS.Seasonname as Telseizoen
+, E.EventCode as TellingCode
+, E.EventLabel as Telling
+, E.SortOrder as TellingSortOrder
+, S.sampleDate as Teldatum
+, S.CoverageCode as Telvolledigheid
+, T.Commonname as NedNaam
+, T.scientificname as WetNaam
+, T.TaxonGroupCode
+, F.Taxoncount as Aantal
+
+FROM FactAnalyseSetOccurrence F
+inner join DimSurvey SU on SU.surveykey = F.surveykey
+inner join DimLocationWV L on L.locationwvkey = F.locationwvkey
+inner join DimSeason SS on SS.Seasonkey = F.seasonkey
+inner join DimEvent E on E.eventkey = F.eventkey
+inner join DimSample S on F.samplekey = S.samplekey
+inner join DimTaxonWV T on T.taxonwvkey = F.taxonwvkey
+WHERE 1=1
+  AND S.samplestatus = 'CHECKED' /**alleen gevalideerde records**/
+  AND S.coveragecode not in ('-', 'N')  /**niet getelde tellingen zijn irrelevant**/
+  AND F.taxoncount > 0;"
+  )
+
+```
+
+
+```{r bevragen-warehouse-zeeschelde-analyseset}
+
+query <-
+  paste0(str_sub(basis_query, end=-2),
+         " AND F.Analysesetkey in (1) /**alleen boottellingen, i.e. uit ZSCH-analyseset**/",
+         " AND SS.seasonname in ",
+         seizoenen_query,
+         ";"
+  )
+
+con <- connect_inbo_dbase("W0004_00_Waterbirds")
+WaterbirdsBT <- 
+  dbGetQuery(con,
+             query)
+dbDisconnect(con)
+
+# selectie van de telgebieden gespecifieerd in de Zeeschelde_gebiedsgroepen - KRWZS
+WaterbirdsBT <-
+  WaterbirdsBT %>% 
+  filter(GebiedsCode %in% gebiedsgroepen$gebiedscode)
+
+```
+
+
+```{r toevoegen-warehouse-MIDMA-analyseset-zijrivieren}
+
+telzones_zijrivieren <- 
+  gebiedsgroepen$gebiedscode %>% 
+  unique() %>% 
+  setdiff(WaterbirdsBT$GebiedsCode %>% 
+            unique())
+
+telzones_query <-
+  paste0("'", telzones_zijrivieren, "'", collapse = ",") %>% 
+  paste0("(", ., ")")
+
+query <-
+  paste0(str_sub(basis_query, end=-2),
+         " AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/",
+         " AND SS.seasonname in ",
+         seizoenen_query,
+         " AND L.LocationWVCode in ",
+         telzones_query,
+         ";"
+  )
+
+con <- connect_inbo_dbase("W0004_00_Waterbirds")
+waterbirds_zijrivieren <- 
+  dbGetQuery(con,
+             query)
+dbDisconnect(con)
+
+WaterbirdsBT <-
+  WaterbirdsBT %>% 
+  bind_rows(waterbirds_zijrivieren)
+
+```
+
+```{r basis-query-tellingen}
+
+basis_query_tellingen <-
+"WITH NulTelling AS
+  (
+  SELECT SampleKey
+  FROM
+  (
+  SELECT sampleKey, sum(taxoncount) as AantalIndividu
+  FROM FactAnalyseSetOccurrence
+  WHERE AnalyseSetKey = 1
+  GROUP BY sampleKey
+  )tmp
+  WHERE tmp.AantalIndividu = 0
+  )
+SELECT
+  su.SurveyCode AS ProjectCode
+, su.SurveyNaam AS Project
+, a.AnalyseSetKey AS AnalyseSetCode
+, a.AnalyseSetNaam AS AnalyseSet
+, l.RegioWVNaam AS Regio
+, l.LocationWVCode AS GebiedsCode
+, l.LocationWVNaam AS Gebied
+, ss.Seasonname AS Telseizoen
+, e.EventLabel AS Telling
+, e.SortOrder AS TellingSortOrder
+, f.SampleDate AS Teldatum
+, s.CoverageCode AS TelvolledigheidCode
+, s.CoverageDescription AS Telvolledigheid
+, CASE WHEN NulTelling.SampleKey IS NOT NULL THEN 1 ELSE 0 END AS IsNulTelling
+FROM FactAnalyseSetOccurrence f
+  INNER JOIN DimSurvey su ON su.surveykey = f.surveykey
+  INNER JOIN DimAnalyseSet a ON a.AnalyseSetKey = f.AnalyseSetKey
+  INNER JOIN DimLocationWV l ON l.locationwvkey = f.locationwvkey
+  INNER JOIN DimSeason ss ON ss.Seasonkey = f.seasonkey
+  INNER JOIN DimEvent e ON e.eventkey = f.eventkey
+  INNER JOIN DimSample s ON s.SampleKey = f.SampleKey
+  LEFT OUTER JOIN NulTelling ON NulTelling.SampleKey = f.SampleKey
+WHERE 1=1
+  AND s.samplestatus = 'CHECKED' /**alleen gevalideerde records**/
+  AND s.coveragecode not in ('-', 'N')  /**niet getelde tellingen zijn irrelevant**/
+;"
+
+grouping_tellingen <-
+"GROUP BY
+  su.SurveyCode
+, su.SurveyNaam
+, a.AnalyseSetKey
+, a.AnalyseSetNaam
+, l.RegioWVCode
+, l.RegioWVNaam
+, l.LocationWVCode
+, l.LocationWVNaam
+, ss.Seasonname
+, e.EventCode
+, e.EventLabel
+, e.SortOrder
+, f.SampleDate
+, s.CoverageCode
+, s.CoverageDescription
+, s.IsNulTelling
+, NulTelling.SampleKey;"
+```
+
+
+```{r bevragen-warehouse-zeeschelde-tellingen}
+
+query <-
+  paste0(str_sub(basis_query_tellingen, end=-2),
+         " AND f.AnalyseSetKey = 1 /**alleen Zeescheldetellingen**/",
+         " AND ss.seasonname in ",
+         seizoenen_query,
+         str_sub(grouping_tellingen, end=-2), 
+         ";"
+  )
+
+con <- connect_inbo_dbase("W0004_00_Waterbirds")
+overzicht_tellingen <-
+  dbGetQuery(con,
+             query)
+dbDisconnect(con)
+
+# selectie van de telgebieden gespecifieerd in de Zeeschelde_gebiedsgroepen - KRWZS
+overzicht_tellingen <-
+  overzicht_tellingen %>%
+  filter(GebiedsCode %in% gebiedsgroepen$gebiedscode)
+
+```
+
+```{r toevoegen-warehouse-tellingen-MIDMA-zijrivieren}
+
+telzones_zijrivieren <-
+  gebiedsgroepen$gebiedscode %>%
+  unique() %>%
+  setdiff(overzicht_tellingen$GebiedsCode %>%
+            unique())
+
+telzones_query <-
+  paste0("'", telzones_zijrivieren, "'", collapse = ",") %>%
+  paste0("(", ., ")")
+
+query <-
+  paste0(str_sub(basis_query_tellingen, end=-2),
+         " AND f.Analysesetkey = 2 /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets - voldoende om enkel analyseset 2 te nemen**/",
+         " AND ss.seasonname in ",
+         seizoenen_query,
+         " AND l.LocationWVCode in ",
+         telzones_query,
+         str_sub(grouping_tellingen, end=-2),
+         ";"
+  )
+
+
+con <- connect_inbo_dbase("W0004_00_Waterbirds")
+tellingen_zijrivieren <-
+  dbGetQuery(con,
+             query)
+dbDisconnect(con)
+
+overzicht_tellingen <-
+  overzicht_tellingen %>%
+  bind_rows(tellingen_zijrivieren)
+
+
+```
+
+
+```{r correcties-overzicht_tellingen}
+
+# checken voor dubbels in de dataset
+overzicht_tellingen  %>% 
+    arrange(Gebied, Telseizoen, Telling, Teldatum, ProjectCode) %>% 
+  distinct(Gebied, Telseizoen, Telling, Teldatum, ProjectCode)
+
+
+
+```
+
+
+```{r toevoegentellinging-informatie-gebiedsgroepen}
+
+overzicht_tellingen <- 
+  overzicht_tellingen %>% 
+  rename_all(tolower) %>% 
+  left_join(gebiedsgroepen) %>% 
+  select(-telling, -tellingsortorder)
+
+```
+
+```{r overzicht-aantal-tellingen}
+
+overzicht_tellingen <-
+  overzicht_tellingen %>%
+  mutate(IsNulTelling = if_else(IsNulTelling == 1, "ja", "nee"))
+
+
+# overzicht aantal tellingen
+aantaltellingen <- overzicht_tellingen %>%
+  count(analyseset, telvolledigheidcode, telvolledigheid, isnultelling)
+
+knitr::kable(aantaltellingen)
+
+# volledigheid wintertelseizoen
+overzicht_tellingen %>% 
+  filter (telseizoen == "2019/20") %>% 
+  filter(month(teldatum) %in% c(10, 11, 12, 1, 2, 3)) %>% 
+  group_by(gebiedscode, gebied, gebiedsgroep_code) %>% 
+  count(telseizoen, sort= TRUE) %>% 
+  filter (n < 6) # gebieden met minder dan 6 tellingen vertonen ontbrekende wintertellingen
+  
+
+
+overzicht_tellingen %>% 
+  filter (telseizoen == "2019/20") %>% 
+  filter (gebiedscode == 3121003) %>% 
+  select(gebied, teldatum) %>% #kijk alleen naar teldatum want telling en tellingsortorder kloppen niet in databank
+  arrange(teldatum)
+
+
+```
+
+
+
+```{r correcties-WaterbirdsBT}
+
+# checken voor dubbels in de dataset
+WaterbirdsBT  %>% 
+  group_by_at(vars(-Aantal)) %>% 
+  mutate(n = n()) %>% 
+  ungroup() %>% 
+  filter(n>1) %>% 
+  arrange(Gebied, Telseizoen, Telling, Teldatum, NedNaam, ProjectCode)
+
+# Correctie hiervoor
+WaterbirdsBT <- 
+  WaterbirdsBT  %>% 
+  group_by_at(vars(-Aantal)) %>% 
+  summarise(Aantal = max(Aantal)) %>% # maximum van de dubbele tellingen
+  ungroup()
+
+# Twee gebieden in dataset die er niet thuishoren: 
+WaterbirdsBT %>% 
+  filter(str_detect(Gebied, "aapskooi|Oude Dijle")) %>% 
+  group_by(Gebied) %>% 
+  summarise() %>% 
+  ungroup()
+
+# Correctie
+WaterbirdsBT <- 
+  WaterbirdsBT %>% 
+  filter(!str_detect(Gebied, "aapskooi|Oude Dijle"))
+
+# Telzones op nederlands grondgebied worden niet meegeteld (strik gesproken geen Zeeschelde). Dit gaat over de teltrajecten (9999999 en 9999998) gelegen op Nederlands grondgebied. Deze teltrajecten zitten niet in de gebiedsgroepen file
+
+# # Enkel wintertellingen
+# WaterbirdsBTw <- WaterbirdsBT %>% filter(month(Teldatum) %in% c(10, 11, 12, 1, 2, 3))
+
+```
+
+```{r telseizoen metadata}
+
+
+laatste_telseizoen <- 
+  WaterbirdsBT %>% 
+  pull(Telseizoen) %>% 
+  unique() %>% 
+  sort() %>% 
+  last()
+
+
+
+```
+
+```{r toevoegen-informatie-gebiedsgroepen}
+
+WaterbirdsBT <- 
+  WaterbirdsBT %>% 
+  rename_all(tolower) %>% 
+  left_join(gebiedsgroepen) %>% 
+  select(gebiedsgroep_code,
+         gebiedsgroep,
+         rivier,
+         gebiedscode,
+         gebied = gebiedsnaam,
+         telseizoen,
+         teldatum,
+         nednaam,
+         wetnaam,
+         taxongroepcode = taxongroupcode,
+         aantal)
+
+```
+
+```{r controle volledigheid}
+Aantaltellingenpergebied0 <- WaterbirdsBT %>% 
+    filter (telseizoen == "2018/19") %>% 
+  count(gebiedsgroep_code, telseizoen, teldatum) 
+  
+# aantal tellingen per telseizoen ingevoerd 
+Aantaltellingenpergebied <- WaterbirdsBT %>% 
+  filter (telseizoen == "2018/19") %>% 
+  distinct(gebiedsgroep_code, gebiedscode, teldatum, telseizoen) %>% 
+  count(gebiedsgroep_code, gebiedscode, telseizoen) 
+  
+
+knitr::kable(Aantaltellingenpergebied)
+
+
+```
+
+```{r optellen-per-gebiedsgroep-rivier}
+
+WaterbirdsBT <- 
+  WaterbirdsBT %>% 
+  group_by(gebiedsgroep_code,
+           gebiedsgroep,
+           rivier,
+           telseizoen,
+           teldatum,
+           nednaam,
+           wetnaam,
+           taxongroepcode) %>% 
+  summarise(aantal = sum(aantal)) %>% 
+  ungroup()
+
+```
+
+
+```{r toevoegen-nultellingen, eval=FALSE}
+
+WaterbirdsBT <- 
+  WaterbirdsBT %>% 
+  complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
+           nesting(nednaam, wetnaam, taxongroepcode),
+           fill = list(0))
+
+```
+
+
+```{r wegschrijven-data}
+
+WaterbirdsBT %>% 
+  write_delim(paste0(pad_data, "Watervogels_Zeeschelde.csv"),
+              delim = ";")
+
+```
+
+
+
+
