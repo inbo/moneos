@@ -14,9 +14,6 @@ bibliography: references.bib
 link-citations: TRUE
 site: bookdown::bookdown_site
 output:
-  bookdown::gitbook:
-    split_by: "chapter+number"
-    template: !expr INBOmd::inbo_rapport_css("html")
   bookdown::pdf_book:
     base_format: INBOmd::inbo_rapport
     style: INBO
@@ -25,9 +22,6 @@ output:
     lot: TRUE
     floatbarrier: subsection
     # header-includes: \usepackage{xcolor}
-  bookdown::epub_book:
-    stylesheet: "css/inbo_rapport.css"
-    template: !expr INBOmd::inbo_rapport_css("epub")
 editor_options: 
   chunk_output_type: console
 ---
