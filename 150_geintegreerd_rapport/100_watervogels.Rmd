@@ -11,11 +11,15 @@ knit: (function(inputFile, encoding) {
                           )})
 title: "moneos hoofdstuk watervogels"
 output:
-  bookdown::word_document2:
-    reference_docx: INBO_sjabloon.docx
+  bookdown::pdf_book:
+    base_format: INBOmd::inbo_rapport
+    style: INBO
+    tocdepth: 2
+    lof: TRUE
+    lot: TRUE
+    floatbarrier: subsection
 bibliography: references.bib
 link-citations: TRUE
-csl: ecology.csl
 ---
 
 
