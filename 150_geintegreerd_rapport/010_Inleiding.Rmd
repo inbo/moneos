@@ -28,6 +28,12 @@ link-citations: TRUE
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 knitr::opts_knit$set(eval.after = "fig.cap")
 
+# Probleem: volgend argument is nodig om het volledige rapport te bouwen, maar mag er niet staan bij het bouwen van 1 hoofdstuk:
+params <- data.frame(hoofdstuk = "010_inleiding")
+# Een alternatief zou kunnen zijn om hier een nieuwe, onafhankelijke parameter te definiëren die in het rapport zelf gebruikt wordt (aanpassingen in hoofdstuk moeten nog gemaakt worden):
+hoofdstuk <- "010_inleiding"
+# OK, dan moet die hoofdstuknaam 2 keer opgegeven worden (voor de hoofding en voor het document), maar anderzijds is 'hoofdstuk' iets gemakkelijker in gebruik dan 'params$hoofdstuk' (en vooral: om die params van je yaml in het document zelf op de roepen, moet je heelwat trucs gebruiken; dat uitzoeken vraagt teveel tijd voor het relatief kleine voordeel dat je ermee hebt.)
+
 ```
 
 
