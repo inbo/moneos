@@ -1,5 +1,12 @@
 book_filename: "moneos_2020"
-output_dir: "../../output"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = {
+                            source("../pad.R");
+                            maak_pad("150_geintegreerd_rapport", "output")
+                          }
+                          )})
 delete_merged_file: FALSE
 language:
   label:
