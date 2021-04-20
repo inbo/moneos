@@ -30,8 +30,8 @@ knitr::opts_knit$set(eval.after = "fig.cap")
 
 # Probleem: volgend argument is nodig om het volledige rapport te bouwen, maar mag er niet staan bij het bouwen van 1 hoofdstuk:
 
-params <- data.frame(hoofdstuk = "010_inleiding")
-
+pars <- data.frame(hoofdstuk = "010_inleiding")
+# pars <- rmarkdown::yaml_front_matter(knitr::current_input())$params
 
 # Een alternatief zou kunnen zijn om hier een nieuwe, onafhankelijke parameter te definiëren die in het rapport zelf gebruikt wordt (aanpassingen in hoofdstuk moeten nog gemaakt worden):
 
@@ -60,9 +60,9 @@ library(kableExtra)
 
 source("../pad.R")
 
-pad_data <- maak_pad(params$hoofdstuk, "data")
-pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
-pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+pad_data <- maak_pad(pars$hoofdstuk, "data")
+pad_figuren <- maak_pad(pars$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(pars$hoofdstuk, "tabellen")
 
 ```
 
