@@ -11,23 +11,32 @@ knit: (function(inputFile, encoding) {
                           )})
 title: "moneos hoofdstuk watervogels"
 output:
-  bookdown::word_document2:
-    reference_docx: INBO_sjabloon.docx
+  bookdown::pdf_book:
+    base_format: INBOmd::inbo_rapport
+    style: INBO
+    tocdepth: 2
+    lof: TRUE
+    lot: TRUE
+    floatbarrier: subsection
 bibliography: references.bib
 link-citations: TRUE
-csl: ecology.csl
 ---
 
 
-```{r setup, include=FALSE}
+```{r 100-setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 knitr::opts_knit$set(eval.after = "fig.cap")
+#probleem: volgend argument is nodig om het volledige rapport te bouwen, maar mag er niet staan bij het bouwen van 1 hoofdstuk
+params <- data.frame(hoofdstuk = "100_watervogels")
+# Een alternatief zou kunnen zijn om hier een nieuwe, onafhankelijke parameter te definiëren die in het rapport zelf gebruikt wordt (aanpassingen in hoofdstuk moeten nog gemaakt worden):
+hoofdstuk <- "100_watervogels"
+# OK, dan moet die hoofdstuknaam 2 keer opgegeven worden (voor de hoofding en voor het document), maar anderzijds is 'hoofdstuk' iets gemakkelijker in gebruik dan 'params$hoofdstuk' (en vooral: om die params van je yaml in het document zelf op de roepen, moet je heelwat trucs gebruiken; dat uitzoeken vraagt teveel tijd voor het relatief kleine voordeel dat je ermee hebt.)
 
 ```
 
 
-```{r libraries}
+```{r 100-libraries}
 
 library(tidyverse)
 library(readxl)
@@ -43,7 +52,7 @@ library(kableExtra)
 ```
 
 
-```{r pad}
+```{r 100-pad}
 
 # inlezen van variabelen
 # pad naar data : pad_data
@@ -59,7 +68,6 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 ```
 
 
-```{r meta_data}
 
 meta_data <- 
   read_delim(paste0(pad_data, "meta_data.csv"),
@@ -71,6 +79,7 @@ for(i in 1:nrow(meta_data)){
   ##now create a new variable with the original name of the list item
   eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
 }
+```{r 100-meta_data}
 
 ```
 
@@ -376,6 +385,5 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_dichtheid.jpg"))
 De vogelaantallen op de Zeeschelde vertonen een doorgaande dalende trend. Deze trends lijken ondertussen al niet meer gerelateerd aan de systeemshift die er kwam door de verbeterende waterkwaliteit. Deze trend vraagt om bijkomende inzichten zodat eventueel maatregelen kunnen getroffen worden om de negatieve trend om te buigen. 
 
 
-## Referenties  
 
 
