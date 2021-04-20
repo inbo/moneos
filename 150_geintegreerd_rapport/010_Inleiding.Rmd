@@ -29,9 +29,14 @@ knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, c
 knitr::opts_knit$set(eval.after = "fig.cap")
 
 # Probleem: volgend argument is nodig om het volledige rapport te bouwen, maar mag er niet staan bij het bouwen van 1 hoofdstuk:
+
 params <- data.frame(hoofdstuk = "010_inleiding")
+
+
 # Een alternatief zou kunnen zijn om hier een nieuwe, onafhankelijke parameter te definiëren die in het rapport zelf gebruikt wordt (aanpassingen in hoofdstuk moeten nog gemaakt worden):
-hoofdstuk <- "010_inleiding"
+
+# hoofdstuk <- "010_inleiding"
+
 # OK, dan moet die hoofdstuknaam 2 keer opgegeven worden (voor de hoofding en voor het document), maar anderzijds is 'hoofdstuk' iets gemakkelijker in gebruik dan 'params$hoofdstuk' (en vooral: om die params van je yaml in het document zelf op de roepen, moet je heelwat trucs gebruiken; dat uitzoeken vraagt teveel tijd voor het relatief kleine voordeel dat je ermee hebt.)
 
 ```
@@ -196,11 +201,11 @@ tabel_indeling_schelde_estuarium <- read_excel(paste0(pad_tabellen, "010_Inleidi
 
 cap_indeling_schelde_estuarium <- "Ruimtelijke indeling van het Schelde-estuarium volgens de Evaluatie methodiek (EM), KRW en saliniteitszones."
 
-knitr::kable(NULL, caption = cap_indeling_schelde_estuarium)
+# knitr::kable(NULL, caption = cap_indeling_schelde_estuarium)
 
 footnote_text <- "n.v.t. : Deel van Zeeschelde niet beschouwd in Evaluatiemethodiek. Zou onderdeel kunnen worden van Z7. Ook wordt het traject Melle-Zwijnaarde (getijde Zeeschelde) niet gerekend tot Zeeschelde I in de KRW indeling. Dit zou beter wel deel worden van deze zone."
 
-tabel_indeling_schelde_estuarium <- 
+# tabel_indeling_schelde_estuarium <- 
   tabel_indeling_schelde_estuarium %>%
   mutate_all(~replace_na(., "")) %>% 
   mutate_all(~cell_spec(., color = "black")) %>% 
@@ -212,7 +217,8 @@ tabel_indeling_schelde_estuarium <-
   .} %>% 
   knitr::kable(# "latex",
     escape = FALSE,
-    booktabs = T) %>%
+    booktabs = T,
+    caption = cap_indeling_schelde_estuarium) %>%
   kable_styling(latex_options = c("scale_down"),
                 font_size = 15) %>%
   column_spec(1:3,width = "1in") %>%
@@ -220,10 +226,12 @@ tabel_indeling_schelde_estuarium <-
   footnote(symbol = footnote_text %>% 
              cell_spec(color = "black"), 
            escape = FALSE,
-           threeparttable = TRUE) %>%
-  save_kable("010-tabel-indeling-schelde-estuarium.png")
+           threeparttable = TRUE)
 
-knitr::include_graphics("010-tabel-indeling-schelde-estuarium.png")
+# %>%
+#   save_kable("010-tabel-indeling-schelde-estuarium.png")
+# 
+# knitr::include_graphics("010-tabel-indeling-schelde-estuarium.png")
 
 ```
 

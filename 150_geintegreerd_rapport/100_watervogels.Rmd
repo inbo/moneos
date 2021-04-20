@@ -28,9 +28,14 @@ link-citations: TRUE
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 knitr::opts_knit$set(eval.after = "fig.cap")
 #probleem: volgend argument is nodig om het volledige rapport te bouwen, maar mag er niet staan bij het bouwen van 1 hoofdstuk
+
 params <- data.frame(hoofdstuk = "100_watervogels")
+
+
 # Een alternatief zou kunnen zijn om hier een nieuwe, onafhankelijke parameter te definiëren die in het rapport zelf gebruikt wordt (aanpassingen in hoofdstuk moeten nog gemaakt worden):
-hoofdstuk <- "100_watervogels"
+
+# hoofdstuk <- "100_watervogels"
+
 # OK, dan moet die hoofdstuknaam 2 keer opgegeven worden (voor de hoofding en voor het document), maar anderzijds is 'hoofdstuk' iets gemakkelijker in gebruik dan 'params$hoofdstuk' (en vooral: om die params van je yaml in het document zelf op de roepen, moet je heelwat trucs gebruiken; dat uitzoeken vraagt teveel tijd voor het relatief kleine voordeel dat je ermee hebt.)
 
 ```
@@ -68,6 +73,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 ```
 
 
+```{r 100-meta_data}
 
 meta_data <- 
   read_delim(paste0(pad_data, "meta_data.csv"),
@@ -79,7 +85,6 @@ for(i in 1:nrow(meta_data)){
   ##now create a new variable with the original name of the list item
   eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
 }
-```{r 100-meta_data}
 
 ```
 
@@ -172,7 +177,7 @@ tabel_teltrajecten <- read_excel(paste0(pad_tabellen, "100_Watervogels_tabellen.
 
 cap_teltrajecten <- "Geselecteerde teltrajecten opgenomen in de exploratieve data-analyse en in de data-aanlevering."
 
-knitr::kable(NULL, caption = cap_teltrajecten)
+# knitr::kable(NULL, caption = cap_teltrajecten)
 
 footnote_text <- "Opgelet dit teltraject omvat data van zowel de getijgebonden Durme als van de afgesneden ‘oude’ Durme-arm. Sinds oktober 2012 wordt de getijgebonden Durme afzonderlijk geteld."
 
@@ -186,18 +191,21 @@ tabel_teltrajecten %>%
     # caption = cap_teltrajecten,
                # "html",
                booktabs = TRUE,
-               escape = FALSE) %>%
+               escape = FALSE,
+               caption = cap_teltrajecten) %>%
   kable_styling(latex_options = c("scale_down"),
                 font_size = 15) %>%
   # kable_styling(latex_options = c("scale_down")) %>%
   footnote(number = footnote_text %>% 
              cell_spec(color = "black"), 
            escape = FALSE,
-           threeparttable = TRUE) %>%
-  # as_image("~/100-tabel-teltrajecten.jpeg")
-  save_kable("100-tabel-teltrajecten.png")
+           threeparttable = TRUE)
 
-knitr::include_graphics("100-tabel-teltrajecten.png")
+# %>%
+#   # as_image("~/100-tabel-teltrajecten.jpeg")
+#   save_kable("100-tabel-teltrajecten.png")
+# 
+# knitr::include_graphics("100-tabel-teltrajecten.png")
 
 
 # options(knitr.kable.NA = '')
