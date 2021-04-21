@@ -10,14 +10,8 @@
 
 # Alternatief kan je onderstaande code runnen, die het rapport wel op de gewenste plaats opslaat
 
-# old_wd <- getwd()
-# on.exit(setwd(old_wd))
-
 source("../pad.R")
 pad_output <- maak_pad("150_geintegreerd_rapport", "output")
 
-# setwd("150_geintegreerd_rapport")
 bookdown::render_book("index.Rmd", output_dir = pad_output)
-
-# setwd(old_wd)
 
