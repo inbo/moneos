@@ -1,4 +1,7 @@
 pad_prj_schelde <- Sys.getenv("pad_prj_schelde")
+if (pad_prj_schelde == "") {
+  stop("Maak een bestand .Renviron aan met het pad waar PRJ_SCHELDE staat, zie de instructies voor deze repo.")
+}
 
 # pad pc joost
 # pad_prj_schelde <- "G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/"
