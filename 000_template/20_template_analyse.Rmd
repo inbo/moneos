@@ -87,8 +87,8 @@ grootste_y <-
 
 tabel_x_waarden <- 
   template_data %>% 
-  mutate(x_cat = cut(x, floor(kleinste_x-1):ceiling(grootste_x+1))) %>% 
-  count(x_cat)
+  mutate(Xcat = cut(x, floor(kleinste_x-1):ceiling(grootste_x+1))) %>% 
+  count(Xcat)
 
 knitr::kable(tabel_x_waarden)
 
