@@ -1,14 +1,4 @@
 ---
-params:
-  hoofdstuk: "010_inleiding"
-knit: (function(inputFile, encoding) {
-        rmarkdown::render(inputFile,
-                          encoding=encoding,
-                          output_dir = {
-                            source("../pad.R");
-                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
-                          }
-                          )})
 title: "moneos inleiding"
 output:
   bookdown::pdf_book:
@@ -32,6 +22,16 @@ hoofdstuk <- "010_inleiding"
 
 ```
 
+---
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = {
+                            source("../pad.R");
+                            maak_pad(hoofdstuk, "output")
+                          }
+                          )})
+---
 
 ```{r 010-libraries}
 
