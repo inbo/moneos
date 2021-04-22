@@ -11,7 +11,6 @@
 # Alternatief kan je onderstaande code runnen, die het rapport wel op de gewenste plaats opslaat
 
 old_wd <- getwd()
-on.exit(setwd(old_wd))
 
 setwd("150_geintegreerd_rapport")
 source("../pad.R")
