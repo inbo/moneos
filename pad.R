@@ -1,7 +1,7 @@
-
+pad_prj_schelde <- Sys.getenv("pad_prj_schelde")
 
 # pad pc joost
-pad_prj_schelde <- "G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/"
+# pad_prj_schelde <- "G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/"
 # pad citrix joost
 # basis_pad <- "//Client/G$/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/"
 
