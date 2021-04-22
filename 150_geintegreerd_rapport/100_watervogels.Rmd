@@ -1,4 +1,14 @@
 ---
+params:
+  hoofdstuk: "100_watervogels"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = {
+                            source("../pad.R");
+                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
+                          }
+                          )})
 title: "moneos hoofdstuk watervogels"
 output:
   bookdown::pdf_book:
@@ -22,16 +32,6 @@ hoofdstuk <- "100_watervogels"
 
 ```
 
----
-knit: (function(inputFile, encoding) {
-        rmarkdown::render(inputFile,
-                          encoding=encoding,
-                          output_dir = {
-                            source("../pad.R");
-                            maak_pad(hoofdstuk, "output")
-                          }
-                          )})
----
 
 ```{r 100-libraries}
 
