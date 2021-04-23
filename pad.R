@@ -4,6 +4,7 @@
 pad_prj_schelde <- "G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/"
 # pad citrix joost
 # basis_pad <- "//Client/G$/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/"
+# pad_prj_schelde <- "C:/Users/joost_vanoverbeke/Documents/"
 
 # pad pc Gunther
 # pad_prj_schelde <- "G:/Mijn Drive/PRJ_SCHELDE/"

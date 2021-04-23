@@ -4,10 +4,7 @@ params:
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = {
-                            source("../pad.R");
-                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
-                          }
+                          output_dir = paste0("../", rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output")
                           )})
 title: "Rmarkdown template MONEOS hoofdstuk"
 output:
@@ -193,7 +190,8 @@ template_data <-
 
 template_data %>% 
   ggplot(aes(x,y)) +
-  geom_point()
+  geom_point(color = "green") +
+  geom_smooth(method = "lm", color = "darkgreen")
 
 # knitr::include_graphics(paste0(pad_figuren, "000_figuur_regressie.jpg"))
 
