@@ -4,7 +4,9 @@ params:
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = paste0("../", rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output")
+                          output_dir = paste0("../", 
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
                           )})
 title: "Rmarkdown template MONEOS hoofdstuk"
 output:
@@ -20,12 +22,17 @@ link-citations: TRUE
 ---
 
 
+```{r hoofdstuk, include=FALSE}
+
+hoofdstuk <- "000_template"
+
+```
+
+
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 knitr::opts_knit$set(eval.after = "fig.cap")
-
-hoofdstuk <- "000_template"
 
 ```
 
@@ -86,6 +93,31 @@ Dit is een template voor Rmardown MONEOS hoofdstuk[^voetnoot-000-1].
 [^voetnoot-000-1]: Voetnoot bij de tekst.
 
 
+### nuttige links
+
+Een tutorial om te werken met git en github vind je [hier](https://inbo.github.io/tutorials/tutorials/git_introduction/)
+
+
+Een tutorial om te werken met bookdown INBO style vind je [hier](https://inbo.github.io/tutorials/tutorials/r_inbomd/)
+
+
+Een reference guide voor Rmarkdown vind je [hier](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf)
+
+
+### Een aantal nuttige git commando's
+
+(uit te voeren via de git shell in RStudio)
+
+verwijder een branch lokaal:
+
+  > _git branch -d <branch_name>_
+
+verwijder verwijzing naar remote gedelete branches:
+
+  > _git remote prune origin_
+
+
+
 ## Materiaal en methode
 
 De data werden gegenereerd in R [@RstatisticalComputing].
@@ -139,7 +171,7 @@ footnote_text <-
 # opmaak tabel
 tabel_x_waarden %>%
   mutate_all(~replace_na(., "")) %>%
-  mutate_all(~cell_spec(., color = "black")) %>% 
+  mutate_all(~cell_spec(., color = "black")) %>%
   # toevoegen voetnoten
   {.[3,1] <- map(.[3,1],
                  ~paste0(.x, footnote_marker_number(1)))
@@ -149,8 +181,9 @@ tabel_x_waarden %>%
   knitr::kable(escape = FALSE,
                booktabs = TRUE,
                caption = caption_x_waarden) %>%
-  footnote(number = footnote_text %>%
-             cell_spec(color = "black"),
+  footnote(number = footnote_text,
+           # %>%
+           #   cell_spec(color = "black"),
            escape = FALSE,
            threeparttable = FALSE)
 
@@ -165,7 +198,7 @@ De minimum y-waarde is `r kleinste_y` en de maximum y-waarde is `r grootste_y`.
 
 De resultaten van de regressie van y over x zijn weergegeven in Figuur \@ref(fig:000-figuur-regressie). Deze figuur werd ingelezen van een .jpg file.
 
-```{r 000-figuur-regressie, fig.cap=caption_regressie}
+```{r 000-figuur-regressie, fig.cap=caption_regressie, out.width="80%"}
 
 caption_regressie <- "Regressie van y over x."
 

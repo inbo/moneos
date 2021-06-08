@@ -4,10 +4,9 @@ params:
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = {
-                            source("../pad.R");
-                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
-                          }
+                          output_dir = paste0("../", 
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
                           )})
 title: "Rmarkdown template MONEOS data"
 output:

@@ -4,10 +4,9 @@ params:
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = {
-                            source("../pad.R");
-                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
-                          }
+                          output_dir = paste0("../", 
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
                           )})
 title: "moneos inleiding"
 output:
@@ -23,12 +22,17 @@ link-citations: TRUE
 ---
 
 
+```{r hoofdstuk, include=FALSE}
+
+hoofdstuk <- "010_inleiding"
+
+```
+
+
 ```{r 010-setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 knitr::opts_knit$set(eval.after = "fig.cap")
-
-hoofdstuk <- "010_inleiding"
 
 ```
 
