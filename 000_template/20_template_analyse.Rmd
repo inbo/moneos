@@ -4,10 +4,9 @@ params:
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = {
-                            source("../pad.R");
-                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
-                          }
+                          output_dir = paste0("../", 
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
                           )})
 title: "Rmarkdown template MONEOS analyse"
 output:
@@ -72,7 +71,7 @@ grootste_y <-
 ```
 
 
-##### beschrijving van de data
+# beschrijving van de data
 
   - Er zijn `r ncol(template_data)` variabelen
     + `r paste(names(template_data), sep = ", ")`
@@ -81,14 +80,14 @@ grootste_y <-
 
 
 
-##### overzicht x waarden 
+# overzicht x waarden 
 
 ```{r 000-tabel-x-waarden}
 
 tabel_x_waarden <- 
   template_data %>% 
-  mutate(x_cat = cut(x, floor(kleinste_x-1):ceiling(grootste_x+1))) %>% 
-  count(x_cat)
+  mutate(Xcat = cut(x, floor(kleinste_x-1):ceiling(grootste_x+1))) %>% 
+  count(Xcat)
 
 knitr::kable(tabel_x_waarden)
 
@@ -98,7 +97,7 @@ write_xlsx(list(x_waarden = tabel_x_waarden),
 ```
 
 
-##### figuur regressie
+# figuur regressie
 
 ```{r 000-figuur-regressie, fig.height=5, fig.width=8}
 
