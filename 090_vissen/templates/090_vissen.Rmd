@@ -36,6 +36,31 @@ knitr::opts_knit$set(eval.after = "fig.cap")
 
 ```
 
+
+```{r 090-libraries}
+
+# library(tidyverse)
+# library(readxl)
+# library(kableExtra)
+
+```
+
+
+```{r 090-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source("../pad.R")
+
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+
+```
+
 # Vissen
 
 Fichenummer: FICHE S-DS-V-004a -- Vissen (KRW) & S-DS-V-004b - Vissen
@@ -148,8 +173,6 @@ visten in het voorjaar, zomer en najaar telkens over een volledige getijfase (eb
 en vloed). De Lambert coördinaten van de locaties zijn: Doel: 143350; 223091,
 Antwerpen: 149192; 210267, Steendorp: 142898; 200951 en Branst: 137181; 195683.
 
-![](090_vissen\templates\media\image1.emf){width="5.905555555555556in"
-height="4.039238845144357in"}
 
 Figuur 1‑1. *De met ankerkuil bemonsterde locaties in het Zeeschelde estuarium
 sinds 2012.*
@@ -194,7 +217,7 @@ Paardenschor: 142882; 225713, Antwerpen: 150050; 210800, Steendorp: 142520;
 201050, Kastel: 137450; 193480, Appels: 128997; 193213 en Overbeke: 114823;
 188235.
 
-![](090_vissen\templates\media\image2.png){width="5.14926290463692in"
+![](..\090_vissen\templates\media\image2.png){width="5.14926290463692in"
 height="3.640883639545057in"}
 
 Figuur 1‑2. *Het getijdengebied van het Zeeschelde-estuarium met aanduiding van
@@ -205,7 +228,7 @@ de laagwaterlijn staat. Enkel de aantallen per soort en per lengteklasse worden
 genoteerd (geen gewichten). De locaties van de vrijwilligers zijn weergegeven in
 Figuur 1‑3.
 
-![](090_vissen\templates\media\image3.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image3.png){width="5.905555555555556in"
 height="4.17957239720035in"}
 
 Figuur 1‑3. *Locaties van het vrijwilligersmeetnet op de Zeeschelde en de Rupel
@@ -228,7 +251,7 @@ uitgezonderd in Antwerpen en Branst, meestal het laagste aantal soorten
 gevangen. Deze resultaten worden in Breine et al. (2020a) meer gedetailleerd
 geanalyseerd.
 
-![](090_vissen\templates\media\image4.png){width="5.455593832020997in"
+![](..\090_vissen\templates\media\image4.png){width="5.455593832020997in"
 height="2.7513812335958003in"}
 
 Figuur 1‑4. *Totaal aantal gevangen soorten per seizoen en per vangstcampagne
@@ -252,7 +275,7 @@ vorige campagnes. In 2018 steeg het aantal individuen gevangen per m³ vooral
 door de zeer hoge grondel vangsten. In 2019 daalde het aantal individuen
 gevangen per m³ tot de laagste waarde ooit sinds de campagnes zijn gestart.
 
-![](090_vissen\templates\media\image5.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image5.png){width="5.905555555555556in"
 height="4.105064523184602in"}
 
 Figuur 1‑5. *Gemiddeld aantal individuen per m³ water gevangen in de Zeeschelde
@@ -267,7 +290,7 @@ Over de jaren heen, in de periode 2012-2019, werd de hoogste biomassa (per m³)
 gevangen in Steendorp (1,1 g/m³) en Branst (0,3 g/m³). In Antwerpen vingen we
 0,13 g/m³ en 0,09 g/m³ in Doel.
 
-![](090_vissen\templates\media\image6.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image6.png){width="5.905555555555556in"
 height="6.590651793525809in"}
 
 Figuur 1‑6. *Aantal individuen per m³ (links) en biomassa (g/m³, rechts)
@@ -296,7 +319,7 @@ biomassa steeds spiering. De relatieve biomassa fint domineerde wel in Branst in
 het voorjaar. Haring dong ook soms nog mee naar de troon in de zomer ter hoogte
 van Doel en Antwerpen.
 
-![](090_vissen\templates\media\image7.png){width="5.713888888888889in"
+![](..\090_vissen\templates\media\image7.png){width="5.713888888888889in"
 height="5.106944444444444in"}
 
 Figuur 1‑7. *Het relatief aantal gevangen individuen in de Zeeschelde tijdens de
@@ -304,7 +327,7 @@ ankerkuilcampagnes in het voorjaar (VJ), de zomer (Z) en het najaar (NJ) van
 2019. Boven elke grafiek staat naast de locatie tussen haakjes het aantal
 gevangen vissen.*
 
-![](090_vissen\templates\media\image8.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image8.png){width="5.905555555555556in"
 height="5.289746281714786in"}
 
 Figuur 1‑8. *De relatieve biomassa van de vangsten in de Zeeschelde tijdens de
@@ -319,7 +342,7 @@ voortplanten bepalen we op basis van lengtefrequentieverdelingen (Breine et al.,
 2020a). De aanwezigheid van verschillende lengteklassen, van klein tot groot,
 duidt op een geslaagde rekrutering.
 
-![](090_vissen\templates\media\image9.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image9.png){width="5.905555555555556in"
 height="1.2376038932633422in"}
 
 Figuur 1‑9. *Het aantal (links) en percentage (rechts) rekruterende soorten per
@@ -336,8 +359,6 @@ een dertigtal daarvan plant zich daarnaast ook effectief voort in het estuarium
 
 Tabel 1‑1. *Rekruterende en opgroeiende soorten in de Zeeschelde.*
 
-![](090_vissen\templates\media\image10.emf){width="4.071992563429571in"
-height="8.607735126859142in"}
 
 In Doel hebben we meer mariene soorten die zich niet voortplanten in het
 estuarium. Ze gebruiken de mesohaliene zone als opgroeigebied of zijn als
@@ -352,7 +373,7 @@ Branst (Figuur 1‑10). Ook in Doel zien we een sterke daling vanaf 2015 om vana
 rekruterende soorten ten opzichte van het slechte jaar 2017.In Steendorp zien we
 over de termijn van de meting de meest stabiele rekrutering.
 
-![](090_vissen\templates\media\image11.png){width="3.9604166666666667in"
+![](..\090_vissen\templates\media\image11.png){width="3.9604166666666667in"
 height="2.379861111111111in"}
 
 Figuur 1‑10. *Het percentage rekruterende soorten per locatie in de Zeeschelde
@@ -387,14 +408,10 @@ laag.
 Tabel 1‑2. *Totaal aantal individuen van exotische vissoorten gevangen met de
 ankerkuil op vier locaties in de Zeeschelde (2012-2019).*
 
-![](090_vissen\templates\media\image12.emf){width="3.342361111111111in"
-height="1.8069444444444445in"}
 
 Tabel 1‑3. *Relatieve percentages exoten met ankerkuil gevangen op vier locaties
 in de Zeeschelde (2012-2019).*
 
-![](090_vissen\templates\media\image13.emf){width="3.342361111111111in"
-height="1.8069444444444445in"}
 
 #### Trends in sleutelsoorten
 
@@ -514,13 +531,13 @@ de periode 2009-2019 hebben we in Paardenschor het hoogste aantal soorten
 gevangen. Antwerpen komt op de tweede plaats terwijl het verschil in aantal
 soorten gevangen voor de periode 2009-2019 in de overige locaties minimaal is.
 
-![](090_vissen\templates\media\image14.png){width="5.820833333333334in"
+![](..\090_vissen\templates\media\image14.png){width="5.820833333333334in"
 height="3.8534722222222224in"}
 
 Figuur 1‑11. *Aantal vissoorten gevangen per seizoen op zes locaties in de
 Zeeschelde in 2019. VJ: voorjaar, Z: zomer en NJ: najaar.*
 
-![](090_vissen\templates\media\image15.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image15.png){width="5.905555555555556in"
 height="2.9942847769028873in"}
 
 Figuur 1‑12. *Aantal vissoorten gevangen per jaar op zes locaties in de
@@ -567,14 +584,14 @@ periode zien we lichte verschuivingen wat de relatieve biomassa van soorten
 betreft. Maar paling en snoekbaars zijn sterk vertegenwoordigd. Karper, brasem
 en Siberische steur dragen ook wel hun steentje bij.
 
-![](090_vissen\templates\media\image16.png){width="5.0469991251093616in"
+![](..\090_vissen\templates\media\image16.png){width="5.0469991251093616in"
 height="6.763636264216973in"}
 
 Figuur 1‑13. *Het relatief aantal gevangen individuen in de Zeeschelde tijdens
 de 2019 campagnes (VJ: voorjaar; Z: zomer; NJ: najaar) Boven elke grafiek staat
 naast de locatie het aantal gevangen vissen tussen haakjes.*
 
-![](090_vissen\templates\media\image17.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image17.png){width="5.905555555555556in"
 height="7.242687007874015in"}
 
 Figuur 1‑14. *De relatieve biomassa van de gevangen individuen in de Zeeschelde
@@ -598,13 +615,13 @@ we jaarlijks, vanaf 2015, een stijging in het aantal rekruterende soorten tot in
 Appels nam het aantal rekruterende soorten in 2019 toe terwijl het daalde in
 Overbeke.
 
-![](090_vissen\templates\media\image18.png){width="5.510416666666667in"
+![](..\090_vissen\templates\media\image18.png){width="5.510416666666667in"
 height="2.40625in"}
 
 Figuur 1‑15*. Het aantal rekruterende soorten per locatie in de Zeeschelde op
 basis van fuikvisserij (2009-2019).*
 
-![](090_vissen\templates\media\image19.png){width="5.784339457567804in"
+![](..\090_vissen\templates\media\image19.png){width="5.784339457567804in"
 height="3.1041666666666665in"}
 
 Figuur 1‑16 *Het percentage rekruterende soorten per locatie in de Zeeschelde op
@@ -649,7 +666,7 @@ individuen gevangen in de verschillende saliniteitszones van de Zeeschelde
 (fuikcampagnes 2019). De cursieve getallen in de iets donkere cellen zijn
 berekend op basis van aantallen \<5 en \>1.*
 
-![](090_vissen\templates\media\image20.png){width="4.420138888888889in"
+![](..\090_vissen\templates\media\image20.png){width="4.420138888888889in"
 height="6.8069444444444445in"}
 
 #### Exoten
@@ -687,13 +704,13 @@ opzichte van 2018 (Tabel 1‑6). Een jaarlijkse variatie is duidelijk.
 Tabel 1‑5. *Het totaal aantal exotische individuen gevangen per fuikdag op zes
 locaties in de Zeeschelde (2009-2019).*
 
-![](090_vissen\templates\media\image21.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image21.png){width="5.905555555555556in"
 height="1.1198753280839895in"}
 
 Tabel 1‑6. *Het relatieve percentage exotische individuen gevangen per fuikdag
 op zes locaties in de Zeeschelde (2009-2019).*
 
-![](090_vissen\templates\media\image22.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image22.png){width="5.905555555555556in"
 height="1.1198753280839895in"}
 
 #### Trends in sleutelsoorten
@@ -736,7 +753,7 @@ aantal bot neemt stroomopwaarts af maar ze worden wel overal gevangen (Figuur
 1‑17). De hoogste relatieve aantallen vingen we in 2012 en 2013 daarna
 verminderde de jaarlijkse gemiddelde relatieve percentages.
 
-![](090_vissen\templates\media\image23.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image23.png){width="5.905555555555556in"
 height="2.604807524059493in"}
 
 Figuur 1‑17. *Relatieve aantallen bot gevangen met schietfuiken op zes locaties
@@ -757,7 +774,7 @@ schietfuiken. Het relatief aandeel palingen neemt stroomopwaarts toe (Figuur
 1‑18). Het relatief percentage gevangen palingen in Antwerpen, Appels en Kastel
 was in 2019 hoger dan in 2018.
 
-![](090_vissen\templates\media\image24.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image24.png){width="5.905555555555556in"
 height="2.613455818022747in"}
 
 Figuur 1‑18. *Relatieve aantallen paling gevangen met schietfuiken op zes
@@ -775,7 +792,7 @@ Antwerpen (Figuur 1‑19). Sporadisch vingen we tong in Steendorp (2010, 2017 en
 2018) en uitzonderlijk een exemplaar in Appels (2009 en 2018) en een individu in
 Overbeke (2015).
 
-![](090_vissen\templates\media\image25.png){width="5.905555555555556in"
+![](..\090_vissen\templates\media\image25.png){width="5.905555555555556in"
 height="2.6538549868766403in"}
 
 Figuur 1‑19*. Relatieve aantallen tong gevangen met schietfuiken op zes locaties
@@ -799,8 +816,6 @@ herrekenden de indexwaarden voor alle beschikbare gegevens (Tabel 1‑7).
 Tabel 1‑7. *De EQR-waarde en appreciatie per jaar per saliniteitszone in de
 Zeeschelde (1995-2019) berekend met de zone-specifieke index.*
 
-![](090_vissen\templates\media\image26.emf){width="5.905555555555556in"
-height="3.616111111111111in"}
 
 Voor 2012 varieerde de EQR-appreciatie in de zoetwaterzone van 'slecht' tot
 'matig'. Van 2012 tot 2015 scoort de zoetwaterzone 'GEP'. In 2016 en 2017 scoort
@@ -830,7 +845,7 @@ vrijwilligersmeetnet worden in detail besproken in Breine et al., 2020b).
 Tabel 1‑8. *Vangstinspanning (aantal fuikdagen) per locatie in het
 vrijwilligersmeetnet (2007-2019).*
 
-![](090_vissen\templates\media\image27.png){width="5.434027777777778in"
+![](..\090_vissen\templates\media\image27.png){width="5.434027777777778in"
 height="2.060416666666667in"}
 
 #### Diversiteit
@@ -844,8 +859,6 @@ Rupel vingen de vrijwilligers 12 soorten in 2019.
 Tabel 1‑9. *Totaal aantal soorten gevangen per locatie en per jaar (2007-2019).
 Bij de locatie staat het totaal aantal campagnes tussen haakjes.*
 
-![](090_vissen\templates\media\image28.emf){width="5.905555555555556in"
-height="1.8539490376202974in"}
 
 ## Algemene conclusie
 
