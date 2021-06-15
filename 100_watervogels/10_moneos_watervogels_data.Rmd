@@ -4,23 +4,20 @@ params:
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = {
-                            source("../pad.R");
-                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
-                          }
+                          output_dir = paste0("../", 
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
                           )})
 title: "watervogeldata"
 output:
   bookdown::word_document2
 ---
 
-
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 
 ```
-test
 
 ```{r libraries}
 
@@ -31,7 +28,6 @@ library(inbodb)
 library(DBI)
 
 ```
-
 
 ```{r pad}
 
@@ -52,7 +48,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 ```{r benodigde-seizoenen}
 
 vroegste_seizoen <- "1991/1992"
-laatste_seizoen <- "2019/2020"
+laatste_seizoen <- "2020/2021"
 
 seizoenen <-
   (vroegste_seizoen %>% str_sub(0, 4) %>% as.numeric):(laatste_seizoen %>% str_sub(0, 4) %>% as.numeric) %>% 
@@ -167,7 +163,7 @@ query <-
          ";"
   )
 
-# con <- connect_inbo_dbase("W0004_00_Waterbirds")
+con <- connect_inbo_dbase("W0004_00_Waterbirds")
 overzicht_tellingen <- 
   dbGetQuery(con,
              query)
