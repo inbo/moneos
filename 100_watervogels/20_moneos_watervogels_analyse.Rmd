@@ -2,19 +2,15 @@
 params:
   hoofdstuk: "100_watervogels"
 knit: (function(inputFile, encoding) {
-                          
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = {
-                            source("../pad.R");
-                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
-                          }
+                          output_dir = paste0("../", 
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
                           )})
 title: "analyse watervogels"
 output:
   bookdown::word_document2
-editor_options: 
-  chunk_output_type: console
 ---
 
 
@@ -31,6 +27,7 @@ library(tidyverse)
 library(lubridate)
 # library(readxl)
 library(INBOtheme)
+library(writexl)
 
 ```
 
@@ -49,6 +46,7 @@ pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ```
+
 
 
 ```{r data-watervogels}
