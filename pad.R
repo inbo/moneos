@@ -8,7 +8,7 @@ if (pad_prj_schelde == "") {
 # basis_pad="//Client/G$/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/"
 
 
-pad_moneos <- "VNSC/Rapportage_INBO/"
+pad_moneos <- "/VNSC/Rapportage_INBO/"
 pad_jaar <- "2021/"
 
 maak_pad <- function(hoofdstuk, onderdeel = NULL) {
