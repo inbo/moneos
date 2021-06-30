@@ -28,7 +28,7 @@ library(tidyverse)
 library(readxl)
 library(writexl)
 library(readxl)
-library(xlsx)
+#library(xlsx)
 library(ggpubr)
 library(INBOtheme)
 
@@ -54,7 +54,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 ```{r data}
 
 data_macrobenthos <- 
-  read_excel(paste0(pad_data, "macrobenthos_data_2008_2018.xlsx")) %>% 
+  read_excel(paste0(pad_data, "macrobenthos_data_2008_2019.xlsx")) %>% 
   mutate(tidaal = if_else(tidaal == "sub", "subtidaal", "intertidaal"),
          tidaal = factor(tidaal, 
                          levels = c("subtidaal", "intertidaal")))
@@ -116,6 +116,10 @@ tabel_staalnamelocaties <-
               values_fill = list(n = 0)) %>% 
   select(waterloop, `diep subtidaal`, `matig diep subtidaal`, `ondiep subtidaal`, `laag intertidaal`, `middelhoog/hoog intertidaal`, `hard substraat`)
 
+aantal_stalen <- tabel_staalnamelocaties %>%
+  select(-waterloop) %>% 
+  summarise(aantal = sum(.)) 
+n_staal <- aantal_stalen$aantal
 
 write_xlsx(list(staalnamelocaties = tabel_staalnamelocaties),
            path = paste0(pad_tabellen, "070_Macrobenthos_tabellen.xlsx"))
@@ -657,7 +661,7 @@ ggsave(paste0(pad_figuren, "070-figuur-soortenrijkdom-ZeescheldeIV.jpg"), height
 
 ```{r 070-oppervlakte koppelen}
 
-oppsruw <- read_excel(paste0(pad_data, "SpatialEcotopenOPP_ApplEcotoop_INBO_v2018small.xlsx"))
+oppsruw <- read_excel(paste0(pad_data, "SpatialEcotopenOPP_ApplEcotoop_INBO_v2019small.xlsx"))
   # oppsruw <- read.csv2("data/SpatialEcotopenOPP_ApplEcotoop_INBO_v2018small.csv", stringsAsFactors = FALSE)
   oppsruw <- oppsruw[oppsruw$waterloop!="SCHRAP",]
   oppsruw <- oppsruw[!is.na(oppsruw$tidaal),]
@@ -787,6 +791,20 @@ ggsave(paste0(pad_figuren, "070-figuur-intertidalesysteembiomassa.jpg"), height=
   ### 
    
   
+
+```
+
+```{r meta-data}
+
+meta_data <- 
+  enframe(c(laatstejaar = laatste_jaar, 
+            vroegstejaar = vroegste_jaar,
+            aantal_stalen = n_staal),
+          name = "naam", value = "waarde")
+
+meta_data %>% 
+  write_delim(paste0(pad_data, "meta_data.csv"),
+              delim = ";")
 
 ```
 
