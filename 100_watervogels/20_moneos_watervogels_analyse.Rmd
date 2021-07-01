@@ -28,7 +28,7 @@ library(lubridate)
 # library(readxl)
 library(INBOtheme)
 library(writexl)
-
+library(rprojroot) ## workaround pad
 ```
 
 
@@ -39,7 +39,8 @@ library(writexl)
 # pad naar tabellen : pad_tabellen
 # pad naar figuren : pad_figuren
 
-source("../pad.R")
+# source("../pad.R")  # default moet deze aanstaan
+source(find_root_file("pad.R", criterion = is_rstudio_project)) ## workaround computer Gunther
 
 pad_data <- maak_pad(params$hoofdstuk, "data")
 pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
@@ -259,7 +260,7 @@ data_watervogels %>%
   mutate(datum = paste(jaar, maand, "15", sep = "-") %>% 
            ymd()) %>% 
   filter(maand %in% c(10:12, 1:3)) %>%
-   # filter(teldatum > "2000-06-01") %>% 
+    # filter(teldatum > "2020-06-01") %>% 
   filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
   group_by(telseizoen, datum) %>% 
   summarise(aantal = sum(aantal)) %>% 
@@ -283,7 +284,7 @@ data_watervogels %>%
   mutate(datum = paste(jaar, maand, "15", sep = "-") %>% 
            ymd()) %>% 
   # filter(maand %in% c(10:12, 1:3)) %>%
-  filter(teldatum < "2020-04-01") %>% #er zit al een telling van mei 2020 in de dataset
+  filter(teldatum < "2021-04-01") %>% #er zit al een telling van mei 2020 in de dataset
   filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
   group_by(telseizoen,datum) %>% 
   summarise(aantal = sum(aantal)) %>% 
@@ -296,8 +297,51 @@ data_watervogels %>%
   geom_smooth(aes(color = "trendlijn"))
 
 ggsave(paste0(pad_figuren, "100_figuur_maandelijkse_totalen_ZSIV.jpg"))
+
+data_watervogels %>% 
+  filter(gebiedsgroep_code == "ZS4") %>% 
+  filter(nednaam == "Scholekster") %>% 
+  mutate(datum = paste(jaar, maand, "15", sep = "-") %>% 
+           ymd()) %>% 
+  filter(maand %in% c(10:12, 1:3)) %>%
+  filter(teldatum > "1991-10-01" & teldatum < "2021-04-01") %>% #er zit al een telling van mei 2020 in de dataset
+  # filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
+  group_by(telseizoen,datum) %>% 
+  summarise(aantal = sum(aantal)) %>% 
+  ungroup() %>% 
+  ggplot(aes(datum, aantal)) + 
+  geom_col() +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  labs(x = "jaar", y = "aantal") +
+  theme(axis.text.x = element_text(angle = 90))+
+  geom_smooth(aes(color = "trendlijn"))
+
+
 ```
 
+```{r 100-figuur-maandelijkse-wintertotalen-KRWzones}
+data_watervogels %>% 
+   filter(gebiedsgroep_code == "ZS4") %>% 
+  mutate(datum = paste(jaar, maand, "15", sep = "-") %>% 
+           ymd()) %>% 
+  filter(maand %in% c(10:12, 1:3)) %>%
+  filter(teldatum > "2010-10-01" & teldatum < "2021-04-01") %>% #
+  filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
+  # filter(nednaam =="Wilde Eend") %>% 
+  group_by(telseizoen,datum,gebiedsgroep_code, gebiedsgroep) %>% 
+  summarise(aantal = sum(aantal)) %>% 
+  ungroup() %>% 
+  ggplot(aes(datum, aantal)) + 
+  geom_col() +
+  scale_x_date(date_breaks = "1 month", date_labels = "%m%Y") +
+  labs(x = "jaar", y = "aantal") +
+  theme(axis.text.x = element_text(angle = 90))+
+  geom_smooth(aes(color = "trendlijn")) +
+  facet_wrap(~gebiedsgroep)
+
+
+
+```
 
 ##### figuur verhouding aantallen
 
@@ -482,7 +526,7 @@ data_watervogels %>%
              ncol = 2) +
   theme(axis.text.x = element_text(angle = 90))
 
-#variant2 inzoemen vanaf telseizoen 2008
+#variant2 inzoemen vanaf telseizoen 2006
 data_watervogels %>% 
   filter(maand %in% c(10:12, 1:3)) %>% 
 filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
@@ -787,7 +831,7 @@ ggsave(paste0(pad_figuren, "100_figuur_aantallen_abundante_soorten.jpg"))
 ```{r 100-figuur-aantallen-visetend-en-steltlopers, fig.height=5, fig.width=7}
 
 # data_watervogels %>% 
-#   filter(nednaam %in% c("Aalscholver", "Fuut", "Tureluur", "Wulp")) %>% 
+#   filter(nednaam %in% c("Aalscholver", "Fuut", "Scholekster", "Wulp")) %>% 
 #   filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
 #   filter(maand %in% c(10:12, 1:3)) %>% 
 #   filter(jaar >= 2009,
@@ -810,8 +854,9 @@ ggsave(paste0(pad_figuren, "100_figuur_aantallen_abundante_soorten.jpg"))
 #         legend.title = element_blank())
 
 data_watervogels %>% 
-  filter(nednaam %in% c("Aalscholver", "Fuut", "Tureluur", "Wulp")) %>% 
-  filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
+  filter(nednaam %in% c("Kluut", "Kievit", "Tureluur", "Wulp", "Scholekster", "Bonte Strandloper")) %>% 
+  filter(trofische_groep == "Nbenth") %>% 
+  filter(str_detect(gebiedsgroep_code, "ZS4")) %>% 
   filter(maand %in% c(10:12, 1:3)) %>% 
   filter(jaar >= 2005,
          telseizoen != "2004/05") %>% 
@@ -831,6 +876,54 @@ data_watervogels %>%
   theme(axis.text.x = element_text(angle = 90),
         legend.position = "bottom",
         legend.title = element_blank())
+
+# data_watervogels %>% 
+#   filter(nednaam %in% c("Scholekster")) %>% 
+#   filter(trofische_groep == "Nbenth") %>% 
+#   filter(str_detect(gebiedsgroep_code, "ZS4")) %>% 
+#   filter(maand %in% c(10:12, 1:3)) %>% 
+#   filter(jaar >= 2019,
+#          telseizoen != "2004/05") %>% 
+#   group_by(telseizoen, gebiedsgroep, nednaam, maand) %>%
+#   summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
+#   ungroup() %>%
+#   # group_by(telseizoen, gebiedsgroep, nednaam) %>% 
+#   # summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
+#   # ungroup() %>% 
+#   ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) + 
+#   geom_point(aes(shape = gebiedsgroep)) +
+#   geom_line() +
+#   labs(x = "telseizoen", 
+#        y = "gemiddeld aantal") +
+#   facet_wrap(~nednaam, 
+#              scales = "free_y") +
+#   theme(axis.text.x = element_text(angle = 90),
+#         legend.position = "bottom",
+#         legend.title = element_blank())
+# 
+# 
+# data_watervogels %>% 
+#   filter(nednaam %in% c("Aalscholver", "Fuut", "Tureluur", "Wulp")) %>% 
+#   filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
+#   filter(maand %in% c(10:12, 1:3)) %>% 
+#   filter(jaar >= 2005,
+#          telseizoen != "2004/05") %>% 
+#   group_by(telseizoen, gebiedsgroep, nednaam, maand) %>% 
+#   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+#   ungroup() %>% 
+#   group_by(telseizoen, gebiedsgroep, nednaam) %>% 
+#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
+#   ungroup() %>% 
+#   ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) + 
+#   geom_point(aes(shape = gebiedsgroep)) +
+#   geom_line() +
+#   labs(x = "telseizoen", 
+#        y = "gemiddeld aantal") +
+#   facet_wrap(~nednaam, 
+#              scales = "free_y") +
+#   theme(axis.text.x = element_text(angle = 90),
+#         legend.position = "bottom",
+#         legend.title = element_blank())
 
 ggsave(paste0(pad_figuren, "100_figuur_aantallen_visetend_en_steltlopers.jpg"))
 
