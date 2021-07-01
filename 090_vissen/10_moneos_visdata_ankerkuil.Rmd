@@ -25,6 +25,7 @@ knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, c
 
 library(tidyverse)
 library(lubridate)
+library(readxl)
 
 ```
 
@@ -50,7 +51,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
   - _G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Projectgroep_Monitoring&Databeheer/Data_aanleveringen/2019/overzicht ankerkuil 2018.xlsx_
 
 
-```{r inlezen-data}
+```{r inlezen-data, eval = FALSE}
 
 ankerkuil_aantal_recent <- 
   read_delim(paste0(pad_data, "overzicht ankerkuil 2018 aantal.csv"),
@@ -76,12 +77,63 @@ ankerkuil_aantal_historisch <-
   read_delim(paste0(pad_data, "ankerkuil_aantallen_2012_2017.csv"),
              delim = ";")
 
-ankerkuil_gewicht_historisch <- 
+ankerkuil_gewicht_historisch2 <- 
   read_delim(paste0(pad_data, "ankerkuil_gewicht_2012_2017.csv"),
              delim = ";")
 
 ```
- blabla
+
+
+```{r alternatief inlezen-data recent en historisch samen}
+
+ankerkuil_aantal <- 
+  read_delim(paste0(pad_data, "ankerkuil 2012-2020 voor VLIZ aantal.csv"),
+             delim = ";") %>%
+  rename_all(tolower) %>% 
+  select(datum, locatie, uren, volume,
+         everything(),
+         -year, -season, -getijde, -mnstot, -mniind) %>% 
+  filter(datum != "niet gevist") %>% 
+  mutate(uren = str_replace(uren, ":", ".") %>% 
+           as.numeric(),
+         datum = dmy(datum)) %>% 
+  filter(!is.na(datum))
+
+
+ankerkuil_gewicht <- 
+  read_delim(paste0(pad_data, "ankerkuil 2012-2020 voor VLIZ gewicht.csv"),
+             delim = ";") %>%
+  rename_all(tolower) %>% 
+  select(datum, locatie, uren, volume,
+         everything(),
+         -getijde, -(saliniteit:conductiviteit), -biomassa) %>% 
+  filter(datum != "niet gevist") %>% 
+  mutate(uren = str_replace(uren, ":", ".") %>% 
+           as.numeric(),
+         datum = dmy(datum)) %>% 
+  filter(!is.na(datum))
+
+# setdiff(names(ankerkuil_aantal), names(ankerkuil_gewicht))
+# setdiff(names(ankerkuil_gewicht), names(ankerkuil_aantal))
+
+ankerkuil_aantal_recent <- 
+  ankerkuil_aantal %>% 
+  filter(year(datum) == max(year(datum)))
+
+ankerkuil_gewicht_recent <- 
+  ankerkuil_gewicht %>% 
+  filter(year(datum) == max(year(datum)))
+
+ankerkuil_aantal_historisch <- 
+  ankerkuil_aantal %>% 
+  filter(year(datum) != max(year(datum)))
+
+ankerkuil_gewicht_historisch <- 
+  ankerkuil_gewicht %>% 
+  filter(year(datum) != max(year(datum)))
+
+```
+
 
 ##### unieke soorten:
 
@@ -291,8 +343,7 @@ soorten_niet_nul <-
 # extractie van jaar, seizoen, soorten
 ankerkuil_aantal_recent <-
   ankerkuil_aantal_recent %>%
-  mutate(datum = dmy(datum),
-         jaar = year(datum),
+  mutate(jaar = year(datum),
          maand = month(datum),
          seizoen = case_when(
            maand %in% 3:5 ~ "VJ",
@@ -303,8 +354,7 @@ ankerkuil_aantal_recent <-
 
 ankerkuil_gewicht_recent <-
   ankerkuil_gewicht_recent %>%
-  mutate(datum = dmy(datum),
-         jaar = year(datum),
+  mutate(jaar = year(datum),
          maand = month(datum),
          seizoen = case_when(
            maand %in% 3:5 ~ "VJ",
@@ -347,6 +397,19 @@ ankerkuil_gewicht_recent <-
   group_by(jaar, seizoen, locatie) %>% 
   summarise_all(~sum(., na.rm = TRUE)) %>% 
   ungroup()
+
+ankerkuil_gewicht_recent$fint
+ankerkuil_gewicht_historisch$fint
+
+fint <- 
+  ankerkuil_gewicht %>% 
+  select(datum:volume, fint)
+  
+fint2 <- 
+  ankerkuil_gewicht_historisch2 %>% 
+  select(jaar:volume, fint) %>% 
+  filter(jaar == 2016)
+  
 
 ```
 
