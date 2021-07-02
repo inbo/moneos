@@ -22,7 +22,7 @@ link-citations: TRUE
 ---
 
 
-```{r hoofdstuk, include=FALSE}
+```{r 100-hoofdstuk, include=FALSE}
 
 hoofdstuk <- "100_watervogels"
 
@@ -33,6 +33,7 @@ hoofdstuk <- "100_watervogels"
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 knitr::opts_knit$set(eval.after = "fig.cap")
+
 
 ```
 
@@ -99,7 +100,8 @@ Het voorkomen van watervogels kan indicatief zijn voor het estuarien ecosysteemf
 
 De eerstelijnsrapportage beschrijft de aangeleverde watervogeldata van de Zeeschelde en de zijrivieren met een focus op de verzamelde tellingen tot de winter van `r as.numeric(laatste_jaar) - 1` (eindigend in maart `r laatste_jaar`). De data werden gefilterd uit de Watervogeldatabank van het INBO.
 
-Beide fiches werden in één excel bestand aangeleverd: “DataMONEOSWatervogels-Zeeschelde_zijrivieren_totwinter**XXX**.xlsx”
+Beide fiches werden in één excel bestand aangeleverd: 
+“DataMONEOSWatervogels-Zeeschelde_zijrivieren_totwinter**XXX**.xlsx”
 
 De evaluatie heeft volgende informatie nodig: aantallen vogels per soort per maand per segment op niveau 2 en 3 (niveau 2 is som van de waterlichamen; niveau 3 heeft betrekking op het waterlichaam of de saliniteitszone) [@marisEvaluatiemethodiekScheldeestuariumUpdate2014]. 
 
