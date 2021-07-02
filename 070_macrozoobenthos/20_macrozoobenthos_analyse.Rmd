@@ -311,6 +311,7 @@ bxp_ZS <-
        y = ylb) +
   facet_grid(tidaal~waterloop2) +
   theme(axis.text.x = element_text(angle = 45))
+bxp_ZR
 bxp_ZS
 
 # ggsave(paste0(pad_figuren, "070-figuur-densiteit-Zeeschelde-alternatief.jpg"), height=4, width=8)
@@ -343,7 +344,7 @@ ggarrange(bxp_ZS + font("xy.text", size = fnt),
           nrow = 2,
           common.legend = TRUE)
 
-ggsave(paste0(pad_figuren, "070-figuur-densiteitgemiddelde-waterlichaam-alternatief.jpg"), height=8, width=8)
+ggsave(paste0(pad_figuren, "070-figuur-densiteitgemiddelde.png"), height=8, width=8)
 
 ```
 
@@ -479,7 +480,7 @@ bxp_ZS <-
   scale_x_continuous(breaks = seq(if_else((laatste_jaar-vroegste_jaar)%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   scale_y_log10(breaks = c(0,0.1,1,10,100,1000)+biom_min, labels = c(0,0.1,1,10,100,1000)) +
   labs(x = xlb,
-       y = ylb) +
+       y = ylb)+
   facet_grid(tidaal~waterloop2) +
   theme(axis.text.x = element_text(angle = 45))
 bxp_ZS
@@ -639,22 +640,23 @@ ggsave(paste0(pad_figuren, "070-figuur-aandeel-lege-stalen.jpg"), height=5, widt
 ```{r 070-figuur-soortenrijkdom-ZeescheldeIV}
 
 data_macrobenthos %>% 
-  filter(waterloop2 == "Zeeschelde IV",
+  filter(#waterloop2 == "Zeeschelde I",
          fysiotoop %in% fysiotoop_order,
          fysiotoop != "hard substraat") %>% 
   mutate(is_soort = if_else(soort == "geen", 0, 1)) %>% 
-  group_by(jaar, fysiotoop, locatie) %>% 
+  group_by(jaar, tidaal, locatie, waterloop2) %>% 
   summarise(n = sum(is_soort)) %>% 
   ungroup() %>% 
-  mutate(jaar = ordered(jaar),
-         fysiotoop = factor(fysiotoop, levels = fysiotoop_order)) %>% 
-  ggplot(aes(fysiotoop, n, fill = jaar)) +
+  mutate(jaar = ordered(jaar)) %>% 
+         #fysiotoop = factor(fysiotoop, levels = fysiotoop_order)) %>% 
+  ggplot(aes(tidaal, n, fill = jaar)) +
   geom_boxplot() +
   ggsci::scale_fill_simpsons() +
   labs(y = "aantal soorten")+
-  labs(x = "fysiotoop Zeeschelde IV")
+  labs(x = "fysiotoop Zeeschelde I")+
+  facet_wrap(~waterloop2)
 
-ggsave(paste0(pad_figuren, "070-figuur-soortenrijkdom-ZeescheldeIV.jpg"), height=5, width=8)
+ggsave(paste0(pad_figuren, "070-figuur-soortenrijkdom-ZeescheldeI.jpg"), height=5, width=8)
 
 ```
 
@@ -788,7 +790,11 @@ ggsave(paste0(pad_figuren, "070-figuur-intertidalesysteembiomassa.jpg"), height=
         geom_line(aes(colour = waterloop, group = waterloop), size = 1.8) +
     labs(x="", y = "gemiddelde biomassa (g/m²)")
   
-  ### 
+ sysbiomgew <- data_macrobenthos_OPP %>%
+    rename(jaar = jaar.x) %>%
+    filter(grepl("Zeeschelde", waterloop) | waterloop == "Durme" | waterloop == "Rupel") %>% 
+    group_by(waterloop, jaar) %>% 
+    summarise(weightedbiomass_waterloop = mean(biomassa_mean))
    
   
 
