@@ -1,0 +1,111 @@
+---
+params:
+  hoofdstuk: "060_sedimentkenmerken"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0("../", 
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
+                          )})
+title: "Sediment MONEOS data"
+output:
+  bookdown::word_document2
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(INBOtheme)
+library(rprojroot)
+
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+# source("../pad.R")
+source(find_root_file("pad.R", criterion = is_rstudio_project))
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r data}
+
+# OPGELET!!!
+  # Dit script start met de afgewerkte data-aanlevering.
+  # Om te starten met extractie van de gegevens uit de databank zie script 2017
+  
+ 
+  data2019 <- read_excel(paste0(pad_data, "basis_sediment_SP19VLIZ.xlsx")) 
+  
+   
+  data2019 <- data2019 %>% 
+    select(jaar, campagne, waterloop, tidaal, ecotoop_werkelijk, locatie, X, Y, mediaan, OM, slib) %>% 
+    gather("mediaan", "OM", "slib", key = variabele, value = waarde, na.rm = TRUE) %>% 
+    rename (fysiotoop = ecotoop_werkelijk)
+ 
+  data <- read_excel(paste0(pad_data, "S_DS_V_004a_sediment_data2008_2018_rapportage2020.xlsx"))
+  
+  
+  ##promemory uit de dataset/databank zijn volgende data verwijderd bij de aanlevering naar VLIZ omdat ze foutief zijn gemeten:
+  # foute data van GK 2015 intertidaal verwijderen
+  #subset(data, !(tidaal=="intertidaal" & jaar==2015 & waterloop=="Zeeschelde IV" & 
+                       # variabele %in% c("mediaan","slib") ))
+    # foute data ZSIV 2013 intertidaal verwijderen
+  # subset(data, !(tidaal == "intertidaal" & jaar ==2013 & waterloop == "Zeeschelde IV" &
+                         # variabele %in% c("mediaan","slib") ))
+  # data ZSI subtidaal 2013 is ook verdacht en werd verwijderd
+  # subset(data, !(tidaal == "subtidaal" & jaar ==2013 & waterloop == "Zeeschelde I" &
+                         # variabele %in% c("mediaan","slib") ))
+  
+  data <- data %>% 
+    rbind (data2019) %>% 
+    na.omit(TRUE)
+
+# template_data <- 
+#   data.frame(x = sample(seq(0,10,0.05), 100, replace = TRUE)) %>% 
+#   mutate(y = 0.5 + 2*x + rnorm(n()))
+
+```
+
+
+data gecreëerd op `r Sys.time()`
+
+data weggeschreven naar `r paste0(pad_data, "template_data.csv")`
+
+
+```{r wegschrijven-data}
+
+ file <- paste0(pad_data, "S_DS_V_004a_sediment_data2008_",(year(Sys.Date())-2),"_rapportage",year(Sys.Date()),".xlsx")
+  
+  openxlsx::write.xlsx(data, file, row.names = FALSE, overwrite = TRUE)
+
+  data %>% 
+  write_delim(paste0(pad_data, "sediment_data.csv"),
+               delim = ";")
+
+```
+
+
+
+
