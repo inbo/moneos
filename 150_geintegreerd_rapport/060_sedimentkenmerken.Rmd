@@ -17,8 +17,8 @@ output:
     lof: TRUE
     lot: TRUE
     floatbarrier: subsection
-bibliography: references.bib
-link-citations: TRUE
+# bibliography: references.bib
+# link-citations: TRUE
 ---
 
 
@@ -98,7 +98,7 @@ De aangeleverde data omvat de outputvariabelen mediane korrelgrootte (D50), het 
 
 ## Materiaal en methode
 
-De data werden gegenereerd in R [@RstatisticalComputing].
+De data werden gegenereerd in R (R Core Team, 2019).
 
 De sedimentwaarden zijn verdeeld zoals weergegeven in Tabel \@ref(tab:060-tabel-sediment).
 
@@ -151,7 +151,7 @@ knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_boxplotf
 
 ```{r 060-figuur-slib-Zeeschelde-intertidaaltrend, fig.cap=slib_Zeeschelde_intertidaaltrend, out.width="80%"}
 
-slib_Zeeschelde_intertidaaltrend <- "Slibgehalte (//%) – Zeeschelde intertidaal. Geen data in 2015 en 2013 voor intertidaal Zeeschede IV. Loess smoother als trendlijn (data 2008-2019)."
+slib_Zeeschelde_intertidaaltrend <- "Slibgehalte (\\%) – Zeeschelde intertidaal. Geen data in 2015 en 2013 voor intertidaal Zeeschede IV. Loess smoother als trendlijn (data 2008-2019)."
 
 knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_intertidaaltrend.jpg"))
 
@@ -161,7 +161,7 @@ knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_intertid
 
 ```{r 060-figuur-slib-Zeeschelde-subtidaaltrend, fig.cap=slib_Zeeschelde_subtidaaltrend, out.width="80%"}
 
-slib_Zeeschelde_subtidaaltrend <- "Slibgehalte (//%) – Zeeschelde subtidaal. Geen data in 2013 voor subtidaal Zeeschede I. Loess smoother als trendlijn (data 2008-2019)."
+slib_Zeeschelde_subtidaaltrend <- "Slibgehalte (\\%) – Zeeschelde subtidaal. Geen data in 2013 voor subtidaal Zeeschede I. Loess smoother als trendlijn (data 2008-2019)."
 
 knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_subtidaaltrend.jpg"))
 
@@ -171,7 +171,7 @@ knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_subtidaa
 
 ```{r 060-figuur-slib-zijrivieren-intertidaaltrend, fig.cap=slib_zijrivieren_intertidaaltrend, out.width="80%"}
 
-slib_zijrivieren_intertidaaltrend <- "Slibgehalte (//%) – zijrivieren intertidaal. In 2018 en 2019 werdeb de zijrivieren Nete, Dijle en Zenne niet bemonsterd. Loess smoother als trendlijn (data 2008-2019)."
+slib_zijrivieren_intertidaaltrend <- "Slibgehalte (\\%) – zijrivieren intertidaal. In 2018 en 2019 werdeb de zijrivieren Nete, Dijle en Zenne niet bemonsterd. Loess smoother als trendlijn (data 2008-2019)."
 
 knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_zijrivieren_intertidaaltrend.jpg"))
 
@@ -181,7 +181,7 @@ knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_zijrivieren_interti
 
 ```{r 060-figuur-slib-zijrivieren-subtidaaltrend, fig.cap=slib_zijrivieren_subtidaaltrend, out.width="80%"}
 
-slib_zijrivieren_subtidaaltrend <- "Slibgehalte (//%) – zijrivieren subtidaal. In 2018 en 2019 werdeb de zijrivieren Nete, Dijle en Zenne niet bemonsterd. Loess smoother als trendlijn (data 2008-2019)."
+slib_zijrivieren_subtidaaltrend <- "Slibgehalte (\\%) – zijrivieren subtidaal. In 2018 en 2019 werdeb de zijrivieren Nete, Dijle en Zenne niet bemonsterd. Loess smoother als trendlijn (data 2008-2019)."
 
 knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_zijrivieren_subtidaaltrend.jpg"))
 
@@ -194,6 +194,9 @@ knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_zijrivieren_subtida
 In de Zeeschelde en zijrivieren wordt het sediment sinds 2011 slibrijker in het intertidale gebied en in het ondiep en ook matig diep subtidaal. In de diepere geul is de variatie groot en zonder duidelijk patroon. In de bovenstroomse delen van de Zeeschelde is er tendens tot het zandiger worden van het fysiotoop diep water. 
 
 
+## Referenties
 
+R Core Team (2019). R: A Language and Environment for Statistical Computing. R Foundation for
+Statistical Computing, Vienna, Austria. https://www.R-project.org/.
 
-
+Van Ryckegem G., Van Braeckel A., Elsen R., Speybroeck J., Vandevoorde B., Mertens W., Breine J., Spanoghe G., Buerms D., De Beukelaer J., De Regge N., Hessel K., Soors J., Terrie T., Van Lierop F. & Van den Bergh E. (2017). MONEOS – Geïntegreerd datarapport INBO: Toestand Zeeschelde 2016: monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten. Rapporten van het Instituut voor Natuur- en Bosonderzoek 2017 (37). Instituut voor Natuur- en Bosonderzoek, Brussel. 
