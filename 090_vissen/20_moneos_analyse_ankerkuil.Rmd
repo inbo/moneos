@@ -50,17 +50,17 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ##### datasets voor aantal en gewicht:
 
-  - _G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2020/090_vissen/data/ankerkuil_aantallen_2012_2018.csv_
-  - _G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2020/090_vissen/data/ankerkuil_gewicht_2012_2018.csv_
+-   *G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2021/090_vissen/data/ankerkuil_aantallen_2012_2020.csv*
+-   *G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2021/090_vissen/data/ankerkuil_gewicht_2012_2020.csv*
 
 ```{r inlezen-data}
 
 ankerkuil_aantal <- 
-  read_delim(paste0(pad_data, "ankerkuil_aantallen_2012_2018.csv"),
+  read_delim(paste0(pad_data, "ankerkuil_aantallen_2012_2020.csv"),
              delim = ";")
 
 ankerkuil_gewicht <- 
-  read_delim(paste0(pad_data, "ankerkuil_gewicht_2012_2018.csv"),
+  read_delim(paste0(pad_data, "ankerkuil_gewicht_2012_2020.csv"),
              delim = ";")
 
 data_ankerkuil <- 
@@ -97,8 +97,12 @@ soorten <-
   distinct(soort) %>% 
   pull(soort)
 
+# soorten_invertebraten <-
+#   c("wolhandkrab", "grijze garnalen", "steurgarnalen", "gammarus", "noordzeekrab", "japanse steurgarnaal", "penseelkrab")
+
 soorten_invertebraten <-
-  c("wolhandkrab", "grijze garnalen", "steurgarnalen", "gammarus", "noordzeekrab", "japanse steurgarnaal", "penseelkrab")
+  soorten %>% 
+  keep(~ str_detect(., "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat")) 
 
 soorten_vis <-
   setdiff(soorten, soorten_invertebraten)
@@ -122,7 +126,7 @@ data_ankerkuil <-
 
 #### relatie aantal - gewicht
 
-```{r relatie-aantal-gewicht, fig.height=14, fig.width=10}
+```{r relatie-aantal-gewicht, fig.height=16, fig.width=10}
 
 # data_ankerkuil %>%
 #   ggplot(aes(aantal, gewicht)) +
@@ -142,7 +146,7 @@ data_ankerkuil %>%
        y = "gewicht") +
   facet_wrap(~soort, 
              scales = "free",
-             ncol = 5)
+             ncol = 8)
 
 ggsave(paste0(pad_figuren, "relatie_aantal_gewicht.jpg"))
 
@@ -231,6 +235,26 @@ ggsave(paste0(pad_figuren, "gemiddeld_over_seizoenen.jpg"))
 ```
 
 
+#### gemiddeld aantal gevangen individuen per seizoen en locatie
+
+```{r gemiddeld-per-seizoenen-en-locatie, fig.height=8, fig.width=6}
+
+data_ankerkuil %>% 
+  ggplot(aes(ordered(jaar), aantal_per_kub, fill = seizoen)) +
+  geom_col(alpha = 0.8,
+           width = 0.5) +
+  geom_text(aes(y = aantal_per_kub + 0.3, label = round(aantal_per_kub, 2)), 
+            size = 4) +
+  labs(x = NULL,
+       y = expression(paste("aantal individuen per ", m^3))) + 
+  facet_wrap(~locatie)
+
+ggsave(paste0(pad_figuren,
+              "gemiddeld_aantal_per_seizoen_en_locatie.jpg"))
+
+```
+
+
 #### relatief aantal gevangen individuen
 
 ```{r relatief-aantal-gevangen-individuen, fig.height=6, fig.width=4}
@@ -287,4 +311,3 @@ meta_data %>%
               delim = ";")
 
 ```
-

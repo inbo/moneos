@@ -9,7 +9,7 @@ knit: (function(inputFile, encoding) {
                             maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
                           }
                           )})
-title: "visdata"
+title: "visdata ankerkuil"
 output: word_document
 ---
 
@@ -232,6 +232,25 @@ volume afgerond naar `r precisie_volume` cijfers na de comma
   - `r nrow(unieke_stalen_gewicht)` uren/volume komen voor in de dataset gewicht en niet in aantallen
     + `r if(nrow(unieke_stalen_gewicht) > 0) knitr::kable(unieke_stalen_gewicht) else NULL`
     
+uren/volume die ontbreken in aantallen worden overgenomen uit volume
+
+```{r ontbrekend volume aantal}
+
+rijen_NA <-
+  which(is.na(ankerkuil_aantal_historisch$volume))
+
+vervanging_NA <-
+  ankerkuil_gewicht_historisch %>% 
+  filter(jaar == ankerkuil_aantal_historisch$jaar[rijen_NA], 
+         seizoen == ankerkuil_aantal_historisch$seizoen[rijen_NA], 
+         locatie == ankerkuil_aantal_historisch$locatie[rijen_NA],
+         uren == ankerkuil_aantal_historisch$uren[rijen_NA])
+
+ankerkuil_aantal_historisch$volume[rijen_NA] <-
+  vervanging_NA$volume
+
+```
+
 
 ##### jaren in de dataset:
 
@@ -286,19 +305,20 @@ stalen worden gesommeerd per jaar, seizoen en locatie
 
 ankerkuil_aantal_historisch <- 
   ankerkuil_aantal_historisch %>% 
-  select(-datum) %>% 
+  select(-datum, -maand) %>% 
   group_by(jaar, seizoen, locatie) %>% 
   summarise_all(~sum(., na.rm = TRUE)) %>% 
   ungroup()
 
 ankerkuil_gewicht_historisch <- 
   ankerkuil_gewicht_historisch %>% 
-  select(-datum) %>% 
+  select(-datum, -maand) %>% 
   group_by(jaar, seizoen, locatie) %>% 
   summarise_all(~sum(., na.rm = TRUE)) %>% 
   ungroup()
 
 ```
+
 
 
 ##### finale data weggeschreven naar:
