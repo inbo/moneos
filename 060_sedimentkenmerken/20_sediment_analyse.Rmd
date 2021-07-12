@@ -81,8 +81,7 @@ recentste_jaar <-
   - Er zijn `r ncol(sediment_data)` variabelen
     + `r paste(names(sediment_data), sep = ", ")`
   - Er zijn `r nrow(sediment_data)` metingen
-  - Er zijn `r count(sediment_data %>% filter(y <= 0))$n` y waarden <= 0
-
+  
 
 
 # overzicht jaar waarden 
@@ -247,7 +246,7 @@ var <- "mediaan"
   
 ```
 
-```{r Mediaan-Zeeschelde-intertidaal, fig.height=5, fig.width=8 }
+```{r Mediaan-Zeeschelde-intertidaal1, fig.height=5, fig.width=8 }
 
 var <- "slib"
   partim <- hoofd
