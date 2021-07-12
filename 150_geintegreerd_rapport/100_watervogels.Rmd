@@ -31,7 +31,7 @@ hoofdstuk <- "100_watervogels"
 
 ```{r 100-setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.showtext = TRUE, dpi = 300)
 knitr::opts_knit$set(eval.after = "fig.cap")
 
 
@@ -233,7 +233,7 @@ De trends in de  __Getijdedurme__ zijn enigszins moeilijker te interpreteren omd
 Op de __Dijle__ (Figuur \@ref(fig:100-figuur-aantallen-zijrivieren)) was de piek van vogelaantallen van korte duur. Terwijl gemiddeld in de periode 2007-2009 nog meer dan 1200 watervogels per winter werden geteld, is het aantal de laatste jaren slechts enkele tientallen vogels per winter.
 
 
-```{r 100-figuur-maandelijkse-totalen-winter-Zeeschelde, fig.cap=cap_maandelijkse_totalen}
+```{r 100-figuur-maandelijkse-totalen-winter-Zeeschelde, fig.cap=cap_maandelijkse_totalen,out.width="80%"}
 
 cap_maandelijkse_totalen <- paste0("Maandelijkse wintertotalen van de watervogels langsheen de Zeeschelde sinds oktober 1991 tot ", 
                                   laatste_jaar, 
@@ -245,7 +245,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_maandelijkse_totalen_ZSw
 
 <br/>  
 
-```{r 100-figuur-wintermaxima-Zeeschelde, fig.cap=cap_wintermaxima_Zeeschelde}
+```{r 100-figuur-wintermaxima-Zeeschelde, fig.cap=cap_wintermaxima_Zeeschelde, out.width="80%"}
 
 cap_wintermaxima_Zeeschelde <- paste0("Wintermaxima van de watervogels langsheen de Zeeschelde sinds oktober 1991 tot ", 
                                   laatste_jaar, 
@@ -256,7 +256,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_wintermaxima_Zeeschelde.
 ```
 
 <br/> 
-```{r 100-figuur-verhouding-aantallen, fig.cap=cap_verhouding_aantallen}
+```{r 100-figuur-verhouding-aantallen, fig.cap=cap_verhouding_aantallen, out.width="80%"}
 
 cap_verhouding_aantallen <- paste0("De verhouding van de totale aantallen watervogels in de waterlichamen (winter 1991 - ", 
                                   laatste_jaar, 
@@ -268,7 +268,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_verhouding_aantallen.jpg
 
 <br/>  
 
-```{r 100-figuur-aantallen-KRWzones, fig.cap=cap_aantallen_KRWzones}
+```{r 100-figuur-aantallen-KRWzones, fig.cap=cap_aantallen_KRWzones, out.width="80%"}
 
 cap_aantallen_KRWzones <- paste0("De wintervogelaantallen in de verschillende KRW-zones (gemiddelde per winter 1991/92 – ",
                                 laatste_telseizoen, 
@@ -280,7 +280,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_KRWzones.jpg")
 
 <br/>  
 
-```{r 100-figuur-aantallen-zijrivieren, fig.cap=cap_aantallen_zijrivieren}
+```{r 100-figuur-aantallen-zijrivieren, fig.cap=cap_aantallen_zijrivieren, out.width="80%"}
 
 cap_aantallen_zijrivieren <- paste0("De wintervogelaantallen in de Dijle, Rupel en Zenne (gedeelte onder getijde-invloed) (gemiddelde per winter 1991/92 – ", 
                                    laatste_telseizoen, 
@@ -304,7 +304,7 @@ De trends van de meest talrijke exotische overwinterende vogelsoorten is weergeg
 
 De dichtheden van de overwinterende watervogels per KRW-zone op het oppervlakte zacht substraat slik in de Zeeschelde is weergegeven in Figuur \@ref(fig:100_figuur_dichtheid). Voor de figuur werd een selectie gemaakt van alle omnivore en benthivore soorten en werden kuifeend en tafeleend uitgesloten omdat beide soorten vooral afhankelijk zijn van het voedselaanbod in de ondiepe waterzones. In 2001 was de vogeldichtheid in Zeeschelde III en Rupel en Zeeschelde II rond de 140 vogels per ha. In 2016 daalde deze dichtheid in Zeeschelde III + Rupel tot ongeveer 20 vogels per hectare. In Zeeschelde II bleef dit aantal ongeveer 80 vogels per ha. De dichtheid in Zeeschelde IV schommelt rond de 10 vogels per hectare. Dit is heel wat lager dan in andere zones nochtans dat het voedselaanbod als biomassa bodemdieren per oppervlakte eenheid hier niet significant lager is dan in andere zones. De oppervlakte zacht substraat in de verschillende zones is maar in beperkte mate veranderd (Hoofdstuk **XXXX**) en heeft hierdoor een beperkte invloed, tot nu toe, op de berekende dichtheden. 
 
-```{r 100-figuur-aantallen-trofische-groep, fig.cap=cap_aantallen_trofische_groep}
+```{r 100-figuur-aantallen-trofische-groep, fig.cap=cap_aantallen_trofische_groep, out.width="80%"}
 
 cap_aantallen_trofische_groep <- paste0("Trends in gemiddelde wintervogelaantallen per KRW-zone (gemiddelde per winter 2009/10 – ",
                                         laatste_telseizoen, 
@@ -316,7 +316,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_trofische_groe
 
 <br/>  
 
-```{r 100-figuur-aantallen-abundante-soorten, fig.cap=cap_aantallen_abundante_soorten}
+```{r 100-figuur-aantallen-abundante-soorten, fig.cap=cap_aantallen_abundante_soorten, out.width="80%"}
 
 cap_aantallen_abundante_soorten <- "Trends in het gemiddelde aantal wintervogels (okt.-mrt.) voor 4 abundante soorten in de 4 KRW-zones van de Zeeschelde+Rupel."
 
@@ -326,7 +326,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_abundante_soor
 
 <br/>  
 
-```{r 100-figuur-aantallen-visetend-en-steltlopers, fig.cap=cap_aantallen_visetend_en_steltlopers}
+```{r 100-figuur-aantallen-visetend-en-steltlopers, fig.cap=cap_aantallen_visetend_en_steltlopers, out.width="80%"}
 
 cap_aantallen_visetend_en_steltlopers <- "Trends in het gemiddeld aantal getelde wintervogels (okt.-mrt.) voor 2 abundante visetende (piscivore) en twee abundante steltlopers in de 4 KRW-zones van de Zeeschelde+Rupel."
                                             
@@ -336,7 +336,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_visetend_en_st
 
 <br/>  
 
-```{r 100-figuur-exotentrends, fig.cap=cap_exotentrends}
+```{r 100-figuur-exotentrends, fig.cap=cap_exotentrends, out.width="80%"}
 
 cap_exotentrends <- "Trends in het gemiddeld aantal getelde wintervogels (okt.-mrt.) voor 4 abundante exoten in de 4 KRW-zones van de Zeeschelde+Rupel."
                                             
@@ -346,7 +346,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_exoten.jpg"))
 
 <br/> 
 
-```{r 100-figuur-dichtheden-watervogels-per-zone, fig.cap=cap_dichtheden}
+```{r 100-figuur-dichtheden-watervogels-per-zone, fig.cap=cap_dichtheden,out.width="80%"}
 
 cap_dichtheden <- "Vogeldichtheid (aantallen per ha zacht substraat slik) van getelde wintervogels (okt.-mrt.) in de 4 KRW-zones van de Zeeschelde+Rupel. Data gepresenteerd voor de jaren overeenkomstig de beschikbare ecotopenkaart"
                                             
