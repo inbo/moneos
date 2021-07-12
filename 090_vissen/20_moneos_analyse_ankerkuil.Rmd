@@ -16,7 +16,7 @@ output: word_document
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.showtext = TRUE, dpi = 300)
 
 ```
 
@@ -69,11 +69,12 @@ data_ankerkuil <-
   left_join(ankerkuil_gewicht %>% 
               select(-uren, -volume) %>% 
               gather(soort, gewicht, `tiendoornige stekelbaars`:last_col())) %>% 
-  mutate(seizoen = recode(seizoen,
+  mutate(gewicht = if_else(aantal == 0, 0, gewicht),
+         seizoen = recode(seizoen,
                           VJ = "voorjaar",
                           NJ = "najaar",
-                          Z = "zomer")) %>% 
-  mutate(seizoen = factor(seizoen, levels = c("voorjaar", "zomer", "najaar")),
+                          Z = "zomer"),
+         seizoen = factor(seizoen, levels = c("voorjaar", "zomer", "najaar")),
          locatie = factor(locatie, levels = c(c("Doel", "Antwerpen", "Steendorp", "Branst"))))
 
 
@@ -126,7 +127,7 @@ data_ankerkuil <-
 
 #### relatie aantal - gewicht
 
-```{r relatie-aantal-gewicht, fig.height=16, fig.width=10}
+```{r relatie-aantal-gewicht, fig.height=20, fig.width=12}
 
 # data_ankerkuil %>%
 #   ggplot(aes(aantal, gewicht)) +
@@ -237,17 +238,26 @@ ggsave(paste0(pad_figuren, "gemiddeld_over_seizoenen.jpg"))
 
 #### gemiddeld aantal gevangen individuen per seizoen en locatie
 
-```{r gemiddeld-per-seizoenen-en-locatie, fig.height=8, fig.width=6}
+```{r gemiddeld-aantal-per-seizoenen-en-locatie, fig.height=6, fig.width=10}
 
-data_ankerkuil %>% 
-  ggplot(aes(ordered(jaar), aantal_per_kub, fill = seizoen)) +
+gemiddeld_per_seizoen_locatie <- 
+  data_ankerkuil %>% 
+  group_by(jaar, seizoen, locatie) %>%
+  summarise(aantal_per_kub = sum(aantal_per_kub)) %>% 
+  ungroup()
+
+gemiddeld_per_seizoen_locatie %>% 
+  ggplot(aes(ordered(jaar), aantal_per_kub, group = seizoen, fill = seizoen)) +
   geom_col(alpha = 0.8,
-           width = 0.5) +
-  geom_text(aes(y = aantal_per_kub + 0.3, label = round(aantal_per_kub, 2)), 
-            size = 4) +
+           position = "dodge") +
+  geom_text(aes(y = aantal_per_kub + 0.1*aantal_per_kub, label = round(aantal_per_kub, 2)),
+            size = 2,
+            angle = 45,
+            position = position_dodge(0.9)) +
   labs(x = NULL,
-       y = expression(paste("aantal individuen per ", m^3))) + 
-  facet_wrap(~locatie)
+       y = expression(paste("gemiddeld aantal individuen per ", m^3))) + 
+  facet_wrap(~locatie,
+             scales = "free_y")
 
 ggsave(paste0(pad_figuren,
               "gemiddeld_aantal_per_seizoen_en_locatie.jpg"))
@@ -255,13 +265,42 @@ ggsave(paste0(pad_figuren,
 ```
 
 
+#### gemiddeld gewicht gevangen individuen per seizoen en locatie
+
+```{r gemiddelde-biomassa-per-seizoenen-en-locatie, fig.height=6, fig.width=10}
+
+gemiddeld_per_seizoen_locatie <- 
+  data_ankerkuil %>% 
+  group_by(jaar, seizoen, locatie) %>%
+  summarise(gewicht_per_kub = sum(gewicht_per_kub)) %>% 
+  ungroup()
+
+gemiddeld_per_seizoen_locatie %>% 
+  ggplot(aes(ordered(jaar), gewicht_per_kub, group = seizoen, fill = seizoen)) +
+  geom_col(alpha = 0.8,
+           position = "dodge") +
+  geom_text(aes(y = gewicht_per_kub + 0.1*gewicht_per_kub, label = round(gewicht_per_kub, 2)),
+            size = 2,
+            angle = 45,
+            position = position_dodge(0.9)) +
+  labs(x = NULL,
+       y = expression(paste("gemiddelde biomassa  ", g/m^3))) + 
+  facet_wrap(~locatie,
+             scales = "free_y")
+
+ggsave(paste0(pad_figuren,
+              "gemiddelde_biomassa_per_seizoen_en_locatie.jpg"))
+
+```
+
+
 #### relatief aantal gevangen individuen
 
-```{r relatief-aantal-gevangen-individuen, fig.height=6, fig.width=4}
+```{r relatief-aantal-gevangen-individuen, fig.height=6, fig.width=6}
 
 relatief_aantal <- 
   data_ankerkuil %>% 
-  filter(jaar == 2017) %>% 
+  filter(jaar == laatste_jaar) %>% 
   group_by(seizoen, locatie) %>%
   mutate(relatief_aantal = aantal/sum(aantal)) %>% 
   ungroup() %>% 
@@ -270,6 +309,10 @@ relatief_aantal <-
   ungroup() %>% 
   group_by(seizoen, locatie, soort2) %>% 
   summarise(aantal = sum(aantal)) %>% 
+  ungroup() %>% 
+  group_by(seizoen, locatie) %>% 
+  mutate(soort2 = soort2,
+         aantal = round(aantal/sum(aantal)*100)) %>% 
   ungroup() %>% 
   rename(soort = soort2) %>% 
   mutate(soort = factor(soort, 
@@ -283,17 +326,70 @@ relatief_aantal %>%
   geom_col(position = "fill") +
   # geom_text(aes(label = soort),
   #            size = 3) +
+  geom_text(aes(label = aantal, size = aantal),
+            position = position_fill(vjust = 0.5),
+            show.legend = FALSE) +
   coord_polar("y", start=0) +
   facet_grid(locatie ~ seizoen) +
   labs(x = NULL,
        y = NULL) +
   scale_x_discrete(breaks = NULL) +
   scale_y_continuous(breaks = NULL) +
-  theme(legend.position = "bottom",
+  theme(
+    # legend.position = "bottom",
         legend.title = element_blank())
 
-
 ggsave(paste0(pad_figuren, "relatief_aantal_gevangen_individuen.jpg"))
+
+```
+
+
+#### relatieve biomassa gevangen individuen
+
+```{r relatieve-biomassa-gevangen-individuen, fig.height=6, fig.width=6}
+
+relatief_gewicht <- 
+  data_ankerkuil %>% 
+  filter(jaar == laatste_jaar) %>% 
+  group_by(seizoen, locatie) %>%
+  mutate(relatief_gewicht = gewicht/sum(gewicht)) %>% 
+  ungroup() %>% 
+  group_by(soort) %>% 
+  mutate(soort2 = ifelse(any(relatief_gewicht >= 0.05), soort, "rest")) %>% 
+  ungroup() %>% 
+  group_by(seizoen, locatie, soort2) %>% 
+  summarise(gewicht = sum(gewicht)) %>% 
+  ungroup() %>% 
+  group_by(seizoen, locatie) %>% 
+  mutate(soort2 = soort2,
+         gewicht = round(gewicht/sum(gewicht)*100)) %>% 
+  ungroup() %>% 
+  rename(soort = soort2) %>% 
+  mutate(soort = factor(soort, 
+                        levels = unique(soort) %>% 
+                          sort() %>% 
+                          setdiff("rest") %>% 
+                          c(., "rest")))
+
+relatief_gewicht %>% 
+  ggplot(aes(x ="", y = gewicht, fill = soort)) +
+  geom_col(position = "fill") +
+  # geom_text(aes(label = soort),
+  #            size = 3) +
+  geom_text(aes(label = gewicht, size = gewicht),
+            position = position_fill(vjust = 0.5),
+            show.legend = FALSE) +
+  coord_polar("y", start=0) +
+  facet_grid(locatie ~ seizoen) +
+  labs(x = NULL,
+       y = NULL) +
+  scale_x_discrete(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  theme(
+    # legend.position = "bottom",
+        legend.title = element_blank())
+
+ggsave(paste0(pad_figuren, "relatieve_biomassa_gevangen_individuen.jpg"))
 
 ```
 
