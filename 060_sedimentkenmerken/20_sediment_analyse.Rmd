@@ -16,7 +16,7 @@ output:
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, cache = FALSE, fig.showtext = TRUE, dpi = 300)
 
 ```
 
@@ -25,12 +25,11 @@ knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, c
 
 library(tidyverse)
 library(writexl)
-library(INBOtheme)
 library(gridExtra)
 library(readxl)
 library(rprojroot)
 library(scales)
-
+library(INBOtheme)
 
 ```
 
@@ -222,7 +221,7 @@ sediment_data$tidaal[sediment_data$tidaal=="sub"] <- "subtidaal"
   
 ```
 
-```{r Mediaan_Zeeschelde, fig.height=5, fig.width=8 }
+```{r Mediaan-Zeeschelde, fig.height=5, fig.width=8 }
 
 var <- "mediaan"
   partim <- hoofd
@@ -248,7 +247,7 @@ var <- "mediaan"
   
 ```
 
-```{r Mediaan_Zeeschelde, fig.height=5, fig.width=8 }
+```{r Mediaan-Zeeschelde-intertidaal, fig.height=5, fig.width=8 }
 
 var <- "slib"
   partim <- hoofd
