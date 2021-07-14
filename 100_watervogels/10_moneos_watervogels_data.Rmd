@@ -4,23 +4,20 @@ params:
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = {
-                            source("../pad.R");
-                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
-                          }
+                          output_dir = paste0("../", 
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
                           )})
 title: "watervogeldata"
 output:
   bookdown::word_document2
 ---
 
-
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 
 ```
-
 
 ```{r libraries}
 
@@ -29,9 +26,10 @@ library(lubridate)
 #library(inborutils)  ## moet dat nu inbodb worden??
 library(inbodb)
 library(DBI)
+library(rprojroot) ## workaround pad
+
 
 ```
-
 
 ```{r pad}
 
@@ -40,8 +38,8 @@ library(DBI)
 # pad naar tabellen : pad_tabellen
 # pad naar figuren : pad_figuren
 
-source("../pad.R")
-
+# source("../pad.R")  # default moet deze aanstaan
+source(find_root_file("pad.R", criterion = is_rstudio_project)) ## workaround computer Gunther
 pad_data <- maak_pad(params$hoofdstuk, "data")
 pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
@@ -52,7 +50,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 ```{r benodigde-seizoenen}
 
 vroegste_seizoen <- "1991/1992"
-laatste_seizoen <- "2019/2020"
+laatste_seizoen <- "2020/2021"
 
 seizoenen <-
   (vroegste_seizoen %>% str_sub(0, 4) %>% as.numeric):(laatste_seizoen %>% str_sub(0, 4) %>% as.numeric) %>% 
@@ -126,32 +124,7 @@ query_grouping <-
 , s.IsNulTelling;"
 
 
-query_tellingen <- 
-"SELECT 
-  su.SurveyCode AS ProjectCode
-, su.SurveyNaam AS Project
-, a.AnalyseSetKey AS AnalyseSetCode
-, a.AnalyseSetNaam AS AnalyseSet
-, l.RegioWVNaam AS Regio
-, l.LocationWVCode AS GebiedsCode
-, l.LocationWVNaam AS Gebied
-, ss.Seasonname AS Telseizoen
-, e.EventLabel AS Telling
-, e.SortOrder AS TellingSortOrder
-, s.SampleDate AS Teldatum
-, s.CoverageCode AS TelvolledigheidCode
-, s.CoverageDescription AS Telvolledigheid
-, s.IsNulTelling AS Nultelling
-FROM DimSample s
-  INNER JOIN DimSurvey su ON su.surveykey = s.surveykey
-  INNER JOIN DimAnalyseSet a ON a.AnalyseSetKey = s.AnalyseSetKey
-  INNER JOIN DimLocationWV l ON l.locationwvkey = s.locationwvkey
-  INNER JOIN DimSeason ss ON ss.Seasonkey = s.seasonkey
-  INNER JOIN DimEvent e ON e.eventkey = s.eventkey
-WHERE 1=1
-  AND s.samplestatus = 'CHECKED' /**alleen gevalideerde records**/
-  AND s.coveragecode not in ('-', 'N')  /**niet getelde tellingen zijn irrelevant**/
-;"
+
 
 ```
 
@@ -167,7 +140,7 @@ query <-
          ";"
   )
 
-# con <- connect_inbo_dbase("W0004_00_Waterbirds")
+con <- connect_inbo_dbase("W0004_00_Waterbirds")
 overzicht_tellingen <- 
   dbGetQuery(con,
              query)
@@ -434,7 +407,7 @@ overzicht_tellingen <-
 
 overzicht_tellingen <-
   overzicht_tellingen %>%
-  mutate(IsNulTelling = if_else(IsNulTelling == 1, "ja", "nee"))
+  mutate(IsNulTelling = if_else(isnultelling == 1, "ja", "nee"))
 
 
 # overzicht aantal tellingen
@@ -455,7 +428,7 @@ overzicht_tellingen %>%
 
 overzicht_tellingen %>% 
   filter (telseizoen == "2019/20") %>% 
-  filter (gebiedscode == 3121003) %>% 
+  filter (gebiedscode == 2050810) %>% 
   select(gebied, teldatum) %>% #kijk alleen naar teldatum want telling en tellingsortorder kloppen niet in databank
   arrange(teldatum)
 
@@ -536,12 +509,12 @@ WaterbirdsBT <-
 
 ```{r controle volledigheid}
 Aantaltellingenpergebied0 <- WaterbirdsBT %>% 
-    filter (telseizoen == "2018/19") %>% 
+    filter (telseizoen == "2020/21") %>% 
   count(gebiedsgroep_code, telseizoen, teldatum) 
   
 # aantal tellingen per telseizoen ingevoerd 
 Aantaltellingenpergebied <- WaterbirdsBT %>% 
-  filter (telseizoen == "2018/19") %>% 
+  filter (telseizoen == "2020/21") %>% 
   distinct(gebiedsgroep_code, gebiedscode, teldatum, telseizoen) %>% 
   count(gebiedsgroep_code, gebiedscode, telseizoen) 
   
@@ -585,6 +558,14 @@ WaterbirdsBT <-
 WaterbirdsBT %>% 
   write_delim(paste0(pad_data, "Watervogels_Zeeschelde.csv"),
               delim = ";")
+
+WaterbirdsBT %>% 
+  mutate(maand = month(teldatum)) %>% 
+  dplyr::select(-c(taxongroepcode,gebiedsgroep_code, wetnaam, teldatum)) %>% 
+  dplyr::rename(KRW_zone = gebiedsgroep) %>% 
+  write_delim(paste0(pad_data, "Watervogels_ZeescheldeVLIZ.csv"),
+              delim = ";")
+  
 
 ```
 
