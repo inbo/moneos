@@ -19,6 +19,8 @@ output:
     floatbarrier: subsection
 # bibliography: references.bib
 # link-citations: TRUE
+
+header-includes: \usepackage{float}
 ---
 
 
@@ -31,7 +33,7 @@ hoofdstuk <- "060_sedimentkenmerken"
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.showtext = TRUE, dpi = 300)
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.showtext = TRUE, dpi = 300, fig.pos = "H", out.extra = '')
 knitr::opts_knit$set(eval.after = "fig.cap")
 
 ```
@@ -86,12 +88,12 @@ for(i in 1:nrow(meta_data)){
 
 Fichenummer: S-MD-V004a – Sedimentkenmerken (in functie van benthos) 
 
-__Gunther Van Ryckegem, Joram De Beukelaer & Frank Van de Meutter__
+__Gunther Van Ryckegem__
 
 
 ## Inleiding
 
-Op elke locatie waar monsters voor het macrozoöbenthos worden genomen (zie Hoofdstuk XXX), wordt een begeleidend sedimentstaal genomen. Van deze stalen worden de granulometrische karakteristieken bepaald door laserdiffractie (LDIF) en wordt het gehalte aan organisch materiaal (OM%) bepaald door verassing (LOI). 
+Op elke locatie waar monsters voor het macrozoöbenthos worden genomen (zie Hoofdstuk __XXX__), wordt een begeleidend sedimentstaal genomen. Van deze stalen worden de granulometrische karakteristieken bepaald door laserdiffractie (LDIF) en wordt het gehalte aan organisch materiaal (OM%) bepaald door verassing (LOI). 
 De korrelgrootte en hoeveelheid organisch materiaal geven respectievelijk informatie over de fysische structuur van de bodem en de mogelijke voedselrijkdom in het sediment – rechtstreeks als voedsel of onrechtstreeks als proxy voor potentiële bacteriële activiteit. Hiermee zijn het interessante verklarende factoren voor het verklaren van trends in de bodemdierengemeenschappen en algemeen indicatief voor het functioneren van het bentisch ecosysteem als matrix voor bodemprocessen. 
 De aangeleverde data omvat de outputvariabelen mediane korrelgrootte (D50), het slibgehalte (percentage van het staalvolume dat een korrelgrootte heeft die kleiner is dan 63µm) en organisch materiaal (percentage verbrandt bij 550°C).
 
