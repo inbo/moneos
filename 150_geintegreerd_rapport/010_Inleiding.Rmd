@@ -8,7 +8,7 @@ knit: (function(inputFile, encoding) {
                           rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
                           "/output")
                           )})
-title: "moneos inleiding"
+title: "Moneos inleiding"
 output:
   bookdown::pdf_book:
     base_format: INBOmd::inbo_rapport
@@ -22,7 +22,7 @@ link-citations: TRUE
 ---
 
 
-```{r hoofdstuk, include=FALSE}
+```{r 010-hoofdstuk, include=FALSE}
 
 hoofdstuk <- "010_inleiding"
 
@@ -42,7 +42,7 @@ knitr::opts_knit$set(eval.after = "fig.cap")
 library(tidyverse)
 library(readxl)
 library(kableExtra)
-
+library(rprojroot) ## workaround pad
 ```
 
 
@@ -53,8 +53,8 @@ library(kableExtra)
 # pad naar tabellen : pad_tabellen
 # pad naar figuren : pad_figuren
 
-source("../pad.R")
-
+# source("../pad.R")
+source(find_root_file("pad.R", criterion = is_rstudio_project)) ## workaround computer Gunther
 pad_data <- maak_pad(hoofdstuk, "data")
 pad_figuren <- maak_pad(hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
@@ -64,96 +64,46 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
 # Dankwoord/Voorwoord {-}  
 
-Het INBO monitoringsprogramma wordt uitgevoerd met de financiële steun van Waterwegen en Zeekanaal (W&Z) afdeling Zeeschelde, afdeling Maritime Toegang (aMT) en van het Agentschap voor Natuur en Bos (ANB).
-De monitoring zou niet mogelijk geweest zijn zonder de bemanning van de schepen SCALDIS I, Scheldewacht II, Veremans en de Parel. Waarvoor dank.
-
+Het INBO monitoringsprogramma wordt uitgevoerd met de financiële steun van de Vlaamse Waterweg nv, Maritime Toegang (MT) en van het Agentschap voor Natuur en Bos (ANB). Waarvoor dank. De monitoring zou niet mogelijk geweest zijn zonder de bemanning van de schepen SCALDIS I, Scheldewacht II, Veremans, Henry de Vos en de Parel. Dank aan Erwin De Backer (Waterbouwkundig laboratorium) voor de uitstekende planning van de bootcampagnes.
 De zoogdierengegevens werden met toestemming ontleend uit de databank van Waarnemingen.be (Natuurpunt VZW).
+De superdeluxe dataverzameling en laboratoriumwerk wat betreft watervogels, hyperbenthos, macrozoöbenthos en de hoogteraaien werden uitgevoerd door Olja Bezdenjesnji, Dimitri Buerms, Ruben Elsen, Joram De Beukelaer, Nico De Regge, Kenny Hessel, Jan Soors en Frederic Van Lierop.
+Ankerkuilvisserij is een ingewikkelde en technische visserij. Job Bout, Sjaak Bout en Davy Govers hebben tijdens de campagnes hun handen meer dan vol. Ze moeten met veel factoren rekening houden zoals het getij, de stroomsnelheid, de weersomstandigheden, het bootverkeer,… Dankzij hun professionele vaardigheid zijn de campagnes in 2020 vlot verlopen. Dat laat ons toe om ons onderzoek in de beste omstandigheden uit te voeren,
+dank u wel. Het INBO-team Linkebeek, dat alle gevangen vissen uitzoekt, meet en weegt, blijft enthousiast ondanks de lange dagen aan boord van ‘De Harder’. Ik dank mijn medeauteurs alsook Marc Dewit voor hun geestdrift en hun hulp aan boord en ook Vyshal Delahaut (UA
+Antwerpen) voor de hulp aan boord in het najaar. 
+Mevrouw Cabradilla (de Vlaamse Waterweg nv) verleent ons altijd vlot de nodige
+aanmeertoelatingen, hartelijk dank.
 
-De superdeluxe dataverzameling en laboratoriumwerk wat betreft watervogels, hyperbenthos en benthos werden uitgevoerd door Olja Bezdenjesnji, Dimitri Buerms, Joram De Beukelaer, Nico De Regge, Kenny Hessel, Charles Lefranc, Jan Soors, Thomas Terrie en Frederic Van Lierop.
+We zijn de mensen van ‘Zates’ in Branst dankbaar voor hun gastvrijheid en voor het
+doorgeven van bijzondere waarnemingen in het Zeeschelde-estuarium.
 
-Ankerkuilvisserij is een zeer technische visserij.
-Er dient met vele factoren rekening gehouden worden zoals stroomsnelheid, wind, bootverkeer enz… Dankzij de professionele vaardigheid van Job en Sjaak Bout zijn de campagnes in 2017 zonder problemen verlopen.
-Jullie hebben dat goed gedaan: dank u wel.
-
-Het visbestand in de Zeeschelde bemonsteren met schietfuiken is zwaar en intensief werk. De stroming is sterk en verraderlijk en telkens moet er geploeterd worden in het slib om fuiknetten te plaatsen en op te halen.
-Maar dat weerhield onze enthousiaste arbeiders en technici niet om de campagnes met succes uit te voeren.
-Dank je wel Danny Bombaerts, Adinda De Bruyn, Jean-Pierre Croonen, Franky Dens, Marc Dewit, Marlies Froidmont, Linde Galle, Isabel Lambeens, Yves Maes, Jan Van Den Houtem en Joris Vernaillen.
-
-De zeer gedreven vrijwilligers zijn we opnieuw zeer erkentelijk voor het aanleveren van extra informatie over het visbestand in de Zeeschelde en Rupel.
-De vrijwilligers in 2017 waren (in stroomopwaartse richting): Gie De Beuckelaer, Ludo Declerck, Myriam De Proost, Georges Hofer, Walter Van Ginhoven, Hugo Van Beek, Hubert Dewilde, Mark Staut, Anna Schneider, Marc Deckers, Swa Branders, Marc Van den Neucker, Tom Van den Neucker, François Van den Broeck, Bart Bonte, Serge Loverie en Carl Van den Bogaert.
 
 
 # Samenvatting {-}  
 
-In 2017 werden verscheidene nieuwe estuariene gebieden gerealiseerd in het kader van het geacutaliseerde SIGMAplan.
-Het gecontroleerd gereduceerd getijdengebied (GGG) van Kruibeke, de aantakking van de Kruibeekse kreek en de ontpoldering van de Fasseitpolder waren een feit.
-In de benedenloop van de Getijdendijle, nabij de Zennemonding werd het GGG Zennegat gerealiseerd.
-Deze realisaties dragen in belangrijke mate bij tot een gunstige habitat oppervlaktebalans in het Schelde-estuarium.
+Deze rapportage geeft toelichting bij de eerstelijnsanalyse van de onderdelen van de geïntegreerde systeemmonitoring van het Schelde-estuarium, kortweg MONEOS (= MONitoring Effecten OntwikkelingsSchets), uitgevoerd door het INBO. De nadruk ligt op de resultaten van de monitoringsjaren 2020 voor de aspecten leefomgeving (habitats/ecotopen), fauna & flora en ecologisch functioneren. Ook de langjarige trends worden toegelicht. 
 
-In de Beneden-Zeeschelde nam het zachte laag slik sinds 2012 sterk af.
-Tot 2014 sedimenteerde een deel op naar middelhoog slik maar sinds 2014 gaat het vooral verloren aan het ondiep water.
-Het areaal zacht middelhoog slik neemt sinds 2014 af.
-Dit wijst op een uitruiming van de vaargeul met steiler wordende oevers als gevolg.
+In de ecotopenkaart van 2019 van de Beneden-Zeeschelde is xxxx
 
-Ook in de Boven-zeeschelde zien we gelijkaardige morfologische processen.
-Een opvallende toename van diep subtidaal areaal ten koste van het matig diep subtidaal ecotoop vooral in de zone tussen Temse en de Durmemonding.
-De laatste 3 jaar blijft deze omzetting doorgaan maar in mindere mate.
-Dit wijst op een uitruiming van de vaargeul met steiler wordende oevers als gevolg.
-Er is een verlies van middelhoog en hoog slikareaal zichtbaar in de Boven-Zeeschelde dat in de totale oppervlakte balans gecompenseerd worden door de nieuwe ontpolderingen en GGG’s.
-Het laag slik met zacht substraat nam toe, vooral in de laatste 3 jaar.
-Dit enerzijds door erosie van het middelhoog slik en een beperkte laterale uitbreiding in sommige binnenbochtlocaties doordat zandwinning hier is weggevallen.
+Op basis van de eerste dataverkenning toont de sedimentdata verzamelt bij de macrozoöbenthosstalen doorgaans het slibrijker worden van het litoraal sinds 2011. In het sublitoraal is de variatie groot en zonder duidelijk patroon. In Zeeschelde III lijkt er in het sublitoraal en laag intertidaal een negatieve trend te zijn in het slibpercentage, de bodem wordt zandiger. Deze veranderingen kunnen mogelijk een impact hebben op het benthische leven.
 
-De ecotopen van de getij-aantakking van de Ringvaart en tijarm Zwijnaarde worden in deze rapportage voor het eerst gerapporteerd.
-De definitieve vegetatiekaart van de Boven-Zeeschelde, Rupel en Durme is gevalideerd en opgeleverd.
+De systeembiomassa in de Zeeschelde zoals bepaald voor het jaar 2019 behoort tot één van de betere jaren sinds de monitoring startte. De hoge waarde is vooral het gevolg van een sterke toename van benthosbiomassa in het traject Melle-Gentbrugge. De laagste biomassa per oppervlakte eenheid (m²) vinden we tussen de Durmemonding en Dendermonde. De samenstelling, de densiteiten en de biomassa van macrozoöbenthos kent grote ruimtelijke verschillen doorheen het Zeeschelde estuarium in samenhang met het beschouwde waterlichaam of het beschouwde fysiotoop. Onze jaarlijkse staalname houdt met dit alles rekening, maar ook binnen de gebieden kan het voorkomen van macrozoöbenthos erg heterogeen zijn, wat voor een deel jaarlijkse variaties binnen de waterlichamen kan verklaren. 
+De soortenrijkdom xxx
 
-Op basis van de eerste dataverkenning toont de sedimentdata verzamelt bij de 283 benthosstalen in 2016 een patroon dat afwijkt van de voorgaande jaartendenzen: het slibrijker worden van de intertidale gebieden in de Boven-Zeeschelde lijkt zich niet door te zetten, ook het slibrijker worden van de zijrivieren zet zich niet door in 2016.
-In 2016 werden geen opvallende sedimenttendenzen waargenomen.
+HyperXXX
 
-In 2016 overschrijdt de intertidale systeembiomassa de 30 ton.
-Het herstel van de biomassa van de Durme alsook toenemende waarden in Zeeschelde IV zijn hiervoor verantwoordelijk.
-In het subtidaal werd door een toevalstreffer ook de hardsubstraatsoort driehoeksmossel (Dreissena polymorpha) bemonsterd wat resulteerde in een grote biomassa outlier in Zeeschelde I.
-De Durme kent opnieuw de hoogste densiteiten aan bodemdieren intertidaal, terwijl subtidaal de grootste biomassa te vinden is in de Nete.
-De soortenrijkdom in Zeeschelde IV bleef onveranderd laag.
-
-In 2017 waren de garnalen (Decapoda) over het algemeen iets talrijker als in de voorgaande jaren.
-Eenzelfde patroon geldt enigszins voor vis.
-Grijze garnalen Crangon crangon werden gevangen op alle meso- en oligohaliene locaties.
-Opmerkelijk zijn de hoge aantallen in de Rupel.
-Ook werden de grootste aantallen Neomysis integer (eerder een brakwatersoort) totnogtoe waargenomen in de zoete stations.
-Deze waarnemingen wijzen op een verdere zoutindringing in het estuarium in 2017.
-
-De vismonitoring met de ankerkuil toonde een vergelijkbare diversiteit aan in de Zeeschelde tegenover de voorgaande jaren (45 vissoorten).
-In alle campagnes wordt het hoogste aantal soorten gevangen in de mesohaliene zone.
-Op alle locaties stelden we rekrutering vast.
-In totaal vingen we met de ankerkuil in de periode 2012-2017 zeven niet-inheemse vissoorten: blauwbandgrondel, regenboogforel, giebel, snoekbaars, zonnebaars, zwartbekgrondel en de reuzenkapiteinvis.
-Het relatief aantal exoten vertoont een stijgende trend.
-
-Spiering blijft ook in 2017 de meest abundante soort in de Zeeschelde maar het aandeel van spiering in de totaalvangsten op de verschillende locaties is wel het laagst sinds het begin van de ankerkuilcampagnes.
-
-In 2017 vingen we opnieuw adulte finten.
-Ook vingen we in de zomer en het najaar juveniele finten wat erop wijst dat er rekrutering heeft plaatsgevonden.
-
-Op basis van de reguliere fuikvangsten kan de Ecologische KwaliteitsRatio berekend worden.
-In 2017 scoort in de zoetwaterzone hoger dan in 2016. De oligohaliene zone blijft ‘ontoereikend’ en de zoetwaterzone en de mesohaliene zone scoren opnieuw ‘matig’.
-
-In 2017 werd er op 10 locaties gevist door vrijwilligers. In 2017 vingen de vrijwilligers in de Zeeschelde 46 soorten en 14 in de Rupel.
-
+De vismonitoring met de ankerkuil toonde een iets lagere diversiteit aan in de Zeeschelde tegenover de voorgaande jaren (40 vissoorten tegenover doorgaans ongeveer 45 soorten). In alle campagnes wordt het hoogste aantal soorten gevangen in de mesohaliene zone. Op alle locaties stelden we rekrutering vast. Het relatief aantal spieringen nam opnieuw verder toe en de soort is opnieuw de meest talrijke vis (in 2018 was dat de brakwatergrondel). 
+In 2019 vingen we opnieuw adulte finten. Ook vingen we in de zomer juveniele finten wat erop wijst dat er rekrutering heeft plaatsgevonden.
+Op basis van de reguliere fuikvangsten kan de Ecologische KwaliteitsRatio berekend worden. In 2019 scoort de zoetwaterzone goed en net iets hoger dan in 2018. De oligohaliene zone blijft ‘ontoereikend’  en de mesohaliene zone scoort ‘matig’ net als in 2018. Sleutelsoorten doen het goed in de Zeeschelde. Diadrome soorten trekken het estuarium op om te paaien en gedeeltelijk om er op te groeien. Snoekbaars, een exotische soort die we misschien als ingeburgerd kunnen beschouwen, doet het heel goed in de Zeeschelde.
 Niettegenstaande de gunstige ontwikkeling van het bodemleven, de garnalen en het visbestand vertonen de vogelaantallen op de Zeeschelde een doorgaande dalende trend.
 
-Naarmate meer Sigmagebieden ingericht worden neemt hun belang toe voor broedvogels.
-Voor de meeste onderzochte soorten is er dan ook een gunstige evolutie zichtbaar en leveren de gebieden een aanzienlijke bijdrage tot het realiseren van de instandhoudingsdoelstelling van het gehele Schelde-estuarium.
-De trends voor bruine kiekendief en tureluur zijn echter doorgaand dalend.
-Ook de grote karekiet heeft nog geen vaste voet in de Sigmagebieden.
-
-De detail hoogtemetingen op raaien langsheen de Zeeschelde illustreren en onderbouwen de waargenomen ontwikkelingen in de ecotopenkaarten. 
-De algemene erosie van het laag slik in Beneden-Zeeschelde, de opbolling van het middelhoog slik en recent de erosie op verscheidende locaties (uitruiming geul).
-De hoogteprofielen tonen op verscheidene locaties de morfologische respons op b.v. baggerwerken in de Durme, Bergenmeersen, traject ringvaart – Heusdenbrug. Op deze locaties vindt doorgaans eerst een erosie van de schorrand plaats gevolgd door versnelde sedimentatie van het slik. 
-De eerste opmetingen van de Wijmeers ontpolderingen worden gepresenteerd.
+Naarmate meer Sigmagebieden ingericht worden neemt hun belang toe voor broedvogels. Voor de meeste onderzochte soorten is er dan ook een gunstige evolutie zichtbaar (b.v. snor, woudaap, baardman) en leveren de gebieden een aanzienlijke bijdrage tot het realiseren van de instandhoudingsdoelstelling van het gehele Schelde-estuarium. De trends voor kluut, bruine kiekendief en tureluur zijn echter dalend. Voor de meeste soorten worden de doelstellingen echter nog (lang) niet gehaald.
+De bever zet zijn opmars in het Zeeschelde-estuarium door tot in Gent. Enkel de Grote Nete lijkt nog niet gekoloniseerd. De otter werd nieuw vastgesteld in de Durmevallei.
+De detail hoogtemetingen op raaien langsheen de Zeeschelde illustreren en onderbouwen de waargenomen ontwikkelingen in de ecotopenkaarten. Opvallende hoogteveranderingen waren er in 2020 terhoogte van de raai aan het Galgenweel, Weert en Driegoten. Aan het Galgenweel was er sinds 2014 een sedimenterende trend maar in 2020 erodeerde het slik zeer sterk over de volledige lengte ongeveer met 0,5 m. In de hoge slikzone had dit klifvorming tot gevolg. In Weert wisselt de langjarige sedimentatie-erosie trend door te eroderen op het laag slik en te sedimenteren op het middelhoog slik. De schorrand dreigt hier wel af te kalven. Ter hoogte van Driegoten treedt er een opvallende sedimentatie op in 2020. Deze plaat kende de afgelopen jaren wisselde sedimentatie erosie events met telkens tientallen centimeters verschil. Over de volledige Zeeschelde bekeken trad er in de loop van 2019 gemiddeld 3 cm sedimentatie op langsheen de raaien. De zone met gemiddeld de meeste sedimentatie (10cm) situeert zich in Zeeschelde II (zoet lange verblijftijd) tussen Durme en Baasrode. Gemiddeld de meeste erosie (8 cm) trad dan ook weer op in Zeeschelde II (zoet lange verblijftijd) tussen Baasrode en Dendermonde. In beide zones is de dynamiek duidelijk het hoogst in de laag slik zone. De hoogteveranderingen in de Durme worden toegelicht en tonen over het algemeen een sterk sedimenterende trend.
 
 
 # Inleiding 
 
-MONEOS (= MONitoring Effecten OntwikkelingsSchets 2010) [@meireMONEOSGeintegreerdeMonitoring2008] zorgt voor de aanlevering van basisdata voor de evaluatierapporten over de effecten van de verruiming (aMT) en voor de evaluatie van de evolutie van het systeem [@marisEvaluatiemethodiekScheldeestuariumUpdate2014]. De voorliggende datarapportage omvat een toelichting en eerstelijnsanalyse van de onderdelen van de geïntegreerde systeemmonitoring van het Schelde-estuarium, kortweg MONEOS, uitgevoerd door het INBO in 2016 (voor benthos) en/of 2017 afhankelijk van het thema.
+MONEOS (= MONitoring Effecten OntwikkelingsSchets 2010) (Meire & Maris, 2008) zorgt voor de aanlevering van basisdata voor de evaluatierapporten over de effecten van de verruiming (aMT) en voor de evaluatie van de evolutie van het systeem (Maris et al., 2014). De voorliggende datarapportage omvat een toelichting en eerstelijnsanalyse van de onderdelen van de geïntegreerde systeemmonitoring van het Schelde-estuarium, kortweg MONEOS, uitgevoerd door het INBO in 2016 (voor benthos) en/of 2017 afhankelijk van het thema.
 
 Het onderzoeksteam Estuaria van het INBO staat, voor wat de Zeeschelde betreft, reeds geruime tijd in voor de monitoring van diverse onderdelen die vallen onder de hoofdstukken Morfodynamiek, Diversiteit soorten en Diversiteit Habitats. Het onderzoeksteam Monitoring en herstel Aquatische fauna van het INBO staat in voor de vismonitoring.
 
@@ -178,9 +128,7 @@ Thema Fauna & Flora en thema Ecologisch Functioneren
 -	Zoogdieren
 
 
-De aangeleverde data omvatten enkel gegevens van de Zeeschelde en getijgebonden zijrivieren. Tenzij anders vermeld kunnen ze gebruikt worden tot op niveau 3 van de Evaluatiemethodiek wat overeenkomt met de saliniteitszones aangevuld met de getijdenzijrivieren (Durme, Netes, Dijle en Zenne (Tabel \@ref(tab:010-tabel-indeling-schelde-estuarium)[^footnote-010-1]). Deze indeling valt samen met de indeling in waterlichamen van de Kaderrichtlijn Water (KRW) (Figuur \@ref(fig:010-figuur-waterlichamen)).  
-
-[^footnote-010-1]: Het deel van de Zeeschelde niet beschouwd in de Evaluatiemethodiek zou onderdeel kunnen worden van Z7. Ook wordt het traject Melle-Zwijnaarde (getijde Zeeschelde) niet gerekend tot Zeeschelde I in de KRW indeling. Dit zou beter wel deel worden van deze zone.
+De aangeleverde data omvatten enkel gegevens van de Zeeschelde en getijgebonden zijrivieren. Tenzij anders vermeld kunnen ze gebruikt worden tot op niveau 3 van de Evaluatiemethodiek wat overeenkomt met de saliniteitszones aangevuld met de getijdenzijrivieren (Durme, Netes, Dijle en Zenne (Tabel \@ref(tab:010-tabel-indeling-schelde-estuarium). Deze indeling valt samen met de indeling in waterlichamen van de Kaderrichtlijn Water (KRW) (Figuur \@ref(fig:010-figuur-waterlichamen)).  
 
 Bij elk hoofdstuk is er een verwijzing naar de datafiches waarin de metadata beschreven zijn. Zie hiervoor op http://www.scheldemonitor.be/nl.  
 
@@ -196,7 +144,7 @@ tabel_indeling_schelde_estuarium <- read_excel(paste0(pad_tabellen, "010_Inleidi
 
 cap_indeling_schelde_estuarium <- "Ruimtelijke indeling van het Schelde-estuarium volgens de Evaluatie methodiek (EM), KRW en saliniteitszones."
 
-footnote_text <- "n.v.t. : Deel van Zeeschelde niet beschouwd in Evaluatiemethodiek. Zou onderdeel kunnen worden van Z7. Ook wordt het traject Melle-Zwijnaarde (getijde Zeeschelde) niet gerekend tot Zeeschelde I in de KRW indeling. Dit zou beter wel deel worden van deze zone."
+footnote_text <- "n.v.t. : Deel van Zeeschelde niet beschouwd in Evaluatiemethodiek. Zou onderdeel kunnen worden van Z7. Ook wordt het traject Tijarm Merelbeke-Zwijnaarde (getijde Zeeschelde) niet gerekend tot Zeeschelde I in de KRW indeling. Dit zou beter wel deel worden van deze zone."
 
 tabel_indeling_schelde_estuarium %>%
   mutate_all(~replace_na(., "")) %>% 
@@ -234,4 +182,8 @@ knitr::include_graphics(paste0(pad_figuren, "010_Kaderrichtlijn_water_waterlicha
 <br/>  
 
 
+# Referenties 
 
+Maris, T., A. Bruens, L. van Duren, J. Vroom, H. Holzhauer, M. de Jonge, S. van Damme, A. Nolte, K. Kuijper, M. Taal, C. Jeuken, J. Kromkamp, B. van Wesenbeeck, G. Van Ryckegem, E. Van den Bergh, S. Wijhoven, and P. Meire. 2014. Evaluatiemethodiek Schelde-estuarium: Update 2014. Deltares, Universiteit Antwerpen, NIOZ en INBO(2014).
+
+Meire, P., and T. Maris. 2008. MONEOS: Geïntegreerde monitoring van het Schelde-estuarium.
