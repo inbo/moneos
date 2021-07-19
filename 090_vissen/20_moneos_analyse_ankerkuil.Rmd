@@ -48,6 +48,13 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 ```
 
 
+```{r excel sheets}
+
+sheets <- NULL
+
+```
+
+
 ##### datasets voor aantal en gewicht:
 
 -   *G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2021/090_vissen/data/ankerkuil_aantallen_2012_2020.csv*
@@ -106,7 +113,8 @@ soorten_invertebraten <-
   keep(~ str_detect(., "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat")) 
 
 soorten_vis <-
-  setdiff(soorten, soorten_invertebraten)
+  setdiff(soorten, soorten_invertebraten) %>% 
+  {.[order(.)]}
 
 data_ankerkuil <- 
   data_ankerkuil %>% 
@@ -182,6 +190,25 @@ aantal_soorten %>%
 
 ggsave(paste0(pad_figuren, "aantal_soorten.jpg"))
 
+
+aantal_soorten_locatie <- 
+  data_ankerkuil %>% 
+  filter(aantal > 0) %>% 
+  distinct(jaar, locatie, soort) %>% 
+  count(jaar, locatie, name = "soorten")
+
+aantal_soorten_locatie %>% 
+  ggplot(aes(locatie, soorten, fill = ordered(jaar))) +
+  geom_col(position = position_dodge(width = 0.925), 
+           alpha = 0.8) +
+  geom_text(aes(y = soorten + 3, label = soorten), 
+            position = position_dodge(width = 0.925),
+            size = 3) +
+  labs(y = "aantal soorten",
+       fill = "jaar")
+
+ggsave(paste0(pad_figuren, "aantal_soorten_locatie.jpg"))
+
 ```
 
 
@@ -203,8 +230,11 @@ tabel_gevangen_soorten <-
 
 knitr::kable(tabel_gevangen_soorten)
 
-write_xlsx(list(gevangen_soorten = tabel_gevangen_soorten),
-           paste0(pad_tabellen, "tabellen_vissen.xlsx"))
+sheets[["gevangen_soorten"]] <- tabel_gevangen_soorten
+  
+
+# write_xlsx(list(gevangen_soorten = tabel_gevangen_soorten),
+#            paste0(pad_tabellen, "tabellen_vissen.xlsx"))
 
 ```
 
@@ -236,9 +266,63 @@ ggsave(paste0(pad_figuren, "gemiddeld_over_seizoenen.jpg"))
 ```
 
 
+#### gemiddeld aantal gevangen individuen per locatie
+
+```{r gemiddeld-per-locatie, fig.height=4, fig.width=6}
+
+gemiddeld_per_locatie <- 
+  data_ankerkuil %>% 
+  group_by(jaar, seizoen, locatie) %>%
+  summarise(aantal_per_kub = sum(aantal_per_kub)) %>% 
+  ungroup() %>% 
+  group_by(locatie) %>%
+  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
+  ungroup()
+
+gemiddeld_per_locatie %>% 
+  ggplot(aes(locatie, aantal_per_kub)) +
+  geom_col(alpha = 0.8,
+           width = 0.5) +
+  geom_text(aes(y = aantal_per_kub + 0.3, label = round(aantal_per_kub, 2)), 
+            size = 4) +
+  labs(x = NULL,
+       y = expression(paste("gem. aantal ind. / ", m^3)))
+
+ggsave(paste0(pad_figuren, "gemiddeld_per_locatie.jpg"))
+
+```
+
+
+#### gemiddelde biomassa per locatie
+
+```{r gemiddelde-biomassa-per-locatie, fig.height=4, fig.width=6}
+
+gemiddelde_biomassa_per_locatie <- 
+  data_ankerkuil %>% 
+  group_by(jaar, seizoen, locatie) %>%
+  summarise(gewicht_per_kub = sum(gewicht_per_kub, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  group_by(locatie) %>%
+  summarise(gewicht_per_kub = mean(gewicht_per_kub, na.rm = TRUE)) %>% 
+  ungroup()
+
+gemiddelde_biomassa_per_locatie %>% 
+  ggplot(aes(locatie, gewicht_per_kub)) +
+  geom_col(alpha = 0.8,
+           width = 0.5) +
+  geom_text(aes(y = gewicht_per_kub + 0.3, label = round(gewicht_per_kub, 2)), 
+            size = 4) +
+  labs(x = NULL,
+       y = expression(paste("gem. aantal ind. / ", m^3)))
+
+ggsave(paste0(pad_figuren, "gemiddelde_biomassa_per_locatie.jpg"))
+
+```
+
+
 #### gemiddeld aantal gevangen individuen per seizoen en locatie
 
-```{r gemiddeld-aantal-per-seizoenen-en-locatie, fig.height=6, fig.width=10}
+```{r gemiddeld-aantal-per-seizoenen-en-locatie, fig.height=4, fig.width=8}
 
 gemiddeld_per_seizoen_locatie <- 
   data_ankerkuil %>% 
@@ -267,7 +351,7 @@ ggsave(paste0(pad_figuren,
 
 #### gemiddeld gewicht gevangen individuen per seizoen en locatie
 
-```{r gemiddelde-biomassa-per-seizoenen-en-locatie, fig.height=6, fig.width=10}
+```{r gemiddelde-biomassa-per-seizoenen-en-locatie, fig.height=4, fig.width=8}
 
 gemiddeld_per_seizoen_locatie <- 
   data_ankerkuil %>% 
@@ -394,12 +478,213 @@ ggsave(paste0(pad_figuren, "relatieve_biomassa_gevangen_individuen.jpg"))
 ```
 
 
+#### sleutelsoorten aantallen
+
+```{r sleutelsoorten aantal, fig.height=4, fig.width=8}
+
+sleutelsoorten <- c("fint", "spiering", "rivierprik", "haring", "zeebaars", "ansjovis")
+
+data_ankerkuil %>% 
+  filter(soort %in% sleutelsoorten) %>% 
+  mutate(jaar_num = as.numeric(ordered(jaar)),
+         periode_num = case_when(
+           seizoen == "voorjaar" ~ jaar_num + 0.25,
+           seizoen == "zomer" ~ jaar_num + 0.5,
+           seizoen == "najaar" ~ jaar_num + 0.75,
+           TRUE ~ jaar_num
+         )) %>% {
+           ggplot(., aes(periode_num, aantal_per_kub, color = locatie)) +
+             geom_line(size = 1) +
+             scale_x_continuous(breaks = unique(.$jaar_num), labels = unique(.$jaar)) +
+             labs(x = NULL,
+                  y = expression(paste("aantal individuen per ", m^3))) + 
+             facet_wrap(~soort,
+                        scales = "free_y") +
+             theme(axis.text.x = element_text(angle = 90))
+         }
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten.jpg"))
+
+
+data_ankerkuil %>%  
+  group_by(jaar, seizoen, locatie) %>%
+  mutate(relatief_aantal = aantal/sum(aantal)*100) %>% 
+  ungroup() %>% 
+  filter(soort %in% sleutelsoorten) %>% 
+  mutate(jaar_num = as.numeric(ordered(jaar)),
+         periode_num = case_when(
+           seizoen == "voorjaar" ~ jaar_num + 0.25,
+           seizoen == "zomer" ~ jaar_num + 0.5,
+           seizoen == "najaar" ~ jaar_num + 0.75,
+           TRUE ~ jaar_num
+         )) %>% {
+           ggplot(., aes(periode_num, relatief_aantal, color = locatie)) +
+             geom_line(size = 1) +
+             scale_x_continuous(breaks = unique(.$jaar_num), labels = unique(.$jaar)) +
+             labs(x = NULL,
+                  y = expression(paste("% van gevangen aantal individuen"))) + 
+             facet_wrap(~soort,
+                        scales = "free_y") +
+             theme(axis.text.x = element_text(angle = 90))
+         }
+ggsave(paste0(pad_figuren, "relatieve_aantallen_sleutelsoorten.jpg"))
+
+```
+
+#### sleutelsoorten biomassa
+
+```{r sleutelsoorten biomassa, fig.height=4, fig.width=8}
+
+sleutelsoorten <- c("fint", "spiering", "rivierprik", "haring", "zeebaars", "ansjovis")
+
+data_ankerkuil %>% 
+  filter(soort %in% sleutelsoorten) %>% 
+  mutate(jaar_num = as.numeric(ordered(jaar)),
+         periode_num = case_when(
+           seizoen == "voorjaar" ~ jaar_num + 0.25,
+           seizoen == "zomer" ~ jaar_num + 0.5,
+           seizoen == "najaar" ~ jaar_num + 0.75,
+           TRUE ~ jaar_num
+         )) %>% {
+           ggplot(., aes(periode_num, gewicht_per_kub, color = locatie)) +
+             geom_line(size = 1) +
+             scale_x_continuous(breaks = unique(.$jaar_num), labels = unique(.$jaar)) +
+             labs(x = NULL,
+                  y = expression(paste("gemiddelde biomassa  ", g/m^3))) + 
+             facet_wrap(~soort,
+                        scales = "free_y") +
+             theme(axis.text.x = element_text(angle = 90))
+         }
+ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten.jpg"))
+
+
+data_ankerkuil %>%  
+  group_by(jaar, seizoen, locatie) %>%
+  mutate(relatief_gewicht = gewicht/sum(gewicht)*100) %>% 
+  ungroup() %>% 
+  filter(soort %in% sleutelsoorten) %>% 
+  mutate(jaar_num = as.numeric(ordered(jaar)),
+         periode_num = case_when(
+           seizoen == "voorjaar" ~ jaar_num + 0.25,
+           seizoen == "zomer" ~ jaar_num + 0.5,
+           seizoen == "najaar" ~ jaar_num + 0.75,
+           TRUE ~ jaar_num
+         )) %>% {
+           ggplot(., aes(periode_num, relatief_gewicht, color = locatie)) +
+             geom_line(size = 1) +
+             scale_x_continuous(breaks = unique(.$jaar_num), labels = unique(.$jaar)) +
+             labs(x = NULL,
+                  y = expression(paste("% van gevangen biomassa"))) + 
+             facet_wrap(~soort,
+                        scales = "free_y") +
+             theme(axis.text.x = element_text(angle = 90))
+         }
+ggsave(paste0(pad_figuren, "relatieve_biomassa_sleutelsoorten.jpg"))
+
+```
+
+
+#### exoten
+
+```{r}
+
+exoten <-
+  c("blauwbandgrondel", "regenboogforel", "giebel", "snoekbaars", "zonnebaars", "zwartbekgrondel", "reuzenkapiteinvis", "naakte grondel", "terapon jarbua")
+
+tabel_gevangen_exoten <-
+  data_ankerkuil %>% 
+  filter(soort %in% exoten) %>% 
+  group_by(jaar, locatie) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  pivot_wider(names_from = locatie,
+              values_from = aantal)
+
+knitr::kable(tabel_gevangen_exoten)
+
+sheets[["gevangen_exoten"]] <- tabel_gevangen_exoten
+
+# write_xlsx(list(gevangen_exoten = tabel_gevangen_exoten),
+#            paste0(pad_tabellen, "tabellen_vissen.xlsx"))
+  
+
+tabel_percentage_exoten <-
+  data_ankerkuil %>% 
+  filter(soort %in% exoten) %>% 
+  group_by(jaar, locatie) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  left_join(data_ankerkuil %>% 
+              group_by(jaar, locatie) %>% 
+              summarise(totaal = sum(aantal, na.rm = TRUE))) %>% 
+  mutate(percentage = round(aantal/totaal*100, 2)) %>% 
+  pivot_wider(id_cols = jaar,
+              names_from = locatie,
+              values_from = percentage)
+
+knitr::kable(tabel_percentage_exoten)
+
+sheets[["percentage_exoten"]] <- tabel_percentage_exoten
+
+# write_xlsx(list(percentage_exoten = tabel_percentage_exoten),
+#            paste0(pad_tabellen, "tabellen_vissen.xlsx"))
+
+
+tabel_exoten_soort <-
+  data_ankerkuil %>% 
+  filter(soort %in% exoten) %>% 
+  group_by(jaar, locatie, soort) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  arrange(soort, jaar) %>% 
+  pivot_wider(id_cols = c(soort, jaar),
+              names_from = locatie,
+              values_from = aantal)
+
+knitr::kable(tabel_exoten_soort)
+
+
+tabel_exoten_soort <-
+  data_ankerkuil %>% 
+  filter(soort %in% exoten,
+         jaar == laatste_jaar) %>% 
+  group_by(jaar, locatie, soort) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  arrange(soort) %>% 
+  pivot_wider(id_cols = soort,
+              names_from = locatie,
+              values_from = aantal)
+
+knitr::kable(tabel_exoten_soort)
+
+sheets[["exoten_soort"]] <- tabel_exoten_soort
+
+
+```
+
+
+```{r wegschrijven tabellen}
+
+write_xlsx(sheets,
+           paste0(pad_tabellen, "tabellen_vissen.xlsx"))
+
+```
+
+
 ```{r meta-data}
 
 meta_data <- 
   enframe(c(vroegste_jaar = vroegste_jaar,
             laatste_jaar = laatste_jaar,
-            aantal_soorten = length(soorten_vis)),
+            aantal_soorten = 
+              data_ankerkuil %>% 
+              filter(!is.na(aantal),
+                     aantal > 0) %>% 
+              distinct(soort) %>% 
+              nrow(),
+            aantal_soorten_laatste_jaar = 
+              data_ankerkuil %>% 
+              filter(!is.na(aantal),
+                     aantal > 0,
+                     jaar == laatste_jaar) %>% 
+              distinct(soort) %>% 
+              nrow()),
           name = "naam", value = "waarde")
 
 meta_data %>% 
