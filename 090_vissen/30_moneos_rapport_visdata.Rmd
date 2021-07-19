@@ -17,8 +17,7 @@ output:
     lof: TRUE
     lot: TRUE
     floatbarrier: subsection
-    extra_dependencies: ["float"]
-    
+
 header-includes: \usepackage{float}
 ---
 
@@ -286,7 +285,7 @@ tabel_gevangen_exoten %>%
   mutate_all(~replace_na(., "")) %>%
   knitr::kable(booktabs = TRUE,
                caption = cap_gevangen_exoten) %>%
-  kable_styling()
+  kable_styling(latex_options = "HOLD_position")
 
 ```
 
@@ -310,7 +309,7 @@ tabel_exoten_soort %>%
   mutate_all(~replace_na(., "")) %>%
   knitr::kable(booktabs = TRUE,
                caption = cap_exoten_soort) %>%
-  kable_styling()
+  kable_styling(latex_options = "HOLD_position")
 
 ```
 
@@ -334,7 +333,7 @@ tabel_percentage_exoten %>%
   mutate_all(~replace_na(., "")) %>%
   knitr::kable(booktabs = TRUE,
                caption = cap_percentage_exoten) %>%
-  kable_styling()
+  kable_styling(latex_options = "HOLD_position")
 
 ```
 
