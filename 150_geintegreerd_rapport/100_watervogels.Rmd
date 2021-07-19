@@ -102,15 +102,15 @@ De eerstelijnsrapportage beschrijft de aangeleverde watervogeldata van de Zeesch
 
 Beide fiches werden in één excel bestand aangeleverd:
 
-“DataMONEOSWatervogels-Zeeschelde_zijrivieren_totwinter**XXX**.xlsx”
+“DataMONEOSWatervogels-Zeeschelde_zijrivieren_totwinter2020.xlsx”
 
-De evaluatie heeft volgende informatie nodig: aantallen vogels per soort per maand per segment op niveau 2 en 3 (niveau 2 is som van de waterlichamen; niveau 3 heeft betrekking op het waterlichaam of de saliniteitszone) [@marisEvaluatiemethodiekScheldeestuariumUpdate2014]. 
+De evaluatie heeft volgende informatie nodig: aantallen vogels per soort per maand per segment op niveau 2 en 3 (niveau 2 is som van de waterlichamen; niveau 3 heeft betrekking op het waterlichaam of de saliniteitszone) (Maris et al., 2014). 
 
 De dataset bevat volgende informatievelden: KRWzone, rivier, telseizoen, maand, nednaam en aantal, waarbij:
 
 - rivier: het naamveld van de rivier (Zeeschelde, Durme, Rupel, Zenne, Dijle)
 - telseizoen: een vogeltelseizoen loopt van juli jaar x tot juni jaar x+1. 
-- krw: indeling volgens Figuur **XXX**.
+- krw: indeling volgens Figuur 1.1.
 - aantal: de aantallen omvatten de som van de getelde vogels per soort, per maand, per rivier en krwzone. 
 
 
@@ -126,7 +126,7 @@ De data omvatten de aantallen watervogels op de Zeeschelde, geteld vanop de boot
 
 _Zijrivieren_
 
-De geselecteerde teltrajecten van de zijrivieren (Watervogeldatabank, INBO) zijn weergegeven in Tabel \@ref(:100-tabel-teltrajecten). Voor de Getijdenetes zijn geen afzonderlijke riviertellingen beschikbaar; voor de Getijdedijle is een beperkte dataset beschikbaar (1996, 1999 en verder vanaf 2008). Eén teltraject in de Durme (Durmemonding tot Mirabrug) werd niet geteld in 2007-2008.
+De geselecteerde teltrajecten van de zijrivieren (Watervogeldatabank, INBO) zijn weergegeven in Tabel \@ref(tab:100-tabel-teltrajecten). Voor de Getijdenetes zijn geen afzonderlijke riviertellingen beschikbaar; voor de Getijdedijle is een beperkte dataset beschikbaar (1996, 1999 en verder vanaf 2008). Eén teltraject in de Durme (Durmemonding tot Mirabrug) werd niet geteld in 2007-2008.
 
 _Ontbrekende data_:
 
@@ -189,7 +189,7 @@ tabel_teltrajecten %>%
 
 ## Exploratieve data-analyse watervogelaantallen
 
-De globale patronen in de maandelijkse wintervogelaantallen langsheen de Zeeschelde zijn de laatste jaren stabiel (Figuur \@ref(fig:100_figuur_maandelijkse_totalen_ZSwinter)). De januari aantallen waren historisch laag (slechts 4600 watervogels) maar in het telseizoen 2020/21 was er wel een duidelijke wintermaximum[^footnote-100-1] in de maand februari (12600 vogels).Dit is duidelijk gelinkt aan de sneeuwval en vriestemperaturen waardoor de valleigebieden veel minder interessant foerageergebied werden en de vogels hun toevlucht zochten op de vrijliggende slikken langsheen de Zeeschelde.  Dergelijk hogere aantallen werden al sinds 2013/14 niet meer waargenomen (Figuur \@ref(fig:100_figuur_wintermaxima_Zeeschelde)). De laagste aantallen in de winterperiode worden doorgaans geteld in maart. De vogelaantallen namen sterk af tussen 2002 en 2007. Tussen 2008 en 2010 was er een klein herstel maar sinds 2012 zijn de vogelaantallen verder afnemend tot stabiel.Het wintergemiddelde ligt in de meeste zones iets hoger dan voorgaande jaren door de winterpiek geteld in februari. De proportionele verdeling van de watervogels in de verschillende waterlichamen (zie waterlichamen in Figuur **XXXfigrefXXX**) toont na de sterke afname van de watervogels in winter 2006/07 vooral in Zeeschelde III + Rupel een geleidelijke toename van het aandeel vogels dat verblijft in Zeeschelde IV (Beneden-Zeeschelde), Zeeschelde I en de zijrivieren. Vanaf 2010/11 is het proportioneel aandeel van elke zone relatief stabiel met de grootste variatie langsheen de Durme (Figuur \@ref(fig:100-figuur-verhouding-aantallen)). 
+De globale patronen in de maandelijkse wintervogelaantallen langsheen de Zeeschelde zijn de laatste jaren stabiel (Figuur \@ref(fig:100_figuur_maandelijkse_totalen_ZSwinter)). De januari aantallen waren historisch laag (slechts 4600 watervogels) maar in het telseizoen 2020/21 was er wel een duidelijke wintermaximum[^footnote-100-1] in de maand februari (12600 vogels).Dit is duidelijk gelinkt aan de sneeuwval en vriestemperaturen waardoor de valleigebieden veel minder interessant foerageergebied werden en de vogels hun toevlucht zochten op de vrijliggende slikken langsheen de Zeeschelde.  Dergelijk hogere aantallen werden al sinds 2013/14 niet meer waargenomen (Figuur \@ref(fig:100_figuur_wintermaxima_Zeeschelde)). De laagste aantallen in de winterperiode worden doorgaans geteld in maart. De vogelaantallen namen sterk af tussen 2002 en 2007. Tussen 2008 en 2010 was er een klein herstel maar sinds 2012 zijn de vogelaantallen verder afnemend tot stabiel.Het wintergemiddelde ligt in de meeste zones iets hoger dan voorgaande jaren door de winterpiek geteld in februari. De proportionele verdeling van de watervogels in de verschillende waterlichamen (zie waterlichamen in Figuur 1.1) toont na de sterke afname van de watervogels in winter 2006/07 vooral in Zeeschelde III + Rupel een geleidelijke toename van het aandeel vogels dat verblijft in Zeeschelde IV (Beneden-Zeeschelde), Zeeschelde I en de zijrivieren. Vanaf 2010/11 is het proportioneel aandeel van elke zone relatief stabiel met de grootste variatie langsheen de Durme (Figuur \@ref(fig:100-figuur-verhouding-aantallen)). 
 
 [^footnote-100-1]: Maximum van de som van alle vogels per wintermaand (oktober tot en met maart).
 
@@ -336,6 +336,6 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_dichtheid.jpg"))
 
 De vogelaantallen op de Zeeschelde zijn stabiel of vertonen een doorgaande dalende trend. Deze trends lijken ondertussen al niet meer gerelateerd aan de systeemshift die er kwam door de verbeterende waterkwaliteit. Deze trend vraagt om vergelijking met de trends in de vallei en met de nieuwe gebieden.  
 
+## Referenties
 
-
-
+Maris, T., A. Bruens, L. van Duren, J. Vroom, H. Holzhauer, M. de Jonge, S. van Damme, A. Nolte, K. Kuijper, M. Taal, C. Jeuken, J. Kromkamp, B. van Wesenbeeck, G. Van Ryckegem, E. Van den Bergh, S. Wijhoven, and P. Meire. 2014. Evaluatiemethodiek Schelde-estuarium: Update 2014. Deltares, Universiteit Antwerpen, NIOZ en INBO(2014).
