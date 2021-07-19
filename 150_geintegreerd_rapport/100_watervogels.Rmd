@@ -17,8 +17,8 @@ output:
     lof: TRUE
     lot: TRUE
     floatbarrier: subsection
-bibliography: references.bib
-link-citations: TRUE
+
+header-includes: \usepackage{float}
 ---
 
 
@@ -31,7 +31,7 @@ hoofdstuk <- "100_watervogels"
 
 ```{r 100-setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.showtext = TRUE, dpi = 300)
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.pos = "H", out.extra = '', fig.showtext = TRUE, dpi = 300)
 knitr::opts_knit$set(eval.after = "fig.cap")
 
 
@@ -86,7 +86,7 @@ for(i in 1:nrow(meta_data)){
 ```
 
 
-# watervogels
+# Watervogels
 
 Fichenummer: FICHE S-DS-V-007a – Maandelijkse vogeltellingen
 
@@ -210,7 +210,7 @@ De trends in de  __Getijdedurme__ zijn enigszins moeilijker te interpreteren omd
 Op de __Dijle__ (Figuur \@ref(fig:100-figuur-aantallen-zijrivieren)) was de piek van vogelaantallen van korte duur. Terwijl gemiddeld in de periode 2007-2009 nog meer dan 1200 watervogels per winter werden geteld, is het aantal de laatste jaren slechts enkele tientallen vogels per winter.
 
 
-```{r 100-figuur-maandelijkse-totalen-winter-Zeeschelde, fig.cap=cap_maandelijkse_totalen,out.width="80%"}
+```{r 100-figuur-maandelijkse-totalen-winter-Zeeschelde, fig.cap=cap_maandelijkse_totalen,out.height="50%"}
 
 cap_maandelijkse_totalen <- paste0("Maandelijkse wintertotalen van de watervogels langsheen de Zeeschelde sinds oktober 1991 tot ", 
                                   laatste_jaar, 
@@ -332,9 +332,11 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_dichtheid.jpg"))
 ```
 
 <br/> 
+\newpage
+
 **Algemene conclusie**
 
-De vogelaantallen op de Zeeschelde zijn stabiel of vertonen een doorgaande dalende trend. Deze trends lijken ondertussen al niet meer gerelateerd aan de systeemshift die er kwam door de verbeterende waterkwaliteit. Deze trend vraagt om vergelijking met de trends in de vallei en met de nieuwe gebieden.  
+Door de koudeperiode in februari 2021 verbleven er iets hogere maxima en gemiddeld aantal watervogels gedurende de winterjaar 2020 op de Zeeschelde. Zonder deze piekperiode bleven de meeste maandresultaten onder dat van de voorgaande jaren, hierdoor spreken we van een globaal doorgaand dalende trend. Deze trend lijkt ondertussen al niet meer gerelateerd aan de systeemshift die er kwam door de verbeterende waterkwaliteit (2006-2007). Deze trend vraagt om een ruimere geografische vergelijking met de trends in de vallei en met de nieuwe gebieden en ruimer met de Westerschelde en de Noord-West Europese populatietrends.  
 
 ## Referenties
 
