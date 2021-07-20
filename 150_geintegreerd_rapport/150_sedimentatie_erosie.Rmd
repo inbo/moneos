@@ -20,7 +20,9 @@ output:
 bibliography: references.bib
 link-citations: TRUE
 
-header-includes: \usepackage{float}
+header-includes: 
+  \usepackage{float}
+  \usepackage{caption}
 ---
 
 
@@ -108,7 +110,7 @@ knitr::include_graphics(paste0(pad_figuren, "0_OverzichtskaartMoneosraaien_Zeesc
 
 ## Methode
 
-Tabel \@ref(tab:130-tabel-overzicht-raaien) in Bijlage \@ref(BL1).
+Tabel \@ref(tab:130-tabel-overzicht-raaien) in \@ref(BL1) Bijlage.
 
 
 ## Exploratieve data-analyse
@@ -118,18 +120,19 @@ Tabel \@ref(tab:130-tabel-overzicht-raaien) in Bijlage \@ref(BL1).
 
 caption_raai <- "Raai GBSa"
 
-knitr::include_graphics(paste0(pad_figuren, "1_MONEOSDEELGBSa.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "1_MONEOSDEELGBSa.png"))
 
 ```
 
 <br/>
 
 
+
 ```{r 130-figuur-ODa, fig.cap=caption_raai, out.width="100%"}
 
 caption_raai <- "Raai ODa"
 
-knitr::include_graphics(paste0(pad_figuren, "2_MONEOSDEELODa.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "2_MONEOSDEELODa.png"))
 
 ```
 
@@ -140,7 +143,7 @@ knitr::include_graphics(paste0(pad_figuren, "2_MONEOSDEELODa.jpg"))
 
 caption_raai <- "Raai ODaslik"
 
-knitr::include_graphics(paste0(pad_figuren, "3_MONEOSDEELODaslik.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "3_MONEOSDEELODaslik.png"))
 
 ```
 
@@ -151,7 +154,7 @@ knitr::include_graphics(paste0(pad_figuren, "3_MONEOSDEELODaslik.jpg"))
 
 caption_raai <- "Raai DO"
 
-knitr::include_graphics(paste0(pad_figuren, "4_MONEOSDEELDO.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "4_MONEOSDEELDO.png"))
 
 ```
 
@@ -162,7 +165,7 @@ knitr::include_graphics(paste0(pad_figuren, "4_MONEOSDEELDO.jpg"))
 
 caption_raai <- "Raai GSb"
 
-knitr::include_graphics(paste0(pad_figuren, "5_MONEOSDEELGSb.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "5_MONEOSDEELGSb.png"))
 
 ```
 
@@ -173,7 +176,7 @@ knitr::include_graphics(paste0(pad_figuren, "5_MONEOSDEELGSb.jpg"))
 
 caption_raai <- "Raai GSc"
 
-knitr::include_graphics(paste0(pad_figuren, "6_MONEOSDEELGSc.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "6_MONEOSDEELGSc.png"))
 
 ```
 
@@ -184,7 +187,7 @@ knitr::include_graphics(paste0(pad_figuren, "6_MONEOSDEELGSc.jpg"))
 
 caption_raai <- "Raai LH"
 
-knitr::include_graphics(paste0(pad_figuren, "7_MONEOSDEELLH.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "7_MONEOSDEELLH.png"))
 
 ```
 
@@ -195,7 +198,7 @@ knitr::include_graphics(paste0(pad_figuren, "7_MONEOSDEELLH.jpg"))
 
 caption_raai <- "Raai LP"
 
-knitr::include_graphics(paste0(pad_figuren, "8_MONEOSDEELLP.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "8_MONEOSDEELLP.png"))
 
 ```
 
@@ -206,7 +209,7 @@ knitr::include_graphics(paste0(pad_figuren, "8_MONEOSDEELLP.jpg"))
 
 caption_raai <- "Raai KPb"
 
-knitr::include_graphics(paste0(pad_figuren, "9_MONEOSDEELKPb.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "9_MONEOSDEELKPb.png"))
 
 ```
 
@@ -217,7 +220,7 @@ knitr::include_graphics(paste0(pad_figuren, "9_MONEOSDEELKPb.jpg"))
 
 caption_raai <- "Raai KPe"
 
-knitr::include_graphics(paste0(pad_figuren, "10_MONEOSDEELKPe.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "10_MONEOSDEELKPe.png"))
 
 ```
 
@@ -228,7 +231,7 @@ knitr::include_graphics(paste0(pad_figuren, "10_MONEOSDEELKPe.jpg"))
 
 caption_raai <- "Raai GW"
 
-knitr::include_graphics(paste0(pad_figuren, "11_MONEOSDEELGW.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "11_MONEOSDEELGW.png"))
 
 ```
 
@@ -239,7 +242,7 @@ knitr::include_graphics(paste0(pad_figuren, "11_MONEOSDEELGW.jpg"))
 
 caption_raai <- "Raai HO"
 
-knitr::include_graphics(paste0(pad_figuren, "11_MONEOSDEELHO.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "12_MONEOSDEELHO.png"))
 
 ```
 
@@ -248,13 +251,33 @@ knitr::include_graphics(paste0(pad_figuren, "11_MONEOSDEELHO.jpg"))
 
 ## Bijlage {#BL1}
 
-```{r 130-tabel-overzicht-raaien, fig.cap=caption_tabel_raaien, out.width="100%"}
+<!-- Tabel \@ref(tab:130-tabel-overzicht-raaien). Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72). -->
+Tabel (\#tab:130-tabel-overzicht-raaien). Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72).
 
-caption_tabel_raaien <- "Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72)."
+|  <!-- -->   | 
+| :------------ | 
+| ![image](`r paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg")`){out.width="100%"}    |
 
-knitr::include_graphics(paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg"))
 
-```
+<!-- ```{r 130-tabel-caption-raaien, out.width="100%"} -->
+
+<!-- caption_tabel_raaien <- -->
+<!--   "Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72)." -->
+
+<!-- data_frame(![image](paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg"))) %>% -->
+<!-- # NULL %>% -->
+<!--   knitr::kable(caption = caption_tabel_raaien) -->
+
+<!-- knitr::include_graphics(paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg")) -->
+
+<!-- ``` -->
+
+
+<!-- ```{r 130-tabel-overzicht-raaien, out.width="100%"} -->
+
+<!-- knitr::include_graphics(paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg")) -->
+
+<!-- ``` -->
 
 <br/>
 
