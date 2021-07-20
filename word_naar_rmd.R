@@ -1,11 +1,11 @@
 
 library(protocolhelper)
 
-convert_docx_to_rmd(from = "090_vissen/templates/template_vissen2.docx",
-                    to = "090_vissen/templates/template_vissen2_magweg.Rmd",
-                    dir_media = "figuren_geintegreerd-rapport")
+convert_docx_to_rmd(from = "120_zoogdieren/120_Zoogdieren_20-07-2021.docx",
+                    to = "150_geintegreerd_rapport/120_Zoogdieren_magweg.Rmd",
+                    dir_media = "../120_zoogdieren/figuren_zoogdieren")
 
-add_captions(from = "090_vissen/templates/template_vissen2_magweg.Rmd",
-             to = "090_vissen/templates/template_vissen2.Rmd")
+add_captions(from = "150_geintegreerd_rapport/120_Zoogdieren_magweg.Rmd",
+             to = "150_geintegreerd_rapport/120_Zoogdieren.Rmd")
 
-unlink("090_vissen/templates/template_vissen2_magweg.Rmd")
+unlink("150_geintegreerd_rapport/120_Zoogdieren_magweg.Rmd")
