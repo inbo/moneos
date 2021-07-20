@@ -21,8 +21,8 @@ bibliography: references.bib
 link-citations: TRUE
 
 header-includes: 
-  \usepackage{float}
-  \usepackage{caption}
+  - \usepackage{float}
+  - \usepackage{colortbl}
 ---
 
 
@@ -251,26 +251,68 @@ knitr::include_graphics(paste0(pad_figuren, "12_MONEOSDEELHO.png"))
 
 ## Bijlage {#BL1}
 
-<!-- Tabel \@ref(tab:130-tabel-overzicht-raaien). Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72). -->
-Tabel (\#tab:130-tabel-overzicht-raaien). Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72).
+<!-- Table: (\#tab:130-tabel-overzicht-raaien) Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72). -->
 
-|  <!-- -->   | 
-| :------------ | 
-| ![image](`r paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg")`){out.width="100%"}    |
+<!-- | | -->
+<!-- | :-- | -->
+<!-- | ![](`r paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg")`){out.width="100%"} | -->
 
 
-<!-- ```{r 130-tabel-caption-raaien, out.width="100%"} -->
+```{r 130-tabel-overzicht-raaien, out.width="100%"}
+
+caption_tabel_raaien <-
+  "Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72)."
+
+img <- str_c("![](", pad_tabellen, "Tabel_MONEOSraaien.jpg", ")")
+temp.df = data.frame(image = img)
+
+temp.df %>%
+  knitr::kable(format = "pandoc",
+               caption = caption_tabel_raaien,
+               booktabs = TRUE,
+               col.names = NULL)
+
+
+# img <- str_c(pad_tabellen, "Tabel_MONEOSraaien.jpg")
+# temp.df = data.frame(image = " ")
+# 
+# temp.df %>%
+#   # knitr::kable(caption = caption_tabel_raaien,
+#   #              booktabs = TRUE,
+#   #              col.names = NULL) %>%
+#   kbl(caption = caption_tabel_raaien,
+#       booktabs = T,
+#       col.names = NULL) %>%
+#   # kable_paper(full_width = F) %>%
+#   column_spec(1, image = img) %>%
+#   row_spec(1:(temp.df %>%
+#              nrow()), extra_latex_after = "\\arrayrulecolor{white}")
+
+```
+
+
+<!-- ```{r 130-tabel-overzicht-raaien, out.width="100%"} -->
+
+<!-- img <- str_c(pad_tabellen, "Tabel_MONEOSraaien.jpg") -->
+
+<!-- # img <- readJPEG(paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg")) -->
 
 <!-- caption_tabel_raaien <- -->
 <!--   "Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72)." -->
 
-<!-- data_frame(![image](paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg"))) %>% -->
-<!-- # NULL %>% -->
-<!--   knitr::kable(caption = caption_tabel_raaien) -->
+<!-- temp.df = data.frame(image = " ") -->
+<!-- # colnames(temp.df) <- NULL -->
+<!-- temp.mat <- as.matrix(temp.df) -->
+<!-- colnames(temp.mat) <- NULL -->
 
-<!-- knitr::include_graphics(paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg")) -->
+<!-- temp.mat %>% -->
+<!--   kbl(booktabs = T) %>% -->
+<!--   kable_paper(full_width = F) %>% -->
+<!--   column_spec(1, image = img) -->
+
 
 <!-- ``` -->
+
 
 
 <!-- ```{r 130-tabel-overzicht-raaien, out.width="100%"} -->
