@@ -1,0 +1,343 @@
+---
+params:
+  hoofdstuk: "100_watervogels"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0("../", 
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
+                          )})
+title: "moneos hoofdstuk watervogels"
+output:
+  bookdown::pdf_book:
+    base_format: INBOmd::inbo_rapport
+    style: INBO
+    tocdepth: 2
+    lof: TRUE
+    lot: TRUE
+    floatbarrier: subsection
+
+header-includes: \usepackage{float}
+---
+
+
+```{r 100-hoofdstuk, include=FALSE}
+
+hoofdstuk <- "100_watervogels"
+
+```
+
+
+```{r 100-setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.pos = "H", out.extra = '', fig.showtext = TRUE, dpi = 300)
+knitr::opts_knit$set(eval.after = "fig.cap")
+
+
+```
+
+
+```{r 100-libraries}
+
+library(tidyverse)
+library(readxl)
+# library(flextable)
+# library(officer)
+library(kableExtra)
+# library(huxtable)
+# library(pander)
+# library(ztable)
+# library(magick)
+# library(webshot)
+library(rprojroot) ## workaround pad
+```
+
+
+```{r 100-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+#source("../pad.R")
+source(find_root_file("pad.R", criterion = is_rstudio_project)) ## workaround computer Gunther
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+
+```
+
+
+```{r 100-meta_data}
+
+meta_data <- 
+  read_delim(paste0(pad_data, "meta_data.csv"),
+             delim = ";")
+  
+for(i in 1:nrow(meta_data)){
+  ##first extract the object value
+  tempobj=meta_data$waarde[i]
+  ##now create a new variable with the original name of the list item
+  eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+}
+
+```
+
+
+# Watervogels
+
+Fichenummer: FICHE S-DS-V-007a – Maandelijkse vogeltellingen
+
+Fichenummer: FICHE S-DS-V-007b – Vogeltellingen zijrivieren 
+
+__Gunther Van Ryckegem__
+
+## Inleiding
+
+Het voorkomen van watervogels kan indicatief zijn voor het estuarien ecosysteemfunctioneren. Aantalsveranderingen kunnen zowel door factoren van buiten (bijvoorbeeld klimaatverandering, Europese populatietrends,…) als van binnen het estuarium gestuurd worden. Dit betekent dat trends steeds in een ruimer kader en met de nodige omzichtigheid geëvalueerd moeten worden. Interne factoren kunnen bijvoorbeeld een gewijzigd voedselaanbod, foerageerareaal of een gewijzigde verstoringinvloed zijn. 
+
+De eerstelijnsrapportage beschrijft de aangeleverde watervogeldata van de Zeeschelde en de zijrivieren met een focus op de verzamelde tellingen tot de winter van `r as.numeric(laatste_jaar) - 1` (eindigend in maart `r laatste_jaar`). De data werden gefilterd uit de Watervogeldatabank van het INBO.
+
+Beide fiches werden in één excel bestand aangeleverd:
+
+“DataMONEOSWatervogels-Zeeschelde_zijrivieren_totwinter2020.xlsx”
+
+De evaluatie heeft volgende informatie nodig: aantallen vogels per soort per maand per segment op niveau 2 en 3 (niveau 2 is som van de waterlichamen; niveau 3 heeft betrekking op het waterlichaam of de saliniteitszone) (Maris et al., 2014). 
+
+De dataset bevat volgende informatievelden: KRWzone, rivier, telseizoen, maand, nednaam en aantal, waarbij:
+
+- rivier: het naamveld van de rivier (Zeeschelde, Durme, Rupel, Zenne, Dijle)
+- telseizoen: een vogeltelseizoen loopt van juli jaar x tot juni jaar x+1. 
+- krw: indeling volgens Figuur 1.1.
+- aantal: de aantallen omvatten de som van de getelde vogels per soort, per maand, per rivier en krwzone. 
+
+
+## Materiaal en methode
+
+Sinds oktober 1991 tellen medewerkers van het INBO maandelijks het aantal watervogels langs de Zeeschelde vanaf de Belgisch-Nederlandse grens tot Gent. De trajecten op Nederlands grondgebied werden niet opgenomen. De aangeleverde data lopen van oktober 1991 tot en met maart `r laatste_jaar`. Oorspronkelijk werd enkel tijdens de winter (oktober – maart) geteld, vanaf 1993 wordt ook tijdens de zomer geteld. Deze zomertellingen (april (behalve juni) - september) werden stopgezet tussen Antwerpen en Gent sinds het telseizoen 2018/19. In de zomer wordt enkel nog gebiedsdekkend geteld in juni. Sinds de winter van 1995/1996 wordt ook geteld langsheen de Rupel (Rupelmonding – sas van Wintam). De tellingen gebeuren vanaf een boot en bij laag tij. Omdat het niet haalbaar is om het volledige onderzoeksgebied grondig te tellen tijdens de periode van één laag tij, worden de telling gespreid over drie dagen. De dagen worden steeds gegroepeerd in het midden van de maand. Alle watervogelsoorten (en steltlopers) worden tijdens de boottellingen geteld sinds het begin van de tellingen, de meeuwen en sternen worden geteld sinds oktober 1999. De tellingen langsheen de zijrivieren (behalve het deel tussen de Rupelmonding tot Wintam) worden geteld vanop de rivieroever door vrijwilligers.De meeuwen, sternen, wulp, kievit en waterhoen worden langs de zijrivieren geteld sinds oktober 1999.In de exploratieve analyse werden de meeuwen en sternen uit de dataset gelaten.
+
+__Ruimtelijke en temporele afbakening data__
+
+_Boottellingen_
+
+De data omvatten de aantallen watervogels op de Zeeschelde, geteld vanop de boot. Dit is inclusief deze op het traject Melle-Gentbrugge dat geteld wordt vanaf de dijk (in de databank als traject Tijgebonden oude Schelde Gent - tot aan monding Ringvaart (2050810)) en deze op het gedeelte van de Rupel dat vanop de boot wordt geteld. Om de data voor het waterlichaam ZSIII+Rupel compleet te maken wordt de dataset aangevuld met tellingen van de Rupel die zijn geteld vanaf de dijk. De dijktellingen gaan enkel door in de winter. De teltrajecten (9999999 en 9999998) gelegen op Nederlands grondgebied werden niet in rekening gebracht voor de data analyse.
+
+_Zijrivieren_
+
+De geselecteerde teltrajecten van de zijrivieren (Watervogeldatabank, INBO) zijn weergegeven in Tabel \@ref(tab:100-tabel-teltrajecten). Voor de Getijdenetes zijn geen afzonderlijke riviertellingen beschikbaar; voor de Getijdedijle is een beperkte dataset beschikbaar (1996, 1999 en verder vanaf 2008). Eén teltraject in de Durme (Durmemonding tot Mirabrug) werd niet geteld in 2007-2008.
+
+_Ontbrekende data_:
+
+
+**2020/21** 
+
+__INBO__ Zeeschelde tellingen zijn volledig uitgevoerd zoals gepland behalve in april 2020 kon de telling in Zeeschelde IV niet doorgaan door coronamaatregelen.
+
+__MIDMA__ ontbrekende data:
+Zenne Zennegat - geen telling in november 2020
+Tijgebonden Oude Schelde Gent - monding Ringvaart- ontbrekende telling november 2020
+Groot Buitenschoor (Schelde Containerkaai - grens) (RO) - ontbrekende telling maart 2021
+
+_Winterkarakteristiek telseizoen 2020/21_:
+
+De winter van 2020/21 [^footnote-100-2] was klimatologisch gemiddeld warmer dan gemiddeld. Kenmerkend waren de grote temperatuursverschillen in februari en relatief veel sneeuw in dezelfde periode. Zo varieerden in Ukkel de temperaturen tussen -8.6°C (10 februari) en 18,7°C (24 februari). In februari bleef de sneeuw liggen en de grootste dikte werd op 9, 11 en 12 februari opgetekend. De tellingen vielen in deze koude periode met sneeuw. Er werden afgelopen winter 22 vorstdagen [min<0°C] (normaal: 29,7 dagen) en 5 winterse dagen [max<0°C] (normaal: 5,6 dagen), waarvan 4 in februari geregistreerd.
+
+[^footnote-100-2]: KMI winter `r laatste_jaar` (dec `r as.numeric(laatste_jaar) - 1` - feb `r laatste_jaar`) ~= wintervogeljaar (telseizoen `r laatste_telseizoen`).
+
+
+
+<!--  | -->
+<!-- -|- -->
+<!-- : Geselecteerde teltrajecten van de zijrivieren opgenomen in de exploratieve data-analyse en in de data-aanlevering. {#tbl:100-tabel-teltrajecten} -->
+
+```{r 100-tabel-teltrajecten}
+
+tabel_teltrajecten <- read_excel(paste0(pad_tabellen, "100_Watervogels_tabellen.xlsx"), 
+    sheet = "teltrajecten", .name_repair = "minimal") %>%
+  mutate_all(~replace_na(., ""))
+
+
+cap_teltrajecten <- "Geselecteerde teltrajecten van de zijrivieren opgenomen in de exploratieve data-analyse en in de data-aanlevering."
+
+footnote_text <- "Opgelet dit teltraject omvat data van zowel de getijgebonden Durme als van de afgesneden ‘oude’ Durme-arm. Sinds oktober 2012 wordt de getijgebonden Durme afzonderlijk geteld."
+
+tabel_teltrajecten %>%
+  mutate_all(~replace_na(., "")) %>% 
+  mutate_all(~cell_spec(., color = "black")) %>% 
+  {.[3,4] <- paste0(.[3,4],
+                    footnote_marker_number(1))
+  .} %>%
+  knitr::kable(
+    # caption = cap_teltrajecten,
+               # "html",
+               booktabs = TRUE,
+               escape = FALSE,
+               caption = cap_teltrajecten) %>%
+  kable_styling(latex_options = c("scale_down"),
+                font_size = 15) %>%
+  # kable_styling(latex_options = c("scale_down")) %>%
+  footnote(number = footnote_text %>% 
+             cell_spec(color = "black"), 
+           escape = FALSE,
+           threeparttable = TRUE)
+
+```
+
+<br/>  
+
+## Exploratieve data-analyse watervogelaantallen
+
+De globale patronen in de maandelijkse wintervogelaantallen langsheen de Zeeschelde zijn de laatste jaren stabiel (Figuur \@ref(fig:100_figuur_maandelijkse_totalen_ZSwinter)). De januari aantallen waren historisch laag (slechts 4600 watervogels) maar in het telseizoen 2020/21 was er wel een duidelijke wintermaximum[^footnote-100-1] in de maand februari (12600 vogels).Dit is duidelijk gelinkt aan de sneeuwval en vriestemperaturen waardoor de valleigebieden veel minder interessant foerageergebied werden en de vogels hun toevlucht zochten op de vrijliggende slikken langsheen de Zeeschelde.  Dergelijk hogere aantallen werden al sinds 2013/14 niet meer waargenomen (Figuur \@ref(fig:100_figuur_wintermaxima_Zeeschelde)). De laagste aantallen in de winterperiode worden doorgaans geteld in maart. De vogelaantallen namen sterk af tussen 2002 en 2007. Tussen 2008 en 2010 was er een klein herstel maar sinds 2012 zijn de vogelaantallen verder afnemend tot stabiel.Het wintergemiddelde ligt in de meeste zones iets hoger dan voorgaande jaren door de winterpiek geteld in februari. De proportionele verdeling van de watervogels in de verschillende waterlichamen (zie waterlichamen in Figuur 1.1) toont na de sterke afname van de watervogels in winter 2006/07 vooral in Zeeschelde III + Rupel een geleidelijke toename van het aandeel vogels dat verblijft in Zeeschelde IV (Beneden-Zeeschelde), Zeeschelde I en de zijrivieren. Vanaf 2010/11 is het proportioneel aandeel van elke zone relatief stabiel met de grootste variatie langsheen de Durme (Figuur \@ref(fig:100-figuur-verhouding-aantallen)). 
+
+[^footnote-100-1]: Maximum van de som van alle vogels per wintermaand (oktober tot en met maart).
+
+Bespreking per deelgebied (Figuur \@ref(fig:100-figuur-aantallen-KRWzones)):
+
+In __Zeeschelde I__ (Gentbrugge – Dendermonde) was er een duidelijke terugval in het overwinterend aantal watervogels in de winter van 2017/18. De overwinterende watervogelaantallen op de Zeeschelde blijven bij de laagste geteld sinds begin jaren '90. Nieuwe estuariene ontwikkelingen zoals GGG Bergenmeersen en Wijmeers ontpoldering trekken veel watervogels aan, net zoals de ontwikkelingen in de vallei bijvoorbeeld Paardeweide, Wijmeers GOG en  Kalkense meersen. Deze gebieden zijn niet vervat in deze trendgrafieken. 
+
+In __Zeeschelde II__ (Dendermonde – Durmemonding) is na de sterk dalende trend tussen 2001/02 en 2006/07. Tussen 2006/07 en 2015/16 zijn de aantallen relatief stabiel. Net zoals in Zeeschelde I was er ook een terugval in de aantallen in de winter van 2017/18. De aantallen blijven ook de laatste seizoenen afnemen. Gedurende winterseizoen `r laatste_telseizoen` was ook in deze zone het aantal watervogels historisch laag behalve in de maand februari door de influx van vogels door de winterpiek. 
+
+__Zeeschelde III__ (Durmemonding - Kennedytunnel) __+ Rupel__ kende proportioneel de grootste afname in watervogelaantallen tussen 2006 en 2010. Deze afname stabiliseert zich de laatste jaren. 
+
+In __Zeeschelde IV__ (Kennedytunnel – Grens) vertonen de winteraantallen tussen 1999 en 2007 een dalende trend. In de periode 2008-2013 lijken de aantallen zich te stabiliseren. Sinds 2013 zijn de vogelaantallen afnemend, gedurende winterseizoen `r laatste_telseizoen` stabiliseerde de toestand. De terugval is vooral waarneembaar in een sterke afname van de aantallen smient, wintertaling en grauwe gans (zie Van Ryckegem, 2013). 
+
+De __Zenne__ (Figuur \@ref(fig:100-figuur-aantallen-zijrivieren)) was tot 2007 nagenoeg ‘vogeldood’. Sinds de waterkwaliteitsverbetering 2006/27 zijn er hoge aantallen overwinteraars. De hoogste aantallen werden geteld in de winter 2007-2008 en zijn sindsdien afnemend tot stabiel de laatste jaren. Mede door de winterpiek was het gemiddeld aantal watervogels iets hoger in `r laatste_telseizoen`.
+
+De trends in de  __Getijdedurme__ zijn enigszins moeilijker te interpreteren omdat de afbakening van het telgebied veranderde. Tot oktober 2012 werden de vogelaantallen van de Oude Durme en de Getijdendurme opgeteld. Sindsdien worden de vogelaantallen afzonderlijk geteld. Bovendien is er een datahiaat in de winter van 2007-2008. Dit verklaart de lage aantallen in deze periode (Figuur \@ref(fig:100-figuur-aantallen-KRWzones)). Na een periode met hogere aantallen (2013-2017) is het aantal overwinterende watervogels op de Durme afnemend. 
+
+Op de __Dijle__ (Figuur \@ref(fig:100-figuur-aantallen-zijrivieren)) was de piek van vogelaantallen van korte duur. Terwijl gemiddeld in de periode 2007-2009 nog meer dan 1200 watervogels per winter werden geteld, is het aantal de laatste jaren slechts enkele tientallen vogels per winter.
+
+
+```{r 100-figuur-maandelijkse-totalen-winter-Zeeschelde, fig.cap=cap_maandelijkse_totalen,out.height="50%"}
+
+cap_maandelijkse_totalen <- paste0("Maandelijkse wintertotalen van de watervogels langsheen de Zeeschelde sinds oktober 1991 tot ", 
+                                  laatste_jaar, 
+                                  " (exclusief zijrivieren; exclusief meeuwen en sternen).")
+
+knitr::include_graphics(paste0(pad_figuren, "100_figuur_maandelijkse_totalen_ZSwinter.jpg"))
+
+```
+
+<br/>  
+
+```{r 100-figuur-wintermaxima-Zeeschelde, fig.cap=cap_wintermaxima_Zeeschelde, out.width="80%"}
+
+cap_wintermaxima_Zeeschelde <- paste0("Wintermaxima van de watervogels langsheen de Zeeschelde sinds oktober 1991 tot ", 
+                                  laatste_jaar, 
+                                  " (exclusief zijrivieren; exclusief meeuwen en sternen).")
+
+knitr::include_graphics(paste0(pad_figuren, "100_figuur_wintermaxima_Zeeschelde.jpg"))
+
+```
+
+<br/> 
+```{r 100-figuur-verhouding-aantallen, fig.cap=cap_verhouding_aantallen, out.width="80%"}
+
+cap_verhouding_aantallen <- paste0("De verhouding van de totale aantallen watervogels in de waterlichamen (winter 1991 - ", 
+                                  laatste_jaar, 
+                                  ") (winterdata okt – mrt).")
+
+knitr::include_graphics(paste0(pad_figuren, "100_figuur_verhouding_aantallen.jpg"))
+
+```
+
+<br/>  
+
+```{r 100-figuur-aantallen-KRWzones, fig.cap=cap_aantallen_KRWzones, out.width="80%"}
+
+cap_aantallen_KRWzones <- paste0("De wintervogelaantallen in de verschillende KRW-zones (gemiddelde per winter 1991/92 – ",
+                                laatste_telseizoen, 
+                                ").")
+
+knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_KRWzones.jpg"))
+
+```
+
+<br/>  
+
+```{r 100-figuur-aantallen-zijrivieren, fig.cap=cap_aantallen_zijrivieren, out.width="80%"}
+
+cap_aantallen_zijrivieren <- paste0("De wintervogelaantallen in de Dijle, Rupel en Zenne (gedeelte onder getijde-invloed) (gemiddelde per winter 1991/92 – ", 
+                                   laatste_telseizoen, 
+                                   ").")
+
+knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_zijrivieren.jpg"))
+
+```
+
+<br/>  
+
+De trends in de wintervogelaantallen opgedeeld volgens de trofische indicatorgroepen is weergegeven in Figuur \@ref(fig:100-figuur-aantallen-trofische-groep). 
+
+Winter `r laatste_telseizoen` is de dalende trend in het aantal benthivore overwinteraars (voornamelijk steltlopers) in Zeeschelde IV en III gestopt. Er is zelfs een toename zichtbaar in Zeeschelde IV. Dit is te wijten aan de hogere aantallen wulp en vooral scholekster (Figuur \@ref(fig:100-figuur-aantallen-visetend-en-steltlopers)). Deze tendens lijkt op het eerste zicht niet gecorreleerd met een kleiner voedselaanbod (Figuur **XXX**). Het gemiddeld aantal visetende vogels in Zeeschelde II (vooral aalscholver) schommelt en correspondeert relatief goed met de trends van vis in deze zone van de Zeeschelde (Figuur **XXX**).
+
+Van een aantal algemenere soorten worden de trends in de periode 2010-`r laatste_jaar` getoond in Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten) en Figuur \@ref(fig:100-figuur-aantallen-visetend-en-steltlopers).
+
+De bergeend neemt voor het 7de jaar in rij af. Deze afname is opvallend in Zeeschelde IV. De winterpiek in februari trok het gemiddelde in de andere zones nog wat omhoog. Ook de wilde eend en wintertaling bleven stabiel (ook vooral door winterpiek in februari, in de overige maanden waren de aantallen lager). Na een opvallende dip van de krakeend in 2019/20 nam de krakeend opnieuw toe. Vooral in Zeeschelde III waren de aantallen hoog. De aalscholveraantallen schommelen en volgen in de toename in vis vooral in de Boven-Zeeschelde. Echter de fuut, ook een viseter is quasi volledig verdwenen langs alle teltrajecten. Tureluur zet zijn stijgende trend niet verder. De gemiddelde wulpaantallen namen, na 4 jaar dalende trend, opnieuw toe. In Zeeschelde IV is er een toename in bodemdierbiomassa vastgesteld (Hoofdstuk **XXX**) (vooral dan _Corophium_, _Hediste_ en _Cyathura_). De negatieve trends van de overwinterende benthivore en omnivore vogels lijken dus niet sterk gecorreleerd met de ontwikkeling van het voedselaanbod, behalve voor tureluur. Het onderzoeken van deze watervogeltrends vereist een integrerende tweedelijnsanalyse van regionale trends (vallei, Vlaanderen, Westerschelde, ... tot het bekijken van de Europese trends), voedselaanbod en beschikbaarheid en mogelijke verstoringseffecten.
+
+De trends van de meest talrijke exotische overwinterende vogelsoorten is weergegeven in Figuur \@ref(fig:100-figuur-exotentrends). De hoogste aantallen worden geteld in Zeeschelde III + Rupel en de aantallen zijn toenemend vooral voor Canadese gans en nijlgans. De boerengans en soepeend komen in relatief kleine aantallen voor en zijn stabiel tot afnemend. 
+
+De dichtheden van de overwinterende watervogels per KRW-zone op het oppervlakte zacht substraat slik in de Zeeschelde is weergegeven in Figuur \@ref(fig:100-figuur-dichtheden-watervogels-per-zone). Voor de figuur werd een selectie gemaakt van alle omnivore en benthivore soorten en werden kuifeend en tafeleend uitgesloten omdat beide soorten vooral afhankelijk zijn van het voedselaanbod in de ondiepe waterzones. In 2001 was de vogeldichtheid in Zeeschelde III en Rupel en Zeeschelde II rond de 140 vogels per ha. In 2016 daalde deze dichtheid in Zeeschelde III + Rupel tot ongeveer 20 vogels per hectare. In Zeeschelde II bleef dit aantal ongeveer 80 vogels per ha. De dichtheid in Zeeschelde IV schommelt rond de 10 vogels per hectare. Dit is heel wat lager dan in andere zones nochtans dat het voedselaanbod als biomassa bodemdieren per oppervlakte eenheid hier niet significant lager is dan in andere zones. De oppervlakte zacht substraat in de verschillende zones is maar in beperkte mate veranderd (Hoofdstuk **XXXX**) en heeft hierdoor een beperkte invloed, tot nu toe, op de berekende dichtheden. 
+
+```{r 100-figuur-aantallen-trofische-groep, fig.cap=cap_aantallen_trofische_groep, out.width="80%"}
+
+cap_aantallen_trofische_groep <- paste0("Trends in gemiddelde wintervogelaantallen per KRW-zone (gemiddelde per winter 2009/10 – ",
+                                        laatste_telseizoen, 
+                                        ") opgedeeld volgens de trofische indicatorgroepen (Nbenth: benthivoren, Nherb: herbivoren, Nomn: omnivoren en Npisc: piscivoren).")
+
+knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_trofische_groep.jpg"))
+
+```
+
+<br/>  
+
+```{r 100-figuur-aantallen-abundante-soorten, fig.cap=cap_aantallen_abundante_soorten, out.width="80%"}
+
+cap_aantallen_abundante_soorten <- "Trends in het gemiddelde aantal wintervogels (okt.-mrt.) voor 4 abundante soorten in de 4 KRW-zones van de Zeeschelde+Rupel."
+
+knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_abundante_soorten.jpg"))
+
+```
+
+<br/>  
+
+```{r 100-figuur-aantallen-visetend-en-steltlopers, fig.cap=cap_aantallen_visetend_en_steltlopers, out.width="80%"}
+
+cap_aantallen_visetend_en_steltlopers <- "Trends in het gemiddeld aantal getelde wintervogels (okt.-mrt.) voor 2 abundante visetende (piscivore) en twee abundante steltlopers in de 4 KRW-zones van de Zeeschelde+Rupel."
+                                            
+knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_visetend_en_steltlopers.jpg"))
+
+```
+
+<br/>  
+
+```{r 100-figuur-exotentrends, fig.cap=cap_exotentrends, out.width="80%"}
+
+cap_exotentrends <- "Trends in het gemiddeld aantal getelde wintervogels (okt.-mrt.) voor 4 abundante exoten in de 4 KRW-zones van de Zeeschelde+Rupel."
+                                            
+knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_exoten.jpg"))
+
+```
+
+<br/> 
+
+```{r 100-figuur-dichtheden-watervogels-per-zone, fig.cap=cap_dichtheden,out.width="80%"}
+
+cap_dichtheden <- "Vogeldichtheid (aantallen per ha zacht substraat slik) van getelde wintervogels (okt.-mrt.) in de 4 KRW-zones van de Zeeschelde+Rupel. Data gepresenteerd voor de jaren overeenkomstig de beschikbare ecotopenkaart"
+                                            
+knitr::include_graphics(paste0(pad_figuren, "100_figuur_dichtheid.jpg"))
+
+```
+
+<br/> 
+\newpage
+
+**Algemene conclusie**
+
+Door de koudeperiode in februari 2021 verbleven er iets hogere maxima en gemiddeld aantal watervogels gedurende de winterjaar 2020 op de Zeeschelde. Zonder deze piekperiode bleven de meeste maandresultaten onder dat van de voorgaande jaren, hierdoor spreken we van een globaal doorgaand dalende trend. Deze trend lijkt ondertussen al niet meer gerelateerd aan de systeemshift die er kwam door de verbeterende waterkwaliteit (2006-2007). Deze trend vraagt om een ruimere geografische vergelijking met de trends in de vallei en met de nieuwe gebieden en ruimer met de Westerschelde en de Noord-West Europese populatietrends.  
+
+## Referenties
+
+Maris, T., A. Bruens, L. van Duren, J. Vroom, H. Holzhauer, M. de Jonge, S. van Damme, A. Nolte, K. Kuijper, M. Taal, C. Jeuken, J. Kromkamp, B. van Wesenbeeck, G. Van Ryckegem, E. Van den Bergh, S. Wijhoven, and P. Meire. 2014. Evaluatiemethodiek Schelde-estuarium: Update 2014. Deltares, Universiteit Antwerpen, NIOZ en INBO(2014).
