@@ -17,19 +17,20 @@ output:
     lof: TRUE
     lot: TRUE
     floatbarrier: subsection
-header-includes: \usepackage{float}
-
+header-includes: 
+  - \usepackage{float}
+  - \usepackage{colortbl}
 ---
 
 
-```{r hoofdstuk, include=FALSE}
+```{r 030-hoofdstuk, include=FALSE}
 
 hoofdstuk <- "030_ecotopen"
 
 ```
 
 
-```{r setup, include=FALSE}
+```{r 030-setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.showtext = TRUE, dpi = 300, fig.pos = "H", out.extra = '')
 knitr::opts_knit$set(eval.after = "fig.cap")
@@ -37,7 +38,7 @@ knitr::opts_knit$set(eval.after = "fig.cap")
 ```
 
 
-```{r libraries}
+```{r 030-libraries}
 
 library(tidyverse)
 library(readxl)
@@ -48,7 +49,7 @@ library(rprojroot)
 ```
 
 
-```{r pad}
+```{r 030-pad}
 
 # inlezen van variabelen
 # pad naar data : pad_data
@@ -77,26 +78,13 @@ Om de evolutie van de diversiteit van habitats op te volgen vormt de ecotopenkaa
 
 Een ecotopenkaart wordt samengesteld uit enerzijds een geomorfologische kaart en anderzijds een fysiotopenkaart Tabel \@ref(tab:030-tabel-1-tabel-klassen). Voor een uitgebreide bespreking van materiaal en methode word verwezen naar (Van Braeckel et al., 2019). In de ecotopenkaart worden natuurontwikkelingsprojecten (NOP’s) zoals ontpolderingen, GGG’s en dijkverleggingen opgenomen wanneer deze een open aansluiting hebben met de Beneden-Zeeschelde. 
 
+Table: (\#tab:030-tabel-1-tabel-klassen) Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen.
 
+| \arrayrulecolor{white} ![](`r paste0(pad_tabellen, "030_tabel_1_tabel_klassen.png")`){out.width="100%"} |
+| -- |
 
-```{r 030-tabel-1-tabel-klassen, out.width="100%"}
-
-caption_tabel_klassen <- "Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen."
-
-img <- str_c("![](", pad_tabellen, "030_tabel_1_tabel_klassen.png", ")")
-temp.df = data.frame(image = img)
-
-temp.df %>%
-  knitr::kable(format = "pandoc",
-               caption = caption_tabel_klassen,
-               booktabs = TRUE,
-               col.names = NULL)
-
-
-
-
-```
 <br/>
+
 
 Ter verduidelijking in de hogere zone met name het supralitoraal fysiotoop, onderscheiden we 7 zones:   
 •	De potentiële pionierzone betreft een onbegroeide zone boven gemiddeld hoog water bij doodtij (HW85). In deze zone zou schoruitbreiding met kenmerkende schorvegetatie mogelijk zijn op basis van de hoogteligging maar zijn de hydrodynamische omstandigheden en/of de waterverzadiging niet geschikt;  
@@ -108,49 +96,25 @@ Ter verduidelijking in de hogere zone met name het supralitoraal fysiotoop, onde
 •	Hoog supralitoraal hard antropogeen: deze zone voldoet aan dezelfde voorwaarden als het hoog supralitoraal maar kent geen begroeiing maar is bestort met breuksteen.  
 Daarnaast bestaat ook nog het ecotoop antropogeen voor verharde zone zonder enige ecologische waarde (geen algen noch plantengroei).
 
-\newpage
+<!-- \newpage -->
 
 ## Ecotopen in de Zeeschelde
 
 ### Ecotopen van de Beneden-Zeeschelde
+
+Table: (\#tab:030-tabel-2-tabel-oppervlakte20102019) Oppervlaktes en oppevlaktepercentages van ecotopen in de Beneden-Zeeschelde tussen 2010 en 2019.
+
+| \arrayrulecolor{white} ![](`r paste0(pad_tabellen, "030_tabel_2_Oppervlakte2010_2019.PNG")`){out.width="100%"} |
+| -- |
+
 <br/>
 
-```{r 030-tabel-2-tabel-oppervlakte20102019, out.width="100%"}
 
-caption_tabel_opp <- "Oppervlaktes en oppevlaktepercentages van ecotopen in de Beneden-Zeeschelde tussen 2010 en 2019."
+Table: (\#tab:030-tabel-3-tabel-evolutie) Lange- en korte termijnevolutie in de Beneden-Zeeschelde tussen 2010 en 2019.
 
-img <- str_c("![](", pad_tabellen, "030_tabel_2_Oppervlakte2010_2019.png", ")")
-temp.df = data.frame(image = img)
+| \arrayrulecolor{white} ![](`r paste0(pad_tabellen, "030_tabel_3_evolutie.PNG")`){out.width="100%"} |
+| -- |
 
-temp.df %>%
-  knitr::kable(format = "pandoc",
-               caption = caption_tabel_opp,
-               booktabs = TRUE,
-               col.names = NULL)
-
-
-
-
-```
-<br/>
-
-```{r 030-tabel-3-tabel-evolutie, out.width="100%"}
-
-caption_tabel_opp_evolutie <- "Lange- en korte termijnevolutie in de Beneden-Zeeschelde tussen 2010 en 2019."
-
-img <- str_c("![](", pad_tabellen, "030_tabel_3_evolutie", ")")
-temp.df = data.frame(image = img)
-
-temp.df %>%
-  knitr::kable(format = "pandoc",
-               caption = caption_tabel_opp_evolutie,
-               booktabs = TRUE,
-               col.names = NULL)
-
-
-
-
-```
 <br/>
 
 
