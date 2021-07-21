@@ -1,0 +1,347 @@
+---
+params:
+  hoofdstuk: "130_sedimentatie_erosie"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0("../", 
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
+                          )})
+title: "MONEOS hoofdstuk sedimentatie - erosie"
+output:
+  bookdown::pdf_book:
+    base_format: INBOmd::inbo_rapport
+    style: INBO
+    tocdepth: 2
+    lof: TRUE
+    lot: TRUE
+    floatbarrier: subsection
+bibliography: references.bib
+link-citations: TRUE
+
+header-includes: 
+  - \usepackage{float}
+  - \usepackage{colortbl}
+---
+
+
+```{r 130-hoofdstuk, include=FALSE}
+
+hoofdstuk <- "130_sedimentatie_erosie"
+
+```
+
+
+```{r 130-setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.pos = "H", out.extra = '')
+knitr::opts_knit$set(eval.after = "fig.cap")
+
+```
+
+
+```{r 130-libraries}
+
+library(tidyverse)
+library(readxl)
+library(kableExtra)
+library(INBOtheme)
+
+```
+
+
+```{r 130-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source("../pad.R")
+
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+
+```
+
+
+```{r 130-meta-data}
+
+# aanpassen indien er meta-data zijn
+
+# meta_data <- 
+#   read_delim(paste0(pad_data, "meta_data.csv"),
+#              delim = ";")
+#   
+# for(i in 1:nrow(meta_data)){
+#   ##first extract the object value
+#   tempobj=meta_data$waarde[i]
+#   ##now create a new variable with the original name of the list item
+#   eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+# }
+
+```
+
+
+
+# Sedimentatie en erosie op punten en raaien
+
+Fiche nummer: S-MD-V002 Topo-bathymetrie - Sedimentatie en erosie op punten en raaien
+
+__Alexander Van Braeckel, Ruben Elsen, Dimitri Buerms & Joram De Beukelaer__
+
+
+## Inleiding
+
+Binnen de MONEOS-monitoring wordt de hoogteligging van het slik en de schorrand jaarlijks ingemeten om hoogteveranderingen met een hoge verticale resolutie in beeld te brengen. Deze hoogtemetingen situeren zich doorgaans loodrecht op rivieras, de zogenoemde ‘raaien’. 
+De MONEOS-raaien zijn gesitueerd op bredere sliklocaties met overwegend zacht substraat of natuurtechnische oeververdediging (Meire & Maris, 2008). Met de raaien wordt gefocust op grotere, ecologisch waardevollere slik- en schorgebieden.
+We maken een onderscheid in 3 klassen van raaien afhankelijk van de prioriteit van opmeten:
+
+o	MONEOS - Vaste: minimaal de slik en schorrand worden jaarlijks ingemeten langs de Zeeschelde (n:24) Figuur \@ref(fig:130-figuur-overzicht-raaien), Durme (n:3) en Rupel (n:2) en 6-jaarlijks voor de tijgebonden zijrivieren (Nete-n:1, Zenne-n:1, Dijle-n:1); deze raaien zijn leidend voor de veldwerkcampagne; de hoge schorplateaus worden 6-jaarlijks gemeten  
+o	MONEOS - Aanvullend: bij deze klasse van raaien wordt getracht om een minimale frequentie (2 – 5 jaar) aan te houden; ze vertonen ontwikkelingen die aanvullende informatie geven over het (deel)gebied die niet altijd door de MONEOS-raaien gecoverd zijn;  
+o	Optioneel: raaien die occasioneel worden ingemeten of waar specifieke vraag naar is.  
+
+
+```{r 130-figuur-overzicht-raaien, fig.cap=caption_overzicht, out.width="100%"}
+
+caption_overzicht <- "Situering van de 24 vaste MONEOS-raaien binnen de Zeeschelde. Zie Tabel in bijlage voor naamgeving."
+
+knitr::include_graphics(paste0(pad_figuren, "0_OverzichtskaartMoneosraaien_Zeeschelde.jpg"))
+
+```
+
+<br/>
+
+
+## Methode
+
+De meetcampagnes van de raaien gebeuren meestal op het einde van de winterperiode en zijn dus een weerslag van wat na het voorbije jaar is veranderd. Een raai in februari 2020 ingemeten wordt vergeleken met de hoogtes van het jaar ervoor, waarbij de verandering een gevolg zijn van wat gebeurde in 2019. De metingen gebeuren steeds tijdens een springtijperiode vanaf het schor of de dijk tot bij het plaatselijk laagwater. ’s Morgens wordt gestart in het stroomafwaartse deel van de Zeeschelde, daarna wordt met het opkomend tij stroomopwaarts telkens een raai opzocht bij opnieuw het plaatselijk laagwater.   
+Alle slik- en schorraaien werden tot begin 2012 ingemeten met een RTK-DGPS_Trimble 5800. Vanaf eind 2012 is een RTK-DGPS_Trimble R8 gebruikt waarbij zowel GPS- en GLONASS-satellietsignalen ontvangen kunnen worden. De ingestelde maximale foutenmarge voor een meting te kunnen uitvoeren is 2 cm op de z-waarde maar ligt gemiddeld rond ±1 cm. Bij de meetcampagne wordt een eerdere meetreeks in de RTK-GPS ingelezen. In het veld wordt vervolgens naar elk gemeten punt van de raai teruggaan. Zodoende kan op een efficiënte manier de raaien opnieuw ingemeten worden met een minimale horizontale afwijking.  
+Tijdens de meetcampagne is gebruik gemaakt van het standaard veldwerkprotocol (cfr. 2e lijnsrapportage, Van Braeckel et al., 2014) met beschrijvingen van de schorrand en de verschillende slikzones. De ingemeten data van de raaien worden vervolgens in GIS ‘gesnapt’ naar een  rechte referentieraailijn met de INBO-GIS-tool. Na controle van de GIS-data wordt de data vervolgens in R (R Core Team 2013) geïmporteerd. In eerste instantie wordt de afstand tussen de punten onderling bepaald. Door de hoogtes uit te zetten t.o.v. de afstand tot een nulpunt op de dijk, wordt in R een grafiek per raai gegenereerd met de metingen van de verschillende meetperioden.   
+Voor verdere analyses wordt vervolgens een lineaire interpolatie tussen gecontroleerde data uitgevoerd naar punten met een tussenafstand van een halve meter. Dit zorgt voor een standaardisatie van de afstand tussen ieder punt. Voorheen kon dit verschillen naargelang  (micro-) reliëf op de raai (1,5-10m) en tussen jaren aangezien bij een nieuwe sterke hoogtegradiënt extra punten worden ingemeten. Door schoruitbreiding of -erosie kan het startpunt van de raai alsook het lokale laagwater verschillen. Om afwijkingen tussen de jaren te vermijden door meetbereik-of schorveranderingen wordt enkele de gezamenlijk gemeten zone meegenomen in de volgende berekeningen.     
+Naast gemiddelde hoogteverschil over de volledige sliklengte wordt ook de oppervlakte tussen de 2 curven van de 2 opeenvolgende ingemeten jaren bepaald. Deze oppervlakte is een maat voor het volume (m³) afgezet/ geërodeerd sediment op een 1 meter breed slik ter hoogte van de raai. De data werd hierna nog gekoppeld aan gemiddelde droogvalduurdata uit de beginperiode 2013-2016. Zoals bij de ecotopen is hier het gemiddelde 25% droogvalduur percentiel gebruikt voor de afbakening van de grens laag en middelhoog slik en het 75% droogvalduurpercentiel voor de grens middelhoog en hoog slikgrens. De grens tussen hoog slik en de supralitoraal slikzone (potentiële pionierzone) vormt het 85 percentiel van de hoogwaters uit die periode.   
+Op de meeste MONEOS-raaien en sommige NOP’s is per ecotoop een vast punt vastgelegd waar 3 RTK-GPSmetingen worden uitgevoerd alsook een foto en sedimentstaal (10cm diep) wordt genomen. Voor de berekening van de hoogteverandering op deze vaste punten wordt het gemiddelde genomen van de 3 metingen, wat direct gerelateerd kan worden aan de sedimentverandering.  
+
+
+Tabel \@ref(tab:130-tabel-overzicht-raaien) in \@ref(BL1) Bijlage.
+
+
+## Exploratieve data-analyse
+
+Illustratief worden hieronder de resultaten getoond van de MONEOSraaien gelegen in de Beneden-Zeeschelde.In 2020 werden geen trendbreuken vastgesteld en evolueren de raaien in de zin van de voorgaande jaren. Het slik aan het Galgenweel (GW) was stabiel in 2020 na een eerder sterke erosie in 2019. 
+
+```{r 130-figuur-GBSa, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai GBSa"
+
+knitr::include_graphics(paste0(pad_figuren, "1_MONEOSDEELGBSa.png"))
+
+```
+
+<br/>
+
+
+
+```{r 130-figuur-ODa, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai ODa"
+
+knitr::include_graphics(paste0(pad_figuren, "2_MONEOSDEELODa.png"))
+
+```
+
+<br/>
+
+
+```{r 130-figuur-ODaslik, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai ODaslik"
+
+knitr::include_graphics(paste0(pad_figuren, "3_MONEOSDEELODaslik.png"))
+
+```
+
+<br/>
+
+
+```{r 130-figuur-DO, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai DO"
+
+knitr::include_graphics(paste0(pad_figuren, "4_MONEOSDEELDO.png"))
+
+```
+
+<br/>
+
+
+```{r 130-figuur-GSb, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai GSb"
+
+knitr::include_graphics(paste0(pad_figuren, "5_MONEOSDEELGSb.png"))
+
+```
+
+<br/>
+
+
+```{r 130-figuur-GSc, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai GSc"
+
+knitr::include_graphics(paste0(pad_figuren, "6_MONEOSDEELGSc.png"))
+
+```
+
+<br/>
+
+
+```{r 130-figuur-LH, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai LH"
+
+knitr::include_graphics(paste0(pad_figuren, "7_MONEOSDEELLH.png"))
+
+```
+
+<br/>
+
+
+```{r 130-figuur-LP, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai LP"
+
+knitr::include_graphics(paste0(pad_figuren, "8_MONEOSDEELLP.png"))
+
+```
+
+<br/>
+
+
+```{r 130-figuur-KPb, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai KPb"
+
+knitr::include_graphics(paste0(pad_figuren, "9_MONEOSDEELKPb.png"))
+
+```
+
+<br/>
+
+
+```{r 130-figuur-KPe, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai KPe"
+
+knitr::include_graphics(paste0(pad_figuren, "10_MONEOSDEELKPe.png"))
+
+```
+
+<br/>
+
+
+```{r 130-figuur-GW, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai GW"
+
+knitr::include_graphics(paste0(pad_figuren, "11_MONEOSDEELGW.png"))
+
+```
+
+<br/>
+
+
+```{r 130-figuur-HO, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai HO"
+
+knitr::include_graphics(paste0(pad_figuren, "12_MONEOSDEELHO.png"))
+
+```
+
+<br/>
+
+
+## Bijlage {#BL1}
+
+<!-- Table: (\#tab:130-tabel-overzicht-raaien) Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72). -->
+
+<!-- | | -->
+<!-- | :-- | -->
+<!-- | ![](`r paste0(pad_tabellen, "Tabel_MONEOSraaien.png")`){out.width="100%"} | -->
+
+
+```{r 130-tabel-overzicht-raaien, out.width="100%"}
+
+caption_tabel_raaien <-
+  "Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, raaicode, naam en X,Y coördinaat (Lambert 72)."
+
+img <- str_c("![](", pad_tabellen, "Tabel_MONEOSraaien.png", ")")
+temp.df = data.frame(image = img)
+
+temp.df %>%
+  knitr::kable(format = "pandoc",
+               caption = caption_tabel_raaien,
+               booktabs = TRUE,
+               col.names = NULL)
+
+
+# img <- str_c(pad_tabellen, "Tabel_MONEOSraaien.jpg")
+# temp.df = data.frame(image = " ")
+# 
+# temp.df %>%
+#   # knitr::kable(caption = caption_tabel_raaien,
+#   #              booktabs = TRUE,
+#   #              col.names = NULL) %>%
+#   kbl(caption = caption_tabel_raaien,
+#       booktabs = T,
+#       col.names = NULL) %>%
+#   # kable_paper(full_width = F) %>%
+#   column_spec(1, image = img) %>%
+#   row_spec(1:(temp.df %>%
+#              nrow()), extra_latex_after = "\\arrayrulecolor{white}")
+
+```
+
+
+<!-- ```{r 130-tabel-overzicht-raaien, out.width="100%"} -->
+
+<!-- img <- str_c(pad_tabellen, "Tabel_MONEOSraaien.jpg") -->
+
+<!-- # img <- readJPEG(paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg")) -->
+
+<!-- caption_tabel_raaien <- -->
+<!--   "Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72)." -->
+
+<!-- temp.df = data.frame(image = " ") -->
+<!-- # colnames(temp.df) <- NULL -->
+<!-- temp.mat <- as.matrix(temp.df) -->
+<!-- colnames(temp.mat) <- NULL -->
+
+<!-- temp.mat %>% -->
+<!--   kbl(booktabs = T) %>% -->
+<!--   kable_paper(full_width = F) %>% -->
+<!--   column_spec(1, image = img) -->
+
+
+<!-- ``` -->
+
+
+
+<!-- ```{r 130-tabel-overzicht-raaien, out.width="100%"} -->
+
+<!-- knitr::include_graphics(paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg")) -->
+
+<!-- ``` -->
+
+<br/>
+
+
+## Referenties
+
+Van Braeckel A., Elsen R. en Van den Bergh E. (2014). MONEOS – Geomorfologie. Hoogteraaien van slik en schor in de Zeeschelde Evolutie van toestand tot 2012. Rapporten van het Instituut voor Natuur- en Bosonderzoek 2014 (1860252). Instituut voor Natuur- en Bosonderzoek, Brussel
+
+R Core Team 2013. R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL http://www.R-project.org/.
