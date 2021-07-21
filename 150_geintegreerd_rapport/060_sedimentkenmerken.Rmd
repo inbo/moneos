@@ -24,14 +24,14 @@ header-includes: \usepackage{float}
 ---
 
 
-```{r hoofdstuk, include=FALSE}
+```{r 060-hoofdstuk, include=FALSE}
 
 hoofdstuk <- "060_sedimentkenmerken"
 
 ```
 
 
-```{r setup, include=FALSE}
+```{r 060-setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.showtext = TRUE, dpi = 300, fig.pos = "H", out.extra = '')
 knitr::opts_knit$set(eval.after = "fig.cap")
@@ -39,7 +39,7 @@ knitr::opts_knit$set(eval.after = "fig.cap")
 ```
 
 
-```{r libraries}
+```{r 060-libraries}
 
 library(tidyverse)
 library(readxl)
@@ -50,7 +50,7 @@ library(rprojroot)
 ```
 
 
-```{r pad}
+```{r 060-pad}
 
 # inlezen van variabelen
 # pad naar data : pad_data
@@ -67,7 +67,7 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 ```
 
 
-```{r meta_data}
+```{r 060-meta-data}
 
 meta_data <- 
   read_delim(paste0(pad_data, "meta_data.csv"),
@@ -123,9 +123,9 @@ caption_x_waarden <- "Verdeling van de sedimentwaarden per jaar."
 # opmaak tabel
 tabel_x_waarden %>%
   mutate_all(~replace_na(., "")) %>%
-  knitr::kable(booktabs = TRUE,
-               caption = caption_x_waarden) %>%
-  kable_styling()
+  kable(caption = caption_x_waarden,
+        booktabs = TRUE) %>%
+  kable_styling(latex_options = "HOLD_position")
 
 ```
 

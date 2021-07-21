@@ -21,14 +21,14 @@ output:
 header-includes: \usepackage{float}
 ---
 
-```{r hoofdstuk, include=FALSE}
+```{r 090-hoofdstuk, include=FALSE}
 
 hoofdstuk <- "090_vissen"
 
 ```
 
 
-```{r setup, include=FALSE}
+```{r 090-setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.pos = "H", out.extra = '')
 knitr::opts_knit$set(eval.after = "fig.cap")
@@ -36,7 +36,7 @@ knitr::opts_knit$set(eval.after = "fig.cap")
 ```
 
 
-```{r libraries}
+```{r 090-libraries}
 
 library(tidyverse)
 library(readxl)
@@ -45,7 +45,7 @@ library(kableExtra)
 ```
 
 
-```{r pad}
+```{r 090-pad}
 
 # inlezen van variabelen
 # pad naar data : pad_data
@@ -54,14 +54,14 @@ library(kableExtra)
 
 source("../pad.R")
 
-pad_data <- maak_pad(params$hoofdstuk, "data")
-pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
-pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
 ```
 
 
-```{r meta_data}
+```{r 090-meta-data}
 
 meta_data <- 
   read_delim(paste0(pad_data, "vissen_meta_data.csv"),
@@ -282,8 +282,9 @@ cap_gevangen_exoten <-
 # opmaak tabel
 tabel_gevangen_exoten %>%
   mutate_all(~replace_na(., "")) %>%
-  knitr::kable(booktabs = TRUE,
-               caption = cap_gevangen_exoten) %>%
+  kbl(caption = cap_gevangen_exoten,
+        booktabs = TRUE,
+        align = 'r') %>%
   kable_styling(latex_options = "HOLD_position")
 
 ```
@@ -307,7 +308,8 @@ cap_exoten_soort <-
 tabel_exoten_soort %>%
   mutate_all(~replace_na(., "")) %>%
   knitr::kable(booktabs = TRUE,
-               caption = cap_exoten_soort) %>%
+               caption = cap_exoten_soort,
+               align = 'r') %>%
   kable_styling(latex_options = "HOLD_position")
 
 ```
@@ -331,7 +333,8 @@ cap_percentage_exoten <-
 tabel_percentage_exoten %>%
   mutate_all(~replace_na(., "")) %>%
   knitr::kable(booktabs = TRUE,
-               caption = cap_percentage_exoten) %>%
+               caption = cap_percentage_exoten,
+               align = 'r') %>%
   kable_styling(latex_options = "HOLD_position")
 
 ```

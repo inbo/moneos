@@ -106,7 +106,7 @@ o	Optioneel: raaien die occasioneel worden ingemeten of waar specifieke vraag na
 
 ```{r 130-figuur-overzicht-raaien, fig.cap=caption_overzicht, out.width="100%"}
 
-caption_overzicht <- "Situering van de 24 vaste MONEOS-raaien binnen de Zeeschelde. Zie Tabel in bijlage voor naamgeving."
+caption_overzicht <- "Situering van de 24 vaste MONEOS-raaien binnen de Zeeschelde. Zie tabel in bijlage voor naamgeving."
 
 knitr::include_graphics(paste0(pad_figuren, "0_OverzichtskaartMoneosraaien_Zeeschelde.jpg"))
 
@@ -117,15 +117,12 @@ knitr::include_graphics(paste0(pad_figuren, "0_OverzichtskaartMoneosraaien_Zeesc
 
 ## Methode
 
-De meetcampagnes van de raaien gebeuren meestal op het einde van de winterperiode en zijn dus een weerslag van wat na het voorbije jaar is veranderd. Een raai in februari 2020 ingemeten wordt vergeleken met de hoogtes van het jaar ervoor, waarbij de verandering een gevolg zijn van wat gebeurde in 2019. De metingen gebeuren steeds tijdens een springtijperiode vanaf het schor of de dijk tot bij het plaatselijk laagwater. ’s Morgens wordt gestart in het stroomafwaartse deel van de Zeeschelde, daarna wordt met het opkomend tij stroomopwaarts telkens een raai opzocht bij opnieuw het plaatselijk laagwater.   
+Een overzicht van de ingemeten raaien wordt gegeven in Tabel \@ref(tab:130-tabel-overzicht-raaien) in \@ref(BL1) Bijlage. De meetcampagnes van de raaien gebeuren meestal op het einde van de winterperiode en zijn dus een weerslag van wat na het voorbije jaar is veranderd. Een raai in februari 2020 ingemeten wordt vergeleken met de hoogtes van het jaar ervoor, waarbij de verandering een gevolg zijn van wat gebeurde in 2019. De metingen gebeuren steeds tijdens een springtijperiode vanaf het schor of de dijk tot bij het plaatselijk laagwater. ’s Morgens wordt gestart in het stroomafwaartse deel van de Zeeschelde, daarna wordt met het opkomend tij stroomopwaarts telkens een raai opzocht bij opnieuw het plaatselijk laagwater.   
 Alle slik- en schorraaien werden tot begin 2012 ingemeten met een RTK-DGPS_Trimble 5800. Vanaf eind 2012 is een RTK-DGPS_Trimble R8 gebruikt waarbij zowel GPS- en GLONASS-satellietsignalen ontvangen kunnen worden. De ingestelde maximale foutenmarge voor een meting te kunnen uitvoeren is 2 cm op de z-waarde maar ligt gemiddeld rond ±1 cm. Bij de meetcampagne wordt een eerdere meetreeks in de RTK-GPS ingelezen. In het veld wordt vervolgens naar elk gemeten punt van de raai teruggaan. Zodoende kan op een efficiënte manier de raaien opnieuw ingemeten worden met een minimale horizontale afwijking.  
 Tijdens de meetcampagne is gebruik gemaakt van het standaard veldwerkprotocol (cfr. 2e lijnsrapportage, Van Braeckel et al., 2014) met beschrijvingen van de schorrand en de verschillende slikzones. De ingemeten data van de raaien worden vervolgens in GIS ‘gesnapt’ naar een  rechte referentieraailijn met de INBO-GIS-tool. Na controle van de GIS-data wordt de data vervolgens in R (R Core Team 2013) geïmporteerd. In eerste instantie wordt de afstand tussen de punten onderling bepaald. Door de hoogtes uit te zetten t.o.v. de afstand tot een nulpunt op de dijk, wordt in R een grafiek per raai gegenereerd met de metingen van de verschillende meetperioden.   
 Voor verdere analyses wordt vervolgens een lineaire interpolatie tussen gecontroleerde data uitgevoerd naar punten met een tussenafstand van een halve meter. Dit zorgt voor een standaardisatie van de afstand tussen ieder punt. Voorheen kon dit verschillen naargelang  (micro-) reliëf op de raai (1,5-10m) en tussen jaren aangezien bij een nieuwe sterke hoogtegradiënt extra punten worden ingemeten. Door schoruitbreiding of -erosie kan het startpunt van de raai alsook het lokale laagwater verschillen. Om afwijkingen tussen de jaren te vermijden door meetbereik-of schorveranderingen wordt enkele de gezamenlijk gemeten zone meegenomen in de volgende berekeningen.     
 Naast gemiddelde hoogteverschil over de volledige sliklengte wordt ook de oppervlakte tussen de 2 curven van de 2 opeenvolgende ingemeten jaren bepaald. Deze oppervlakte is een maat voor het volume (m³) afgezet/ geërodeerd sediment op een 1 meter breed slik ter hoogte van de raai. De data werd hierna nog gekoppeld aan gemiddelde droogvalduurdata uit de beginperiode 2013-2016. Zoals bij de ecotopen is hier het gemiddelde 25% droogvalduur percentiel gebruikt voor de afbakening van de grens laag en middelhoog slik en het 75% droogvalduurpercentiel voor de grens middelhoog en hoog slikgrens. De grens tussen hoog slik en de supralitoraal slikzone (potentiële pionierzone) vormt het 85 percentiel van de hoogwaters uit die periode.   
 Op de meeste MONEOS-raaien en sommige NOP’s is per ecotoop een vast punt vastgelegd waar 3 RTK-GPSmetingen worden uitgevoerd alsook een foto en sedimentstaal (10cm diep) wordt genomen. Voor de berekening van de hoogteverandering op deze vaste punten wordt het gemiddelde genomen van de 3 metingen, wat direct gerelateerd kan worden aan de sedimentverandering.  
-
-
-Tabel \@ref(tab:130-tabel-overzicht-raaien) in \@ref(BL1) Bijlage.
 
 
 ## Exploratieve data-analyse
@@ -267,76 +264,14 @@ knitr::include_graphics(paste0(pad_figuren, "12_MONEOSDEELHO.png"))
 
 ## Bijlage {#BL1}
 
-<!-- Table: (\#tab:130-tabel-overzicht-raaien) Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72). -->
+\arrayrulecolor{white}
 
-<!-- | | -->
-<!-- | :-- | -->
-<!-- | ![](`r paste0(pad_tabellen, "Tabel_MONEOSraaien.png")`){out.width="100%"} | -->
+Table: (\#tab:130-tabel-overzicht-raaien) Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72).
 
+| ![](`r paste0(pad_tabellen, "Tabel_MONEOSraaien.png")`){out.width="100%"} |
+| -- |
 
-```{r 130-tabel-overzicht-raaien, out.width="100%"}
-
-caption_tabel_raaien <-
-  "Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, raaicode, naam en X,Y coördinaat (Lambert 72)."
-
-img <- str_c("![](", pad_tabellen, "Tabel_MONEOSraaien.png", ")")
-temp.df = data.frame(image = img)
-
-temp.df %>%
-  knitr::kable(format = "pandoc",
-               caption = caption_tabel_raaien,
-               booktabs = TRUE,
-               col.names = NULL)
-
-
-# img <- str_c(pad_tabellen, "Tabel_MONEOSraaien.jpg")
-# temp.df = data.frame(image = " ")
-# 
-# temp.df %>%
-#   # knitr::kable(caption = caption_tabel_raaien,
-#   #              booktabs = TRUE,
-#   #              col.names = NULL) %>%
-#   kbl(caption = caption_tabel_raaien,
-#       booktabs = T,
-#       col.names = NULL) %>%
-#   # kable_paper(full_width = F) %>%
-#   column_spec(1, image = img) %>%
-#   row_spec(1:(temp.df %>%
-#              nrow()), extra_latex_after = "\\arrayrulecolor{white}")
-
-```
-
-
-<!-- ```{r 130-tabel-overzicht-raaien, out.width="100%"} -->
-
-<!-- img <- str_c(pad_tabellen, "Tabel_MONEOSraaien.jpg") -->
-
-<!-- # img <- readJPEG(paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg")) -->
-
-<!-- caption_tabel_raaien <- -->
-<!--   "Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72)." -->
-
-<!-- temp.df = data.frame(image = " ") -->
-<!-- # colnames(temp.df) <- NULL -->
-<!-- temp.mat <- as.matrix(temp.df) -->
-<!-- colnames(temp.mat) <- NULL -->
-
-<!-- temp.mat %>% -->
-<!--   kbl(booktabs = T) %>% -->
-<!--   kable_paper(full_width = F) %>% -->
-<!--   column_spec(1, image = img) -->
-
-
-<!-- ``` -->
-
-
-
-<!-- ```{r 130-tabel-overzicht-raaien, out.width="100%"} -->
-
-<!-- knitr::include_graphics(paste0(pad_tabellen, "Tabel_MONEOSraaien.jpg")) -->
-
-<!-- ``` -->
-
+\arrayrulecolor{black}
 <br/>
 
 
