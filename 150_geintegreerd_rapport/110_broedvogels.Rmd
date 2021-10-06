@@ -19,6 +19,8 @@ output:
     floatbarrier: subsection
 bibliography: references.bib
 link-citations: TRUE
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -43,6 +45,8 @@ library(tidyverse)
 # library(readxl)
 # library(kableExtra)
 library(INBOtheme)
+library(sf)
+library(leaflet)
 
 ```
 
@@ -55,6 +59,7 @@ library(INBOtheme)
 # pad naar figuren : pad_figuren
 
 source("../pad.R")
+# source("pad.R")
 
 pad_data <- maak_pad(hoofdstuk, "data")
 pad_figuren <- maak_pad(hoofdstuk, "figuren")
@@ -83,6 +88,15 @@ Terr_Sigma_AB <-
   gather(key = Jaar, value = Aantal, -SOORT, -Gebied, -TypeGebied, -Doel) %>% 
   mutate(Jaar = as.numeric(Jaar))
 
+# GebiedenAlgemenSoorten <- 
+#   st_read(str_c(pad_data, "Gebieden_algSoorten.shp"), crs = 31370,
+#           quiet = TRUE) %>% 
+#   st_transform(crs = 4326)
+# NOPzone <- 
+#   st_read(str_c(pad_data, "NOPzoneplusminhaven.shp"), crs = 31370,
+#           quiet = TRUE) %>% 
+#   st_transform(crs = 4326)
+
 ```
 
 
@@ -103,22 +117,56 @@ De eerstelijnsrapportage beschrijft de trends van de broedvogelsoorten waarvoor 
 
 ### Studiegebied
 
-Het IHD-gebied (zoals beschreven in Adriaensen et al. (2005)) omvat 
-  
-  *	het Noordelijk gebied (Doelpolder Noord, Doelpolder Midden, Prosperpolder en Schor Ouden Doel, Paardenschor),
-  *	het Galgenschoor,
-  * Ketenisse
-  * Blokkersdijk en
-  * Rest IHD-gebied. 
+<!-- Het IHD-gebied (zoals beschreven in Adriaensen et al. (2005)) omvat  -->
 
-Rest IHD-gebied is de NOP-zoneplus, het studiegebied van de Instandhoudingsdoelstellingen Schelde-estuarium (IHD-Z, Adriaensen et al. 2005). Dit gebied omvat de vallei van de Zeeschelde en haar getijgebonden zijrivieren, inclusief de vallei van de Grote Nete tot in Zammel en van de Kleine Nete tot in Grobbendonk en alle buitendijkse gebieden.  
-Het Galgenschoor, Ketenisse en het Noordelijk gebied worden apart behandeld omdat hiervoor aparte doelstellingen zijn gedefinieerd (Adriaensen et al., 2005).  
-Het Groot Buitenschoor, het overstromingsgebied Kruibeke – Bazel – Rupelmonde, de Potpolder Lillo, het Molsbroek, de overige gebieden vzw Durme (reservaten Durmemeersen, Scheldebroeken (excl. Paardeweide en reservaatzone Donkmeer), de Kalkense Meersen en Wijmeers (KM en WM), het Weijmeerbroek, de Paardeweide, de Bergenmeersen, het Aubroek en de Sint Onolfspolder, Schellebelle (omgeving station) en Zennegat zitten vervat in het ‘Rest IHD-gebied’. De gegevens van deze gebieden worden tevens in aparte werkbladen gegeven omdat soms voor één of meerdere soorten goede lokale tijdsreeksen beschikbaar zijn.
-In het werkblad “IHD-gebied_Totaal” worden de totalen berekend voor het IHD-gebied. Deze totalen zijn gebaseerd op de aantallen van bovenstaande deelgebieden (zie andere werkbladen), waarbij in geval van een vork steeds de hoogste waarden werd genomen. Aanwezigheid van NA’s (soort niet geteld in dat gebied tijdens dat jaar) in één gebied leidt tot een NA in het totaal.  
-Rest AN-LO is het Vogelrichtlijngebied op de linkeroever van de Schelde, inclusief de compensatiegebieden (Achtergrondnota Natuur) en exclusief het Noordelijk gebied en Ketenisse. Deze data zijn in principe niet nodig voor de evaluatie aangezien de IHD-Z geen betrekking hebben op dit gebied (er worden aparte doelstellingen voor dit gebied geformuleerd in de Achtergrondnota Natuur). Ze kunnen wel bijkomende informatie geven over de feitelijke populatiegrootte van sommige soorten.  
-Het Fort St- Marie en het gebied tussen de Vlakte van Zwijndrecht en Blokkersdijk is mee opgenomen in ‘Rest IHD-gebied’.  
-AN_RO_Inclusief Kuifeend omvat het Vogelrichtlijngebied de Kuifeend en de omliggende gebieden (Plas voormalige Hoge Maey, de Verlegde Schijns, het Oud Schijn, de Grote Kreek en Stadsgracht), de Meeuwenbroedplaats en het Opstalvalleigebied. Ook deze aantallen zijn niet strikt noodzakelijk voor de evaluatie omdat de Achtergrondnota Natuur voor dit gebied aparte instandhoudingsdoelstellingen vastlegt.  
-De overige gebieden in de haven op de rechteroever van de Schelde zijn opgenomen in Rest IHD-gebied (Fort St-Filip, Potpolder Lillo …).  
+<!--   *	het Noordelijk gebied (Doelpolder Noord, Doelpolder Midden, Prosperpolder en Schor Ouden Doel, Paardenschor), -->
+<!--   *	het Galgenschoor, -->
+<!--   * Ketenisse -->
+<!--   * Blokkersdijk en -->
+<!--   * Rest IHD-gebied.  -->
+
+Voor de evaluatie worden broedvogelgegevens verzameld uit de NOP-zoneplus zonder het vogelrichtlijngebied "Slikken en Schorren van de Beneden Zeeschelde" (Figuur \@ref(fig:110-kaart)).
+De NOP-zoneplus is het studiegebied van de Instandhoudingsdoelstellingen Schelde-estuarium (IHD-Z, Adriaensen et al. 2005). De NOP-zone omvat het estuarium en de valleigebieden van de Zeeschelde en haar tijgebonden zijrivieren (Van den Bergh et al. 2003). Deze NOP-zone werd uitgebreid tot de NOP-zoneplus met meer stroomopwaartse valleidelen langs Grote Nete, Dijle en Zenne.  De IHD-Z horen gerealiseerd te worden binnen strikt beschermde natuurgebieden in de NOP-zoneplus, zijnde Speciale beschermingszones, gebieden van het Vlaams ecologisch netwerk, Vlaamse en erkende natuurreservaten. Voor het vogelrichtlijngebied  zijn aparte instandhoudingsdoelstellingen geformuleerd (Anoniem 2005) die ten dele overlappen met de IHD-Z, meer bepaald voor het Noordelijk gebied (Doelpolder, Prosperpolder, Schor Ouden Doel en Paardeschor). 
+
+
+<!-- Het Galgenschoor, Ketenisse en het Noordelijk gebied worden apart behandeld omdat hiervoor aparte doelstellingen zijn gedefinieerd (Adriaensen et al., 2005).   -->
+<!-- Het Groot Buitenschoor, het overstromingsgebied Kruibeke – Bazel – Rupelmonde, de Potpolder Lillo, het Molsbroek, de overige gebieden vzw Durme (reservaten Durmemeersen, Scheldebroeken (excl. Paardeweide en reservaatzone Donkmeer), de Kalkense Meersen en Wijmeers (KM en WM), het Weijmeerbroek, de Paardeweide, de Bergenmeersen, het Aubroek en de Sint Onolfspolder, Schellebelle (omgeving station) en Zennegat zitten vervat in het ‘Rest IHD-gebied’. De gegevens van deze gebieden worden tevens in aparte werkbladen gegeven omdat soms voor één of meerdere soorten goede lokale tijdsreeksen beschikbaar zijn. -->
+<!-- In het werkblad “IHD-gebied_Totaal” worden de totalen berekend voor het IHD-gebied. Deze totalen zijn gebaseerd op de aantallen van bovenstaande deelgebieden (zie andere werkbladen), waarbij in geval van een vork steeds de hoogste waarden werd genomen. Aanwezigheid van NA’s (soort niet geteld in dat gebied tijdens dat jaar) in één gebied leidt tot een NA in het totaal.   -->
+<!-- Rest AN-LO is het Vogelrichtlijngebied op de linkeroever van de Schelde, inclusief de compensatiegebieden (Achtergrondnota Natuur) en exclusief het Noordelijk gebied en Ketenisse. Deze data zijn in principe niet nodig voor de evaluatie aangezien de IHD-Z geen betrekking hebben op dit gebied (er worden aparte doelstellingen voor dit gebied geformuleerd in de Achtergrondnota Natuur). Ze kunnen wel bijkomende informatie geven over de feitelijke populatiegrootte van sommige soorten.   -->
+<!-- Het Fort St- Marie en het gebied tussen de Vlakte van Zwijndrecht en Blokkersdijk is mee opgenomen in ‘Rest IHD-gebied’.   -->
+<!-- AN_RO_Inclusief Kuifeend omvat het Vogelrichtlijngebied de Kuifeend en de omliggende gebieden (Plas voormalige Hoge Maey, de Verlegde Schijns, het Oud Schijn, de Grote Kreek en Stadsgracht), de Meeuwenbroedplaats en het Opstalvalleigebied. Ook deze aantallen zijn niet strikt noodzakelijk voor de evaluatie omdat de Achtergrondnota Natuur voor dit gebied aparte instandhoudingsdoelstellingen vastlegt.   -->
+<!-- De overige gebieden in de haven op de rechteroever van de Schelde zijn opgenomen in Rest IHD-gebied (Fort St-Filip, Potpolder Lillo …).   -->
+
+```{r 110-kaart, fig.height=5, fig.width=6, out.width="100%", fig.cap = "NOP-zoneplus en onderzooeksgebieden - algemene soorten."}
+
+knitr::include_graphics(paste0(pad_figuren, "kaart_NOP.png"))
+
+# leaflet() %>% 
+#   addTiles(group = "OSM") %>%
+#   addPolygons(data = GebiedenAlgemenSoorten,
+#               color = "blue",
+#               weight = 3, fillOpacity = 0.4,
+#               group = "Gebieden - algemene soorten",
+#               labelOptions = labelOptions(style = list("color" = "black"),
+#                                           textOnly = TRUE, textsize = 15)) %>% 
+#    addPolygons(data = NOPzone,
+#               color = "black",
+#               weight = 1, fillOpacity = 0.2,
+#               group = "NOPzone",
+#               labelOptions = labelOptions(style = list("color" = "black"),
+#                                           textOnly = TRUE, textsize = 15)) %>%
+#   # addLayersControl(
+#   #   overlayGroups = c("Gebieden - algemene soorten", "NOPzone"),
+#   #   options = layersControlOptions(collapsed = FALSE, position = "topright"))
+#   addLegend(position = "bottomright",
+#             colors = c("blue", "black"),
+#             opacity = 0.6,
+#             labels = c("Gebieden - Algemene soorten", "NOP-zone")) %>% 
+#   addScaleBar(options = scaleBarOptions(imperial = FALSE))
+
+```
+
+<br/> 
 
 ### Dataverzameling
 
@@ -132,22 +180,17 @@ De gegevens van de periode 2006-2007 zijn afkomstig uit het BBV-verslag 2006-200
 De gegevens voor de periode 2008-2009 zijn afkomstig uit (Anselin 2010) en de Broedvogeldatabank.
 Voor de deelgebieden Noordelijk gebied, Ketenisse, Rest AN-LO zijn de aantallen vanaf 2003 afgeleid uit de monitoringsrapporten van het Linkerscheldeoevergebied (Spanoghe et al., 2003, 2006, 2008, 2010 en Gyselings et al. 2004, 2007, 2009) en recentere monitoringsgegevens van het INBO-project “Monitoring en evaluatie van het Linkerscheldeoevergebied (LO)”.  
 De aantallen voor Blokkersdijk zijn afkomstig van de website van Natuurpunt-Waasland en het tweede monitoringsrapport (De Jonghe & Verschueren, 2017) en data aangeleverd door Willy Verschueren (2018 - 2020).
-Voor Kuifeend en omgeving zijn de gegevens vanaf 2009 en voor sommige soorten vanaf 2004 afkomstig uit het monitoringsrapport RO (Gyselings et al. 2014) en recentere monitoringsgegevens van het EVINBO-project “Monitoring en evaluatie van het Rechterscheldeoevergebied (RO)”. De aantallen voor de jaren 2009 tot en met 2017 zijn voor enkele soorten aangepast op basis van de meest recente rapportage.  
+<!-- Voor Kuifeend en omgeving zijn de gegevens vanaf 2009 en voor sommige soorten vanaf 2004 afkomstig uit het monitoringsrapport RO (Gyselings et al. 2014) en recentere monitoringsgegevens van het EVINBO-project “Monitoring en evaluatie van het Rechterscheldeoevergebied (RO)”. De aantallen voor de jaren 2009 tot en met 2017 zijn voor enkele soorten aangepast op basis van de meest recente rapportage.   -->
 Voor het overstromingsgebied Kruibeke – Bazel – Rupelmonde zijn de gegevens afkomstig van de jaarverslagen van de Beheercommissie Kruibeke-Bazel-Rupelmonde (Anoniem, 2014) en recentere monitoringsgegevens van het INBO-project “”Opvolgen en adviseren beheercommissie Kruibeke-Bazel-Rupelmonder (KBR)”.  
 Gegevens van Molsbroek en de overige gebieden van de vzw Durme zijn afkomstig van de Vogelwerkgroep Durmevallei.  
 Gegevens van Kalkense Meersen, Wijmeers, Paardeweide, Bergenmeersen, Weijmeerbroek en Zennegat na 2008 werden verzameld in het kader van het INBO/ANB-project “Wetenschappelijke opvolging van de natuurontwikkeling in de gebieden van het geactualiseerde Sigmaplan”. In deze gebieden zijn frequent, maar niet jaarlijks broedvogelkarteringen uitgevoerd. Het aantal territoria voor jaren zonder kartering wordt berekend op basis van een lineair interpolatie.   
 Gegevens over het aantal gruttoterritoria in de Kalkense Meersen en omgeving in de periode 2001-2009 zijn afkomstig uit Schepers (2010). Gegevens over het aantal gruttoterritoria in Aubroek, Sint Onolfspolder en Schellebelle (omgeving station) na 2010 zijn afkomstig van de projectverslagen Weidevogelbescherming in het Regionaal Landschap Schelde-Durme (2013 en 2014) en van data aangeleverd door Robbert Schepers.
 De gegevens van het Groot Buitenschoor (2012) zijn ongepubliceerde gegevens verzameld in het kader van een INBO-ANB monitoringproject Antwerpen RO.  
-Voor de soorten baardman, bruine kiekendief, grote karekiet, kluut, snor, tureluur, woudaap en zomertaling werden de aantallen uit bovenstaande bronnen aangevuld op basis van waarnemingen uit waarnemingen.be geïnterpreteerd volgens de criteria uit Van Dijk en Boele (2011) en Vergeer et al. (2016).
-Nullen werden enkel ingevuld als:
+Voor de soorten baardman, bruine kiekendief, grote karekiet, kluut, snor, tureluur, woudaap en zomertaling werden de aantallen uit bovenstaande bronnen aangevuld op basis van waarnemingen uit waarnemingen.be geïnterpreteerd volgens de criteria uit Van Dijk en Boele (2011) en Vergeer et al. (2016).  
 
-  *	er een intensieve monitoring werd uitgevoerd en geen territoria of broedgevallen zijn vastgesteld in een bepaald gebied
-  *	er voor een bepaald jaar voor een gebied aantallen in de databank zaten voor andere soorten
-  *	het op basis van de gekende Vlaamse populaties uiterst onwaarschijnlijk is dat een bepaalde soort zou hebben gebroed.
-  
-In andere gevallen, waar geen zekerheid bestaat over aan- of afwezigheid, werd niets ingevuld. 
-De aantallen voor de gebieden Groot Buitenschoor, overstromingsgebied Kruibeke – Bazel – Rupelmonde, Potpolder Lillo, Molsbroek, Overige gebieden vzw Durme (reservaten Durmemeersen, Scheldebroeken (excl. Paardeweide en reservaatzone Donkmeer), Kalkense Meersen en Wijmeers (KM en WM), Paardeweide, Bergenmeersen, Aubroek en Sint Onolfspolder en Schellebelle (omgeving station)  worden in aparte werkbladen gegeven maar zitten vervat in de totalen van de categorie Rest_IHD-gebied (indien aanwezig).  
-In het werkblad Rest_IHD-gebied worden enkel aantallen gegeven indien verwacht mag worden dat ze een redelijke schatting zijn van het totaal aantal territoria in het gebied.  
+Totale aantallen worden enkel ingevuld voor soorten waarvan de bovenbeschreven dataverzameling met grote waarschijnlijkheid de volledige populatie van het studiegebied in kaart brengt. In andere gevallen, waar geen zekerheid bestaat over aan- of afwezigheid, wordt NA ingevuld.  
+<!-- De aantallen voor de gebieden Groot Buitenschoor, overstromingsgebied Kruibeke – Bazel – Rupelmonde, Potpolder Lillo, Molsbroek, Overige gebieden vzw Durme (reservaten Durmemeersen, Scheldebroeken (excl. Paardeweide en reservaatzone Donkmeer), Kalkense Meersen en Wijmeers (KM en WM), Paardeweide, Bergenmeersen, Aubroek en Sint Onolfspolder en Schellebelle (omgeving station)  worden in aparte werkbladen gegeven maar zitten vervat in de totalen van de categorie Rest_IHD-gebied (indien aanwezig).   -->
+<!-- In het werkblad Rest_IHD-gebied worden enkel aantallen gegeven indien verwacht mag worden dat ze een redelijke schatting zijn van het totaal aantal territoria in het gebied.   -->
 
 ### Exploratieve data-analyse
 
@@ -253,6 +296,8 @@ Terr_Sigma_AB %>%
 
 Adriaensen F., Van Damme S., Van den Bergh E., Van Hove D., Brys R., Cox T., Jacobs S., Konings P., Maes J., Maris T. et al. (2005). Instandhoudingsdoelstellingen Schelde-estuarium. Antwerpen: Antwerpen U. 05-R82. 249 p.
 
+Anoniem. (2005) Achtergrondnota Natuur Haven van Antwerpen. Afdeling Natuur – Aeolus-UA.
+
 Anoniem (2014). Jaarverslag 2013. Beheercommissie Natuur Kruibeke – Bazel – Rupelmonde, Gent.
 
 Anselin A. (2010). Enkele resultaten van het project Bijzondere Broedvogels voor 2008 en 2009. Vogelnieuws : ornithologische nieuwsbrief van het Instituut voor Natuur- en Bosonderzoek 14(Brussel).
@@ -285,6 +330,8 @@ Spanoghe G., Gyselings R., Van den Bergh E. (2006). Monitoring van het Linkersch
 Spanoghe G., Gyselings R., Van den Bergh E. (2008). Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het vijfde jaar : bijlage 9.10 bij het vijfde jaarverslag van de Beheercommissie Natuurcompensatie Linkerscheldeoevergebied. Brussel. 2008.14.
 
 Spanoghe G., Gyselings R., Vandevoorde B., Van den Bergh E., Hessel K., Mertens W. (2010). Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het zevende jaar : bijlage 9.8 bij het zevende jaarverslag van de Beheercommissie Natuur Linkerscheldeoever. Brussel. 2010.8.
+
+Van den Bergh E., van Damme S., Graveland J., de Jong D.J., Baten I.  & Meire P. (2003). Studierapport natuurontwikkelingsmaatregelen ten behoeve van de Ontwikkelingsschets 2010 voor het Schelde-estuarium (NOP): Op basis van een ecosysteemanalyse en verkenning van mogelijke maatregelen om het streefbeeld Natuurlijkheid van de Lange Termijn Visie te bereiken. ProSes. 99pp.
 
 Van Dijk A.J., Boele A. (2011). Handleiding SOVON Broedvogelonderzoek. Nijmegen, Nederland: SOVON Vogelonderzoek.
 
