@@ -187,14 +187,15 @@ knitr::include_graphics(paste0(pad_figuren, "aantal_soorten_locatie.jpg"))
 
 #### Densiteit en biomassa
 
-[Algemene patronen 2012-2019]{.ul}
+[Algemene patronen 2012-`r laatste_jaar`]{.ul}
 
-Het gemiddeld aantal gevangen individuen per volume water dat door het net stroomde nam toe van 2012 tot 2014 (Figuur \@ref(fig:090-figuur-gemiddeld-over-seizoenen)). Dat heeft vooral te maken met de toename van spiering. In 2015 was het aantal gevangen individuen per m\textsuperscript{3} water veel lager dan in 2014. Dit was het gevolg van de zeer lage vangstaantallen in het voorjaar. In 2016 was het gemiddeld aantal gevangen individuen nog lager dan in 2015. Er werden minder spieringen gevangen. Deze dalende trend zette zich ook voort in 2017. In het voorjaar van 2017 vingen we gemiddeld minder individuen dan in 2016. In de zomer waren de vangstaantallen per m\textsuperscript{3} iets hoger dan in 2016. Ook in het najaar van 2017 waren de vangsten per m\textsuperscript{3} lager dan in het najaar van vorige campagnes. In 2019 daalde het aantal individuen gevangen per m\textsuperscript{3} tot de laagste waarde ooit sinds de campagnes zijn gestart. In 2020 is er weer een hertstel waar te nemen van het gevangen aantal individuen per m\textsuperscript{3}.
+Het gemiddeld aantal gevangen individuen per volume water dat door het net stroomde kende een sterke piek in 2014 (Figuur \@ref(fig:090-figuur-gemiddeld-over-seizoenen)). Dat heeft vooral te maken met een enorm succesvolle rekrutering van spiering in het voorjaar in alle stations maar vooral te Steendorp en Branst. In 2015 was het aantal gevangen individuen per m\textsuperscript{3} water opnieuw lager. Dit was het gevolg van de zeer lage vangstaantallen in het voorjaar. In 2016-2017 was het gemiddeld aantal gevangen (spiering) individuen nog lager. In 2018 was het gemiddeld aantal individuen opnieuw hoger. Dit kwam vooral door het hoge aantal brakwatergrondels. In 2019 daalde het aantal individuen gevangen per m\textsuperscript{3} tot de laagste waarde ooit. In 2020 werden opnieuw iets meer vissen gevangen.
 
-Het aantal individuen gevangen per m\textsuperscript{3} over alle seizoenen heen, voor de periode 2012-`r laatste_jaar`, is laag in Doel en Antwerpen (0,12 ind./m\textsuperscript{3} voor beide locaties). Gemiddeld vingen we in de periode 2012-`r laatste_jaar` 0,79 individuen per m\textsuperscript{3} in Steendorp en 1,24 per m\textsuperscript{3} in Branst. Over de jaren heen werd de hoogste biomassa (per m\textsuperscript{3}) gevangen in Branst (0.29 g/m\textsuperscript{3}) en Branst (0,25 g/m\textsuperscript{3}). In Antwerpen vingen we 0,12 g/m\textsuperscript{3} en 0,09 g/m\textsuperscript{3} in Doel.
+Het aantal individuen gevangen per m\textsuperscript{3} over alle seizoenen heen, voor de periode 2012-`r laatste_jaar`, is laag in Doel en Antwerpen (0,12 ind./m\textsuperscript{3} voor beide locaties). Gemiddeld vingen we in de periode 2012-`r laatste_jaar` 0,79 individuen per m\textsuperscript{3} in Steendorp en 1,24 per m\textsuperscript{3} in Branst. Over de jaren heen werd de hoogste biomassa (per m\textsuperscript{3}) gevangen in Steendorp (0.29 g/m\textsuperscript{3}) en Branst (0,25 g/m\textsuperscript{3}). In Antwerpen vingen we 0,12 g/m\textsuperscript{3} en 0,09 g/m\textsuperscript{3} in Doel.
 
 
 ```{r 090-figuur-gemiddeld-over-seizoenen, fig.cap=cap_gemiddeld_over_seizoenen, out.width="80%"}
+#deze figuur moet herzien worden zodat ook de onzekerheid wordt weergegeven
 
 cap_gemiddeld_over_seizoenen <-
   str_c("Gemiddeld aantal individuen per m\\textsuperscript{3} water gevangen in de Zeeschelde in de periode 2012-",laatste_jaar,".")
@@ -227,9 +228,9 @@ knitr::include_graphics(paste0(pad_figuren, "gemiddelde_biomassa_per_seizoen_en_
 
 <br/>
 
-[Relatieve soortensamenstelling dominante soorten in 2019]{.ul}
+[Relatieve soortensamenstelling dominante soorten in `r laatste_jaar`]{.ul}
 
-We analyseren alle vangstgegevens van `r laatste_jaar`, inclusief spiering. Soorten met een relatieve bijdrage kleiner dan 5% worden als rest samengenomen. Uit deze analyse blijkt dat de relatieve soortenabundantie zowel seizoenaal als ruimtelijk verschilt (Figuur \@ref(fig:090-figuur-relatief-aantal)). In de zomer `r laatste_jaar` vingen we in Doel hoofdzakelijk haring, met ook een belangrijke bijdrage van spiering en sprot. In het najaar nam het aandeel spiering nog toe. In de andere locaties werd in de zomer hoofdzakelijk spiering gevangen. In Antwerpen was er ook nog een belangrijk aandeel brakwatergrondel. In het najaar nam het aandeel van grondels (brakwatergrondel en dikkopje) sterk toe in Steendorp en Branst, terwijl het aandeel spiering afnam. In Antwerpen blijft spiering de dominante soort in het najaar. Verder zien we een volledige dominantie van spiering. Het overwicht van grondels vastgesteld in het voorjaar van 2018 is niet terug te vinden in 2019. Enkel in Branst in het najaar was het relatief aantal brakwatergrondels en dikkopjes groot.
+We analyseren alle vangstgegevens van `r laatste_jaar`, inclusief spiering. Soorten met een relatieve bijdrage kleiner dan 5% worden als rest samengenomen. Uit deze analyse blijkt dat de relatieve soortenabundantie zowel seizoenaal als ruimtelijk verschilt (Figuur \@ref(fig:090-figuur-relatief-aantal)). In de zomer `r laatste_jaar` vingen we in Doel hoofdzakelijk haring, met ook een belangrijke bijdrage van spiering en sprot. In het najaar nam het aandeel spiering nog toe. In de andere locaties werd in de zomer hoofdzakelijk spiering gevangen. In Antwerpen was er ook nog een belangrijk aandeel brakwatergrondel. In het najaar nam het aandeel van grondels (brakwatergrondel en dikkopje) sterk toe in Steendorp en Branst, terwijl het aandeel spiering afnam. In Antwerpen blijft spiering de dominante soort in het najaar. Verder zien we een volledige dominantie van spiering. 
 
 De relatieve biomassa van de verschillende soorten varieert zowel seizoenaal als spatiaal (Figuur \@ref(fig:090-figuur-relatieve-biomassa)), maar op enkele uitzonderingen na (zomer Doel) is het leeuwendeel van de biomassa steeds spiering. In Doel bestaat vooral in de zomer een groot deel van de biomassa uit haring. Verder kan, afhankelijk van seizoen en locatie, ook brakwatergrondel een belangrijk deel (15%-20%) deel van de biomassa innemen.
 
@@ -237,7 +238,7 @@ De relatieve biomassa van de verschillende soorten varieert zowel seizoenaal als
 ```{r 090-figuur-relatief-aantal, fig.cap=cap_relatief_aantal, out.width="100%"}
 
 cap_relatief_aantal <-
-  str_c("Het relatief aantal gevangen individuen in de Zeeschelde tijdens de ankerkuilcampagnes in de zomer en het najaar van 2019. De getallen geven de percentages van het aantal gevangen vissen weer.")
+  str_c("Het relatief aantal gevangen individuen in de Zeeschelde tijdens de ankerkuilcampagnes in de zomer en het najaar van ",laatste_jaar,". De getallen geven de percentages van het aantal gevangen vissen weer.")
 
 knitr::include_graphics(paste0(pad_figuren, "relatief_aantal_gevangen_individuen.jpg"))
 
@@ -249,7 +250,7 @@ knitr::include_graphics(paste0(pad_figuren, "relatief_aantal_gevangen_individuen
 ```{r 090-figuur-relatieve-biomassa, fig.cap=cap_relatieve_biomassa, out.width="100%"}
 
 cap_relatieve_biomassa <-
-  str_c("De relatieve biomassa van de vangsten in de Zeeschelde tijdens de ankerkuilcampagnes in de zomer en het najaar van 2019. De getallen geven de percentages van de totale biomassa weer.")
+  str_c("De relatieve biomassa van de vangsten in de Zeeschelde tijdens de ankerkuilcampagnes in de zomer en het najaar van ",laatste_jaar,". De getallen geven de percentages van de totale biomassa weer.")
 
 knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_gevangen_individuen.jpg"))
 
@@ -260,9 +261,9 @@ knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_gevangen_individ
 
 #### Exoten
 
-In totaal vingen we voor de periode 2012-2019 negen exotische soorten: blauwbandgrondel, regenboogforel, giebel, snoekbaars, zonnebaars, zwartbekgrondel, een exemplaar van de reuzenkapiteinvis in 2016 (Breine et al., 2017a) en in het najaar van 2018 een naakte grondel (*Gobiosoma bosc*) (Verreycken et al., 2019) en een 'target fish' of terapon jarbua (*Terapon jarbua*) (Breine et al., 2019). Naakte grondel werd opnieuw in 2019 gevangen.
+In totaal vingen we voor de periode 2012-`r laatste_jaar` negen exotische soorten: blauwbandgrondel, regenboogforel, giebel, snoekbaars, zonnebaars, zwartbekgrondel, een exemplaar van de reuzenkapiteinvis in 2016 (Breine et al., 2017a) en in het najaar van 2018 een naakte grondel (*Gobiosoma bosc*) (Verreycken et al., 2019) en een 'target fish' of terapon jarbua (*Terapon jarbua*) (Breine et al., 2019). In `r laatste_jaar` werden 4 soorten exoten gevangen (Tabel \@ref(tab:090-tabel-exoten-soort)).
 
-In de periode 2012 tot en met 2017 steeg het aantal gevangen individuen van exoten op bijna alle locaties (Tabel \@ref(tab:090-tabel-gevangen-exoten)). De hoge aantallen exoten in 2016 en 2017 waren hoofdzakelijk te wijten aan het groot aantal snoekbaarzen (Breine et al., 2018). In `r laatste_jaar` vingen we ook nog veel snoekbaars in Antwerpen, Branst en Steendorp (Tabel \@ref(tab:090-tabel-exoten-soort)). Snoekbaars is een algemeen voorkomende (ingeburgerde) soort in de Zeeschelde en doet het uitstekend de laatste jaren. Blauwbandgrondel werd in 2016 voornamelijk gevangen in Branst terwijl er in 2017-2019 minder exemplaren gevangen werden. In `r laatste_jaar` worden er echter weer meer blauwbandgrondel gevangen in Antwerpen, Steendorp en Branst. Giebel vingen we in 2016 goed in Steendorp maar niet in Doel. In 2017 vingen we minder giebel en geen in 2018-2020. **Merk op de aantallen gevangen exoten voor 2020 een onderschatting zijn ten opzichte van de vorige jaren, aangezien er in 2020 niet werd gevist in het voorjaar.**
+In de periode 2012 tot en met 2017 steeg het aantal gevangen individuen van exoten op bijna alle locaties (Tabel \@ref(tab:090-tabel-gevangen-exoten)). De hoge aantallen exoten in 2016 en 2017 waren hoofdzakelijk te wijten aan het groot aantal snoekbaarzen (Breine et al., 2018). In `r laatste_jaar` vingen we ook nog veel snoekbaars in Antwerpen, Branst en Steendorp (Tabel \@ref(tab:090-tabel-exoten-soort)). Snoekbaars is een algemeen voorkomende (ingeburgerde) soort in de Zeeschelde en doet het uitstekend de laatste jaren. Blauwbandgrondel wordt voornamelijk gevangen in Branst. In `r laatste_jaar` worden er meer blauwbandgrondels gevangen in Branst maar ook in Antwerpen en Steendorp. Giebel vingen we niet in 2018-2020. **Merk op de aantallen gevangen exoten voor 2020 een onderschatting zijn ten opzichte van de vorige jaren, aangezien er in 2020 niet werd gevist in het voorjaar.**
 
 Uit Tabel \@ref(tab:090-tabel-percentage-exoten) blijkt dat het relatief aantal exoten een stijgende trend vertoont tot in 2017. In 2018 daalde, behalve in Doel, het percentage gevangen aantal exoten. De relatieve percentages exoten stegen dan opnieuw in 2019 in Antwerpen, Steendorp en Branst. Het relatief percentage exoten gevangen in de Zeeschelde is laag. Ook in 2020 zijn de percentages aan exoten relatief hoog, voornamelijk in Antwerpen.
 
@@ -350,7 +351,7 @@ Een aantal soorten beschouwen we als sleutelsoorten in de Zeeschelde omdat ze in
 
 ##### Fint
 
-Fint is een indicator voor een goede zuurstofhuishouding. De aanwezigheid van juveniele finten toont ook aan dat het estuarium als paaiplaats geschikt is voor deze soort.
+Fint is één van de indicatoren voor een goede zuurstofhuishouding. De aanwezigheid van juveniele finten toont ook aan dat het estuarium als paaiplaats geschikt is voor deze soort.
 
 Als volwassen vis eten ze graag andere kleine vissoorten (o.a. sprot), maar tijdens de migratie naar de paaiplaats eten ze niet (Aprahamian et al., 2003; CTGREF, 1979). Voedsel is dus geen beperkende factor voor hun migratie, zuurstof wel (Maes et al., 2008). Juveniele finten eten in het zoete water voornamelijk Crustacea, Mysidacea en Amphipoda (Gammariden). Eenmaal in het brakke gedeelte voeden ze zich met larven van sprot, spiering en grondels (dikkopje, brakwatergrondel).
 
@@ -376,23 +377,24 @@ Rivierprik werd jaarlijks, vooral in het voorjaar, in lage aantallen gevangen.
 
 Haringen komen voornamelijk in zeewater voor maar ze zijn ook bestendig tegen lage zoutgehaltes en gedijen dus ook in brakwater (Brevé, 2007). Haringen eten bij voorkeur zoöplankton. Ze kunnen ook fytoplankton eten door het zeewater met hun kieuwzeven te filteren (Brevé, 2007).
 
-Haring werd in Doel vooral in het voorjaar van 2012, 2014, 2016, 2017, 2018 en 2019 gevangen en in het voorjaar van 2012, 2015, 2016, 2017 en 2019 in Antwerpen. Het is opmerkelijk dat juveniele haring zelfs tot in Branst wordt gevangen vooral in de zomer van 2013, in het voorjaar van 2017 en in het najaar van 2019. Voor 2020 zijn er geen gegevens voor het voorjaar, maar in de zomer werden ook nog een relatief groot aantal haringen gevangen.
+Haring vangen we traditioneel goed in het voorjaar te Doel en iets minder te Antwerpen. Het is opmerkelijk dat juveniele haring steeds vaker tot in Branst wordt gevangen. Voor 2020 zijn er geen gegevens voor het voorjaar, maar in de zomer werden ook nog haringen gevangen.
 
 ##### Zeebaars
 
 Zeebaars kan je in de zomer meestal langs de kust en in estuaria terugvinden. In de winter migreert de vis verder weg van de kust (Nijssen & De Groot, 1987; Pickett & Pawson, 1994). Het dieet van de zeebaars is zeer gevarieerd maar bestaat voornamelijk uit vis, schaaldieren, garnalen en weekdieren (Schmidt-Luchs, 1977).
 
-Zeebaars vingen we in alle locaties en hun relatieve aantallen varieerden van jaar tot jaar in de verschillende locaties. Zeebaars wordt het minst gevangen in Doel en komt dus vooral verder stroomopwaarts opgroeien. De soort vertoonde sinds 2012 een dalende trend in alle locaties, maar werd dan opnieuw veel gevangen in 2017 (vooral in Branst). Vanaf 2018 vingen we terug veel minder zeebaars dan in 2017.
+Zeebaars vingen we in alle locaties en hun relatieve aantallen varieerden van jaar tot jaar in de verschillende locaties. Zeebaars wordt het minst gevangen in Doel en komt dus vooral verder stroomopwaarts opgroeien. De soort vertoonde sinds 2012 een dalende trend in alle locaties, maar werd dan opnieuw veel gevangen in 2017 (vooral in Branst). Vanaf 2018 vingen we terug veel minder zeebaars.
 
 ##### Ansjovis
 
 Deze mariene soort paait in de Westerschelde en dringt minder ver door in de Zeeschelde dan haring of zeebaars. Ze voeden zich voornamelijk met dierlijk plankton zoals roeipootkreeftjes.
 
-Ansjovis werd in kleine aantallen gevangen in Doel, hoofdzakelijk in het najaar. Deze soort komt meer voor in de Westerschelde (Goudswaard & Breine, 2011). Uitzonderlijk werd ansjovis gevangen in Steendorp in het najaar van 2015 en 2017. In 2019 vingen we zowel in het voorjaar als in het najaar ansjovis in Doel. In Antwerpen en Steendorp vingen we ansjovis in het najaar. In Branst vingen we nog nooit ansjovis. Ook in 2020 werd ansjovis gevangen in het najaar in doel. In vergelijking met andere jaren was het relatief aandeel gevangen individuen in 2020 hoger dan in de vorige jaren.
+Ansjovis werd in kleine aantallen gevangen in Doel, hoofdzakelijk in het najaar. Deze soort komt meer voor in de Westerschelde (Goudswaard & Breine, 2011). Uitzonderlijk werd ansjovis gevangen in Steendorp in het najaar van 2015 en 2017. In 2019 vingen we zowel in het voorjaar als in het najaar ansjovis in Doel. In Antwerpen en Steendorp vingen we ansjovis in het najaar. In Branst vingen we nog nooit ansjovis. In 2020 werd ansjovis enkel in Doel gevangen. In vergelijking met andere jaren was het relatief aandeel gevangen individuen in 2020 hoger dan in de vorige jaren.
 
 
 
 ```{r 090-figuur-relatieve-aantallen-sleutelsoorten, fig.cap=cap_aantal_sleutelsoorten, out.width="100%"}
+#behalve relatieve aantallen is het ook relevant om de absolute aantallen en biomassa figuren te maken
 
 cap_aantal_sleutelsoorten <-
   str_c("Relatieve aantallen (\\%) van sleutelsoorten gevangen in de Zeschelde met ankerkuilen voor de periode 2012-", laatste_jaar,".")
