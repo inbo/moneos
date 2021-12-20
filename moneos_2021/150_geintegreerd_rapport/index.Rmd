@@ -1,0 +1,76 @@
+---
+site: bookdown::bookdown_site
+output:
+  bookdown::pdf_book:
+    base_format: INBOmd::inbo_rapport
+    style: INBO
+    tocdepth: 2
+    lof: TRUE
+    lot: TRUE
+    floatbarrier: subsection
+editor_options: 
+  chunk_output_type: console
+
+---
+
+
+```{r setup, include = FALSE}
+library(knitr)
+opts_knit$set(eval.after = "fig.cap")
+opts_chunk$set(
+  echo = FALSE, 
+  eval = TRUE,
+  cache = FALSE,
+  fig.width = 150 / 25.4,
+  fig.height = 100 / 25.4,
+  warning = TRUE,
+  error = FALSE,
+  message = TRUE)
+library(kableExtra)
+library(tidyverse)
+library(ggpubr)
+library(readxl)
+library(lubridate)
+library(INBOtheme)
+if (interactive()) {
+  theme_set(
+    theme_inbo(
+      base_family = "Calibri", # "FlandersArtSans-Regular",
+      base_size = 10
+    )
+  )
+} else {
+  switch(
+    opts_knit$get("rmarkdown.pandoc.to"),
+    html = {
+      opts_chunk$set(dev = "png", dpi = 72)
+      theme_set(
+        theme_inbo(
+          base_family = "Calibri", # "FlandersArtSans-Regular", 
+          base_size = 12
+        )
+      )
+    },
+    latex = {
+      opts_chunk$set(dev = "cairo_pdf", dpi = 300)
+      theme_set(
+        theme_inbo(
+          base_family = "Calibri", # "FlandersArtSans-Regular", 
+          base_size = 9
+        )
+      )
+      update_geom_defaults("point", list(size = 1.5))
+    },
+    epub3 = {
+      opts_chunk$set(dev = "png", dpi = 300)
+      theme_set(
+        theme_inbo(
+          base_family = "Calibri", # "FlandersArtSans-Regular", 
+          base_size = 12
+        )
+      )
+    }
+  )
+}
+```
+

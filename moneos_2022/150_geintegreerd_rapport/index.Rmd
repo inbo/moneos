@@ -1,0 +1,104 @@
+--- 
+title: "MONEOS - Geïntegreerd datarapport INBO: Toestand Zeeschelde 2022"
+subtitle: " Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten"
+author: 
+  - firstname: Gunther
+    name: Van Ryckegem
+    email: gunther.vanryckegem@inbo.be 
+  - firstname: Joost
+    name: Vanoverbeke
+    email: joost.vanoverbeke@inbo.be
+  - 
+    name: Alexander Van Braeckel
+  - 
+    name: Frank Van de Meutter
+  - 
+    name: Wim Mertens
+  - 
+    name: Amber Mertens
+shortauthor: 
+  - Van Ryckegem, G., Vanoverbeke, J., Van Braeckel, A., Van de Meutter, F., Mertens, W., Mertens, A.
+corresponding: gunther.vanryckegem@inbo.be
+reviewer: ""
+year: "`r Sys.getenv('jaar_moneos')`"
+cover_photo: ""
+cover_description: "" 
+# cover: cover.pdf # link naar pdf met cover
+doi: ""
+reportnr: ""
+depotnr: ""
+embargo: ""
+
+style: INBO
+lang: nl
+lot: TRUE
+lof: TRUE
+floatbarrier: subsection
+
+site: bookdown::bookdown_site
+
+output:
+  INBOmd::gitbook: default
+  INBOmd::report: default
+  INBOmd::ebook: default
+  bookdown::dont_run: default
+---
+
+```{r setup, include = FALSE}
+library(knitr)
+opts_knit$set(eval.after = "fig.cap")
+opts_chunk$set(
+  echo = TRUE, 
+  eval = TRUE,
+  cache = FALSE,
+  dpi = 300,
+  fig.width = 150 / 25.4,
+  fig.height = 100 / 25.4,
+  warning = TRUE,
+  error = TRUE,
+  message = TRUE
+)
+library(ggplot2)
+library(INBOtheme) # remotes::install_github("inbo/INBOtheme")
+if (interactive()) {
+  theme_set(
+    theme_inbo(
+      base_family = "FlandersArtSans-Regular",
+      base_size = 10
+    )
+  )
+} else {
+  switch(
+    opts_knit$get("rmarkdown.pandoc.to"),
+    html = {
+      opts_chunk$set(dev = "png", dpi = 72)
+      theme_set(
+        theme_inbo(
+          base_family = "FlandersArtSans-Regular", 
+          base_size = 12
+        )
+      )
+    },
+    latex = {
+      opts_chunk$set(dev = "cairo_pdf", dpi = 300)
+      theme_set(
+        theme_inbo(
+          base_family = "FlandersArtSans-Regular", 
+          base_size = 9
+        )
+      )
+      update_geom_defaults("point", list(size = 1.5))
+    },
+    epub3 = {
+      opts_chunk$set(dev = "png", dpi = 300)
+      theme_set(
+        theme_inbo(
+          base_family = "FlandersArtSans-Regular", 
+          base_size = 12
+        )
+      )
+    }
+  )
+}
+```
+
