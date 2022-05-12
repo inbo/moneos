@@ -1,0 +1,23 @@
+on:
+  pull_request:
+    branches: main
+
+name: checks
+
+jobs:
+  pkgdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: r-lib/actions/setup-r@master
+
+      - uses: r-lib/actions/setup-pandoc@master
+
+      - name: Query dependencies
+        run: |
+          chapters <- list.files(path = "moneos_2022/150_geintegreerd_rapport")
+          if (any(grepl("^_.*\\.Rmd$", chapters))) {
+            stop("Verwijder de underscores voor de hoofdstuknamen!")
+          }
+        shell: Rscript {0}
