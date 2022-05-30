@@ -4,7 +4,7 @@ params:
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = paste0("../", 
+                          output_dir = paste0(
                           rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
                           "/output")
                           )})
@@ -26,6 +26,7 @@ knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, c
 library(tidyverse)
 library(writexl)
 library(INBOtheme)
+library(rprojroot)
 
 ```
 
@@ -37,7 +38,7 @@ library(INBOtheme)
 # pad naar tabellen : pad_tabellen
 # pad naar figuren : pad_figuren
 
-source("../pad.R")
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
 
 pad_data <- maak_pad(params$hoofdstuk, "data")
 pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
