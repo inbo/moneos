@@ -34,7 +34,6 @@
 -   under 'Tools' -\> 'Global Options'
     -   under 'R markdown'
         -   check that 'evaluate chunks in directory' is set to 'Project' ![image](https://user-images.githubusercontent.com/45075881/171018619-bb8a6a2e-67b7-4990-9ed0-42a6d004bdcd.png)
-
 -   under 'Tools' -\> 'Project Options'
     -   under 'Build Tools'
         -   check that 'Project Build Tools' is set to ''Website'
