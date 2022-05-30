@@ -1,13 +1,13 @@
 
 
-```{r hoofdstuk, include=FALSE}
+```{r 000-hoofdstuk, include=FALSE}
 
 hoofdstuk <- "000_template"
 
 ```
 
 
-```{r setup, include=FALSE}
+```{r 000-setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 knitr::opts_knit$set(eval.after = "fig.cap")
@@ -15,7 +15,7 @@ knitr::opts_knit$set(eval.after = "fig.cap")
 ```
 
 
-```{r libraries}
+```{r 000-libraries}
 
 library(tidyverse)
 library(readxl)
@@ -26,7 +26,7 @@ library(rprojroot) ## workaround pad
 ```
 
 
-```{r pad}
+```{r 000-pad}
 
 # inlezen van variabelen
 # pad naar data : pad_data
@@ -42,7 +42,7 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 ```
 
 
-```{r meta_data}
+```{r 000-meta_data}
 
 meta_data <- 
   read_delim(paste0(pad_data, "meta_data.csv"),
@@ -118,7 +118,7 @@ caption_x_waarden <- "Verdeling van de x-waarden."
 
 # opmaak tabel
 tabel_x_waarden %>%
-  mutate_all(~replace_na(., "")) %>%
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
   knitr::kable(booktabs = TRUE,
                caption = caption_x_waarden) %>%
   kable_styling()
@@ -150,8 +150,8 @@ footnote_text <-
 
 # opmaak tabel
 tabel_x_waarden %>%
-  mutate_all(~replace_na(., "")) %>%
-  mutate_all(~cell_spec(., color = "black")) %>%
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
+  mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
   # toevoegen voetnoten
   {.[3,1] <- map(.[3,1],
                  ~paste0(.x, footnote_marker_number(1)))
