@@ -1,7 +1,6 @@
 # workflows
 
 -   working in Rstudio : <https://inbo.github.io/git-course/workflow_rstudio.html>
-
 -   collaboration : <https://inbo.github.io/git-course/workflow_review.html>
 
 # setup
@@ -9,52 +8,34 @@
 ### copy the moneos project to your pc
 
 -   if you have a folder 'moneos' existing on your local computer, delete it (make sure to back up files you migh still need somewhere else!)
-
 -   open Rstudio
-
 -   create a new project using 'version control' -\> 'git'
-
     -   add '<https://github.com/inbo/moneos>' to 'repository url'
-
     -   the name of the project (moneos) should appear automatically; if not, fill it in
-
     -   choose the parent directory for the moneos project directory
-
     -   create the project ![image](https://user-images.githubusercontent.com/45075881/170995002-4847b3b7-d0c6-4aef-93c4-48b9470b032d.png)
 
 ### add a .Renviron file
 
 -   browse to the folder 'moneos/moneos_XXX/000_template', where XXX stands for the year of reporting (e.g. 2022)
-
 -   copy the file '\_.Renviron' to the folder 'moneos/moneos_XXX'
-
 -   rename the '\_.Renviron' under 'moneos/moneos_XXX' to '.Renviron' (remove the underscore '\_')
-
 -   in a text editor or in Rstudio, open the '.Renviron' file and adjust the folder paths to the paths used on your local pc
-
 -   if you are already work in Rstudio, close Rstudio and reopen it
 
 # open the moneos project for a given year in Rstudio
 
--   open Rstudio
-
--   open the project
-
-    -   select 'file' -\> 'open project'
-
-    -   under the moneos folder, browse to the subfolder for the year of reporting (folder 'moneos_XXX' where XXX is the year)
-
-    -   select the 'moneos_XXX.Rproj' project
+-   select 'file' -\> 'open project'
+-   under the moneos folder, browse to the subfolder for the year of reporting (folder 'moneos_XXX' where XXX is the year)
+-   select the 'moneos_XXX.Rproj' project
 
 # Rstudio settings for the moneos project
 
 -   under 'Tools' -\> 'Global Options'
-
     -   under 'R markdown'
         -   check that 'evaluate chunks in directory' is set to 'Project' ![image](https://user-images.githubusercontent.com/45075881/171018619-bb8a6a2e-67b7-4990-9ed0-42a6d004bdcd.png)
 
 -   under 'Tools' -\> 'Project Options'
-
     -   under 'Build Tools'
         -   check that 'Project Build Tools' is set to ''Website'
         -   check that 'Site directory' is set to '150_geintegreerd_rapport' ![image](https://user-images.githubusercontent.com/45075881/171019335-e213f765-ccab-43df-88bf-92f0ee053fe1.png)
@@ -88,9 +69,7 @@
         -   **but** make sure to check that the chunks at the top of the file (chunks -hoofdstuk to -pad) correspond to the example as given in the 000_template.Rmd file
 -   under the folder 'moneos/moneos_XXX' create a subfolder for your chapter with the same name as the chapter
     -   use this folder to store .Rmd files for data management and analysis
-
     -   examples of such files are given in the folder 'moneos/moneos_XXX/000_template'
-
     -   make sure that the yaml header at the top of these files (between ---) has the correct information (copy from the templates and change 'hoofdstuk:' and 'title:')
 
 # building the report pdf
@@ -107,7 +86,7 @@
 
 -   read <https://inbo.github.io/git-course/workflow_review.html>
 -   make sure you merged the latest version of the main branch (potentially comprising already merged chapters) into your chapter branch before you make a pull request
-    -   to do merge the latest version of the main branch
+    -   to merge the latest version of the main branch
         -   switch to the main branch in Rstudio
         -   hit the 'pull' button
         -   switch back to your chapter branch
