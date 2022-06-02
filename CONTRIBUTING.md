@@ -13,7 +13,7 @@
     -   add '<https://github.com/inbo/moneos>' to 'repository url'
     -   the name of the project (moneos) should appear automatically; if not, fill it in
     -   choose the parent directory for the moneos project directory
-    -   create the project 
+    -   create the project
 
 ![image](https://user-images.githubusercontent.com/45075881/170995002-4847b3b7-d0c6-4aef-93c4-48b9470b032d.png)
 
@@ -35,14 +35,12 @@
 
 -   under 'Tools' -\> 'Global Options'
     -   under 'R markdown'
-        -   check that 'evaluate chunks in directory' is set to 'Project' 
-        ![image](https://user-images.githubusercontent.com/45075881/171018619-bb8a6a2e-67b7-4990-9ed0-42a6d004bdcd.png)
+        -   check that 'evaluate chunks in directory' is set to 'Project' ![image](https://user-images.githubusercontent.com/45075881/171018619-bb8a6a2e-67b7-4990-9ed0-42a6d004bdcd.png)
 -   under 'Tools' -\> 'Project Options'
     -   under 'Build Tools'
         -   check that 'Project Build Tools' is set to ''Website'
         -   check that 'Book output format(s)' is set to 'INBOmd::pdf_report'
-        -   check that 'Site directory' is set to '150_geintegreerd_rapport' 
-        ![image](https://user-images.githubusercontent.com/45075881/171019335-e213f765-ccab-43df-88bf-92f0ee053fe1.png)
+        -   check that 'Site directory' is set to '150_geintegreerd_rapport' ![image](https://user-images.githubusercontent.com/45075881/171019335-e213f765-ccab-43df-88bf-92f0ee053fe1.png)
 
 # create a moneos chapter branch
 
@@ -80,7 +78,7 @@
 
 -   to build the report, go to the tab 'Build'
 -   make sure the 'pdf_report' is selected under 'build book'
--   hit the build book button 
+-   hit the build book button
 
 ![image](https://user-images.githubusercontent.com/45075881/171016595-b1a3f3a1-d8b6-4d5b-80f7-9f787fcc9827.png)
 
@@ -97,9 +95,8 @@
         -   switch to the main branch in Rstudio
         -   hit the 'pull' button
         -   switch back to your chapter branch
-        -   open the  (Git) Shell and enter the command: 'git merge main' 
+        -   open the (Git) Shell and enter the command: 'git merge main'
 
-![image](https://user-images.githubusercontent.com/45075881/171647731-3d398ea2-6f20-4e03-8e40-3841f4e890b7.png)
-![image](https://user-images.githubusercontent.com/45075881/171015844-d28f3385-cfef-4727-8457-dc000c56ce89.png)
+![image](https://user-images.githubusercontent.com/45075881/171647731-3d398ea2-6f20-4e03-8e40-3841f4e890b7.png) ![image](https://user-images.githubusercontent.com/45075881/171015844-d28f3385-cfef-4727-8457-dc000c56ce89.png)
 
 -   a reviewer is mandatory; choose Joost Vanoverbeke as reviewer
