@@ -100,3 +100,16 @@
 ![image](https://user-images.githubusercontent.com/45075881/171647731-3d398ea2-6f20-4e03-8e40-3841f4e890b7.png) ![image](https://user-images.githubusercontent.com/45075881/171015844-d28f3385-cfef-4727-8457-dc000c56ce89.png)
 
 -   a reviewer is mandatory; choose Joost Vanoverbeke as reviewer
+
+# avoiding GIT conflicts
+
+-   In the first phase, only work in your own branch and on your own chapter (chapter directory and chapter .Rmd files)
+-   if contribution to another chapter is needed
+    -   work in the branch for that chapter
+    -   communicate between contributors and make good agreements on who works when on the chapter
+    -   make sure to `pull` changes made by others before you start working on the chapter
+    -   make sure to `commit` and `push` your changes when you have finished
+-   In the last phase, when chapters have been merged and a few modifications are needed
+    -   communicate about the intended changes
+    -   make sure to always merge the latest version of the main branch into your chapter branch before starting
+    -   keep the changes short and merge quickly (pull request) with the main branch
