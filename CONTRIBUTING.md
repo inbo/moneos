@@ -88,7 +88,6 @@
 
 # merging your branch with the main branch (pull request)
 
--   create a pull request as explained in <https://inbo.github.io/git-course/workflow_review.html#Create_a_pull_request>
 -   make sure you merged the latest version of the main branch (potentially comprising already merged chapters) into your chapter branch before you make a pull request
     -   to merge the latest version of the main branch
         -   see <https://inbo.github.io/git-course/workflow_review.html#Merge_changes_to_main>
@@ -100,14 +99,14 @@
 ![image](https://user-images.githubusercontent.com/45075881/171647731-3d398ea2-6f20-4e03-8e40-3841f4e890b7.png) 
 ![image](https://user-images.githubusercontent.com/45075881/171015844-d28f3385-cfef-4727-8457-dc000c56ce89.png)
 
-
+-   create a pull request as explained in <https://inbo.github.io/git-course/workflow_review.html#Create_a_pull_request>
 -   a reviewer is mandatory to make a pull request; choose Joost Vanoverbeke as reviewer
+-   some checks are performed when you make a pull request. This may take a little time to finish
 
 ![image](https://user-images.githubusercontent.com/45075881/171813020-738149a3-cb49-4e66-818d-77979a42e415.png)
 ![image](https://user-images.githubusercontent.com/45075881/171812792-974b89a7-fa56-48cf-ab1b-2a7b41b1494c.png)
 
 
--   some checks are performed when you make a pull request. This may take a little time to finish
 
 # avoiding GIT conflicts
 
