@@ -97,7 +97,8 @@
         -   switch back to your chapter branch
         -   open the (Git) Shell and enter the command: 'git merge main'
 
-![image](https://user-images.githubusercontent.com/45075881/171647731-3d398ea2-6f20-4e03-8e40-3841f4e890b7.png) ![image](https://user-images.githubusercontent.com/45075881/171015844-d28f3385-cfef-4727-8457-dc000c56ce89.png)
+![image](https://user-images.githubusercontent.com/45075881/171647731-3d398ea2-6f20-4e03-8e40-3841f4e890b7.png) 
+![image](https://user-images.githubusercontent.com/45075881/171015844-d28f3385-cfef-4727-8457-dc000c56ce89.png)
 
 -   a reviewer is mandatory; choose Joost Vanoverbeke as reviewer
 
@@ -112,4 +113,5 @@
 -   In the last phase, when chapters have been merged and a few modifications are needed
     -   communicate about the intended changes
     -   make sure to always merge the latest version of the main branch into your chapter branch before starting
+        -  see <https://inbo.github.io/git-course/workflow_review.html#Merge_changes_to_main>
     -   keep the changes short and merge quickly (pull request) with the main branch
