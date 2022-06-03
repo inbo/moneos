@@ -101,6 +101,7 @@
 ![image](https://user-images.githubusercontent.com/45075881/171015844-d28f3385-cfef-4727-8457-dc000c56ce89.png)
 
 -   a reviewer is mandatory; choose Joost Vanoverbeke as reviewer
+-   some checks are performed when you make a pull request. This may take a little time to finish
 
 # avoiding GIT conflicts
 
