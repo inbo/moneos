@@ -2,13 +2,12 @@
 params:
   hoofdstuk: "090_vissen"
 knit: (function(inputFile, encoding) {
-                          }
-                          )})
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = {
-                            source("../pad.R");
-                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
+                          output_dir = paste0(
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
+                          )})
 title: "analyse visdata ankerkuil"
 output: word_document
 editor_options: 
@@ -420,33 +419,6 @@ ggsave(paste0(pad_figuren, "gemiddeld_per_locatie.jpg"))
 
 ```
 
-#### aantallen EMSE
-
-```{r aantallen EMSE}
-
-gemiddeld_aantal_EMSE <- 
-  data_ankerkuil %>% 
-  group_by(jaar, seizoen, locatie, salgroep, dieet, indeling) %>%
-  summarise(aantal_per_kub = sum(aantal_per_kub)) %>% 
-  ungroup() %>% 
-  group_by(jaar, salgroep, dieet, indeling) %>%
-  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
-  ungroup() %>% 
-  add_row(aantal_per_kub = NA, indeling = "Diadr -- Benth", jaar = vroegste_jaar:laatste_jaar) %>% 
-  mutate(indeling = factor(indeling, levels = levels_indeling))
-
-gemiddeld_aantal_EMSE %>% 
-  ggplot(aes(locatie, aantal_per_kub)) +
-  geom_col(alpha = 0.8,
-           width = 0.5) +
-  geom_text(aes(y = aantal_per_kub + 0.3, label = round(aantal_per_kub, 2)), 
-            size = 4) +
-  labs(x = NULL,
-       y = expression(paste("gem. aantal ind. / ", m^3)))
-
-```
-
-
 #### gemiddelde biomassa per locatie
 
 ```{r gemiddelde-biomassa-per-locatie, fig.height=4, fig.width=6}
@@ -530,6 +502,149 @@ ggsave(paste0(pad_figuren,
               "gemiddelde_biomassa_per_seizoen_en_locatie.jpg"))
 
 ```
+
+
+#### aantallen EMSE
+
+```{r aantallen EMSE}
+
+mult_kub <- 1000
+
+gemiddeld_aantal_EMSE <- 
+  data_ankerkuil %>% 
+  filter(in_indeling) %>% 
+  group_by(jaar, seizoen, locatie, salgroep, dieet, indeling) %>%
+  summarise(aantal_per_kub = sum(aantal_per_kub)) %>% 
+  ungroup() %>% 
+  group_by(jaar, salgroep, dieet, indeling) %>%
+  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
+  ungroup() %>% 
+  add_row(aantal_per_kub = NA, indeling = "Diadr -- Benth", jaar = vroegste_jaar:laatste_jaar) %>% 
+  mutate(indeling = factor(indeling, levels = levels_indeling))
+
+gemiddeld_aantal_EMSE %>% 
+  mutate(aantal_per_kub = aantal_per_kub*mult_kub) %>%
+  ggplot(aes(jaar, aantal_per_kub, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(),
+           width = 0.7,
+           alpha = 0.8) +
+  # geom_linerange(aes(ymin = 0, ymax = aantal_per_kub),
+  #                size = 4) +
+  # geom_text(aes(y = aantal_per_kub + 0.3, label = aantal_per_kub), 
+  #           position = position_dodge(width = 0.925),
+  #           size = 3) +
+  # scale_fill_viridis_c() +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_y_log10() +
+  labs(y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3)),
+       fill = "jaar",
+       color = "jaar") +
+  facet_wrap(~ indeling, scales = "free_y")
+
+
+gemiddeld_aantal_niet_EMSE <- 
+  data_ankerkuil %>% 
+  filter(!in_indeling,
+         !is.na(dieet)) %>% 
+  group_by(jaar, seizoen, locatie, salgroep, dieet, indeling) %>%
+  summarise(aantal_per_kub = sum(aantal_per_kub)) %>% 
+  ungroup() %>% 
+  group_by(jaar, salgroep, dieet, indeling) %>%
+  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
+  ungroup()
+
+gemiddeld_aantal_niet_EMSE %>% 
+  mutate(aantal_per_kub = aantal_per_kub*mult_kub) %>%
+  ggplot(aes(jaar, aantal_per_kub, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(),
+           width = 0.7,
+           alpha = 0.8) +
+  # geom_linerange(aes(ymin = 0, ymax = aantal_per_kub),
+  #                size = 4) +
+  # geom_text(aes(y = aantal_per_kub + 0.3, label = aantal_per_kub), 
+  #           position = position_dodge(width = 0.925),
+  #           size = 3) +
+  # scale_fill_viridis_c() +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_y_log10() +
+  labs(y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3)),
+       fill = "jaar",
+       color = "jaar") +
+  facet_wrap(salgroep ~ dieet, scales = "free_y")
+
+```
+
+
+#### gewicht EMSE
+
+```{r gewicht EMSE}
+
+mult_kub <- 1000
+
+gemiddeld_gewicht_EMSE <- 
+  data_ankerkuil %>% 
+  filter(in_indeling) %>% 
+  group_by(jaar, seizoen, locatie, salgroep, dieet, indeling) %>%
+  summarise(gewicht_per_kub = sum(gewicht_per_kub)) %>% 
+  ungroup() %>% 
+  group_by(jaar, salgroep, dieet, indeling) %>%
+  summarise(gewicht_per_kub = mean(gewicht_per_kub)) %>% 
+  ungroup() %>% 
+  add_row(gewicht_per_kub = NA, indeling = "Diadr -- Benth", jaar = vroegste_jaar:laatste_jaar) %>% 
+  mutate(indeling = factor(indeling, levels = levels_indeling))
+
+gemiddeld_gewicht_EMSE %>% 
+  mutate(gewicht_per_kub = gewicht_per_kub*mult_kub) %>%
+  ggplot(aes(jaar, gewicht_per_kub, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(),
+           width = 0.7,
+           alpha = 0.8) +
+  # geom_linerange(aes(ymin = 0, ymax = gewicht_per_kub),
+  #                size = 4) +
+  # geom_text(aes(y = gewicht_per_kub + 0.3, label = gewicht_per_kub), 
+  #           position = position_dodge(width = 0.925),
+  #           size = 3) +
+  # scale_fill_viridis_c() +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_y_log10() +
+  labs(y = expr(paste("gem. gewicht g/", !!mult_kub, m^3)),
+       fill = "jaar",
+       color = "jaar") +
+  facet_wrap(~ indeling, scales = "free_y")
+
+
+gemiddeld_gewicht_niet_EMSE <- 
+  data_ankerkuil %>% 
+  filter(!in_indeling,
+         !is.na(dieet)) %>% 
+  group_by(jaar, seizoen, locatie, salgroep, dieet, indeling) %>%
+  summarise(gewicht_per_kub = sum(gewicht_per_kub)) %>% 
+  ungroup() %>% 
+  group_by(jaar, salgroep, dieet, indeling) %>%
+  summarise(gewicht_per_kub = mean(gewicht_per_kub)) %>% 
+  ungroup()
+
+gemiddeld_gewicht_niet_EMSE %>% 
+  mutate(gewicht_per_kub = gewicht_per_kub*mult_kub) %>%
+  ggplot(aes(jaar, gewicht_per_kub, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(),
+           width = 0.7,
+           alpha = 0.8) +
+  # geom_linerange(aes(ymin = 0, ymax = gewicht_per_kub),
+  #                size = 4) +
+  # geom_text(aes(y = gewicht_per_kub + 0.3, label = gewicht_per_kub), 
+  #           position = position_dodge(width = 0.925),
+  #           size = 3) +
+  # scale_fill_viridis_c() +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_y_log10() +
+  labs(y = expr(paste("gem. gewicht g/", !!mult_kub, m^3)),
+       fill = "jaar",
+       color = "jaar") +
+  facet_wrap(salgroep ~ dieet, scales = "free_y")
+
+```
+
 
 
 #### relatief aantal gevangen individuen
