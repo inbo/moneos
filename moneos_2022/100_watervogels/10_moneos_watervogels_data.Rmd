@@ -418,7 +418,7 @@ knitr::kable(aantaltellingen)
 
 # volledigheid wintertelseizoen
 overzicht_tellingen %>% 
-  filter (telseizoen == "2019/20") %>% 
+  filter (telseizoen == "2021/22") %>% 
   filter(month(teldatum) %in% c(10, 11, 12, 1, 2, 3)) %>% 
   group_by(gebiedscode, gebied, gebiedsgroep_code) %>% 
   count(telseizoen, sort= TRUE) %>% 
@@ -427,7 +427,7 @@ overzicht_tellingen %>%
 
 
 overzicht_tellingen %>% 
-  filter (telseizoen == "2019/20") %>% 
+  filter (telseizoen == "2020/21") %>% 
   filter (gebiedscode == 2050810) %>% 
   select(gebied, teldatum) %>% #kijk alleen naar teldatum want telling en tellingsortorder kloppen niet in databank
   arrange(teldatum)
@@ -514,7 +514,7 @@ Aantaltellingenpergebied0 <- WaterbirdsBT %>%
   
 # aantal tellingen per telseizoen ingevoerd 
 Aantaltellingenpergebied <- WaterbirdsBT %>% 
-  filter (telseizoen == "2020/21") %>% 
+  filter (telseizoen == "2021/22") %>% 
   distinct(gebiedsgroep_code, gebiedscode, teldatum, telseizoen) %>% 
   count(gebiedsgroep_code, gebiedscode, telseizoen) 
   
