@@ -1,0 +1,441 @@
+---
+params:
+  hoofdstuk: "090_vissen"
+knit: (function(inputFile, encoding) {
+                          }
+                          )})
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = {
+                            source("../pad.R");
+                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
+title: "analyse visdata ankerkuil"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+library(writexl)
+library(readxl)
+
+library(INBOtheme)
+library(inbodb)
+
+library(rprojroot) ## workaround pad
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r excel sheets}
+
+sheets <- NULL
+
+```
+
+
+```{r sleutelsoorten EMSE rapportage, eval=FALSE}
+
+sleutelsoorten <-
+  tibble(soort = c("bot", "elft", "fint", "spiering", 
+                   "rivierprik", "zeeprik", "paling",
+                   "brakwatergrondel", "dikkopje", "puitaal", "slakdolf", 
+                   "zeedonderpad", "zeebaars", "wijting", "schol",
+                   "haring", "glasgrondel",
+                   "snoekbaars", "tiendoornige stekelbaars", "brasem", "pos", "bittervoorn",
+                   "europese meerval", "kolblei", "blankvoorn"),
+         indeling = c("Diadr -- Benth/Pisc", "Diadr -- Benth/Pisc", "Diadr -- Benth/Pisc", "Diadr -- Benth/Pisc", 
+                      "Diadr -- Parasiet", "Diadr -- Parasiet", "Diadr -- Omn",
+                      "Mar/Est -- Benth", "Mar/Est -- Benth", "Mar/Est -- Benth", "Mar/Est -- Benth",
+                      "Mar/Est -- Benth/Pisc", "Mar/Est -- Benth/Pisc", "Mar/Est -- Benth/Pisc", "Mar/Est -- Benth",
+                      "Mar/Est -- Plankt", "Mar/Est -- Plankt",
+                      "Zoetw -- Benth/Pisc", "Zoetw -- Benth", "Zoetw -- Benth", "Zoetw -- Benth", "Zoetw -- Benth",
+                      "Zoetw -- Pisc", "Zoetw -- Omn", "Zoetw -- Omn"))
+
+sleutelsoorten  %>%
+  write_xlsx(str_c(pad_data, "sleutelsoorten EMSE.xlsx"))
+
+```
+
+
+```{r functionele groepen EMSE, eval=FALSE}
+
+VIS <- connect_inbo_dbase("W0001_00_Vis")
+taxon_tab <-
+  tbl(VIS, "DimTaxon")
+taxon_data_tab <-
+  tbl(VIS, "DimVisindexTaxon")
+
+func_groepen_tab <-
+  taxon_tab %>%
+  select(TaxonKey, WetenschappelijkeNaam) %>%
+  inner_join(taxon_data_tab,
+             by = "TaxonKey") %>%
+  select(TaxonKey, Soort, WetenschappelijkeNaam, Exoot,
+         Migratie, Bentisch, Invertivoor, Omnivoor, Piscivoor, Water_Anadroom, Water_Brak, Water_Zoet)
+
+func_groepen_VIS <-
+  func_groepen_tab %>%
+  collect()
+
+dbDisconnect(VIS)
+
+
+
+func_groepen_EMSE <-
+  read_xlsx(str_c(pad_data, "functionele groepen.xlsx")) %>% 
+  mutate(Soort = str_to_lower(Soort))
+
+func_groepen_EMSE <-
+  func_groepen_EMSE %>% 
+  mutate(Salgroep_detail = Saliniteitsvoorkeur,
+         Salgroep = case_when(
+           Salgroep_detail %in% c("Mariene migranten", "Mariene dwaalgasten", "Estuarien residenten") ~ "Mariene en Estuariene soorten",
+           Salgroep_detail %in% c("Diadromen") ~ "Diadrome soorten",
+           Salgroep_detail %in% c("Zoetwatersoorten") ~ "Zoetwatersoorten"
+         ),
+         indeling = case_when(
+           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Benthivoren" ~ "Mar/Est -- Benth",
+           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Piscivoren" ~ "Mar/Est -- Pisc",
+           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Planktivoren" ~ "Mar/Est -- Plankt",
+           Salgroep == "Diadrome soorten" & Dieet == "Benthivoren" ~ "Diadr -- Benth",
+           Salgroep == "Diadrome soorten" & Dieet == "Piscivoren" ~ "Diadr -- Pisc",
+           Salgroep == "Diadrome soorten" & Dieet == "Omnivoren" ~ "Diadr -- Omn",
+           Salgroep == "Zoetwatersoorten" & Dieet == "Benthivoren" ~ "Zoetw -- Benth",
+           Salgroep == "Zoetwatersoorten" & Dieet == "Piscivoren" ~ "Zoetw -- Pisc",
+           Salgroep == "Zoetwatersoorten" & Dieet == "Omnivoren" ~ "Zoetw -- Omn")) %>% 
+  left_join(sleutelsoorten %>% 
+              rename(indeling_SL = indeling), by = c("Soort" = "soort")) %>% 
+  mutate(., sleutelsoort = !is.na(.$indeling_SL)) %>% 
+  select(-Salgroep_detail, -Salgroep) %>% 
+  relocate(sleutelsoort, .before = indeling)
+
+func_groepen_EMSE <-
+  func_groepen_EMSE %>% 
+  select(Soort, Species, Saliniteitsvoorkeur, Dieet, indeling) %>% 
+  full_join(sleutelsoorten %>% 
+              rename(indeling_SL = indeling), by = c("Soort" = "soort")) %>% 
+  mutate(., sleutelsoort = !is.na(.$indeling_SL)) %>% 
+  # select(-Salgroep_detail, -Salgroep) %>% 
+  relocate(sleutelsoort, .before = indeling)
+
+func_groepen_EMSE %>% 
+  mutate(across(everything(), as.character)) %>% 
+  mutate(across(everything(), ~replace_na(.,"NA"))) %>% 
+  arrange(Soort) %>% 
+  write_xlsx(str_c(pad_data, "functionele groepen.xlsx"))
+
+```
+
+
+```{r EMSE tabellen}
+
+sleutelsoorten_EMSE <-
+  read_xlsx(str_c(pad_data, "sleutelsoorten EMSE.xlsx"))
+
+func_groepen_EMSE <-
+  read_xlsx(str_c(pad_data, "functionele groepen.xlsx"))
+  
+```
+
+
+##### datasets voor aantal en gewicht:
+
+-   *G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/090_vissen/data/ankerkuil_aantallen_2012_2021.csv*
+-   *G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/090_vissen/data/ankerkuil_gewicht_2012_2021.csv*
+
+```{r inlezen-data}
+
+soortenlijst <- 
+  read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx")) %>% 
+  mutate(Soort = str_to_lower(Soort))
+
+ankerkuil_aantal <- 
+  read_delim(paste0(pad_data, "ankerkuil_aantallen_2012_2021.csv"),
+             delim = ";")
+
+ankerkuil_gewicht <- 
+  read_delim(paste0(pad_data, "ankerkuil_gewicht_2012_2021.csv"),
+             delim = ";")
+
+data_ankerkuil <- 
+  ankerkuil_aantal %>% 
+  pivot_longer(cols = `tiendoornige stekelbaars`:last_col(),
+               names_to = "soort",
+               values_to = "aantal") %>%
+  left_join(ankerkuil_gewicht %>% 
+              select(-uren, -volume) %>% 
+              pivot_longer(cols = `tiendoornige stekelbaars`:last_col(),
+                           names_to = "soort",
+                           values_to = "gewicht")) %>% 
+  mutate(gewicht = if_else(aantal == 0, 0, gewicht),
+         seizoen = recode(seizoen,
+                          VJ = "voorjaar",
+                          NJ = "najaar",
+                          Z = "zomer"),
+         seizoen = factor(seizoen, levels = c("voorjaar", "zomer", "najaar")),
+         locatie = factor(locatie, levels = c(c("Doel", "Antwerpen", "Steendorp", "Branst")))) %>%
+  # filter(!str_detect(soort, "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat")) %>%
+  group_by(soort) %>% 
+  mutate(anyN = any(aantal > 0)) %>% 
+  ungroup() %>% 
+  filter(anyN) %>% 
+  select(-anyN) %>% 
+  left_join(soortenlijst)
+
+
+vroegste_jaar <-
+  data_ankerkuil %>% 
+  pull(jaar) %>% 
+  min()
+
+laatste_jaar <-
+  data_ankerkuil %>% 
+  pull(jaar) %>% 
+  max()
+
+```
+
+
+```{r enkel-vissen}
+
+soorten <- 
+  data_ankerkuil %>% 
+  distinct(soort) %>% 
+  pull(soort)
+
+# soorten_invertebraten <-
+#   c("wolhandkrab", "grijze garnalen", "steurgarnalen", "gammarus", "noordzeekrab", "japanse steurgarnaal", "penseelkrab")
+
+soorten_invertebraten <-
+  soorten %>% 
+  keep(~ str_detect(., "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat")) 
+
+soorten_vis <-
+  setdiff(soorten, soorten_invertebraten) %>% 
+  {.[order(.)]}
+
+data_ankerkuil <- 
+  data_ankerkuil %>% 
+  filter(soort %in% soorten_vis)
+
+```
+
+
+```{r aantal-en-gewicht-per-kub}
+
+data_ankerkuil <- 
+  data_ankerkuil %>% 
+  mutate(aantal_per_kub = aantal/volume,
+         gewicht_per_kub = gewicht/volume)
+
+```
+
+
+```{r indeling EMSE rapportage}
+
+data_ankerkuil %>% 
+  distinct(Salgroep)
+
+data_ankerkuil %>% 
+  distinct(Dieet)
+
+data_ankerkuil <- 
+  data_ankerkuil %>% 
+  mutate(Salgroep_detail = Salgroep,
+         Salgroep = case_when(
+           Salgroep_detail %in% c("Mariene migranten", "Mariene dwaalgasten", "Estuarien residenten") ~ "Mariene en Estuariene soorten",
+           Salgroep_detail %in% c("Diadromen") ~ "Diadrome soorten",
+           Salgroep_detail %in% c("Zoetwatersoorten") ~ "Zoetwatersoorten"
+         ),
+         indeling = case_when(
+           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Benthivoren" ~ "Mar/Est -- Benth",
+           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Piscivoren" ~ "Mar/Est -- Pisc",
+           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Planktivoren" ~ "Mar/Est -- Plankt",
+           Salgroep == "Diadrome soorten" & Dieet == "Benthivoren" ~ "Diadr -- Benth",
+           Salgroep == "Diadrome soorten" & Dieet == "Piscivoren" ~ "Diadr -- Pisc",
+           Salgroep == "Diadrome soorten" & Dieet == "Omnivoren" ~ "Diadr -- Omn",
+           Salgroep == "Zoetwatersoorten" & Dieet == "Benthivoren" ~ "Zoetw -- Benth",
+           Salgroep == "Zoetwatersoorten" & Dieet == "Piscivoren" ~ "Zoetw -- Pisc",
+           Salgroep == "Zoetwatersoorten" & Dieet == "Omnivoren" ~ "Zoetw -- Omn"),
+         in_indeling = !is.na(indeling))
+
+indeling_EMSE <-
+  data_ankerkuil %>% 
+  distinct(soort, Salgroep, Dieet, indeling, in_indeling)
+
+```
+
+#### EMSE indeling
+
+```{r soortverschillen}
+
+setdiff(soorten_EMSE$Soort, sleutelsoorten$soort)
+setdiff(sleutelsoorten$soort, func_groepen_EMSE %>%  filter(Species != "NA") %>%  pull(Soort))
+
+setdiff(soortenlijst %>%  filter(inEMSE) %>% pull(soort), soorten_vis)
+setdiff(soorten_vis, soortenlijst %>%  filter(inEMSE) %>% pull(soort))
+
+```
+
+
+```{r}
+
+soortenlijst_check <-
+  soortenlijst %>% 
+  mutate(Salgroep_detail = Salgroep,
+         Salgroep = case_when(
+           Salgroep_detail %in% c("Mariene migranten", "Mariene dwaalgasten", "Estuarien residenten") ~ "Mariene en Estuariene soorten",
+           Salgroep_detail %in% c("Diadromen") ~ "Diadrome soorten",
+           Salgroep_detail %in% c("Zoetwatersoorten") ~ "Zoetwatersoorten"
+         ),
+         indeling = case_when(
+           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Benthivoren" ~ "Mar/Est -- Benth",
+           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Piscivoren" ~ "Mar/Est -- Pisc",
+           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Planktivoren" ~ "Mar/Est -- Plankt",
+           Salgroep == "Diadrome soorten" & Dieet == "Benthivoren" ~ "Diadr -- Benth",
+           Salgroep == "Diadrome soorten" & Dieet == "Piscivoren" ~ "Diadr -- Pisc",
+           Salgroep == "Diadrome soorten" & Dieet == "Omnivoren" ~ "Diadr -- Omn",
+           Salgroep == "Zoetwatersoorten" & Dieet == "Benthivoren" ~ "Zoetw -- Benth",
+           Salgroep == "Zoetwatersoorten" & Dieet == "Piscivoren" ~ "Zoetw -- Pisc",
+           Salgroep == "Zoetwatersoorten" & Dieet == "Omnivoren" ~ "Zoetw -- Omn"),
+         in_indeling = !is.na(indeling))
+
+soortenlijst_check <-
+  soortenlijst_check %>% 
+  filter(!inEMSE) %>% 
+  select(soort, Salgroep, Dieet, indeling) %>% 
+  arrange(soort)
+
+soortenlijst_check <-
+  soortenlijst_check %>% 
+  left_join(sleutelsoorten %>% 
+              rename(indeling_SL = indeling)) %>% 
+  mutate(., sleutelsoort = !is.na(.$indeling_SL)) %>% 
+  # select(-Salgroep_detail, -Salgroep) %>% 
+  relocate(sleutelsoort, .before = indeling)
+
+soortenlijst_check %>% 
+  mutate(across(everything(), as.character)) %>% 
+  mutate(across(everything(), ~replace_na(.,"NA"))) %>% 
+  write_xlsx(str_c(pad_data, "soorten niet in EMSE.xlsx"))
+
+```
+
+
+```{r figuur indeling}
+
+data_ankerkuil %>%
+  group_by(jaar, seizoen, locatie, soort, in_indeling) %>%
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(soort, in_indeling) %>%
+  summarise(`N>0` = sum(aantal > 0, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(`N>0` > 0) %>%
+  arrange(`N>0`, soort) %>%
+  ggplot(aes(fct_inorder(soort), `N>0`+0.1, fill = in_indeling)) +
+  geom_col() +
+  scale_y_log10(breaks = c(1,3,10,30,100,300)) +
+  scale_fill_brewer(palette = "Set1") +
+  labs(x = "soort",
+       y = "aantal afvissingen waarbij N>0") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+data_ankerkuil %>%
+  group_by(jaar, seizoen, locatie, soort, inEMSE, in_indeling) %>%
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(soort, inEMSE, in_indeling) %>%
+  summarise(`N>0` = sum(aantal > 0, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(`N>0` > 0) %>%
+  arrange(`N>0`, soort) %>%
+  ggplot(aes(fct_inorder(soort), `N>0`+0.1, fill = in_indeling)) +
+  geom_col() +
+  scale_y_log10(breaks = c(1,3,10,30,100,300)) +
+  scale_fill_brewer(palette = "Set1") +
+  labs(x = "soort",
+       y = "aantal afvissingen waarbij N>0") +
+  facet_wrap(~inEMSE, scales = "free_x", labeller = "label_both") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+data_ankerkuil %>%
+  mutate(`EMSE - Indeling` = str_c(inEMSE, in_indeling, sep = " - ")) %>% 
+  group_by(jaar, seizoen, locatie, soort, `EMSE - Indeling`) %>%
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(soort, `EMSE - Indeling`) %>%
+  summarise(`N>0` = sum(aantal > 0, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(`N>0` > 0) %>%
+  arrange(`N>0`, soort) %>%
+  ggplot(aes(fct_inorder(soort), `N>0`+0.1, fill = `EMSE - Indeling`)) +
+  geom_col() +
+  scale_y_log10(breaks = c(1,3,10,30,100,300)) +
+  scale_fill_brewer(palette = "Set1") +
+  labs(x = "soort",
+       y = "aantal afvissingen waarbij N>0") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+
+data_ankerkuil %>%
+  group_by(soort, in_indeling) %>%
+  summarise(aantal_per_kub = mean(aantal_per_kub, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(aantal_per_kub, soort) %>%
+  ggplot(aes(fct_inorder(soort), aantal_per_kub*100000, fill = in_indeling)) +
+  geom_col() +
+  scale_y_log10(breaks = c(0.1,0.3,1,3,10,30,100,300,1000,3000,10000,30000,100000)) +
+  scale_fill_brewer(palette = "Set1") +
+  labs(x = "soort",
+       y = "gem aantal per 100000 kub per vangst") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+data_ankerkuil %>%
+  group_by(soort, in_indeling) %>%
+  summarise(gewicht_per_kub = mean(gewicht_per_kub, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(gewicht_per_kub, soort) %>%
+  ggplot(aes(fct_inorder(soort), gewicht_per_kub*100000, fill = in_indeling)) +
+  geom_col() +
+  scale_y_log10(breaks = c(0.1,0.3,1,3,10,30,100,300,1000,3000,10000,30000,100000)) +
+  scale_fill_brewer(palette = "Set1") +
+  labs(x = "soort",
+       y = "gem gewicht per 100000 kub per vangst") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+```
+

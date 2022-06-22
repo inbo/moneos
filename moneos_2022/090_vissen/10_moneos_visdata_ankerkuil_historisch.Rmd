@@ -348,14 +348,14 @@ stalen worden gesommeerd per jaar, seizoen en locatie
 
 ankerkuil_aantal_historisch <- 
   ankerkuil_aantal_historisch %>% 
-  select(-datum, -maand, -getijde) %>% 
+  select(-datum, -maand, -getijde, -volgorde) %>% 
   group_by(jaar, seizoen, locatie) %>% 
   summarise_all(~sum(., na.rm = TRUE)) %>% 
   ungroup()
 
 ankerkuil_gewicht_historisch <- 
   ankerkuil_gewicht_historisch %>% 
-  select(-datum, -maand, -getijde) %>% 
+  select(-datum, -maand, -getijde, -volgorde) %>% 
   group_by(jaar, seizoen, locatie) %>% 
   summarise_all(~sum(., na.rm = TRUE)) %>% 
   ungroup()
