@@ -5,9 +5,9 @@ knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
                           output_dir = paste0(
-                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
                           "/output")
                           )})
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
 title: "analyse visdata ankerkuil"
 output: word_document
 editor_options: 
@@ -210,7 +210,7 @@ indeling_EMSE <-
 
 #### relatie aantal - gewicht
 
-```{r relatie-aantal-gewicht, fig.height=20, fig.width=12}
+```{r relatie-aantal-gewicht}
 
 # data_ankerkuil %>%
 #   ggplot(aes(aantal, gewicht)) +
@@ -232,112 +232,170 @@ data_ankerkuil %>%
              scales = "free",
              ncol = 8)
 
-ggsave(paste0(pad_figuren, "relatie_aantal_gewicht.jpg"))
+# # ggsave(paste0(pad_figuren, "relatie_aantal_gewicht.jpg"))
 
 ```
 
 
 #### aantal soorten
 
-```{r aantal-soorten, fig.height=4, fig.width=8}
+```{r aantal-soorten}
 
-aantal_soorten <- 
+# aantal_soorten_seizoen_locatie <- 
+#   data_ankerkuil %>% 
+#   filter(aantal > 0) %>% 
+#   distinct(jaar, seizoen, locatie, soort) %>% 
+#   count(jaar, seizoen, locatie, name = "soorten")
+# 
+# aantal_soorten_seizoen_locatie %>% 
+#   ggplot(aes(jaar, soorten, fill = ordered(jaar), color = ordered(jaar))) +
+#   geom_col(position = position_dodge(width = 0.8),
+#            width = 0.7,
+#            alpha = 0.8) +
+#   geom_text(aes(y = soorten + 2, label = soorten),
+#             position = position_dodge(width = 0.8),
+#             size = 4, color = "steelblue4") +
+#   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+#   # labs(fill = "jaar",
+#   #      color = "jaar") +
+#   guides(fill="none",
+#          color = "none") +
+#   facet_grid(seizoen ~ locatie)
+# 
+# ggsave(paste0(pad_figuren, "aantal_soorten_seizoen_locatie.jpg"))
+
+
+aantal_soorten_seizoen_locatie <- 
   data_ankerkuil %>% 
   filter(aantal > 0) %>% 
-  distinct(jaar, seizoen, soort) %>% 
-  count(jaar, seizoen, name = "soorten") %>% 
+  distinct(jaar, seizoen, locatie, soort) %>% 
+  count(jaar, seizoen, locatie, name = "soorten") %>% 
+  bind_rows(data_ankerkuil %>% 
+              filter(aantal > 0) %>% 
+              distinct(jaar, locatie, soort) %>% 
+              count(jaar, locatie, name = "soorten") %>% 
+              mutate(seizoen = "totaal over seizoenen")) %>% 
+  bind_rows(data_ankerkuil %>% 
+              filter(aantal > 0) %>% 
+              distinct(jaar, seizoen, soort) %>% 
+              count(jaar, seizoen, name = "soorten") %>% 
+              mutate(locatie = "totaal over locaties")) %>% 
   bind_rows(data_ankerkuil %>% 
               filter(aantal > 0) %>% 
               distinct(jaar, soort) %>% 
               count(jaar, name = "soorten") %>% 
-              mutate(seizoen = "totaal")) %>% 
-  mutate(seizoen = factor(seizoen, levels = c("voorjaar", "zomer", "najaar", "totaal")))
+              mutate(seizoen = "totaal over seizoenen",
+                     locatie = "totaal over locaties")) %>% 
+  mutate(seizoen = factor(seizoen, levels = c("voorjaar", "zomer", "najaar", "totaal over seizoenen")),
+         locatie = factor(locatie, levels = c("Doel", "Antwerpen", "Steendorp", "Branst", "totaal over locaties")))
 
-aantal_soorten %>% 
-  ggplot(aes(seizoen, soorten, fill = ordered(jaar))) +
-  geom_col(position = position_dodge(width = 0.925), 
+aantal_soorten_seizoen_locatie %>% 
+  ggplot(aes(jaar, soorten, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(width = 0.8),
+           width = 0.7,
            alpha = 0.8) +
-  geom_text(aes(y = soorten + 3, label = soorten), 
-            position = position_dodge(width = 0.925),
-            size = 3) +
-  labs(y = "aantal soorten",
-       fill = "jaar")
+  geom_text(aes(y = soorten + 3, label = soorten),
+            position = position_dodge(width = 0.8),
+            size = 3, color = "steelblue4") +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # labs(fill = "jaar",
+  #      color = "jaar") +
+  guides(fill="none",
+         color = "none") +
+  facet_grid(seizoen ~ locatie) +
+  theme(strip.text = element_text(size = 12))
 
-ggsave(paste0(pad_figuren, "aantal_soorten.jpg"))
+ggsave(paste0(pad_figuren, "aantal_soorten_seizoen_locatie.jpg"), width = 12, height = 10)
+
+
+aantal_soorten_seizoen <- 
+  data_ankerkuil %>% 
+  filter(aantal > 0) %>% 
+  distinct(jaar, seizoen, locatie, soort) %>% 
+  count(jaar, seizoen, locatie, name = "soorten") %>% 
+  group_by(jaar, seizoen) %>%
+  summarise(soorten = round(mean(soorten))) %>% 
+  ungroup() %>% 
+  bind_rows(data_ankerkuil %>% 
+              filter(aantal > 0) %>% 
+              distinct(jaar, locatie, soort) %>% 
+              count(jaar, locatie, name = "soorten") %>% 
+              group_by(jaar) %>% 
+              summarise(soorten = round(mean(soorten))) %>% 
+              ungroup() %>% 
+              mutate(seizoen = "totaal over seizoenen")) %>% 
+  mutate(seizoen = factor(seizoen, levels = c("voorjaar", "zomer", "najaar", "totaal over seizoenen")))
+
+aantal_soorten_seizoen %>% 
+  ggplot(aes(seizoen, soorten, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(width = 0.8),
+           width = 0.6,
+           alpha = 0.8) +
+  geom_text(aes(y = soorten + 1, label = soorten),
+            position = position_dodge(width = 0.8),
+            size = 2, color = "steelblue4") +
+  labs(fill = "jaar",
+       color = "jaar")
+
+ggsave(paste0(pad_figuren, "aantal_soorten_seizoen.jpg"), width = 8, height = 4)
 
 
 aantal_soorten_locatie <- 
   data_ankerkuil %>% 
   filter(aantal > 0) %>% 
-  distinct(jaar, locatie, soort) %>% 
-  count(jaar, locatie, name = "soorten")
-
-aantal_soorten_locatie %>% 
-  ggplot(aes(locatie, soorten, fill = ordered(jaar))) +
-  geom_col(position = position_dodge(width = 0.925), 
-           alpha = 0.8) +
-  geom_text(aes(y = soorten + 3, label = soorten), 
-            position = position_dodge(width = 0.925),
-            size = 3) +
-  labs(y = "aantal soorten",
-       fill = "jaar")
-
-ggsave(paste0(pad_figuren, "aantal_soorten_locatie.jpg"))
-
-```
-
-
-```{r aantal soorten EMSE}
-
-aantal_soorten_EMSE_pooled <- 
-  data_ankerkuil %>% 
-  filter(aantal > 0) %>% 
-  filter(in_indeling) %>% 
-  distinct(jaar, soort, salgroep, dieet, indeling) %>% 
-  count(jaar, salgroep, dieet, indeling, name = "soorten") %>% 
-  add_row(soorten = NA, indeling = "Diadr -- Benth", jaar = vroegste_jaar:laatste_jaar) %>% 
-  mutate(indeling = factor(indeling, levels = levels_indeling))
-
-# levels(aantal_soorten_EMSE_pooled$indeling)
-
-aantal_soorten_EMSE_pooled %>% 
-  ggplot(aes(jaar, soorten, fill = ordered(jaar))) +
-  geom_col(position = position_dodge(width = 0.925), 
-           alpha = 0.8) +
-  geom_text(aes(y = soorten + 2, label = soorten), 
-            position = position_dodge(width = 0.925),
-            size = 3) +
-  # scale_fill_viridis_c() +
-  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
-  labs(y = "aantal soorten",
-       fill = "jaar") +
-  facet_wrap(~ indeling)
-
-aantal_soorten_EMSE_mean <- 
-  data_ankerkuil %>% 
-  filter(aantal > 0) %>% 
-  filter(in_indeling) %>% 
-  distinct(jaar, soort, seizoen, locatie, salgroep, dieet, indeling) %>% 
-  count(jaar, seizoen, locatie, salgroep, dieet, indeling, name = "soorten") %>% 
-  group_by(jaar, salgroep, dieet, indeling) %>% 
+  distinct(jaar, seizoen, locatie, soort) %>% 
+  count(jaar, seizoen, locatie, name = "soorten") %>% 
+  group_by(jaar, locatie) %>%
   summarise(soorten = round(mean(soorten))) %>% 
   ungroup() %>% 
-  add_row(soorten = NA, indeling = "Diadr -- Benth", jaar = vroegste_jaar:laatste_jaar) %>% 
-  mutate(indeling = factor(indeling, levels = levels_indeling))
+  bind_rows(data_ankerkuil %>% 
+              filter(aantal > 0) %>% 
+              distinct(jaar, seizoen, soort) %>% 
+              count(jaar, seizoen, name = "soorten") %>% 
+              group_by(jaar) %>% 
+              summarise(soorten = round(mean(soorten))) %>% 
+              ungroup() %>% 
+              mutate(locatie = "totaal over locaties")) %>% 
+  mutate(locatie = factor(locatie, levels = c("Doel", "Antwerpen", "Steendorp", "Branst", "totaal over locaties")))
 
-aantal_soorten_EMSE_mean %>% 
-  ggplot(aes(jaar, soorten, fill = ordered(jaar))) +
-  geom_col(position = position_dodge(width = 0.925), 
+aantal_soorten_locatie %>% 
+  ggplot(aes(locatie, soorten, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(width = 0.8),
+           width = 0.6,
            alpha = 0.8) +
-  geom_text(aes(y = soorten + 1, label = soorten), 
-            position = position_dodge(width = 0.925),
-            size = 3) +
+  geom_text(aes(y = soorten + 1, label = soorten),
+            position = position_dodge(width = 0.8),
+            size = 2, color = "steelblue4") +
+  labs(fill = "jaar",
+       color = "jaar")
+
+ggsave(paste0(pad_figuren, "aantal_soorten_locatie.jpg"), width = 8, height = 4)
+
+
+aantal_soorten_totaal <- 
+  data_ankerkuil %>% 
+  filter(aantal > 0) %>% 
+  distinct(jaar, soort) %>% 
+  count(jaar, name = "soorten")
+
+aantal_soorten_totaal %>% 
+  ggplot(aes(jaar, soorten, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(width = 0.8),
+           width = 0.7,
+           alpha = 0.8) +
+  geom_text(aes(y = soorten + 2, label = soorten),
+            position = position_dodge(width = 0.8),
+            size = 3, color = "steelblue4") +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
-  labs(y = "aantal soorten",
-       fill = "jaar") +
-  facet_wrap(~ indeling)
+  # labs(fill = "jaar",
+  #      color = "jaar") +
+  guides(fill="none",
+         color = "none")
+
+ggsave(paste0(pad_figuren, "aantal_soorten_totaal.jpg"), width = 6, height = 4)
 
 ```
+
 
 #### overzicht gevangen soorten
 
@@ -366,140 +424,106 @@ sheets[["gevangen_soorten"]] <- tabel_gevangen_soorten
 ```
 
 
-#### gemiddeld aantal gevangen individuen over seizoenen
+#### relatief aantal gevangen individuen
 
-```{r gemiddeld-over-seizoenen, fig.height=4, fig.width=6}
+```{r relatief-aantal-gevangen-individuen, fig.height=6, fig.width=6}
 
-gemiddel_over_seizoen <- 
+relatief_aantal <- 
   data_ankerkuil %>% 
-  group_by(jaar, seizoen, locatie) %>%
-  summarise(aantal_per_kub = sum(aantal_per_kub)) %>% 
+  filter(jaar == laatste_jaar) %>% 
+  group_by(seizoen, locatie) %>%
+  mutate(relatief_aantal = aantal/sum(aantal),
+         relatief_gewicht = gewicht/sum(gewicht)) %>% 
   ungroup() %>% 
-  group_by(jaar) %>%
-  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
-  ungroup()
-
-gemiddel_over_seizoen %>% 
-  ggplot(aes(ordered(jaar), aantal_per_kub)) +
-  geom_col(alpha = 0.8,
-           width = 0.5) +
-  geom_text(aes(y = aantal_per_kub + 0.3, label = round(aantal_per_kub, 2)), 
-            size = 4) +
-  labs(x = NULL,
-       y = expression(paste("gem. aantal ind. / ", m^3)))
-
-ggsave(paste0(pad_figuren, "gemiddeld_over_seizoenen.jpg"))
-
-```
-
-
-#### gemiddeld aantal gevangen individuen per locatie
-
-```{r gemiddeld-per-locatie, fig.height=4, fig.width=6}
-
-gemiddeld_per_locatie <- 
-  data_ankerkuil %>% 
-  group_by(jaar, seizoen, locatie) %>%
-  summarise(aantal_per_kub = sum(aantal_per_kub)) %>% 
+  group_by(soort) %>% 
+  mutate(soort2 = ifelse(any(relatief_aantal >= 0.05 | relatief_gewicht >= 0.05), soort, "rest")) %>% 
   ungroup() %>% 
-  group_by(locatie) %>%
-  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
-  ungroup()
-
-gemiddeld_per_locatie %>% 
-  ggplot(aes(locatie, aantal_per_kub)) +
-  geom_col(alpha = 0.8,
-           width = 0.5) +
-  geom_text(aes(y = aantal_per_kub + 0.3, label = round(aantal_per_kub, 2)), 
-            size = 4) +
-  labs(x = NULL,
-       y = expression(paste("gem. aantal ind. / ", m^3)))
-
-ggsave(paste0(pad_figuren, "gemiddeld_per_locatie.jpg"))
-
-```
-
-#### gemiddelde biomassa per locatie
-
-```{r gemiddelde-biomassa-per-locatie, fig.height=4, fig.width=6}
-
-gemiddelde_biomassa_per_locatie <- 
-  data_ankerkuil %>% 
-  group_by(jaar, seizoen, locatie) %>%
-  summarise(gewicht_per_kub = sum(gewicht_per_kub, na.rm = TRUE)) %>% 
+  group_by(seizoen, locatie, soort2) %>% 
+  summarise(aantal = sum(aantal)) %>% 
   ungroup() %>% 
-  group_by(locatie) %>%
-  summarise(gewicht_per_kub = mean(gewicht_per_kub, na.rm = TRUE)) %>% 
-  ungroup()
+  group_by(seizoen, locatie) %>% 
+  mutate(soort2 = soort2,
+         aantal = round(aantal/sum(aantal)*100)) %>% 
+  ungroup() %>% 
+  rename(soort = soort2) %>% 
+  mutate(soort = factor(soort, 
+                        levels = unique(soort) %>% 
+                          sort() %>% 
+                          setdiff("rest") %>% 
+                          c(., "rest")))
 
-gemiddelde_biomassa_per_locatie %>% 
-  ggplot(aes(locatie, gewicht_per_kub)) +
-  geom_col(alpha = 0.8,
-           width = 0.5) +
-  geom_text(aes(y = gewicht_per_kub + 0.3, label = round(gewicht_per_kub, 2)), 
-            size = 4) +
+relatief_aantal %>% 
+  mutate(aantal = if_else(aantal == 0, NA_real_, aantal)) %>% 
+  ggplot(aes(x ="", y = aantal, fill = soort)) +
+  geom_col(position = "fill") +
+  # geom_text(aes(label = soort),
+  #            size = 3) +
+  geom_text(aes(label = aantal, size = aantal),
+            position = position_fill(vjust = 0.5),
+            show.legend = FALSE) +
+  coord_polar("y", start=0) +
+  facet_grid(locatie ~ seizoen) +
   labs(x = NULL,
-       y = expression(paste("gem. biomassa / ", m^3)))
+       y = NULL) +
+  scale_x_discrete(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  theme(
+    # legend.position = "bottom",
+        legend.title = element_blank())
 
-ggsave(paste0(pad_figuren, "gemiddelde_biomassa_per_locatie.jpg"))
+ggsave(paste0(pad_figuren, "relatief_aantal_gevangen_individuen.jpg"))
 
 ```
 
 
-#### gemiddeld aantal gevangen individuen per seizoen en locatie
+#### relatieve biomassa gevangen individuen
 
-```{r gemiddeld-aantal-per-seizoenen-en-locatie, fig.height=4, fig.width=8}
+```{r relatieve-biomassa-gevangen-individuen, fig.height=6, fig.width=6}
 
-gemiddeld_per_seizoen_locatie <- 
+relatief_gewicht <- 
   data_ankerkuil %>% 
-  group_by(jaar, seizoen, locatie) %>%
-  summarise(aantal_per_kub = sum(aantal_per_kub)) %>% 
-  ungroup()
+  filter(jaar == laatste_jaar) %>% 
+  group_by(seizoen, locatie) %>%
+  mutate(relatief_aantal = aantal/sum(aantal),
+         relatief_gewicht = gewicht/sum(gewicht)) %>% 
+  ungroup() %>% 
+  group_by(soort) %>% 
+  mutate(soort2 = ifelse(any(relatief_aantal >= 0.05 | relatief_gewicht >= 0.05), soort, "rest")) %>% 
+  ungroup() %>% 
+  group_by(seizoen, locatie, soort2) %>% 
+  summarise(gewicht = sum(gewicht)) %>% 
+  ungroup() %>% 
+  group_by(seizoen, locatie) %>% 
+  mutate(soort2 = soort2,
+         gewicht = round(gewicht/sum(gewicht)*100)) %>% 
+  ungroup() %>% 
+  rename(soort = soort2) %>% 
+  mutate(soort = factor(soort, 
+                        levels = unique(soort) %>% 
+                          sort() %>% 
+                          setdiff("rest") %>% 
+                          c(., "rest")))
 
-gemiddeld_per_seizoen_locatie %>% 
-  ggplot(aes(ordered(jaar), aantal_per_kub, group = seizoen, fill = seizoen)) +
-  geom_col(alpha = 0.8,
-           position = "dodge") +
-  geom_text(aes(y = aantal_per_kub + 0.1*aantal_per_kub, label = round(aantal_per_kub, 2)),
-            size = 2,
-            angle = 45,
-            position = position_dodge(0.9)) +
+relatief_gewicht %>% 
+  mutate(gewicht = if_else(gewicht == 0, NA_real_, gewicht)) %>% 
+  ggplot(aes(x ="", y = gewicht, fill = soort)) +
+  geom_col(position = "fill") +
+  # geom_text(aes(label = soort),
+  #            size = 3) +
+  geom_text(aes(label = gewicht, size = gewicht),
+            position = position_fill(vjust = 0.5),
+            show.legend = FALSE) +
+  coord_polar("y", start=0) +
+  facet_grid(locatie ~ seizoen) +
   labs(x = NULL,
-       y = expression(paste("gemiddeld aantal individuen per ", m^3))) + 
-  facet_wrap(~locatie,
-             scales = "free_y")
+       y = NULL) +
+  scale_x_discrete(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  theme(
+    # legend.position = "bottom",
+        legend.title = element_blank())
 
-ggsave(paste0(pad_figuren,
-              "gemiddeld_aantal_per_seizoen_en_locatie.jpg"))
-
-```
-
-
-#### gemiddeld gewicht gevangen individuen per seizoen en locatie
-
-```{r gemiddelde-biomassa-per-seizoenen-en-locatie, fig.height=4, fig.width=8}
-
-gemiddeld_per_seizoen_locatie <- 
-  data_ankerkuil %>% 
-  group_by(jaar, seizoen, locatie) %>%
-  summarise(gewicht_per_kub = sum(gewicht_per_kub)) %>% 
-  ungroup()
-
-gemiddeld_per_seizoen_locatie %>% 
-  ggplot(aes(ordered(jaar), gewicht_per_kub, group = seizoen, fill = seizoen)) +
-  geom_col(alpha = 0.8,
-           position = "dodge") +
-  geom_text(aes(y = gewicht_per_kub + 0.1*gewicht_per_kub, label = round(gewicht_per_kub, 2)),
-            size = 2,
-            angle = 45,
-            position = position_dodge(0.9)) +
-  labs(x = NULL,
-       y = expression(paste("gemiddelde biomassa  ", g/m^3))) + 
-  facet_wrap(~locatie,
-             scales = "free_y")
-
-ggsave(paste0(pad_figuren,
-              "gemiddelde_biomassa_per_seizoen_en_locatie.jpg"))
+ggsave(paste0(pad_figuren, "relatieve_biomassa_gevangen_individuen.jpg"))
 
 ```
 
@@ -536,10 +560,12 @@ gemiddeld_aantal_EMSE %>%
   # scale_fill_viridis_c() +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_y_log10() +
-  labs(y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3)),
-       fill = "jaar",
-       color = "jaar") +
+  labs(y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) +
+  guides(fill = "none",
+         color = "none") +
   facet_wrap(~ indeling, scales = "free_y")
+
+ggsave(paste0(pad_figuren, "aantallen_EMSE.jpg"), width = 8, height = 6)
 
 
 gemiddeld_aantal_niet_EMSE <- 
@@ -567,10 +593,12 @@ gemiddeld_aantal_niet_EMSE %>%
   # scale_fill_viridis_c() +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_y_log10() +
-  labs(y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3)),
-       fill = "jaar",
-       color = "jaar") +
+  labs(y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) +
+  guides(fill = "none",
+         color = "none") +
   facet_wrap(salgroep ~ dieet, scales = "free_y")
+
+ggsave(paste0(pad_figuren, "aantallen_niet_EMSE.jpg"), width = 4, height = 3)
 
 ```
 
@@ -607,10 +635,12 @@ gemiddeld_gewicht_EMSE %>%
   # scale_fill_viridis_c() +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_y_log10() +
-  labs(y = expr(paste("gem. gewicht g/", !!mult_kub, m^3)),
-       fill = "jaar",
-       color = "jaar") +
+  labs(y = expr(paste("gem. biomassa [g/", !!mult_kub, m^3, "]"))) +
+  guides(fill = "none",
+         color = "none") +
   facet_wrap(~ indeling, scales = "free_y")
+
+ggsave(paste0(pad_figuren, "biomassa_EMSE.jpg"), width = 8, height = 6)
 
 
 gemiddeld_gewicht_niet_EMSE <- 
@@ -638,118 +668,248 @@ gemiddeld_gewicht_niet_EMSE %>%
   # scale_fill_viridis_c() +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_y_log10() +
-  labs(y = expr(paste("gem. gewicht g/", !!mult_kub, m^3)),
-       fill = "jaar",
-       color = "jaar") +
+  labs(y = expr(paste("gem. biomassa [g/", !!mult_kub, m^3, "]"))) +
+  guides(fill = "none",
+         color = "none") +
   facet_wrap(salgroep ~ dieet, scales = "free_y")
 
+ggsave(paste0(pad_figuren, "biomassa_niet_EMSE.jpg"), width = 4, height = 3)
+
 ```
 
 
+#### diversiteit EMSE
 
-#### relatief aantal gevangen individuen
+```{r diversiteit EMSE}
+# EH = H / ln(S)
 
-```{r relatief-aantal-gevangen-individuen, fig.height=6, fig.width=6}
-
-relatief_aantal <- 
+gemiddeld_diversiteit_EMSE <- 
   data_ankerkuil %>% 
-  filter(jaar == laatste_jaar) %>% 
-  group_by(seizoen, locatie) %>%
+  filter(in_indeling) %>% 
+  filter(aantal > 0) %>% 
+  group_by(jaar, seizoen, locatie, salgroep, dieet, indeling) %>%
   mutate(relatief_aantal = aantal/sum(aantal)) %>% 
+  summarise(N = n(),
+            H_sh = -sum(relatief_aantal*log(relatief_aantal)),
+            H_gs = 1-sum(relatief_aantal^2),
+            D_sh = exp(H_sh),
+            D_gs = 1/(1-H_gs),
+            E_sh = H_sh/log(N)) %>%
   ungroup() %>% 
-  group_by(soort) %>% 
-  mutate(soort2 = ifelse(any(relatief_aantal >= 0.05), soort, "rest")) %>% 
+  group_by(jaar, salgroep, dieet, indeling) %>%
+  summarise(N = mean(N),
+            H_sh = mean(H_sh),
+            H_gs = mean(H_gs),
+            D_sh = mean(D_sh),
+            D_gs = mean(D_gs),
+            E_sh = mean(E_sh)) %>% 
   ungroup() %>% 
-  group_by(seizoen, locatie, soort2) %>% 
-  summarise(aantal = sum(aantal)) %>% 
-  ungroup() %>% 
-  group_by(seizoen, locatie) %>% 
-  mutate(soort2 = soort2,
-         aantal = round(aantal/sum(aantal)*100)) %>% 
-  ungroup() %>% 
-  rename(soort = soort2) %>% 
-  mutate(soort = factor(soort, 
-                        levels = unique(soort) %>% 
-                          sort() %>% 
-                          setdiff("rest") %>% 
-                          c(., "rest")))
+  add_row(N = NA, H_sh = NA, H_gs = NA, D_sh = NA, D_gs = NA, indeling = "Diadr -- Benth", jaar = vroegste_jaar:laatste_jaar) %>% 
+  mutate(indeling = factor(indeling, levels = levels_indeling))
 
-relatief_aantal %>% 
-  ggplot(aes(x ="", y = aantal, fill = soort)) +
-  geom_col(position = "fill") +
-  # geom_text(aes(label = soort),
-  #            size = 3) +
-  geom_text(aes(label = aantal, size = aantal),
-            position = position_fill(vjust = 0.5),
-            show.legend = FALSE) +
-  coord_polar("y", start=0) +
-  facet_grid(locatie ~ seizoen) +
-  labs(x = NULL,
-       y = NULL) +
-  scale_x_discrete(breaks = NULL) +
-  scale_y_continuous(breaks = NULL) +
-  theme(
-    # legend.position = "bottom",
-        legend.title = element_blank())
+gemiddeld_diversiteit_EMSE %>% 
+  ggplot(aes(jaar, N, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(),
+           width = 0.7,
+           alpha = 0.8) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_y_log10() +
+  labs(y = "aantal soorten") +
+  guides(fill = "none",
+         color = "none") +
+  facet_wrap(~ indeling, scales = "free_y")
 
-ggsave(paste0(pad_figuren, "relatief_aantal_gevangen_individuen.jpg"))
+ggsave(paste0(pad_figuren, "diversiteit_N_EMSE.jpg"), width = 8, height = 6)
+
+gemiddeld_diversiteit_EMSE %>% 
+  ggplot(aes(jaar, H_sh, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(),
+           width = 0.7,
+           alpha = 0.8) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  labs(y = "shannon diversity index H") +
+  guides(fill = "none",
+         color = "none") +
+  facet_wrap(~ indeling, scales = "free_y")
+
+ggsave(paste0(pad_figuren, "diversiteit_H_shannon_EMSE.jpg"), width = 8, height = 6)
+
+
+gemiddeld_diversiteit_EMSE %>%
+  ggplot(aes(jaar, H_gs, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(),
+           width = 0.7,
+           alpha = 0.8) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_y_log10() +
+  # labs(y = "shannon diversiteit H") +
+  guides(fill = "none",
+         color = "none") +
+  facet_wrap(~ indeling, scales = "free_y")
+
+gemiddeld_diversiteit_EMSE %>% 
+  ggplot(aes(jaar, D_sh, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(),
+           width = 0.7,
+           alpha = 0.8) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_y_log10() +
+  labs(y = "shannon true diversiteit D") +
+  guides(fill = "none",
+         color = "none") +
+  facet_wrap(~ indeling, scales = "free_y")
+
+ggsave(paste0(pad_figuren, "diversiteit_D_shannon_EMSE.jpg"), width = 8, height = 6)
+
+
+gemiddeld_diversiteit_EMSE %>%
+  ggplot(aes(jaar, D_gs, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(),
+           width = 0.7,
+           alpha = 0.8) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_y_log10() +
+  # labs(y = "shannon diversiteit H") +
+  guides(fill = "none",
+         color = "none") +
+  facet_wrap(~ indeling, scales = "free_y")
+
+
+gemiddeld_diversiteit_EMSE %>% 
+  ggplot(aes(jaar, E_sh, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(),
+           width = 0.7,
+           alpha = 0.8) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_y_log10() +
+  labs(y = "shannon eveness E") +
+  guides(fill = "none",
+         color = "none") +
+  facet_wrap(~ indeling, scales = "free_y")
+
+ggsave(paste0(pad_figuren, "diversiteit_E_shannon_EMSE.jpg"), width = 8, height = 6)
+
+
+gemiddeld_diversiteit_EMSE %>% 
+  ggplot(aes(jaar, N, fill = ordered(jaar), color = ordered(jaar))) +
+  geom_col(position = position_dodge(),
+           width = 0.7,
+           alpha = 0.25) +
+  geom_col(aes(y = D_sh),
+           position = position_dodge(),
+           width = 0.7,
+           alpha = 0.8) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_y_log10() +
+  labs(y = "N -- D") +
+  guides(fill = "none",
+         color = "none") +
+  facet_wrap(~ indeling, scales = "free_y")
+
+ggsave(paste0(pad_figuren, "diversiteit_N_D_EMSE.jpg"), width = 8, height = 6)
+
+# gemiddeld_aantal_niet_EMSE <- 
+#   data_ankerkuil %>% 
+#   filter(!in_indeling,
+#          !is.na(dieet)) %>% 
+#   group_by(jaar, seizoen, locatie, salgroep, dieet, indeling) %>%
+#   summarise(aantal_per_kub = sum(aantal_per_kub)) %>% 
+#   ungroup() %>% 
+#   group_by(jaar, salgroep, dieet, indeling) %>%
+#   summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
+#   ungroup()
+# 
+# gemiddeld_aantal_niet_EMSE %>% 
+#   mutate(aantal_per_kub = aantal_per_kub*mult_kub) %>%
+#   ggplot(aes(jaar, aantal_per_kub, fill = ordered(jaar), color = ordered(jaar))) +
+#   geom_col(position = position_dodge(),
+#            width = 0.7,
+#            alpha = 0.8) +
+#   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+#   labs(y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) +
+#   guides(fill = "none",
+#          color = "none") +
+#   facet_wrap(salgroep ~ dieet, scales = "free_y")
+# 
+# ggsave(paste0(pad_figuren, "aantallen_niet_EMSE.jpg"), width = 4, height = 3)
+
 
 ```
 
 
-#### relatieve biomassa gevangen individuen
+#### relatieven aantallen EMSE
 
-```{r relatieve-biomassa-gevangen-individuen, fig.height=6, fig.width=6}
+```{r}
 
-relatief_gewicht <- 
+relatieve_aantallen_EMSE <- 
   data_ankerkuil %>% 
-  filter(jaar == laatste_jaar) %>% 
-  group_by(seizoen, locatie) %>%
-  mutate(relatief_gewicht = gewicht/sum(gewicht)) %>% 
+  filter(in_indeling) %>% 
+  filter(aantal > 0) %>% 
+  group_by(jaar, seizoen, locatie, salgroep, dieet, indeling) %>%
+  mutate(relatief_aantal = aantal/sum(aantal),
+         relatief_gewicht = gewicht/sum(gewicht)) %>% 
   ungroup() %>% 
-  group_by(soort) %>% 
-  mutate(soort2 = ifelse(any(relatief_gewicht >= 0.05), soort, "rest")) %>% 
+  group_by(jaar, soort, salgroep, dieet, indeling) %>%
+  summarise(relatief_aantal = mean(relatief_aantal),
+            relatief_gewicht = mean(relatief_gewicht)) %>% 
   ungroup() %>% 
-  group_by(seizoen, locatie, soort2) %>% 
-  summarise(gewicht = sum(gewicht)) %>% 
+  group_by(jaar, salgroep, dieet, indeling) %>%
+  mutate(max_aantal = relatief_aantal == max(relatief_aantal),
+         max_gewicht = relatief_gewicht == max(relatief_gewicht)) %>%
+  # mutate(max_aantal = relatief_aantal >= 0.05,
+  #        max_gewicht = relatief_gewicht >= 0.05) %>%
   ungroup() %>% 
-  group_by(seizoen, locatie) %>% 
-  mutate(soort2 = soort2,
-         gewicht = round(gewicht/sum(gewicht)*100)) %>% 
-  ungroup() %>% 
-  rename(soort = soort2) %>% 
-  mutate(soort = factor(soort, 
+  mutate(soort = if_else(max_aantal | max_gewicht, soort, "rest")) %>%
+  left_join(data_ankerkuil %>% 
+              filter(in_indeling) %>% 
+              filter(aantal > 0) %>% 
+              group_by(jaar, seizoen, locatie, salgroep, dieet, indeling) %>%
+              summarise(N = n()) %>% 
+              ungroup() %>% 
+              group_by(jaar, salgroep, dieet, indeling) %>%
+              summarise(N = mean(N)) %>% 
+              ungroup()) %>% 
+  add_row(N = NA, relatief_aantal = NA, indeling = "Diadr -- Benth", jaar = vroegste_jaar:laatste_jaar) %>% 
+  mutate(indeling = factor(indeling, levels = levels_indeling),
+         soort = factor(soort, 
                         levels = unique(soort) %>% 
                           sort() %>% 
                           setdiff("rest") %>% 
                           c(., "rest")))
 
-relatief_gewicht %>% 
-  ggplot(aes(x ="", y = gewicht, fill = soort)) +
-  geom_col(position = "fill") +
-  # geom_text(aes(label = soort),
-  #            size = 3) +
-  geom_text(aes(label = gewicht, size = gewicht),
-            position = position_fill(vjust = 0.5),
-            show.legend = FALSE) +
-  coord_polar("y", start=0) +
-  facet_grid(locatie ~ seizoen) +
-  labs(x = NULL,
-       y = NULL) +
-  scale_x_discrete(breaks = NULL) +
-  scale_y_continuous(breaks = NULL) +
-  theme(
-    # legend.position = "bottom",
-        legend.title = element_blank())
+relatieve_aantallen_EMSE %>% 
+  distinct(soort) %>% pull(soort)
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_gevangen_individuen.jpg"))
+library(ggsci)
+library(yarrr)
+
+my_pal <- 
+  c(piratepal(palette = "info2", 
+            trans = .8,
+            plot.result = F,
+            length.out = length(levels(relatieve_aantallen_EMSE$soort))-1) %>% 
+  unname(), "grey")
+
+relatieve_aantallen_EMSE %>% 
+  ggplot(aes(jaar, relatief_aantal*N, fill = soort)) +
+  geom_col(position = position_stack(),
+           width = 0.7,
+           alpha = 0.8) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_y_log10() +
+  # scale_fill_brewer(palette = "Paired") +
+  scale_fill_manual(values = my_pal) +
+  labs(y = "aantal soorten") +
+  facet_wrap(~ indeling, scales = "free_y")
+
+# ggsave(paste0(pad_figuren, "diversiteit_N_EMSE.jpg"), width = 8, height = 6)
 
 ```
 
 
 #### sleutelsoorten aantallen
 
-```{r sleutelsoorten aantal, fig.height=4, fig.width=8}
+```{r sleutelsoorten aantal}
 
 sleutelsoorten <- c("fint", "spiering", "rivierprik", "haring", "zeebaars", "ansjovis")
 
@@ -771,7 +931,7 @@ data_ankerkuil %>%
                         scales = "free_y") +
              theme(axis.text.x = element_text(angle = 90))
          }
-ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten.jpg"))
+# ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten.jpg"))
 
 
 data_ankerkuil %>%  
@@ -795,13 +955,14 @@ data_ankerkuil %>%
                         scales = "free_y") +
              theme(axis.text.x = element_text(angle = 90))
          }
-ggsave(paste0(pad_figuren, "relatieve_aantallen_sleutelsoorten.jpg"))
+# ggsave(paste0(pad_figuren, "relatieve_aantallen_sleutelsoorten.jpg"))
 
 ```
 
+
 #### sleutelsoorten biomassa
 
-```{r sleutelsoorten biomassa, fig.height=4, fig.width=8}
+```{r sleutelsoorten biomassa}
 
 sleutelsoorten <- c("fint", "spiering", "rivierprik", "haring", "zeebaars", "ansjovis")
 
@@ -823,7 +984,7 @@ data_ankerkuil %>%
                         scales = "free_y") +
              theme(axis.text.x = element_text(angle = 90))
          }
-ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten.jpg"))
+# ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten.jpg"))
 
 
 data_ankerkuil %>%  
@@ -847,9 +1008,12 @@ data_ankerkuil %>%
                         scales = "free_y") +
              theme(axis.text.x = element_text(angle = 90))
          }
-ggsave(paste0(pad_figuren, "relatieve_biomassa_sleutelsoorten.jpg"))
+# ggsave(paste0(pad_figuren, "relatieve_biomassa_sleutelsoorten.jpg"))
 
 ```
+
+
+#### sleutelsoorten diversiteit
 
 
 #### exoten
