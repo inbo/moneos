@@ -113,6 +113,11 @@ data_trofische_groep <-
   read_delim(paste0(pad_data, "Voedselgilde_Moneosrapport.csv"), 
              delim = ";")  
 
+data_trofische_groep <- data_trofische_groep %>% 
+              rename_all(tolower) %>% 
+              rename(nednaam = species,
+                     trofische_groep = indicator)
+
 # testen voor dubbels in trofische groep
 # data_trofische_groep %>% 
 #   group_by(Species, Indicator) %>% 
@@ -130,10 +135,7 @@ data_trofische_groep <-
 # toevoegen trofisch groep aan dataset
 data_watervogels <- 
   data_watervogels %>% 
-  left_join(data_trofische_groep %>% 
-              rename_all(tolower) %>% 
-              rename(nednaam = species,
-                     trofische_groep = indicator))
+  left_join(data_trofische_groep)
 
 ```
 
@@ -159,7 +161,7 @@ data_oppzachtslikKRWZS <- data_oppecotoop %>%
   rename(jaar = Jaar) %>% 
   ungroup()
 
-#we koppelen de data aan volledige jaren (juni tot juli) of aan winterjaar of wintertelseizoen (okt - mrt)
+#we koppelen de data aan volledige jaren (jaar x = juni x tot juli x+1) of aan winterjaar of wintertelseizoen (okt jaar x - mrt jaar x+1)
 
 ###dataset nog niet goed de jaargangen met Zeeschelde III vr 2012,2014,2015,2017,2018 moeten eruit - slechts gedeeltelijke data 
    # filter(KRWzone != "Zeeschelde III + Rupel" 
@@ -210,6 +212,25 @@ knitr::kable(rivieren)
 soortnamen <- 
   data_watervogels %>%
   distinct(nednaam, wetnaam)
+
+#lijst ZS soorten die minstens 30 keer werden waargenomen - EMSE
+
+overzichtsoorten_analyse <-
+  data_watervogels %>% 
+  group_by(nednaam) %>% 
+  summarise(aantal = sum(aantal)) %>%
+  filter(aantal > 30) %>% 
+  ungroup()
+
+#ontbreken er soorten waarvan we geen dieet opnamen in data trofische groep?
+
+trofische_groep_aanvullen <-
+  left_join(overzichtsoorten_analyse, data_trofische_groep) %>% 
+  filter(is.na(trofische_groep))
+
+# trofische_groep_aanvullen %>% 
+  # write_delim(paste0(pad_data, "trofischegroepaanvullen.csv"),
+              # delim = ";")
 
 geen_trofische_groep <- 
   data_watervogels %>%
@@ -359,7 +380,7 @@ data_watervogels %>%
   ggplot(aes(ordered(telseizoen), aantal, fill = gebiedsgroep)) + 
   geom_col(position = "fill") +
   scale_y_continuous(breaks = seq(0,1,0.1), labels = paste0(seq(0,100,10),"%")) +
-  scale_fill_manual(values = inbo.2015.colours()) +
+  scale_fill_manual(values = inbo_palette()) +
   labs(x = "telseizoen", 
        y = "") +
   theme(axis.text.x = element_text(angle = 90),
@@ -793,6 +814,91 @@ ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgro
         legend.title = element_blank())
 ```
 
+##### figuur abundante soorten met > 5% per KRWzone voor en na 2009
+
+```{r 100-figuur-abundante-soorten, fig.height=5, fig.width=7}
+
+abundante_wintervogels <- data_watervogels %>% 
+    # filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
+  filter(maand %in% c(10:12, 1:3)) %>% 
+     group_by(gebiedsgroep, nednaam) %>% 
+  mutate(totaal = sum(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(gebiedsgroep) %>% 
+  mutate(totaalgebiedsgroep = sum(aantal, na.rm = TRUE)) %>% 
+  mutate(perc = (totaal/totaalgebiedsgroep)*100) %>% 
+  filter(perc > 5) %>% 
+  ungroup() %>% 
+  select(nednaam) %>%
+  distinct(nednaam) %>% 
+  arrange(nednaam)
+  
+
+# #Create a custom color scale for species: 10 colors needed and order of color must be the same for each species
+# library(RColorBrewer)
+# myColors <- brewer.pal(10,"Set3")
+# names(myColors) <- levels(abundante_wintervogels$nednaam)
+# colScale <- scale_colour_manual(name = "nednaam",values = myColors)
+# # lukt me niet om dit te doen werken
+
+
+data_watervogels %>% 
+    # filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
+  filter(maand %in% c(10:12, 1:3)) %>% 
+  filter(jaar >= 2009,
+         telseizoen != "2008/09") %>% 
+   group_by(gebiedsgroep, nednaam) %>% 
+  mutate(totaal = sum(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(gebiedsgroep) %>% 
+  mutate(totaalgebiedsgroep = sum(aantal, na.rm = TRUE)) %>% 
+  mutate(perc = (totaal/totaalgebiedsgroep)*100) %>% 
+  filter(perc > 5) %>%
+  ggplot(aes(ordered(gebiedsgroep), aantal, fill = nednaam)) + 
+  geom_col(position = "fill") +
+  scale_y_continuous(breaks = seq(0,1,0.1), labels = paste0(seq(0,100,10),"%")) +
+   scale_fill_manual(values=c("#CC0000", "#006600", "#669999", "#00CCCC",
+                              "#660099", "#CC0066", "#FF9999", "#FF9900",
+                              "black", "red", "green", "blue", "yellow")) +
+  labs(x = "Gebiedsgroep", 
+       y = "") +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position = "bottom",
+        legend.title = element_blank()) 
+  
+
+
+ggsave(paste0(pad_figuren, "100_figuur_abundante_soortenna2009.jpg"))
+
+data_watervogels %>% 
+    # filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
+  filter(maand %in% c(10:12, 1:3)) %>% 
+  filter(jaar <= 2009,
+         telseizoen != "2009/10") %>% 
+   group_by(gebiedsgroep, nednaam) %>% 
+  mutate(totaal = sum(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(gebiedsgroep) %>% 
+  mutate(totaalgebiedsgroep = sum(aantal, na.rm = TRUE)) %>% 
+  mutate(perc = (totaal/totaalgebiedsgroep)*100) %>% 
+  filter(perc > 5) %>%
+  ggplot(aes(ordered(gebiedsgroep), aantal, fill = nednaam)) + 
+  geom_col(position = "fill") +
+  scale_y_continuous(breaks = seq(0,1,0.1), labels = paste0(seq(0,100,10),"%"))+
+  scale_fill_manual(values=c("#CC0000", "#006600", "#669999", "#00CCCC",
+                             "#660099", "#CC0066", "#FF9999", "#FF9900",
+                             "black", "red", "green", "blue", "yellow")) +
+  labs(x = "Gebiedsgroep", 
+       y = "") +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position = "bottom",
+        legend.title = element_blank())
+
+
+ggsave(paste0(pad_figuren, "100_figuur_abundante_soortenvoor2009.jpg"))
+
+
+```
 
 ##### figuur wintergemiddelde aantallen voor abundante soorten
 
