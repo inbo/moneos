@@ -28,6 +28,10 @@ library(tidyverse)
 library(lubridate)
 library(writexl)
 library(readxl)
+# library(yarrr)
+library(wesanderson)
+library(gridExtra)
+library(cowplot)
 
 library(INBOtheme)
 library(inbodb)
@@ -808,32 +812,6 @@ gemiddeld_diversiteit_EMSE %>%
 
 ggsave(paste0(pad_figuren, "diversiteit_N_D_EMSE.jpg"), width = 8, height = 6)
 
-# gemiddeld_aantal_niet_EMSE <- 
-#   data_ankerkuil %>% 
-#   filter(!in_indeling,
-#          !is.na(dieet)) %>% 
-#   group_by(jaar, seizoen, locatie, salgroep, dieet, indeling) %>%
-#   summarise(aantal_per_kub = sum(aantal_per_kub)) %>% 
-#   ungroup() %>% 
-#   group_by(jaar, salgroep, dieet, indeling) %>%
-#   summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
-#   ungroup()
-# 
-# gemiddeld_aantal_niet_EMSE %>% 
-#   mutate(aantal_per_kub = aantal_per_kub*mult_kub) %>%
-#   ggplot(aes(jaar, aantal_per_kub, fill = ordered(jaar), color = ordered(jaar))) +
-#   geom_col(position = position_dodge(),
-#            width = 0.7,
-#            alpha = 0.8) +
-#   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
-#   labs(y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) +
-#   guides(fill = "none",
-#          color = "none") +
-#   facet_wrap(salgroep ~ dieet, scales = "free_y")
-# 
-# ggsave(paste0(pad_figuren, "aantallen_niet_EMSE.jpg"), width = 4, height = 3)
-
-
 ```
 
 
@@ -848,18 +826,32 @@ relatieve_aantallen_EMSE <-
   group_by(jaar, seizoen, locatie, salgroep, dieet, indeling) %>%
   mutate(relatief_aantal = aantal/sum(aantal),
          relatief_gewicht = gewicht/sum(gewicht)) %>% 
-  ungroup() %>% 
-  group_by(jaar, soort, salgroep, dieet, indeling) %>%
-  summarise(relatief_aantal = mean(relatief_aantal),
-            relatief_gewicht = mean(relatief_gewicht)) %>% 
-  ungroup() %>% 
-  group_by(jaar, salgroep, dieet, indeling) %>%
   mutate(max_aantal = relatief_aantal == max(relatief_aantal),
          max_gewicht = relatief_gewicht == max(relatief_gewicht)) %>%
-  # mutate(max_aantal = relatief_aantal >= 0.05,
-  #        max_gewicht = relatief_gewicht >= 0.05) %>%
+  # mutate(max_aantal = relatief_aantal >= 0.5,
+  #        max_gewicht = relatief_gewicht >= 0.5) %>%
   ungroup() %>% 
-  mutate(soort = if_else(max_aantal | max_gewicht, soort, "rest")) %>%
+  group_by(jaar, soort, salgroep, dieet, indeling) %>%
+  # summarise(relatief_aantal = mean(relatief_aantal),
+  #           relatief_gewicht = mean(relatief_gewicht)) %>%
+  summarise(relatief_aantal = mean(relatief_aantal),
+            relatief_gewicht = mean(relatief_gewicht),
+            max_aantal = any(max_aantal),
+            max_gewicht = any(max_gewicht)) %>%
+  ungroup() %>% 
+  # group_by(jaar, salgroep, dieet, indeling) %>%
+  # mutate(max_aantal = relatief_aantal == max(relatief_aantal),
+  #        max_gewicht = relatief_gewicht == max(relatief_gewicht)) %>%
+  # # mutate(max_aantal = relatief_aantal >= 0.5,
+  # #        max_gewicht = relatief_gewicht >= 0.5) %>%
+  # ungroup() %>%
+  group_by(soort) %>% 
+  mutate(soort = ifelse(any(max_aantal | max_gewicht), soort, "rest")) %>%
+  ungroup() %>% 
+  # mutate(soort = if_else(max_aantal | max_gewicht, soort, "rest")) %>%
+  group_by(jaar, salgroep, dieet, indeling) %>%
+  mutate(relatief_aantal = relatief_aantal/sum(relatief_aantal)) %>% 
+  ungroup() %>% 
   left_join(data_ankerkuil %>% 
               filter(in_indeling) %>% 
               filter(aantal > 0) %>% 
@@ -877,32 +869,96 @@ relatieve_aantallen_EMSE <-
                           setdiff("rest") %>% 
                           c(., "rest")))
 
-relatieve_aantallen_EMSE %>% 
-  distinct(soort) %>% pull(soort)
+# relatieve_aantallen_EMSE %>% 
+#   distinct(soort) %>% pull(soort)
 
-library(ggsci)
-library(yarrr)
 
-my_pal <- 
-  c(piratepal(palette = "info2", 
-            trans = .8,
-            plot.result = F,
-            length.out = length(levels(relatieve_aantallen_EMSE$soort))-1) %>% 
-  unname(), "grey")
+# my_pal_yarr <- 
+#   c(piratepal(palette = "info2", 
+#             trans = 1,
+#             plot.result = F,
+#             length.out = length(levels(relatieve_aantallen_EMSE$soort))-1) %>% 
+#   unname(), 
+#   "grey")
 
-relatieve_aantallen_EMSE %>% 
-  ggplot(aes(jaar, relatief_aantal*N, fill = soort)) +
-  geom_col(position = position_stack(),
-           width = 0.7,
-           alpha = 0.8) +
+my_pal_wes <- 
+c(wes_palette("FantasticFox1", 
+            type = "continuous", 
+            n = length(levels(relatieve_aantallen_EMSE$soort))-1) %>% 
+  unname(), 
+  "darkslategrey")
+names(my_pal_wes) <-
+  levels(relatieve_aantallen_EMSE$soort)
+
+# relatieve_aantallen_EMSE %>% 
+#   ggplot(aes(jaar, relatief_aantal*N, fill = soort)) +
+#   geom_col(position = position_stack(),
+#            width = 0.7,
+#            alpha = 0.9) +
+#   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+#   # scale_y_log10() +
+#   # scale_fill_brewer(palette = "Paired") +
+#   scale_fill_manual(values = my_pal_wes) +
+#   labs(y = "aantal soorten") +
+#   facet_wrap(~ indeling, scales = "free_y")
+
+# ggsave(paste0(pad_figuren, "diversiteit_N_EMSE.jpg"), width = 8, height = 6)
+
+
+data_split <-
+  relatieve_aantallen_EMSE %>% 
+  group_by(indeling) %>% 
+  nest()
+
+data_split <-
+  data_split %>% 
+  mutate(legend = 
+           map2(indeling, data, 
+                function(ind, dat) {
+                  pal_split <- 
+                    my_pal_wes[names(my_pal_wes) %in% unique(dat$soort)]
+                  plt <-
+                    dat %>% 
+                    ggplot(aes(jaar, relatief_aantal*N, fill = soort)) +
+                    geom_col(position = position_stack(),
+                             width = 0.7,
+                             alpha = 0.9) +
+                    scale_x_continuous(breaks = 
+                                         seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+                    scale_fill_manual(values = pal_split) +
+                    labs(y = "aantal soorten",
+                         fill = ind) + 
+                    theme(legend.justification = c(0,1))
+                  plt %>% 
+                    get_legend()
+                  }))
+# data_split$legend
+
+ggp_all <-
+  relatieve_aantallen_EMSE %>% 
+  ggplot(aes(jaar, relatief_aantal*N, fill = soort, color = soort)) +
+  geom_col(width = 0.7,
+           alpha = 0.9,
+           size = 0.1) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_y_log10() +
   # scale_fill_brewer(palette = "Paired") +
-  scale_fill_manual(values = my_pal) +
+  scale_fill_manual(values = my_pal_wes) +
+  scale_color_manual(values = my_pal_wes) +
   labs(y = "aantal soorten") +
-  facet_wrap(~ indeling, scales = "free_y")
+  facet_wrap(~ indeling, scales = "free_y") +
+  theme(legend.position = "none")
 
-# ggsave(paste0(pad_figuren, "diversiteit_N_EMSE.jpg"), width = 8, height = 6)
+plot_grid(ggp_all,
+          NULL,
+          plot_grid(NULL,
+                    plot_grid(plotlist = data_split$legend[sort.list(data_split$indeling)],
+                              align = "h"),
+                    NULL,
+                    ncol = 1, rel_heights = c(0.1,1,0.2)),
+          ncol = 3, rel_widths = c(1.5,0.1,1))
+
+ggsave(paste0(pad_figuren, "relatieve_aantallen_EMSE.jpg"), width = 12, height = 6, bg = "white")
 
 ```
 
