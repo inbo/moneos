@@ -960,28 +960,76 @@ ggsave(paste0(pad_figuren, "100_figuur_aantallen_abundante_soorten.jpg"))
 
 ```{r 100-figuur-aantallen-visetend-en-steltlopers, fig.height=5, fig.width=7}
 
-# data_watervogels %>% 
-#   filter(nednaam %in% c("Aalscholver", "Fuut", "Scholekster", "Wulp")) %>% 
-#   filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
-#   filter(maand %in% c(10:12, 1:3)) %>% 
-#   filter(jaar >= 2009,
-#          telseizoen != "2008/09") %>% 
-#   group_by(telseizoen, gebiedsgroep, nednaam, rivier) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, gebiedsgroep, nednaam) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) + 
-#   geom_point(aes(shape = gebiedsgroep)) +
-#   geom_line() +
-#   labs(x = "telseizoen", 
-#        y = "aantal") +
-#   facet_wrap(~nednaam, 
-#              scales = "free_y") +
-#   theme(axis.text.x = element_text(angle = 90),
-#         legend.position = "bottom",
-#         legend.title = element_blank())
+data_watervogels %>%
+  filter(nednaam %in% c("Aalscholver", "Fuut", "Blauwe Reiger")) %>%
+  filter(str_detect(gebiedsgroep_code, "ZS")) %>%
+  filter(maand %in% c(10:12, 1:3)) %>%
+  filter(jaar >= 2009,
+         telseizoen != "2008/09") %>%
+  group_by(telseizoen, gebiedsgroep, nednaam, rivier) %>%
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(telseizoen, gebiedsgroep, nednaam) %>%
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) +
+  geom_point(aes(shape = gebiedsgroep)) +
+  geom_line() +
+  labs(x = "telseizoen",
+       y = "gemiddeld aantal") +
+  facet_wrap(~nednaam,
+             scales = "free_y") +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position = "bottom",
+        legend.title = element_blank())
+
+ggsave(paste0(pad_figuren, "100_figuur_aantallen_viseters.jpg"))
+
+data_watervogels %>%
+  filter(nednaam %in% c("Aalscholver", "Fuut", "Visdief", "Blauwe Reiger")) %>%
+  filter(str_detect(gebiedsgroep_code, "ZS")) %>%
+  filter(maand %in% c(4:9)) %>%
+  filter(jaar >= 2009,
+         telseizoen != "2008/09") %>%
+  group_by(telseizoen, gebiedsgroep, nednaam, rivier) %>%
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(telseizoen, gebiedsgroep, nednaam) %>%
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) +
+  geom_point(aes(shape = gebiedsgroep)) +
+  geom_line() +
+  labs(x = "telseizoen",
+       y = "gemiddeld aantal zomer") +
+  facet_wrap(~nednaam,
+             scales = "free_y") +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position = "bottom",
+        legend.title = element_blank())
+
+data_watervogels %>%
+  filter(nednaam %in% c("Aalscholver", "Fuut", "Visdief", "Blauwe Reiger")) %>%
+  filter(str_detect(gebiedsgroep_code, "ZS")) %>%
+  filter(maand %in% c(4:9)) %>%
+  filter(jaar >= 2009,
+         telseizoen != "2008/09") %>%
+  group_by(telseizoen, gebiedsgroep, nednaam, rivier) %>%
+  summarise(aantal = max(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(telseizoen, gebiedsgroep, nednaam) %>%
+  summarise(aantal = max(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) +
+  geom_point(aes(shape = gebiedsgroep)) +
+  geom_line() +
+  labs(x = "telseizoen",
+       y = "max aantal zomer") +
+  facet_wrap(~nednaam,
+             scales = "free_y") +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position = "bottom",
+        legend.title = element_blank())
 
 data_watervogels %>% 
   filter(nednaam %in% c("Kluut", "Kievit", "Tureluur", "Wulp", "Scholekster", "Bonte Strandloper")) %>% 
@@ -1055,14 +1103,13 @@ data_watervogels %>%
 #         legend.position = "bottom",
 #         legend.title = element_blank())
 
-ggsave(paste0(pad_figuren, "100_figuur_aantallen_visetend_en_steltlopers.jpg"))
+ggsave(paste0(pad_figuren, "100_figuur_aantallen_steltlopers.jpg"))
 
 ```
 ##### figuur wintergemiddelde vogeldichtheid per zones
 
 ```{r dichtheden watervogels per zone}
 
-##hiervoor nog nodig: tabel met oppervlakte slik per jaar per gebiedsgroep en per rivier - te linken met datalevering ecotopen-fysiotopen
 ##gekoppelde dataset bevat nog beperkt aantal jaren en aantal jaargangen moeten er nog uit
 
 
