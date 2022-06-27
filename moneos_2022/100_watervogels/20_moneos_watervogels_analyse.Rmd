@@ -236,7 +236,7 @@ soortnamen <-
 overzichtsoorten_analyse <-
   data_watervogels %>% 
   group_by(nednaam) %>% 
-  summarise(aantal = sum(aantal)) %>%
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
   filter(aantal > 30) %>% 
   ungroup()
 
@@ -273,6 +273,47 @@ tabel_trofische_groep <-
     + `r geen_trofische_groep`
   - de overige soorten behoren tot volgende trofische groepen
     + `r knitr::kable(tabel_trofische_groep)`
+    
+#### shannon diversity
+
+```{r Shannon index}
+
+  
+ data_watervogels %>% 
+    mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
+    filter(telseizoen1 %in% c(2001:2021)) %>%  
+    # filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% # geen meeuwen of sternen  # geen meeuwen of sternen
+    filter(maand %in% c(10:12, 1:3)) %>%
+    filter(gebiedsgroep != "Getijdedurme" | telseizoen1 > 2012) %>% 
+    group_by(telseizoen1, gebiedsgroep) %>% 
+    mutate(totaal = sum(aantal, na.rm = TRUE)) %>%
+    ungroup() %>% 
+    group_by(telseizoen1, gebiedsgroep, nednaam,totaal) %>% 
+    summarise(aantalsp = sum(aantal, na.rm = TRUE)) %>% 
+    filter(aantalsp > 0) %>% 
+   mutate(pi = aantalsp/totaal) %>% 
+   mutate(lnpi = log(pi)) %>% 
+   mutate(pilnpi = pi * lnpi) %>% 
+   ungroup() %>% 
+   group_by(telseizoen1, gebiedsgroep) %>% 
+   summarise(H_shannon = sum(pilnpi *-1, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+    ggplot(aes(ordered(telseizoen1), H_shannon, group = gebiedsgroep, color = gebiedsgroep)) + 
+  geom_point(aes(shape = gebiedsgroep)) +
+  geom_line(size = 1) + 
+    labs(x = "telseizoen", 
+       y = "Shannon diversiteit H") +
+    theme(axis.text.x = element_text(angle = 90),
+        legend.position = "bottom",
+        legend.title = element_blank())+
+  scale_y_continuous()
+
+# ggsave(paste0(pad_figuren, "100_figuur_ShannonDiversity_wintervogels.jpg"))
+ggsave(paste0(pad_figuren, "100_figuur_ShannonDiversity_wintervogels_metmeeuwen.jpg"))
+    
+ 
+```
+
 
 
 ##### figuur maandelijkse totalen wintervogels Zeeschelde
@@ -301,7 +342,7 @@ data_watervogels %>%
     # filter(teldatum > "2020-06-01") %>% 
   filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
   group_by(telseizoen, datum) %>% 
-  summarise(aantal = sum(aantal)) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
   ggplot(aes(datum, aantal)) + 
   geom_col() +
@@ -325,7 +366,7 @@ data_watervogels %>%
   filter(teldatum < "2021-04-01") %>% #er zit al een telling van mei 2020 in de dataset
   filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
   group_by(telseizoen,datum) %>% 
-  summarise(aantal = sum(aantal)) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
   ggplot(aes(datum, aantal)) + 
   geom_col() +
@@ -345,7 +386,7 @@ data_watervogels %>%
   filter(teldatum > "1991-10-01" & teldatum < "2022-04-01") %>% #er zit al een telling van mei 2020 in de dataset
   # filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
   group_by(telseizoen,datum) %>% 
-  summarise(aantal = sum(aantal)) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
   ggplot(aes(datum, aantal)) + 
   geom_col() +
@@ -367,7 +408,7 @@ data_watervogels %>%
   filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
   # filter(nednaam =="Wilde Eend") %>% 
   group_by(telseizoen,datum,gebiedsgroep_code, gebiedsgroep) %>% 
-  summarise(aantal = sum(aantal)) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
   ggplot(aes(datum, aantal)) + 
   geom_col() +
@@ -423,6 +464,15 @@ ggsave(paste0(pad_figuren, "100_figuur_verhouding_aantallen.jpg"))
 #         legend.title = element_blank())
 
 ```
+
+```{r 100-figuur-shannon diversiteit, fig.height=5, fig.width=8}
+
+
+
+```
+
+
+
 
 ##### figuur wintermaxima Zeeschelde
 
@@ -544,17 +594,6 @@ SeizMax <- function(data, type){
     summarise(Wmax = max(aantal, na.rm = TRUE)) %>% 
     mutate(type = type)
 }
-
-check <- data_watervogels %>% 
-    mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
-    filter(telseizoen1 %in% c(1991:2021)) %>%  
-    filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% # geen meeuwen of sternen
-    filter(maand %in% c(10:12, 1:3)) %>%   
-  group_by(telseizoen1, maand) %>% 
-    summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-    group_by(telseizoen1) %>% 
-    summarise(Wmax = max(aantal)) %>% 
-    mutate(type = type)
 
 
 Wmax_ZschZR <- SeizMax(data_watervogels, "Zeeschelde + zijrivieren")
