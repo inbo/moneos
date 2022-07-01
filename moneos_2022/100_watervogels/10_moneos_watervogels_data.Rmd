@@ -109,6 +109,13 @@ gebiedsgroepenSigma <- gebiedsgroepenall %>%
 
 ```
 
+```{r valleigebieden}
+
+gebiedsgroepenVallei <- gebiedsgroepenall %>%
+  filter(gebiedsgroeptype != "Sigma-gebieden") %>%
+  filter(gebiedsgroep == "Vallei")
+  mutate(gebiedscode = as.character(gebiedscode))
+```
 
 
 ```{r query-tellingen}
@@ -193,65 +200,10 @@ overzicht_tellingen %>%
 
 ```
 
-```{r inlezendata Midmaanalyseset voor berekening natuurindicator, include=FALSE}
-
-# Query Warehouse - alle data van MIDMA-analyseset
-
-# query all valid(ated) records from MIDMA-alaysesets (takes a while), further selection is carried out in R (another option would be to carry out selection in SQl query below)
-# Uit deze dataset halen we de aantallen voor de zijrivieren en de Sigmaprojectgebieden
-# De query is uitgecommentarieerd omdat die van thuis uit redelijk wat tijd vergt. In plaats daarvan gebruiken we de csv gebaseerd op een recente bevraging van de Warehouse
-
-Waterbirds <- dbGetQuery(con,
-"SELECT
-  SU.SurveyCode as ProjectCode
-, SU.SurveyNaam as Project
-, L.RegioWVCode as RegioCode
-, L.RegioWVNaam as Regio
-, L.LocationWVCode as GebiedsCode
-, L.LocationWVNaam as Gebied
-, SS.Seasonname as Telseizoen
-, E.EventCode as TellingCode
-, E.EventLabel as Telling
-, E.SortOrder as TellingSortOrder
-, S.sampleDate as Teldatum
---, S.IceCoverCode as Ijsbedekking
---, S.SnowCoverCode as Sneeuwbedekking
-, S.CoverageCode as Telvolledigheid
-, T.Commonname as NedNaam
-, T.scientificname as WetNaam
-, T.TaxonGroupCode
-, F.Taxoncount as Aantal
-
-FROM FactAnalyseSetOccurrence F
-inner join DimSurvey SU on SU.surveykey = F.surveykey
-inner join DimLocationWV L on L.locationwvkey = F.locationwvkey
-inner join DimSeason SS on SS.Seasonkey = F.seasonkey
-inner join DimEvent E on E.eventkey = F.eventkey
-inner join DimSample S on F.samplekey = S.samplekey
-inner join DimTaxonWV T on T.taxonwvkey = F.taxonwvkey
-WHERE 1=1
-  AND S.samplestatus = 'CHECKED' /**alleen gevalideerde records**/
-  AND S.coveragecode not in ('-', 'N')  /**niet getelde tellingen zijn irrelevant**/
-  AND F.taxoncount > 0
-  AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/
---and SS.seasonname in ('2013/14','2014/15','2015/16','2016/17', '2017/18')
---and T.isgoose = 1;")
-Waterbirds %>% write_csv("data-output/Waterbirds.csv")
-
-dbDisconnect(con)
-
-Waterbirds <- read_csv("data-output/Waterbirds.csv")
-# Correctie dubbels
-Waterbirds <- Waterbirds  %>% 
-  group_by(Gebied, ProjectCode, RegioCode, Telseizoen, TellingCode, Telling, TellingSortOrder, 
-           Teldatum, Telvolledigheid, NedNaam, WetNaam, TaxonGroupCode) %>% 
-  summarise(Aantal = max(Aantal)) %>% 
-  ungroup()
-```
-
+ 
 ```{r basis-query bevraging Watervogeldatabank}
 
-basis_query <- 
+basis_query <-
   paste0(
 "SELECT
   SU.SurveyCode as ProjectCode
@@ -384,6 +336,41 @@ WaterbirdsBT <-
   bind_rows(waterbirds_sigma)
 ```
 
+```{r bevragen-warehouse-MIDMA-vallei-analyseset}
+
+telzones_vallei <- 
+  gebiedsgroepenVallei %>% 
+      pull(gebiedsnaam) 
+
+telzones_query <-
+  paste0("'", telzones_vallei, "'", collapse = ",") %>% 
+  paste0("(", ., ")")
+
+query <-
+  paste0(str_sub(basis_query, end=-2),
+         " AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/",
+         " AND SS.seasonname in ",
+         seizoenen_query,
+         " AND L.LocationWVNaam in ",
+         telzones_query,
+         ";"
+  )
+
+con <- connect_inbo_dbase("W0004_00_Waterbirds")
+waterbirds_vallei <- 
+  dbGetQuery(con,
+             query)
+dbDisconnect(con)
+
+waterbirds_vallei <- waterbirds_vallei %>% 
+  mutate(Analyseset = "VALLEI_MIDMA") 
+
+WaterbirdsBT <-
+  WaterbirdsBT %>% 
+  bind_rows(waterbirds_vallei)
+
+
+```
 
 
 ```{r basis-query-tellingen}
@@ -639,7 +626,7 @@ WaterbirdsBT <-
          analyseset)
 
 WaterbirdsBTall <- 
-  WaterbirdsBT
+   WaterbirdsBT
 ```
 
 ```{r controle volledigheid}
@@ -709,6 +696,21 @@ WaterbirdsBT_sigma <-
   ungroup() %>% 
   mutate(analyseset = "Sigma")
 
+WaterbirdsBT_vallei <- 
+  WaterbirdsBTall %>% 
+  filter(analyseset == "VALLEI_MIDMA") %>% 
+  group_by(gebiedsgroep_code,
+           gebiedsgroep,
+           rivier,
+           telseizoen,
+           teldatum,
+           nednaam,
+           wetnaam,
+           taxongroepcode) %>% 
+  summarise(aantal = sum(aantal)) %>% 
+  ungroup() %>% 
+  mutate(analyseset = "Vallei")
+
 ```
 
 
@@ -722,6 +724,12 @@ WaterbirdsBT <-
 
 WaterbirdsBT_sigma <- 
   WaterbirdsBT_sigma %>% 
+  complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
+           nesting(nednaam, wetnaam, taxongroepcode),
+           fill = list(0))
+
+WaterbirdsBT_vallei <- 
+  WaterbirdsBT_vallei %>% 
   complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
            nesting(nednaam, wetnaam, taxongroepcode),
            fill = list(0))
@@ -745,6 +753,11 @@ WaterbirdsBT %>%
 WaterbirdsBT_sigma %>% 
   write_delim(paste0(pad_data, "Watervogels_Sigma.csv"),
               delim = ";")
+
+WaterbirdsBT_vallei %>% 
+  write_delim(paste0(pad_data, "Watervogels_Vallei.csv"),
+              delim = ";")
+
 
 ```
 
