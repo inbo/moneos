@@ -694,19 +694,6 @@ Wmax_ZschZR <- SeizMax(data_watervogels, "Zeeschelde + zijrivieren")
 Wmax_ZschZRSigma <- SeizMax(data_watervogels_Zeeschelde_ZR_Sigma, "Zeeschelde + zijrivieren + Sigmagebieden")
 Wmax_ZschZRSigmaVallei <- SeizMax(data_watervogels_Zeeschelde_ZR_Sigma_Vallei, "Zeeschelde + zijrivieren + Sigmagebieden + Vallei")
 
-# Doelstelling "Zeeschelde IHD-Z" bepaald op basis van winterseizoensgemiddelde tussen 1995-2005 aantal vogels 
-Wmax_Zsch %>% 
-  filter(telseizoen1%in% c(1995:2005)) %>% 
-  summarise(doel = mean(Wmax, na.rm = TRUE))
-#gemiddelde max winterseizoen 1995-2005 Zeeschelde is 43282 - het doel is destijds afgerond naar onder en nu verondersteld als te behalen doelstelling binnen Zeeschelde + zijrivieren + Sigmagebieden (wetland + ontpoldering) (maar niet binnen de vallei IHD-Z contour)
-
-Wmax_ZschZR %>% 
-  filter(telseizoen1%in% c(1995:2005)) %>% 
-  summarise(doel = mean(Wmax, na.rm = TRUE))
-
-Wmax_ZschZRSigmaVallei %>% 
-  filter(telseizoen1%in% c(1995:2005)) %>% 
-  summarise(doel = mean(Wmax, na.rm = TRUE))
 
 
 ```
@@ -723,9 +710,14 @@ mav_wm <- function(data, x, value, n){
            ci_min = m + 1.96*sd/sqrt(n),
            ci_max = m - 1.96*sd/sqrt(n))
 }
+mav_Zsc <- Wmax_Zsch %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 mav_ZscZR <- Wmax_ZschZR %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 mav_ZscZRSigma <- Wmax_ZschZRSigma %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 mav_ZscZRSigmaVallei <- Wmax_ZschZRSigmaVallei %>% mav_wm(.$telseizoen1, .$Wmax, 5)
+
+mav_Zsc %>% 
+  write_delim(paste0(pad_data, "mav_Zsc.csv"),
+              delim = ";")
 
 mav_ZscZR %>% 
   write_delim(paste0(pad_data, "mav_ZscZR.csv"),
@@ -738,6 +730,26 @@ mav_ZscZRSigma %>%
 mav_ZscZRSigmaVallei %>% 
   write_delim(paste0(pad_data, "mav_ZscZRSigmaVallei.csv"),
               delim = ";")
+
+# Doelstelling "Zeeschelde IHD-Z" bepaald op basis van winterseizoens glijdend gemiddelde (n=5) tussen 1995-2005 aantal vogels 
+
+mav_Zsc %>% 
+  filter(telseizoen1%in% c(1995:2005)) %>% 
+  summarise(doel = mean(m, na.rm = TRUE)) %>% 
+  pull()
+#gemiddelde max winterseizoen 1995-2005 Zeeschelde is 41926 - het doel is destijds afgerond naar onder en nu verondersteld als te behalen doelstelling binnen Zeeschelde + zijrivieren + Sigmagebieden (wetland + ontpoldering) (maar niet binnen de vallei IHD-Z contour)
+
+mav_ZscZR %>% 
+  filter(telseizoen1%in% c(1995:2005)) %>% 
+  summarise(doel = mean(m, na.rm = TRUE))
+
+mav_ZscZRSigma %>% 
+  filter(telseizoen1%in% c(1995:2005)) %>% 
+  summarise(doel = mean(m, na.rm = TRUE))
+
+mav_ZscZRSigmaVallei %>% 
+  filter(telseizoen1%in% c(1995:2005)) %>% 
+  summarise(doel = mean(m, na.rm = TRUE))
 
 
 ```
@@ -823,6 +835,16 @@ plot_mav <- function(data){
 ```{r 100-figuur-wintermaximum-Natuurindicatorberekening, fig.height=6, fig.width=8"}
 
 # , fig.cap="Vijfjarig glijdend gemiddelde van het wintermaximum van het totaal aantal watervogels in de getijderivieren van het Zeeschelde-estuarium."
+
+mav_Zsc %>% 
+  filter(telseizoen1%in% c(1995:2005)) %>% 
+  plot_mav()
+ ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_glijdendgemiddelde_ZS_doelIHD.jpg"))
+
+mav_Zsc %>% bind_rows(mav_ZscZR) %>% 
+  plot_mav()
+
+
 
 mav_ZscZR %>% plot_mav()
 
