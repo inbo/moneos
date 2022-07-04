@@ -66,7 +66,8 @@ seizoenen_query <-
 ```{r gebiedsgroepen}
 gebiedsgroepenall <- 
   read_delim(paste0(pad_data, "Zeeschelde_gebiedsgroepen.csv"),
-             delim = ";")
+             delim = ";") %>% 
+   mutate(gebiedscode = as.character(gebiedscode))
 
 gebiedsgroepen <- 
   read_delim(paste0(pad_data, "Zeeschelde_gebiedsgroepen.csv"),
@@ -113,7 +114,7 @@ gebiedsgroepenSigma <- gebiedsgroepenall %>%
 
 gebiedsgroepenVallei <- gebiedsgroepenall %>%
   filter(gebiedsgroeptype != "Sigma-gebieden") %>%
-  filter(gebiedsgroep == "Vallei")
+  filter(gebiedsgroep == "Vallei") %>%
   mutate(gebiedscode = as.character(gebiedscode))
 ```
 
@@ -608,6 +609,27 @@ laatste_telseizoen <-
 
 ```{r toevoegen-informatie-gebiedsgroepen}
 
+WaterbirdsBTallcheck <- 
+  WaterbirdsBT %>% 
+  rename_all(tolower) %>% 
+  left_join(gebiedsgroepenall) %>% 
+  select(gebiedsgroep_code,
+         gebiedsgroep,
+         rivier,
+         gebiedscode,
+         gebied = gebiedsnaam,
+         telseizoen,
+         teldatum,
+         nednaam,
+         wetnaam,
+         taxongroepcode = taxongroupcode,
+         aantal,
+         analyseset)
+
+WaterbirdsBTallcheck %>% 
+  write_delim(paste0(pad_data, "Watervogels_all_ruwedata.csv"),
+              delim = ";")
+
 WaterbirdsBT <- 
   WaterbirdsBT %>% 
   rename_all(tolower) %>% 
@@ -627,6 +649,8 @@ WaterbirdsBT <-
 
 WaterbirdsBTall <- 
    WaterbirdsBT
+
+
 ```
 
 ```{r controle volledigheid}
@@ -711,6 +735,39 @@ WaterbirdsBT_vallei <-
   ungroup() %>% 
   mutate(analyseset = "Vallei")
 
+####data ontpolderingen en GGG's Sigma
+
+WaterbirdsBT_sigma_estuarien <- 
+  WaterbirdsBTallcheck %>% 
+  filter(gebiedsgroep == "GGG" | gebiedsgroep == "Ontpoldering") %>% 
+  group_by(gebiedsgroep_code,
+           gebiedsgroep,
+           rivier,
+           telseizoen,
+           teldatum,
+           nednaam,
+           wetnaam,
+           taxongroepcode) %>% 
+  summarise(aantal = sum(aantal)) %>% 
+  ungroup() %>% 
+  mutate(analyseset = "Sigma_estuarien")
+
+WaterbirdsBT_sigma_wetland <- 
+  WaterbirdsBTallcheck %>% 
+  filter(gebiedsgroep == "Wetland") %>% 
+  group_by(gebiedsgroep_code,
+           gebiedsgroep,
+           rivier,
+           telseizoen,
+           teldatum,
+           nednaam,
+           wetnaam,
+           taxongroepcode) %>% 
+  summarise(aantal = sum(aantal)) %>% 
+  ungroup() %>% 
+  mutate(analyseset = "Sigma_wetland")
+
+
 ```
 
 
@@ -724,6 +781,18 @@ WaterbirdsBT <-
 
 WaterbirdsBT_sigma <- 
   WaterbirdsBT_sigma %>% 
+  complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
+           nesting(nednaam, wetnaam, taxongroepcode),
+           fill = list(0))
+
+WaterbirdsBT_sigma_estuarien <- 
+  WaterbirdsBT_sigma_estuarien %>% 
+  complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
+           nesting(nednaam, wetnaam, taxongroepcode),
+           fill = list(0))
+
+WaterbirdsBT_sigma_wetland <- 
+  WaterbirdsBT_sigma_wetland %>% 
   complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
            nesting(nednaam, wetnaam, taxongroepcode),
            fill = list(0))
@@ -758,6 +827,13 @@ WaterbirdsBT_vallei %>%
   write_delim(paste0(pad_data, "Watervogels_Vallei.csv"),
               delim = ";")
 
+WaterbirdsBT_sigma_estuarien %>% 
+  write_delim(paste0(pad_data, "Watervogels_Sigma_estuarien.csv"),
+              delim = ";")
+
+WaterbirdsBT_sigma_wetland %>% 
+  write_delim(paste0(pad_data, "Watervogels_Sigma_wetland.csv"),
+              delim = ";")
 
 ```
 
