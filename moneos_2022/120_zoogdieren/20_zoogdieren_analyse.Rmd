@@ -1,0 +1,191 @@
+---
+params:
+  hoofdstuk: "120_zoogdieren"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0(
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+                           
+title: "MONEOS analyse - zoogdieren"
+output:
+  bookdown::word_document2
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(INBOtheme)
+library(rprojroot)
+library(lubridate)
+library(readxl)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r data}
+zoogdier_data <- 
+  read_excel(path = paste0(pad_data, 
+                           "INBODATAVR-296_divers_wbe_VL_DumpTem20220424 (1).xlsx"))
+```
+
+
+# beschrijving van de data
+
+  - Per waarneming zijn er `r ncol(zoogdier_data)` informatievelden
+    + `r paste(names(zoogdier_data), sep = ", ")`
+  - In totaal bevat de dataset in 2022 `r nrow(zoogdier_data)` waarnemingen
+  - De dataset bevat waarnemingen van `r unique(zoogdier_data$naam_nl)`
+
+
+
+# Aantal waarnemingen per soort per jaar 
+
+```{r aantal waarnemingen}
+
+n_seeings <- 
+  zoogdier_data %>% 
+  group_by(naam_nl, Jaar = year(datum)) %>% 
+  count() %>% 
+  spread(key = naam_nl, value = n) %>% 
+  mutate_all(~replace(., is.na(.), 0)) 
+n_seeings %>% 
+  write_csv(paste0(pad_tabellen, "aantal_waarnemingen.csv"))
+
+knitr::kable(n_seeings, 
+             caption = "Tabel X: Aantal waarnemingen per soort per jaar")
+
+```
+<br/>
+<br/>
+
+Tot en met rapportage 2021 werden alle waarnemingen opgenomen in de dataanalyse. Hieronder wordt de dataset beperkt tot goedgekeurde waarnemingen. De verschillen zijn niet erg groot, we beperken ons tot vanaf nu tot goedgekeurde gegevens.
+
+```{r aantal goedgekeurde waarnemingen}
+
+n_seeings_goedgekeurd <- 
+  zoogdier_data %>% 
+  filter(str_detect(status, "Goedgekeurd")) %>% 
+  group_by(naam_nl, Jaar = year(datum)) %>% 
+  count() %>% 
+  spread(key = naam_nl, value = n) %>% 
+  mutate_all(~replace(., is.na(.), 0)) 
+n_seeings_goedgekeurd %>% 
+  write_csv(paste0(pad_tabellen, "aantal_waarnemingen_goedgekeurd.csv"))
+
+knitr::kable(n_seeings_goedgekeurd, 
+             caption = "Tabel X: Aantal goedgekeurde waarnemingen per soort per jaar")
+```
+<br/>
+<br/>
+
+# Aantal waarnemingen per soort per jaar (exclusief waarnemingen van sporen)
+
+```{r aantal goedg zichtwaarnemingen}
+n_seeings_sight <- 
+  zoogdier_data %>% 
+  filter(
+    str_detect(status, "Goedgekeurd"),
+    naam_nl == "Europese Bever",
+    !(gedrag %in% c("sporen", "onbekend")),
+    !(methode %in% c("vraatsporen", "andere sporen", "sporenbed"))) %>% 
+  group_by(naam_nl, Jaar = year(datum)) %>% 
+  count() %>% 
+  spread(key = naam_nl, value = n) %>% 
+  mutate_all(~replace(., is.na(.), 0))
+n_seeings_sight %>% 
+  write_csv(paste0(pad_tabellen, "/aantal_waarnemingen_zicht.csv"))
+
+knitr::kable(n_seeings_sight, 
+             caption = "Tabel X: Aantal goedgekeurde zichtwaarnemingen bever per jaar (exclusief waarnemingen van sporen")
+```
+<br/>
+<br/>
+
+```{r aantal individuen}
+n_indiv <- 
+  zoogdier_data %>% 
+  filter(str_detect(status, "Goedgekeurd"),
+         !(gedrag %in% c("sporen", "onbekend")),
+         !(methode %in% c("vraatsporen", "andere sporen", "sporenbed", "uitwerpselen"))) %>%
+  group_by(naam_nl, Jaar = year(datum)) %>%
+  summarise(n = sum(aantal))
+n_indiv_death <- 
+  zoogdier_data %>% 
+  filter(gedrag %in% c("dood", "verdrinkingsslachtoffer", "verkeersslachtoffer", 
+                       "vondst (dood)")) %>% 
+  group_by(naam_nl, Jaar = year(datum)) %>% 
+  summarise(n_death = sum(aantal))
+n_indiv_with_dead <- 
+  n_indiv %>% 
+  left_join(n_indiv_death, by = c("naam_nl", "Jaar")) %>% 
+  mutate(string = ifelse(is.na(n_death), 
+                         as.character(n), 
+                         paste0(n, " (", n_death, "†)"))) %>% 
+  select(Jaar, naam_nl, string) %>% 
+  spread(key = naam_nl, value = string) %>% 
+  mutate_all(~replace(., is.na(.), 0))
+
+knitr::kable(n_indiv_with_dead, 
+             caption = "Tabel X: Aantal goedgekeurde zichtwaarnemingen bever per jaar (exclusief waarnemingen van sporen")
+```
+<br/>
+<br/>
+
+
+# figuur regressie
+
+<!-- ```{r 000-figuur-regressie, fig.height=5, fig.width=8} -->
+
+<!-- template_data %>%  -->
+<!--   ggplot(aes(x, y)) + -->
+<!--   geom_point() + -->
+<!--   geom_smooth(method = "lm") -->
+
+<!-- ggsave(paste0(pad_figuren, "000_figuur_regressie.jpg")) -->
+
+<!-- ``` -->
+
+
+<!-- ```{r meta-data} -->
+
+<!-- meta_data <-  -->
+<!--   enframe(c(kleinste_x = kleinste_x,  -->
+<!--             grootste_x = grootste_x,  -->
+<!--             kleinste_y = kleinste_y, -->
+<!--             grootste_y = grootste_y, -->
+<!--             metingen = nrow(template_data)), -->
+<!--           name = "naam", value = "waarde") -->
+
+<!-- meta_data %>%  -->
+<!--   write_delim(paste0(pad_data, "meta_data.csv"), -->
+<!--               delim = ";") -->
+
+<!-- ``` -->
+
