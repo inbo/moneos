@@ -4,10 +4,7 @@ params:
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = paste0(
-                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
-                          "/output")
-                          )})
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
 title: "visdata ankerkuil"
 output: word_document
 editor_options: 

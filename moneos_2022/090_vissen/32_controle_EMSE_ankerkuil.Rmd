@@ -2,13 +2,9 @@
 params:
   hoofdstuk: "090_vissen"
 knit: (function(inputFile, encoding) {
-                          }
-                          )})
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = {
-                            source("../pad.R");
-                            maak_pad(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "output")
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
 title: "analyse visdata ankerkuil"
 output: word_document
 editor_options: 
@@ -61,25 +57,32 @@ sheets <- NULL
 ```
 
 
-```{r sleutelsoorten EMSE rapportage, eval=FALSE}
+```{r sleutelsoorten_EMSE EMSE rapportage, eval=FALSE}
 
-sleutelsoorten <-
+sleutelsoorten_EMSE <-
   tibble(soort = c("bot", "elft", "fint", "spiering", 
                    "rivierprik", "zeeprik", "paling",
                    "brakwatergrondel", "dikkopje", "puitaal", "slakdolf", 
-                   "zeedonderpad", "zeebaars", "wijting", "schol",
+                   "zeedonderpad", "zeebaars", "schol",
                    "haring", "glasgrondel",
                    "snoekbaars", "tiendoornige stekelbaars", "brasem", "pos", "bittervoorn",
                    "europese meerval", "kolblei", "blankvoorn"),
          indeling = c("Diadr -- Benth/Pisc", "Diadr -- Benth/Pisc", "Diadr -- Benth/Pisc", "Diadr -- Benth/Pisc", 
                       "Diadr -- Parasiet", "Diadr -- Parasiet", "Diadr -- Omn",
                       "Mar/Est -- Benth", "Mar/Est -- Benth", "Mar/Est -- Benth", "Mar/Est -- Benth",
-                      "Mar/Est -- Benth/Pisc", "Mar/Est -- Benth/Pisc", "Mar/Est -- Benth/Pisc", "Mar/Est -- Benth",
+                      "Mar/Est -- Benth/Pisc", "Mar/Est -- Benth/Pisc", "Mar/Est -- Benth",
                       "Mar/Est -- Plankt", "Mar/Est -- Plankt",
                       "Zoetw -- Benth/Pisc", "Zoetw -- Benth", "Zoetw -- Benth", "Zoetw -- Benth", "Zoetw -- Benth",
-                      "Zoetw -- Pisc", "Zoetw -- Omn", "Zoetw -- Omn"))
+                      "Zoetw -- Pisc", "Zoetw -- Omn", "Zoetw -- Omn"),
+         scheldezone = c("SG, OH, ZL, ZK", "SG, OH, ZL, ZK", "SG, OH, ZL, ZK", "SG, OH, ZL, ZK",
+                         "SG, OH, ZL, ZK", "SG, OH, ZL, ZK", "SG, OH, ZL, ZK",
+                         "SG, OH", "SG, OH", "SG, OH", "SG",
+                         "SG, OH", "SG, OH", "SG, OH",
+                         "SG, OH", "SG",
+                         "SG, OH, ZL, ZK", "SG, OH, ZL, ZK", "OH, ZL, ZK", "SG, OH, ZL, ZK", "OH, ZL, ZK",
+                         "SG, OH, ZL, ZK", "SG, OH, ZL, ZK", "SG, OH, ZL, ZK"))
 
-sleutelsoorten  %>%
+sleutelsoorten_EMSE  %>%
   write_xlsx(str_c(pad_data, "sleutelsoorten EMSE.xlsx"))
 
 ```
@@ -115,35 +118,37 @@ func_groepen_EMSE <-
 
 func_groepen_EMSE <-
   func_groepen_EMSE %>% 
-  mutate(Salgroep_detail = Saliniteitsvoorkeur,
-         Salgroep = case_when(
-           Salgroep_detail %in% c("Mariene migranten", "Mariene dwaalgasten", "Estuarien residenten") ~ "Mariene en Estuariene soorten",
-           Salgroep_detail %in% c("Diadromen") ~ "Diadrome soorten",
-           Salgroep_detail %in% c("Zoetwatersoorten") ~ "Zoetwatersoorten"
+  rename_with(~tolower(.)) %>% 
+  mutate(across(everything(), ~str_to_lower(.))) %>% 
+  mutate(salgroep_detail = saliniteitsvoorkeur,
+         salgroep = case_when(
+           salgroep_detail %in% c("mariene migranten", "mariene dwaalgasten", "estuarien residenten") ~ "mariene en estuariene soorten",
+           salgroep_detail %in% c("diadromen") ~ "diadrome soorten",
+           salgroep_detail %in% c("zoetwatersoorten") ~ "zoetwatersoorten"
          ),
          indeling = case_when(
-           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Benthivoren" ~ "Mar/Est -- Benth",
-           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Piscivoren" ~ "Mar/Est -- Pisc",
-           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Planktivoren" ~ "Mar/Est -- Plankt",
-           Salgroep == "Diadrome soorten" & Dieet == "Benthivoren" ~ "Diadr -- Benth",
-           Salgroep == "Diadrome soorten" & Dieet == "Piscivoren" ~ "Diadr -- Pisc",
-           Salgroep == "Diadrome soorten" & Dieet == "Omnivoren" ~ "Diadr -- Omn",
-           Salgroep == "Zoetwatersoorten" & Dieet == "Benthivoren" ~ "Zoetw -- Benth",
-           Salgroep == "Zoetwatersoorten" & Dieet == "Piscivoren" ~ "Zoetw -- Pisc",
-           Salgroep == "Zoetwatersoorten" & Dieet == "Omnivoren" ~ "Zoetw -- Omn")) %>% 
-  left_join(sleutelsoorten %>% 
-              rename(indeling_SL = indeling), by = c("Soort" = "soort")) %>% 
-  mutate(., sleutelsoort = !is.na(.$indeling_SL)) %>% 
-  select(-Salgroep_detail, -Salgroep) %>% 
+           salgroep == "mariene en estuariene soorten" & dieet == "benthivoren" ~ "Mar/Est -- Benth",
+           salgroep == "mariene en estuariene soorten" & dieet == "piscivoren" ~ "Mar/Est -- Pisc",
+           salgroep == "mariene en estuariene soorten" & dieet == "planktivoren" ~ "Mar/Est -- Plankt",
+           salgroep == "diadrome soorten" & dieet == "benthivoren" ~ "Diadr -- Benth",
+           salgroep == "diadrome soorten" & dieet == "piscivoren" ~ "Diadr -- Pisc",
+           salgroep == "diadrome soorten" & dieet == "omnivoren" ~ "Diadr -- Omn",
+           salgroep == "zoetwatersoorten" & dieet == "benthivoren" ~ "Zoetw -- Benth",
+           salgroep == "zoetwatersoorten" & dieet == "piscivoren" ~ "Zoetw -- Pisc",
+           salgroep == "zoetwatersoorten" & dieet == "omnivoren" ~ "Zoetw -- Omn")) %>% 
+  left_join(sleutelsoorten_EMSE %>% 
+              rename(indeling_sl = indeling)) %>% 
+  mutate(., sleutelsoort = !is.na(.$indeling_sl)) %>% 
+  select(-salgroep_detail, -salgroep) %>% 
   relocate(sleutelsoort, .before = indeling)
 
 func_groepen_EMSE <-
   func_groepen_EMSE %>% 
-  select(Soort, Species, Saliniteitsvoorkeur, Dieet, indeling) %>% 
-  full_join(sleutelsoorten %>% 
+  select(Soort, Species, Saliniteitsvoorkeur, dieet, indeling) %>% 
+  full_join(sleutelsoorten_EMSE %>% 
               rename(indeling_SL = indeling), by = c("Soort" = "soort")) %>% 
   mutate(., sleutelsoort = !is.na(.$indeling_SL)) %>% 
-  # select(-Salgroep_detail, -Salgroep) %>% 
+  # select(-salgroep_detail, -salgroep) %>% 
   relocate(sleutelsoort, .before = indeling)
 
 func_groepen_EMSE %>% 
@@ -174,8 +179,7 @@ func_groepen_EMSE <-
 ```{r inlezen-data}
 
 soortenlijst <- 
-  read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx")) %>% 
-  mutate(Soort = str_to_lower(Soort))
+  read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"))
 
 ankerkuil_aantal <- 
   read_delim(paste0(pad_data, "ankerkuil_aantallen_2012_2021.csv"),
@@ -262,34 +266,34 @@ data_ankerkuil <-
 ```{r indeling EMSE rapportage}
 
 data_ankerkuil %>% 
-  distinct(Salgroep)
+  distinct(salgroep)
 
 data_ankerkuil %>% 
-  distinct(Dieet)
+  distinct(dieet)
 
 data_ankerkuil <- 
   data_ankerkuil %>% 
-  mutate(Salgroep_detail = Salgroep,
-         Salgroep = case_when(
-           Salgroep_detail %in% c("Mariene migranten", "Mariene dwaalgasten", "Estuarien residenten") ~ "Mariene en Estuariene soorten",
-           Salgroep_detail %in% c("Diadromen") ~ "Diadrome soorten",
-           Salgroep_detail %in% c("Zoetwatersoorten") ~ "Zoetwatersoorten"
+  mutate(salgroep_detail = salgroep,
+         salgroep = case_when(
+           salgroep_detail %in% c("mariene migranten", "mariene dwaalgasten", "estuarien residenten") ~ "mariene en estuariene soorten",
+           salgroep_detail %in% c("diadromen") ~ "diadrome soorten",
+           salgroep_detail %in% c("zoetwatersoorten") ~ "zoetwatersoorten"
          ),
          indeling = case_when(
-           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Benthivoren" ~ "Mar/Est -- Benth",
-           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Piscivoren" ~ "Mar/Est -- Pisc",
-           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Planktivoren" ~ "Mar/Est -- Plankt",
-           Salgroep == "Diadrome soorten" & Dieet == "Benthivoren" ~ "Diadr -- Benth",
-           Salgroep == "Diadrome soorten" & Dieet == "Piscivoren" ~ "Diadr -- Pisc",
-           Salgroep == "Diadrome soorten" & Dieet == "Omnivoren" ~ "Diadr -- Omn",
-           Salgroep == "Zoetwatersoorten" & Dieet == "Benthivoren" ~ "Zoetw -- Benth",
-           Salgroep == "Zoetwatersoorten" & Dieet == "Piscivoren" ~ "Zoetw -- Pisc",
-           Salgroep == "Zoetwatersoorten" & Dieet == "Omnivoren" ~ "Zoetw -- Omn"),
+           salgroep == "mariene en estuariene soorten" & dieet == "benthivoren" ~ "Mar/Est -- Benth",
+           salgroep == "mariene en estuariene soorten" & dieet == "piscivoren" ~ "Mar/Est -- Pisc",
+           salgroep == "mariene en estuariene soorten" & dieet == "planktivoren" ~ "Mar/Est -- Plankt",
+           salgroep == "diadrome soorten" & dieet == "benthivoren" ~ "Diadr -- Benth",
+           salgroep == "diadrome soorten" & dieet == "piscivoren" ~ "Diadr -- Pisc",
+           salgroep == "diadrome soorten" & dieet == "omnivoren" ~ "Diadr -- Omn",
+           salgroep == "zoetwatersoorten" & dieet == "benthivoren" ~ "Zoetw -- Benth",
+           salgroep == "zoetwatersoorten" & dieet == "piscivoren" ~ "Zoetw -- Pisc",
+           salgroep == "zoetwatersoorten" & dieet == "omnivoren" ~ "Zoetw -- Omn"),
          in_indeling = !is.na(indeling))
 
 indeling_EMSE <-
   data_ankerkuil %>% 
-  distinct(soort, Salgroep, Dieet, indeling, in_indeling)
+  distinct(soort, salgroep, dieet, indeling, in_indeling)
 
 ```
 
@@ -297,8 +301,8 @@ indeling_EMSE <-
 
 ```{r soortverschillen}
 
-setdiff(soorten_EMSE$Soort, sleutelsoorten$soort)
-setdiff(sleutelsoorten$soort, func_groepen_EMSE %>%  filter(Species != "NA") %>%  pull(Soort))
+setdiff(func_groepen_EMSE$Soort, sleutelsoorten_EMSE$soort)
+setdiff(sleutelsoorten_EMSE$soort, func_groepen_EMSE %>%  filter(Species != "NA") %>%  pull(Soort))
 
 setdiff(soortenlijst %>%  filter(inEMSE) %>% pull(soort), soorten_vis)
 setdiff(soorten_vis, soortenlijst %>%  filter(inEMSE) %>% pull(soort))
@@ -310,36 +314,36 @@ setdiff(soorten_vis, soortenlijst %>%  filter(inEMSE) %>% pull(soort))
 
 soortenlijst_check <-
   soortenlijst %>% 
-  mutate(Salgroep_detail = Salgroep,
-         Salgroep = case_when(
-           Salgroep_detail %in% c("Mariene migranten", "Mariene dwaalgasten", "Estuarien residenten") ~ "Mariene en Estuariene soorten",
-           Salgroep_detail %in% c("Diadromen") ~ "Diadrome soorten",
-           Salgroep_detail %in% c("Zoetwatersoorten") ~ "Zoetwatersoorten"
+  mutate(salgroep_detail = salgroep,
+         salgroep = case_when(
+           salgroep_detail %in% c("Mariene migranten", "Mariene dwaalgasten", "Estuarien residenten") ~ "Mariene en Estuariene soorten",
+           salgroep_detail %in% c("Diadromen") ~ "Diadrome soorten",
+           salgroep_detail %in% c("Zoetwatersoorten") ~ "Zoetwatersoorten"
          ),
          indeling = case_when(
-           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Benthivoren" ~ "Mar/Est -- Benth",
-           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Piscivoren" ~ "Mar/Est -- Pisc",
-           Salgroep == "Mariene en Estuariene soorten" & Dieet == "Planktivoren" ~ "Mar/Est -- Plankt",
-           Salgroep == "Diadrome soorten" & Dieet == "Benthivoren" ~ "Diadr -- Benth",
-           Salgroep == "Diadrome soorten" & Dieet == "Piscivoren" ~ "Diadr -- Pisc",
-           Salgroep == "Diadrome soorten" & Dieet == "Omnivoren" ~ "Diadr -- Omn",
-           Salgroep == "Zoetwatersoorten" & Dieet == "Benthivoren" ~ "Zoetw -- Benth",
-           Salgroep == "Zoetwatersoorten" & Dieet == "Piscivoren" ~ "Zoetw -- Pisc",
-           Salgroep == "Zoetwatersoorten" & Dieet == "Omnivoren" ~ "Zoetw -- Omn"),
+           salgroep == "Mariene en Estuariene soorten" & dieet == "Benthivoren" ~ "Mar/Est -- Benth",
+           salgroep == "Mariene en Estuariene soorten" & dieet == "Piscivoren" ~ "Mar/Est -- Pisc",
+           salgroep == "Mariene en Estuariene soorten" & dieet == "Planktivoren" ~ "Mar/Est -- Plankt",
+           salgroep == "Diadrome soorten" & dieet == "Benthivoren" ~ "Diadr -- Benth",
+           salgroep == "Diadrome soorten" & dieet == "Piscivoren" ~ "Diadr -- Pisc",
+           salgroep == "Diadrome soorten" & dieet == "Omnivoren" ~ "Diadr -- Omn",
+           salgroep == "Zoetwatersoorten" & dieet == "Benthivoren" ~ "Zoetw -- Benth",
+           salgroep == "Zoetwatersoorten" & dieet == "Piscivoren" ~ "Zoetw -- Pisc",
+           salgroep == "Zoetwatersoorten" & dieet == "Omnivoren" ~ "Zoetw -- Omn"),
          in_indeling = !is.na(indeling))
 
 soortenlijst_check <-
   soortenlijst_check %>% 
   filter(!inEMSE) %>% 
-  select(soort, Salgroep, Dieet, indeling) %>% 
+  select(soort, salgroep, dieet, indeling) %>% 
   arrange(soort)
 
 soortenlijst_check <-
   soortenlijst_check %>% 
-  left_join(sleutelsoorten %>% 
+  left_join(sleutelsoorten_EMSE %>% 
               rename(indeling_SL = indeling)) %>% 
   mutate(., sleutelsoort = !is.na(.$indeling_SL)) %>% 
-  # select(-Salgroep_detail, -Salgroep) %>% 
+  # select(-salgroep_detail, -salgroep) %>% 
   relocate(sleutelsoort, .before = indeling)
 
 soortenlijst_check %>% 

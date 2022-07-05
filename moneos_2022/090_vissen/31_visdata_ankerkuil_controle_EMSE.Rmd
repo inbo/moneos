@@ -4,10 +4,7 @@ params:
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = paste0(
-                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
-                          "/output")
-                          )})
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
 title: "visdata ankerkuil controle EMSE"
 output: word_document
 editor_options: 
@@ -114,8 +111,8 @@ soorten <-
   left_join(voorkomen %>% 
               select(soort, `N>0`))
   
-soorten %>% 
-  writexl::write_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"))
+# soorten %>% 
+#   writexl::write_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"))
 
 
 aantal_long %>%
