@@ -1,11 +1,10 @@
 ---
 params:
   hoofdstuk: "090_vissen"
-knit: (function(inputFile, encoding) {
-        rmarkdown::render(inputFile,
-                          encoding=encoding,
-                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
 title: "visdata ankerkuil"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
 output: word_document
 editor_options: 
   chunk_output_type: console
@@ -140,12 +139,12 @@ uniek_gewicht_niet_nul <-
 
 ```
 
-- `r length(unieke_soorten_aantal)` soorten komen voor in de dataset aantallen en niet in gewicht
-    - `r unieke_soorten_aantal`
-    - van deze soorten hebben `r uniek_aantal_niet_nul` aantallen \> 0
-- `r length(unieke_soorten_gewicht)` soorten komen voor in de dataset gewicht en niet in aantallen
-    - `r unieke_soorten_gewicht`
-    - van deze soorten hebben `r uniek_gewicht_niet_nul` gewicht \> 0
+-   `r length(unieke_soorten_aantal)` soorten komen voor in de dataset aantallen en niet in gewicht
+    -   `r unieke_soorten_aantal`
+    -   van deze soorten hebben `r uniek_aantal_niet_nul` aantallen \> 0
+-   `r length(unieke_soorten_gewicht)` soorten komen voor in de dataset gewicht en niet in aantallen
+    -   `r unieke_soorten_gewicht`
+    -   van deze soorten hebben `r uniek_gewicht_niet_nul` gewicht \> 0
 
 De soorten die niet in de data voor aantallen voorkomen worden verwijderd
 
@@ -181,11 +180,10 @@ unieke_stalen_gewicht <-
 
 ```
 
-- `r nrow(unieke_stalen_aantal)` stalen komen voor in de dataset aantallen en niet in gewicht
-    - `r if(nrow(unieke_stalen_aantal) > 0) knitr::kable(unieke_stalen_aantal) else NULL`
-- `r nrow(unieke_stalen_gewicht)` stalen komen voor in de dataset gewicht en niet in aantallen
-    - `r if(nrow(unieke_stalen_gewicht) > 0) knitr::kable(unieke_stalen_gewicht) else NULL`
-
+-   `r nrow(unieke_stalen_aantal)` stalen komen voor in de dataset aantallen en niet in gewicht
+    -   `r if(nrow(unieke_stalen_aantal) > 0) knitr::kable(unieke_stalen_aantal) else NULL`
+-   `r nrow(unieke_stalen_gewicht)` stalen komen voor in de dataset gewicht en niet in aantallen
+    -   `r if(nrow(unieke_stalen_gewicht) > 0) knitr::kable(unieke_stalen_gewicht) else NULL`
 
 #### unieke uren - volume:
 
@@ -227,10 +225,10 @@ unieke_stalen_gewicht <-
 uren afgerond naar `r precisie_uren` cijfers na de comma\
 volume afgerond naar `r precisie_volume` cijfers na de comma
 
-- `r nrow(unieke_stalen_aantal)` uren/volume komen voor in de dataset aantallen en niet in gewicht
-    - `r if(nrow(unieke_stalen_aantal) > 0) knitr::kable(unieke_stalen_aantal) else NULL`
-- `r nrow(unieke_stalen_gewicht)` uren/volume komen voor in de dataset gewicht en niet in aantallen
-    - `r if(nrow(unieke_stalen_gewicht) > 0) knitr::kable(unieke_stalen_gewicht) else NULL`
+-   `r nrow(unieke_stalen_aantal)` uren/volume komen voor in de dataset aantallen en niet in gewicht
+    -   `r if(nrow(unieke_stalen_aantal) > 0) knitr::kable(unieke_stalen_aantal) else NULL`
+-   `r nrow(unieke_stalen_gewicht)` uren/volume komen voor in de dataset gewicht en niet in aantallen
+    -   `r if(nrow(unieke_stalen_gewicht) > 0) knitr::kable(unieke_stalen_gewicht) else NULL`
 
 uren/volume die ontbreken in aantallen worden overgenomen uit volume
 
@@ -295,7 +293,6 @@ niet_beiden_nul <-
 if(nrow(niet_beiden_nul) > 0) knitr::kable(niet_beiden_nul) else NULL
 
 ```
-
 
 #### jaren in de dataset:
 

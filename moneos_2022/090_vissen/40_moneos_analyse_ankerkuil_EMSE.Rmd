@@ -342,7 +342,7 @@ aantal_soorten_seizoen_locatie %>%
   facet_grid(seizoen ~ locatie) +
   theme(strip.text = element_text(size = 12))
 
-ggsave(paste0(pad_figuren, "aantal_soorten_seizoen_locatie.jpg"), width = 12, height = 10)
+ggsave(paste0(pad_figuren, "aantal_soorten_seizoen_locatie.jpg"), width = 10, height = 8)
 
 
 aantal_soorten_seizoen <- 
@@ -464,6 +464,30 @@ sheets[["gevangen_soorten"]] <- tabel_gevangen_soorten
 
 
 
+```{r overzicht-aantal-soorten}
+
+tabel_aantal_soorten <-
+  data_ankerkuil %>% 
+  filter(jaar == laatste_jaar,
+         aantal > 0) %>%
+  group_by(seizoen, locatie) %>%
+  summarise(soorten = as.character(n())) %>% 
+  ungroup() %>% 
+  pivot_wider(locatie, names_from = seizoen, values_from = soorten, values_fill = "")
+
+knitr::kable(tabel_aantal_soorten)
+
+sheets[["aantal_soorten"]] <- tabel_aantal_soorten
+  
+
+# write_xlsx(list(gevangen_soorten = tabel_gevangen_soorten),
+#            paste0(pad_tabellen, "tabellen_vissen.xlsx"))
+
+```
+
+
+#### relatief aantal gevangen individuen
+
 ```{r test kleurcode, eval=FALSE}
 
 relatief_aantal <- 
@@ -534,8 +558,6 @@ for(s in 51:100) {
 
 ```
 
-
-#### relatief aantal gevangen individuen
 
 ```{r relatief-aantal-gevangen-individuen, fig.height=6, fig.width=6}
 
@@ -1079,7 +1101,7 @@ gemiddeld_diversiteit_EMSE %>%
        y = "N -- D") +
   facet_grid(indeling ~ scheldezone, scales = "free_y")
 
-ggsave(paste0(pad_figuren, "diversiteit_N_D_EMSE_diadr.jpg"), width = 8, height = 6)
+ggsave(paste0(pad_figuren, "diversiteit_N_D_EMSE_diadroom.jpg"), width = 7, height = 5)
 
 gemiddeld_diversiteit_EMSE %>% 
   filter(str_detect(salgroep, "zoet")) %>% 
@@ -1101,7 +1123,7 @@ gemiddeld_diversiteit_EMSE %>%
        y = "N -- D") +
   facet_grid(indeling ~ scheldezone, scales = "free_y")
 
-ggsave(paste0(pad_figuren, "diversiteit_N_D_EMSE_zoet.jpg"), width = 8, height = 6)
+ggsave(paste0(pad_figuren, "diversiteit_N_D_EMSE_zoet.jpg"), width = 7, height = 5)
 
 ```
 
@@ -1490,7 +1512,7 @@ ggp_all <-
   # scale_fill_brewer(palette = "Paired") +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
-  labs(title = "estuariene soorten en mariene migranten",
+  labs(# title = "estuariene soorten en mariene migranten",
        y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) +
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none")
@@ -1502,10 +1524,10 @@ plot_grid(ggp_all,
                     plot_grid(plotlist = data_split$legend[sort.list(data_split$indeling)],
                     align = "h", ncol = 1),
                     NULL,
-                    ncol = 1, rel_heights = c(0.1,1,0.05)),
+                    ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.2,0.05,0.5))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_marien.jpg"), width = 11, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_marien.jpg"), width = 10, height = 6, bg = "white")
 
 
 data_split <-
@@ -1557,7 +1579,7 @@ ggp_all <-
   # scale_fill_brewer(palette = "Paired") +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
-  labs(title = "diadrome soorten",
+  labs(# title = "diadrome soorten",
        y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) +
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none")
@@ -1572,7 +1594,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.1,1,0.05)),
           ncol = 3, rel_widths = c(1.6,0.05,0.4))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_diadroom.jpg"), width = 11, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_diadroom.jpg"), width = 9.5, height = 5, bg = "white")
 
 
 data_split <-
@@ -1624,7 +1646,7 @@ ggp_all <-
   # scale_fill_brewer(palette = "Paired") +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
-  labs(title = "zoetwater soorten",
+  labs(# title = "zoetwater soorten",
        y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) +
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none")
@@ -1636,10 +1658,10 @@ plot_grid(ggp_all,
                     plot_grid(plotlist = data_split$legend[sort.list(data_split$indeling)],
                     align = "h", ncol = 1),
                     NULL,
-                    ncol = 1, rel_heights = c(0.1,1,0.05)),
+                    ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.6,0.05,0.4))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_zoet.jpg"), width = 11, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_zoet.jpg"), width = 9.5, height = 5, bg = "white")
 
 ```
 
@@ -1747,7 +1769,7 @@ ggp_all <-
   # scale_fill_brewer(palette = "Paired") +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
-  labs(title = "estuariene soorten en mariene migranten",
+  labs(# title = "estuariene soorten en mariene migranten",
        y = expr(paste("gem. biomassa [g/", !!mult_kub, m^3, "]"))) + 
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none")
@@ -1759,10 +1781,10 @@ plot_grid(ggp_all,
                     plot_grid(plotlist = data_split$legend[sort.list(data_split$indeling)],
                     align = "h", ncol = 1),
                     NULL,
-                    ncol = 1, rel_heights = c(0.1,1,0.05)),
+                    ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.2,0.05,0.5))
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_marien.jpg"), width = 11, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_marien.jpg"), width = 10, height = 6, bg = "white")
 
 
 data_split <-
@@ -1814,7 +1836,7 @@ ggp_all <-
   # scale_fill_brewer(palette = "Paired") +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
-  labs(title = "diadrome soorten",
+  labs(# title = "diadrome soorten",
        y = expr(paste("gem. biomassa [g/", !!mult_kub, m^3, "]"))) + 
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none")
@@ -1829,7 +1851,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.1,1,0.05)),
           ncol = 3, rel_widths = c(1.6,0.05,0.4))
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_diadroom.jpg"), width = 11, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_diadroom.jpg"), width = 9.5, height = 5, bg = "white")
 
 
 data_split <-
@@ -1881,7 +1903,7 @@ ggp_all <-
   # scale_fill_brewer(palette = "Paired") +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
-  labs(title = "zoetwater soorten",
+  labs(# title = "zoetwater soorten",
        y = expr(paste("gem. biomassa [g/", !!mult_kub, m^3, "]"))) + 
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none")
@@ -1893,10 +1915,10 @@ plot_grid(ggp_all,
                     plot_grid(plotlist = data_split$legend[sort.list(data_split$indeling)],
                     align = "h", ncol = 1),
                     NULL,
-                    ncol = 1, rel_heights = c(0.1,1,0.05)),
+                    ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.6,0.05,0.4))
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_zoet.jpg"), width = 11, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_zoet.jpg"), width = 9.5, height = 5, bg = "white")
 
 ```
 
@@ -1922,13 +1944,13 @@ data_ankerkuil %>%
            width = 0.7,
            alpha = 0.8) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
-  labs(title = "estuariene soorten en mariene migranten",
+  labs(# title = "estuariene soorten en mariene migranten",
        y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) + 
   facet_wrap(~soort,
              scales = "free_y") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
 
-ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marien.jpg"), width = 10, height = 6)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marien.jpg"), width = 9, height = 5)
 
 
 data_ankerkuil %>% 
@@ -1948,13 +1970,13 @@ data_ankerkuil %>%
            width = 0.7,
            alpha = 0.8) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
-  labs(title = "diadrome soorten",
+  labs(# title = "diadrome soorten",
        y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) + 
   facet_wrap(~soort,
              scales = "free_y") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
 
-ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadroom.jpg"), width = 11, height = 6)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadroom.jpg"), width = 9, height = 4)
 
 
 data_ankerkuil %>% 
@@ -1975,13 +1997,13 @@ data_ankerkuil %>%
            alpha = 0.8) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_x_continuous(breaks = vroegste_jaar:laatste_jaar) +
-  labs(title = "zoetwatersoorten",
+  labs(# title = "zoetwatersoorten",
        y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) + 
   facet_wrap(~soort,
              scales = "free_y") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
 
-ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.jpg"), width = 10, height = 6)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.jpg"), width = 9, height = 5)
 
 ```
 
