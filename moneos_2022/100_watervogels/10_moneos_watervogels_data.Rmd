@@ -240,6 +240,104 @@ WHERE 1=1
 ```
 
 
+```{r checken details in databank}
+
+# con <- connect_inbo_dbase("W0004_00_Waterbirds")
+# 
+# q_WVgebiedenLier <- "SELECT *
+#                      FROM DimLocationWV
+#                      WHERE LocationWVNaam LIKE '%LIER%' AND
+#                            LocationWVNaam NOT LIKE '%LIERE%'"
+# 
+# q_WVgebiedenNete <- "SELECT *
+#                      FROM DimLocationWV
+#                      WHERE LocationWVNaam LIKE '%Nete%'"
+# 
+# 
+# # Selectie gebieden in Lier                     
+# GebiedenLier <- 
+#   tbl(src = con, sql(q_WVgebiedenLier)) %>% 
+#   select(LocationWVCode, LocationWVNaam, IsStandardizedLocationWV) %>% 
+#   collect()
+# 
+# GebiedenNete <- 
+#   tbl(src = con, sql(q_WVgebiedenNete)) %>% 
+#   select(LocationWVCode, LocationWVNaam, IsStandardizedLocationWV) %>% 
+#   collect()
+# 
+# # query midmaandelijkse tellingen
+# q_midmaandtellingen <- 
+#   "SELECT SU.SurveyCode as ProjectCode
+# , SU.SurveyNaam as Project
+# , L.RegioWVCode as RegioCode
+# , L.RegioWVNaam as Regio
+# , L.LocationWVCode as GebiedsCode
+# , L.LocationWVNaam as Gebied
+# , SS.Seasonname as Telseizoen
+# , E.EventCode as TellingCode
+# , E.EventLabel as Telling
+# , E.SortOrder as TellingSortOrder
+# , S.sampleDate as Teldatum
+# --, S.IceCoverCode as Ijsbedekking
+# --, S.SnowCoverCode as Sneeuwbedekking
+# , S.CoverageCode as Telvolledigheid
+# , T.Commonname as NedNaam
+# , T.scientificname as WetNaam
+# , T.TaxonGroupCode
+# , F.Taxoncount as Aantal
+# FROM FactAnalyseSetOccurrence F
+# inner join DimSurvey SU on SU.surveykey = F.surveykey
+# inner join DimLocationWV L on L.locationwvkey = F.locationwvkey
+# inner join DimSeason SS on SS.Seasonkey = F.seasonkey
+# inner join DimEvent E on E.eventkey = F.eventkey
+# inner join DimSample S on F.samplekey = S.samplekey
+# inner join DimTaxonWV T on T.taxonwvkey = F.taxonwvkey
+# WHERE 1=1
+#   "
+# # Selectie midmaandelijkse tellingen in gebieden Lier
+# WaterbirdsLier <- 
+#   tbl(src = con, 
+#       sql(q_midmaandtellingen)) %>% 
+#   filter(GebiedsCode %in% !!GebiedenLier$LocationWVCode) %>% 
+#   collect()
+# 
+# WaterbirdsNete <- 
+#   tbl(src = con, 
+#       sql(q_midmaandtellingen)) %>% 
+#   filter(GebiedsCode %in% !!GebiedenNete$LocationWVCode) %>% 
+#   collect()
+# 
+# dbDisconnect(con)
+# 
+# # Totalen per gebied per seizoen
+# Totaal_n_Watervogels_Gebied_seizoen_Lier <- 
+#   WaterbirdsLier %>% 
+#   group_by(Gebied, Telseizoen) %>% 
+#   summarise(Totaal = sum(Aantal, na.rm = TRUE)) %>% 
+#   spread(key = Gebied, value = Totaal)
+# 
+# Totaal_n_Watervogels_Gebied_seizoen_Nete <- 
+#   WaterbirdsNete %>% 
+#   group_by(Gebied, Telseizoen) %>% 
+#   summarise(Totaal = sum(Aantal, na.rm = TRUE)) %>% 
+#   spread(key = Gebied, value = Totaal)
+# 
+# 
+# # sla op als spreadsheet
+# Totaal_n_Watervogels_Gebied_seizoen_Lier %>% 
+#   write_delim(paste0(pad_data, "Totalen_gebiedenLier.csv"),
+#               delim = ";")
+# 
+# Totaal_n_Watervogels_Gebied_seizoen_Nete %>% 
+#   write_delim(paste0(pad_data, "Totalen_gebiedenNete.csv"),
+#               delim = ";")
+# 
+# 
+
+
+```
+
+
 ```{r bevragen-warehouse-zeeschelde-analyseset}
 
 query <-
@@ -308,6 +406,7 @@ telzones_sigma <-
   gebiedsgroepenall %>% 
   filter(gebiedsgroeptype_code == "SIGMA") %>% 
     pull(gebiedsnaam) 
+
 
 telzones_query <-
   paste0("'", telzones_sigma, "'", collapse = ",") %>% 
