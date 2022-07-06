@@ -1066,6 +1066,12 @@ WaterbirdsBT %>%
   write_delim(paste0(pad_data, "Watervogels_ZeescheldeVLIZ.csv"),
               delim = ";")
 
+WaterbirdsBT_sigma_estuarien %>% 
+  mutate(maand = month(teldatum)) %>% 
+  dplyr::select(-c(taxongroepcode,gebiedsgroep_code, wetnaam, teldatum, analyseset)) %>% 
+  dplyr::rename(Sigmagebiedstype = gebiedsgroep) %>% 
+  write_delim(paste0(pad_data, "Watervogels_Sigma_estuarienVLIZ.csv"),
+              delim = ";")
 
 WaterbirdsBT_sigma %>% 
   write_delim(paste0(pad_data, "Watervogels_Sigma.csv"),
