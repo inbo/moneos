@@ -71,34 +71,30 @@ for(i in 1:nrow(meta_data)){
 # Watervogels
 
 Fichenummer: FICHE S-DS-V-007a – Maandelijkse vogeltellingen
-
 Fichenummer: FICHE S-DS-V-007b – Vogeltellingen zijrivieren 
+Fichenummer: FICHE S-DS-V-007c – Vogeltellingen sigmagebieden (estuarien) 
 
 __Gunther Van Ryckegem__
 
 ## Inleiding
 
-Het voorkomen van watervogels kan indicatief zijn voor het estuarien ecosysteemfunctioneren. Aantalsveranderingen kunnen zowel door factoren van buiten (bijvoorbeeld klimaatverandering, Europese populatietrends,…) als van binnen het estuarium gestuurd worden. Dit betekent dat trends steeds in een ruimer kader en met de nodige omzichtigheid geëvalueerd moeten worden. Interne factoren kunnen bijvoorbeeld een gewijzigd voedselaanbod, foerageerareaal of een gewijzigde verstoringinvloed zijn. 
+Het voorkomen van watervogels kan indicatief zijn voor het estuarien ecosysteemfunctioneren. Aantalsveranderingen kunnen zowel door factoren van buiten (bijvoorbeeld klimaatverandering, Europese populatietrends,…) als van binnen het estuarium gestuurd worden. Dit betekent dat trends steeds in een ruimer kader en met de nodige omzichtigheid geëvalueerd moeten worden. Interne factoren kunnen bijvoorbeeld een gewijzigd voedselaanbod, foerageerareaal of een gewijzigde verstoringsinvloed zijn. 
 
-De eerstelijnsrapportage beschrijft de aangeleverde watervogeldata van de Zeeschelde en de zijrivieren met een focus op de verzamelde tellingen tot de winter van `r as.numeric(laatste_jaar) - 1` (eindigend in maart `r laatste_jaar`). De data werden gefilterd uit de Watervogeldatabank van het INBO.
+De eerstelijnsrapportage beschrijft de aangeleverde watervogeldata van de Zeeschelde, de zijrivieren en de estuariene sigmagebieden met een focus op de verzamelde tellingen tot de winter van `r as.numeric(laatste_jaar) - 1` (eindigend in maart `r laatste_jaar`). De data werden gefilterd uit de Watervogeldatabank van het INBO.
 
-Beide fiches werden in één excel bestand aangeleverd:
-
-“DataMONEOSWatervogels-Zeeschelde_zijrivieren_totwinter2020.xlsx”
-
-De evaluatie heeft volgende informatie nodig: aantallen vogels per soort per maand per segment op niveau 2 en 3 (niveau 2 is som van de waterlichamen; niveau 3 heeft betrekking op het waterlichaam of de saliniteitszone) (Maris et al., 2014). 
+De evaluatie heeft volgende informatie nodig: aantallen vogels per soort per maand per segment op niveau 2 en 3 (niveau 2 is som van de waterlichamen; niveau 3 heeft betrekking op het waterlichaam (KRWzone) of de saliniteitszone) (Evaluatiemethodiek, 2021). 
 
 De dataset bevat volgende informatievelden: KRWzone, rivier, telseizoen, maand, nednaam en aantal, waarbij:
 
 - rivier: het naamveld van de rivier (Zeeschelde, Durme, Rupel, Zenne, Dijle)
 - telseizoen: een vogeltelseizoen loopt van juli jaar x tot juni jaar x+1. 
-- krw: indeling volgens Figuur 1.1.
+- krwzone: indeling volgens Figuur 1.1.
 - aantal: de aantallen omvatten de som van de getelde vogels per soort, per maand, per rivier en krwzone. 
 
 
 ## Materiaal en methode
 
-Sinds oktober 1991 tellen medewerkers van het INBO maandelijks het aantal watervogels langs de Zeeschelde vanaf de Belgisch-Nederlandse grens tot Gent. De trajecten op Nederlands grondgebied werden niet opgenomen. De aangeleverde data lopen van oktober 1991 tot en met maart `r laatste_jaar`. Oorspronkelijk werd enkel tijdens de winter (oktober – maart) geteld, vanaf 1993 wordt ook tijdens de zomer geteld. Deze zomertellingen (april (behalve juni) - september) werden stopgezet tussen Antwerpen en Gent sinds het telseizoen 2018/19. In de zomer wordt enkel nog gebiedsdekkend geteld in juni. Sinds de winter van 1995/1996 wordt ook geteld langsheen de Rupel (Rupelmonding – sas van Wintam). De tellingen gebeuren vanaf een boot en bij laag tij. Omdat het niet haalbaar is om het volledige onderzoeksgebied grondig te tellen tijdens de periode van één laag tij, worden de telling gespreid over drie dagen. De dagen worden steeds gegroepeerd in het midden van de maand. Alle watervogelsoorten (en steltlopers) worden tijdens de boottellingen geteld sinds het begin van de tellingen, de meeuwen en sternen worden geteld sinds oktober 1999. De tellingen langsheen de zijrivieren (behalve het deel tussen de Rupelmonding tot Wintam) worden geteld vanop de rivieroever door vrijwilligers.De meeuwen, sternen, wulp, kievit en waterhoen worden langs de zijrivieren geteld sinds oktober 1999.In de exploratieve analyse werden de meeuwen en sternen uit de dataset gelaten.
+Sinds oktober 1991 tellen medewerkers van het INBO maandelijks het aantal watervogels langs de Zeeschelde vanaf de Belgisch-Nederlandse grens tot Gent. De trajecten op Nederlands grondgebied werden niet opgenomen. De aangeleverde data lopen van oktober 1991 tot en met maart `r laatste_jaar`. Oorspronkelijk werd enkel tijdens de winter (oktober – maart) geteld, vanaf 1993 wordt ook tijdens de zomer geteld. Deze zomertellingen (april (behalve juni) - september) werden stopgezet tussen Antwerpen en Gent sinds het telseizoen 2018/19. In de zomer wordt enkel nog gebiedsdekkend geteld in juni. Sinds de winter van 1995/1996 wordt ook geteld langsheen de Rupel (Rupelmonding – sas van Wintam). De tellingen gebeuren vanaf een boot en bij laag tij. Omdat het niet haalbaar is om het volledige onderzoeksgebied grondig te tellen tijdens de periode van één laag tij, worden de telling gespreid over drie dagen. De dagen worden steeds gegroepeerd in het midden van de maand. Alle watervogelsoorten (en steltlopers) worden tijdens de boottellingen geteld sinds het begin van de tellingen, de meeuwen en sternen worden geteld sinds oktober 1999. De tellingen langsheen de zijrivieren (behalve het deel tussen de Rupelmonding tot Wintam) en van de sigmagebieden worden geteld vanop de rivieroever door vrijwilligers of medewerkers van het INBO.De meeuwen, sternen, wulp, kievit en waterhoen worden langs de zijrivieren geteld sinds oktober 1999.In de exploratieve analyse werden de meeuwen en sternen uit de dataset gelaten.
 
 __Ruimtelijke en temporele afbakening data__
 
