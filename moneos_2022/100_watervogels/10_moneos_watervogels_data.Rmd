@@ -81,7 +81,7 @@ gebiedsindeling_T2021 <-
     niveau4 == "GetijdeDijle" ~ "Dijle",
     niveau4 == "GetijdeZenne" ~ "Zenne",
     niveau4 == "GetijdeNete" ~ "Nete",
-    niveau4 == "Monding" ~ "Noordzee",
+    niveau4 == "Monding" ~ "Monding",
     niveau2 == "Westerschelde" ~"Westerschelde",
     TRUE ~ "Zeeschelde"
   ))
@@ -463,6 +463,7 @@ WaterbirdsBT_ZR <-
 
 ```{r bevragen-warehouse-MIDMA-Sigma-analyseset}
 
+## alle sigmagebieden
 telzones_sigma <- 
   gebiedsgroepenSigma %>% 
       pull(gebiedsnaam) 
@@ -497,73 +498,7 @@ Waterbirds_bt_zr_sigma <-
 
 ######
 
-telzones_sigma_zeeschelde <- 
-  gebiedsgroepenSigma_zeeschelde %>% 
-      pull(gebiedsnaam) 
 
-
-telzones_query <-
-  paste0("'", telzones_sigma_zeeschelde, "'", collapse = ",") %>% 
-  paste0("(", ., ")")
-
-query <-
-  paste0(str_sub(basis_query, end=-2),
-         " AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/",
-         " AND SS.seasonname in ",
-         seizoenen_query,
-         " AND L.LocationWVNaam in ",
-         telzones_query,
-         ";"
-  )
-
-con <- connect_inbo_dbase("W0004_00_Waterbirds")
-waterbirds_sigma_zeeschelde <- 
-  dbGetQuery(con,
-             query)
-dbDisconnect(con)
-
-waterbirds_sigma_zeeschelde <- waterbirds_sigma_zeeschelde %>% 
-  mutate(Analyseset = "SIGMA_ZSCH_MIDMA") 
-
-Waterbirds_bt_zr_sigma_sigmazs <-
-  Waterbirds_bt_zr_sigma %>% 
-  bind_rows(waterbirds_sigma_zeeschelde)
-
-#### sigma estuariene gebieden - GGG en ontpolderingen
-
-telzones_sigma_estuarien <- 
-  gebiedsgroepenSigma %>%
-  filter(gebiedsgroep == "GGG" )
-  
-      pull(gebiedsnaam) 
-
-
-telzones_query <-
-  paste0("'", telzones_sigma_estuarien, "'", collapse = ",") %>% 
-  paste0("(", ., ")")
-
-query <-
-  paste0(str_sub(basis_query, end=-2),
-         " AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/",
-         " AND SS.seasonname in ",
-         seizoenen_query,
-         " AND L.LocationWVNaam in ",
-         telzones_query,
-         ";"
-  )
-
-con <- connect_inbo_dbase("W0004_00_Waterbirds")
-waterbirds_sigma_zeeschelde <- 
-  dbGetQuery(con,
-             query)
-dbDisconnect(con)
-
-waterbirds_sigma_zeeschelde <- waterbirds_sigma_zeeschelde %>% 
-  mutate(Analyseset = "SIGMA_ZSCH_MIDMA") 
-
-Waterbirds_bt_zr_sigma_sigmazs <-
-  Waterbirds_bt_zr_sigma %>% 
-  bind_rows(waterbirds_sigma_zeeschelde)
 
 ```
 
@@ -596,44 +531,44 @@ dbDisconnect(con)
 waterbirds_vallei <- waterbirds_vallei %>% 
   mutate(Analyseset = "VALLEI_MIDMA") 
 
-Waterbirds_bt_zr_sigma_sigmazs_vallei <-
-  Waterbirds_bt_zr_sigma_sigmazs %>% 
+Waterbirds_bt_zr_sigma_vallei <-
+  Waterbirds_bt_zr_sigma %>% 
   bind_rows(waterbirds_vallei)
 
 ####
 
-telzones_vallei_zeeschelde <- 
-  gebiedsgroepenVallei_zeeschelde %>% 
-      pull(gebiedsnaam) 
-
-telzones_query <-
-  paste0("'", telzones_vallei_zeeschelde, "'", collapse = ",") %>% 
-  paste0("(", ., ")")
-
-query <-
-  paste0(str_sub(basis_query, end=-2),
-         " AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/",
-         " AND SS.seasonname in ",
-         seizoenen_query,
-         " AND L.LocationWVNaam in ",
-         telzones_query,
-         ";"
-  )
-
-con <- connect_inbo_dbase("W0004_00_Waterbirds")
-waterbirds_vallei_zeeschelde <- 
-  dbGetQuery(con,
-             query)
-dbDisconnect(con)
-
-waterbirds_vallei_zeeschelde <- waterbirds_vallei_zeeschelde %>% 
-  mutate(Analyseset = "VALLEI_ZSCH_MIDMA") 
-
-Waterbirds_bt_zr_sigma_sigmazs_vallei_valleizs <-
-  Waterbirds_bt_zr_sigma_sigmazs_vallei %>% 
-  bind_rows(waterbirds_vallei_zeeschelde)
-
-Waterbirds <- Waterbirds_bt_zr_sigma_sigmazs_vallei_valleizs
+# telzones_vallei_zeeschelde <- 
+#   gebiedsgroepenVallei_zeeschelde %>% 
+#       pull(gebiedsnaam) 
+# 
+# telzones_query <-
+#   paste0("'", telzones_vallei_zeeschelde, "'", collapse = ",") %>% 
+#   paste0("(", ., ")")
+# 
+# query <-
+#   paste0(str_sub(basis_query, end=-2),
+#          " AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/",
+#          " AND SS.seasonname in ",
+#          seizoenen_query,
+#          " AND L.LocationWVNaam in ",
+#          telzones_query,
+#          ";"
+#   )
+# 
+# con <- connect_inbo_dbase("W0004_00_Waterbirds")
+# waterbirds_vallei_zeeschelde <- 
+#   dbGetQuery(con,
+#              query)
+# dbDisconnect(con)
+# 
+# waterbirds_vallei_zeeschelde <- waterbirds_vallei_zeeschelde %>% 
+#   mutate(Analyseset = "VALLEI_ZSCH_MIDMA") 
+# 
+# Waterbirds_bt_zr_sigma_sigmazs_vallei_valleizs <-
+#   Waterbirds_bt_zr_sigma_sigmazs_vallei %>% 
+#   bind_rows(waterbirds_vallei_zeeschelde)
+# 
+Waterbirds <- Waterbirds_bt_zr_sigma_vallei
 
 ```
 
