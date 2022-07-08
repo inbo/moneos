@@ -50,13 +50,6 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 ```
 
 
-```{r excel sheets}
-
-sheets <- NULL
-
-```
-
-
 ```{r sleutelsoorten_EMSE EMSE rapportage, eval=FALSE}
 
 sleutelsoorten_EMSE <-
@@ -312,6 +305,13 @@ setdiff(soorten_vis, soortenlijst %>%  filter(inEMSE) %>% pull(soort))
 
 ```{r}
 
+# tst <-
+#   data_ankerkuil %>%
+#   filter(aantal > 0) %>%
+#   filter(jaar > laatste_jaar - 5) %>%
+#   distinct(soort, wetensch_naam, inEMSE, in_indeling, salgroep, dieet, indeling) %>% 
+#   filter(!inEMSE)
+
 soortenlijst_check <-
   soortenlijst %>% 
   mutate(salgroep_detail = salgroep,
@@ -375,6 +375,7 @@ data_ankerkuil %>%
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
 
 data_ankerkuil %>%
+  # filter(jaar > laatste_jaar - 5) %>%
   group_by(jaar, seizoen, locatie, soort, inEMSE, in_indeling) %>%
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
   ungroup() %>%
@@ -382,16 +383,55 @@ data_ankerkuil %>%
   summarise(`N>0` = sum(aantal > 0, na.rm = TRUE)) %>%
   ungroup() %>%
   filter(`N>0` > 0) %>%
+  mutate(inEMSE = as.character(inEMSE),
+         inEMSE = recode(inEMSE, `TRUE` = "in EMSE soortenlijst", `FALSE` = "niet in EMSE soortenlijst"),
+         in_indeling = as.character(in_indeling),
+         in_indeling = recode(in_indeling, `TRUE` = "in EMSE indeling", `FALSE` = "niet in EMSE indeling")) %>%
   arrange(`N>0`, soort) %>%
   ggplot(aes(fct_inorder(soort), `N>0`+0.1, fill = in_indeling)) +
   geom_col() +
   scale_y_log10(breaks = c(1,3,10,30,100,300)) +
-  scale_fill_brewer(palette = "Set1") +
+  scale_fill_brewer(palette = "Set1", direction = -1) +
   labs(x = "soort",
-       y = "aantal afvissingen waarbij N>0") +
-  facet_wrap(~inEMSE, scales = "free_x", labeller = "label_both") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+       y = "aantal afvissingen waarbij N>0",
+       fill = NULL) +
+  facet_wrap(~inEMSE, scales = "free_x") +
+  # theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1),
+        legend.position = "top")
+
+ggsave(str_c(pad_figuren, "EMSE_controle.jpg"), width = 10, height = 5)
+
+
+data_ankerkuil %>%
+  mutate(indeling = case_when(
+    salgroep == "mariene en estuariene soorten" & dieet == "omnivoren" ~ "Mar/Est -- Omn",
+    TRUE ~ indeling),
+    in_indeling = !is.na(indeling)) %>% 
+  group_by(jaar, seizoen, locatie, soort, inEMSE, in_indeling) %>%
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(soort, inEMSE, in_indeling) %>%
+  summarise(`N>0` = sum(aantal > 0, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(`N>0` > 0) %>%
+  mutate(inEMSE = as.character(inEMSE),
+         inEMSE = recode(inEMSE, `TRUE` = "in EMSE soortenlijst", `FALSE` = "niet in EMSE soortenlijst"),
+         in_indeling = as.character(in_indeling),
+         in_indeling = recode(in_indeling, `TRUE` = "in EMSE indeling", `FALSE` = "niet in EMSE indeling")) %>%
+  arrange(`N>0`, soort) %>%
+  ggplot(aes(fct_inorder(soort), `N>0`+0.1, fill = in_indeling)) +
+  geom_col() +
+  scale_y_log10(breaks = c(1,3,10,30,100,300)) +
+  scale_fill_brewer(palette = "Set1", direction = -1) +
+  labs(x = "soort",
+       y = "aantal afvissingen waarbij N>0",
+       fill = NULL) +
+  facet_wrap(~inEMSE, scales = "free_x") +
+  # theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1),
+        legend.position = "top")
+
 
 data_ankerkuil %>%
   mutate(`EMSE - Indeling` = str_c(inEMSE, in_indeling, sep = " - ")) %>% 

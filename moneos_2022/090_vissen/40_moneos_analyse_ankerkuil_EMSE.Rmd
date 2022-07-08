@@ -470,15 +470,36 @@ tabel_aantal_soorten <-
   data_ankerkuil %>% 
   filter(jaar == laatste_jaar,
          aantal > 0) %>%
-  group_by(seizoen, locatie) %>%
-  summarise(soorten = as.character(n())) %>% 
-  ungroup() %>% 
-  pivot_wider(locatie, names_from = seizoen, values_from = soorten, values_fill = "")
+  distinct(seizoen, locatie, soort) %>% 
+  count(seizoen, locatie, name = "soorten") %>% 
+  bind_rows(data_ankerkuil %>% 
+              filter(jaar == laatste_jaar,
+                     aantal > 0) %>% 
+              distinct(locatie, soort) %>% 
+              count(locatie, name = "soorten") %>% 
+              mutate(seizoen = "totaal over seizoenen")) %>% 
+  bind_rows(data_ankerkuil %>% 
+              filter(jaar == laatste_jaar,
+                     aantal > 0) %>% 
+              distinct(seizoen, soort) %>% 
+              count(seizoen, name = "soorten") %>% 
+              mutate(locatie = "totaal over locaties")) %>% 
+  bind_rows(data_ankerkuil %>% 
+              filter(jaar == laatste_jaar,
+                     aantal > 0) %>% 
+              distinct(soort) %>% 
+              count(name = "soorten") %>% 
+              mutate(seizoen = "totaal over seizoenen",
+                     locatie = "totaal over locaties")) %>% 
+  mutate(seizoen = factor(seizoen, levels = c("voorjaar", "zomer", "najaar", "totaal over seizoenen")),
+         locatie = factor(locatie, levels = c("Doel", "Antwerpen", "Steendorp", "Branst", "totaal over locaties"))) %>% 
+  pivot_wider(locatie, names_from = seizoen, values_from = soorten)
 
 knitr::kable(tabel_aantal_soorten)
 
 sheets[["aantal_soorten"]] <- tabel_aantal_soorten
   
+
 
 # write_xlsx(list(gevangen_soorten = tabel_gevangen_soorten),
 #            paste0(pad_tabellen, "tabellen_vissen.xlsx"))
@@ -1076,10 +1097,10 @@ gemiddeld_diversiteit_EMSE %>%
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_y_log10() +
   labs(title = "estuariene soorten en mariene migranten",
-       y = "N -- D") +
+       y = "S -- D") +
   facet_grid(indeling ~ scheldezone, scales = "free_y")
 
-ggsave(paste0(pad_figuren, "diversiteit_N_D_EMSE_marien.jpg"), width = 7, height = 6)
+ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_marien.jpg"), width = 7, height = 6)
 
 gemiddeld_diversiteit_EMSE %>% 
   filter(str_detect(salgroep, "diadr")) %>% 
@@ -1098,10 +1119,10 @@ gemiddeld_diversiteit_EMSE %>%
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_y_log10() +
   labs(title = "diadrome soorten",
-       y = "N -- D") +
+       y = "S -- D") +
   facet_grid(indeling ~ scheldezone, scales = "free_y")
 
-ggsave(paste0(pad_figuren, "diversiteit_N_D_EMSE_diadroom.jpg"), width = 7, height = 5)
+ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_diadroom.jpg"), width = 7, height = 5)
 
 gemiddeld_diversiteit_EMSE %>% 
   filter(str_detect(salgroep, "zoet")) %>% 
@@ -1120,10 +1141,10 @@ gemiddeld_diversiteit_EMSE %>%
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_y_log10() +
   labs(title = "zoetwater soorten",
-       y = "N -- D") +
+       y = "S -- D") +
   facet_grid(indeling ~ scheldezone, scales = "free_y")
 
-ggsave(paste0(pad_figuren, "diversiteit_N_D_EMSE_zoet.jpg"), width = 7, height = 5)
+ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_zoet.jpg"), width = 7, height = 5)
 
 ```
 

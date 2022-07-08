@@ -66,7 +66,7 @@ De visgemeenschap in de Zeeschelde wordt jaarlijks onderzocht, niet alleen omwil
 
 Sinds 2011 is er naast de reguliere fuikvisserij (gestart in 2002 (Maes et al., 2003a)) ook ankerkuilvisserij in de Zeeschelde (Goudswaard & Breine, 2011). Dat gebeurde in eerste instantie in Doel en Antwerpen. In 2012 voegden we er nog twee stroomopwaarts gelegen locaties, Steendorp en Branst, aan toe (Breine & Van Thuyne, 2012) om zo langs de volledige saliniteitsgradiënt te monitoren. Ankerkuilvisserij is goed toepasbaar in de waterkolom, fuikvisserij eerder nabij de bodem. Beide methodes zijn complementair en geven samen een vollediger beeld van de visgemeenschappen in de Zeeschelde voor de verschillende saliniteitszones. Bovenop de resultaten van het reguliere INBO meetnet krijgen we extra informatie uit de resultaten van een vrijwilligersmeetnet (hier niet gerapporteerd).
 
-INBO fuikvangstgegevens zijn beschikbaar via de VIS databank (<https://vis.inbo.be>) (Brosens et al., 2015). Vrijwilligersdata en ankerkuilgegevens worden momenteel nog afzonderlijk opgeslaan tot er een aanpassing kan gebeuren aan de databank. Alle data werden aangeleverd als xlsx-bestanden aan de Scheldemonitor.
+INBO fuikvangstgegevens zijn beschikbaar via de VIS databank (<https://vis.inbo.be>) (Brosens et al., 2015). Vrijwilligersdata en ankerkuilgegevens worden momenteel nog afzonderlijk opgeslagen tot er een aanpassing kan gebeuren aan de databank. Alle data werden aangeleverd als xlsx-bestanden aan de Scheldemonitor.
 
 ## Materiaal en Methode
 
@@ -97,16 +97,59 @@ knitr::include_graphics(paste0(pad_figuren, "locaties_ankerkuil.jpg"))
 
 ### Fuikvisserij
 
+<!--# aan te vullen -->
+
 ### EMSE evaluatie
 
+De resultaten van ankerkuil en fuikvisserij worden gerapporteerd volgens EMSE (Evaluatie Methodiek Schelde Estuarium; XXXREF). Hierbij worden de waargenomen soortenonderverdeeld in groepen op basis van hun saliniteits- en dieetvoorkeur. De indeling is als volgt:
+
+-   Diadrome soorten
+
+    -   Benthivoor
+
+    -   Piscivoor
+
+    -   Omnivoor
+
+-   Estuariene soorten en mariene migranten
+
+    -   Benthivoor
+
+    -   Piscivoor
+
+    -   Omnivoor **\***
+
+    -   Planktivoor
+
+-   Zoetwatersoorten
+
+    -   Benthivoor
+
+    -   Piscivoor
+
+    -   Omnivoor
+
+**\*** Merk op dat binnen de estuariene soorten en mariene migranten de omnivoren niet zijn opgenomen in de originele EMSE indeling (zie XXXREF). Omdat dit echter een belangrijke groep van soorten uitmaakt in de Zeeschelde wordt deze groep wel opgenomen in de MONEOS rapportage.
+
+Een overzicht van de historisch gevangen soorten in de Zeeschelde (vanaf 2012) <!--# aanpassen voor fuiken --> met aanduiding van de bovenstaande indeling wordt gegeven in Tabel \@ref(tab:090-tabel-EMSE-soorten) in bijlage. Voor elk van de groepen in de indeling wordt per jaar het totaal aantal gevangen individuen, de totale biomassa, het aantal soorten en de Shannon diversiteit gerapporteerd. Dit per Scheldezone (EMSE niveau 3) en gemiddeld over de bemonsterde seizoenen (voorjaar, zomer, najaar).
+
+De Shannon diversiteit *D* wordt berekend als:
+
+$$
+D = exp(-∑^S_i p_i ln (p_i))
+$$
+
+waarbij *S* het aantal soorten in de groep is en *p~i~* relatieve abundantie van soort *i*. *D* neemt een waarde aan tussen 1 en *S*, afhankelijk van de gelijkheid (evenness) in abundantie van de soorten (bij *D* = *S* hebben alle soorten in de groep een gelijke abundantie).
+
+Naast de algemene trends per soortengroep wordt er ook gekeken naar de trends van een aantal sleutelsoorten. Deze soorten zijn zo geselecteerd dat ze een goede vertegenwoordiging geven van de verschillende saliniteits- en dieetvoorkeuren (zie bijlage Tabel \@ref(tab:090-tabel-EMSE-soorten)) en zijn belangrijke indicatoren voor het ecologisch functioneren van het systeem.
 
 ## Resultaten
 
-### Ankerkuil
+### Soortenrijkdom in `r laatste_jaar`
 
-#### Diversiteit in het laatste jaar
+#### Ankerkuil
 
-We vingen `r aantal_soorten_laatste_jaar` vissoorten in `r laatste_jaar`. Een overzicht van de soorten gevangen in `r laatste_jaar` is weergegeven in Tabel \@ref(tab:090-tabel-overzicht-soorten). Ten opzichte van `r laatste_jaar - 1` vingen we in het najaar van `r laatste_jaar` iets meer soorten, terwijl er in de zomer ongeveer evenveel soorten werden gevangen als in `r laatste_jaar - 1` (Tabel \@ref(tab:090-tabel-aantal-soorten)). Over het algemeen worden er in de zomer meestal het laagste aantal soorten gevangen. Het totaal aantal soorten jaarlijks gevangen in de periode 2012-`r laatste_jaar` varieert rond de 40. In `r laatste_jaar` werden er in total evenwel minder soorten gevangen dan in de vorige jaren (Merk wel op dat er voor `r laatste_jaar` geen gegevens zijn voor het voorjaar). In de mesohaliene zone (Doel) wordt jaarlijks bijna altijd het grootste aantal soorten gevangen. Verder stroomopwaarts daalt het aantal gevangen soorten. Er bestaat wel een jaarlijkse variatie eigen aan het dynamisch systeem van de Zeeschelde. In `r laatste_jaar`, bijvoorbeeld, worden er in Antwerpen meer soorten gevangen dan in Doel (Tabel \@ref(tab:090-tabel-aantal-soorten)).
+We vingen `r aantal_soorten_laatste_jaar` vissoorten in `r laatste_jaar`. Een overzicht van de soorten gevangen in `r laatste_jaar` is weergegeven in Tabel \@ref(tab:090-tabel-overzicht-soorten). In de zone met sterke saliniteitsgradiënt (Doel en Antwerpen) werden er meer soorten gevangen dan in de oligohaliene (Steendorp) en zoetwater (Branst) zone (Tabel \@ref(tab:090-tabel-aantal-soorten)). Historisch worden er in deze zone inderdaad meer soorten gevangen en neemt het aantal soorten af naar de oligohaliene en zoete zone (Figuur \@ref(fig:090-figuur-aantal-soorten-locatie-historisch)). Het totaal aantal soorten jaarlijks gevangen in de Zeeschelde in de periode 2012-`r laatste_jaar` varieert rond de 40 (Figuur \@ref(fig:090-figuur-aantal-soorten-historisch)). Gedurende de periode 2017-2020 was er echter een negatieve trend in het aantal soorten, maar in `r laatste_jaar` lijkt de soortenrijkdom zich te herstellen.
 
 ```{r 090-tabel-overzicht-soorten}
 
@@ -122,7 +165,7 @@ cap_gevangen_soorten <-
 tabel_gevangen_soorten  %>% 
   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
   mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
-  knitr::kable(#booktabs = TRUE,
+  knitr::kable(booktabs = TRUE,
                caption = cap_gevangen_soorten,
                align = c("l", rep("c", 12)),
                col.names = c("", rep(c("Doel", "Antw.", "Steend.", "Branst"), 3)),
@@ -162,11 +205,41 @@ tabel_aantal_soorten  %>%
 
 <br/>
 
-#### Relatieve soortensamenstelling dominante soorten in `r laatste_jaar`
+```{r 090-figuur-aantal-soorten-locatie-historisch, fig.cap=cap_aantal_soorten_locatie, out.width="110%"}
 
-We analyseren alle vangstgegevens van `r laatste_jaar`, inclusief spiering. Soorten met een relatieve bijdrage kleiner dan 5% worden als rest samengenomen. Uit deze analyse blijkt dat de relatieve soortenabundantie zowel seizoenaal als ruimtelijk verschilt (Figuur \@ref(fig:090-figuur-relatief-aantal)). In de zomer `r laatste_jaar` vingen we in Doel hoofdzakelijk haring, met ook een belangrijke bijdrage van spiering en sprot. In het najaar nam het aandeel spiering nog toe. In de andere locaties werd in de zomer hoofdzakelijk spiering gevangen. In Antwerpen was er ook nog een belangrijk aandeel brakwatergrondel. In het najaar nam het aandeel van grondels (brakwatergrondel en dikkopje) sterk toe in Steendorp en Branst, terwijl het aandeel spiering afnam. In Antwerpen blijft spiering de dominante soort in het najaar. Verder zien we een volledige dominantie van spiering.
+cap_aantal_soorten_locatie <-
+  str_c("Het aantal gevangen soorten in de Zeeschelde per locatie tijdens de ankerkuilcampagnes in de Zeeschelde in de periode 2012-",laatste_jaar,". Soorten gepooled over de verschillende seizoenen.")
 
-De relatieve biomassa van de verschillende soorten varieert zowel seizoenaal als spatiaal (Figuur \@ref(fig:090-figuur-relatieve-biomassa)), maar op enkele uitzonderingen na (zomer Doel) is het leeuwendeel van de biomassa steeds spiering. In Doel bestaat vooral in de zomer een groot deel van de biomassa uit haring. Verder kan, afhankelijk van seizoen en locatie, ook brakwatergrondel een belangrijk deel (15%-20%) deel van de biomassa innemen.
+knitr::include_graphics(paste0(pad_figuren, "aantal_soorten_locatie.jpg"))
+
+```
+
+<br/>
+
+```{r 090-figuur-aantal-soorten-historisch, fig.cap=cap_aantal_soorten, out.width="90%"}
+
+cap_aantal_soorten <-
+  str_c("Het aantal gevangen soorten in de Zeeschelde tijdens de ankerkuilcampagnes in de Zeeschelde in de periode 2012-",laatste_jaar,". Soorten gepooled over de verschillende seizoenen.")
+
+knitr::include_graphics(paste0(pad_figuren, "aantal_soorten_totaal.jpg"))
+
+```
+
+<br/>
+
+#### Fuikvangsten
+
+<!--# aan te vullen -->
+
+### Relatieve soortensamenstelling van de meest dominante soorten in `r laatste_jaar`
+
+We analyseren alle vangstgegevens van `r laatste_jaar`, inclusief spiering. Soorten met een relatieve bijdrage kleiner dan 10% worden als rest samengenomen.
+
+#### Ankerkuil
+
+Uit deze analyse blijkt dat de relatieve soortenabundantie zowel seizoenaal als ruimtelijk verschilt (Figuur \@ref(fig:090-figuur-relatief-aantal)). In het voorjaar van `r laatste_jaar` vingen we in Doel en Antwerpen (zone met sterke saliniteitsgradiënt) en Steendorp (oligohalien) hoofdzakelijk haring. in Branst (zoetwater) worden de vangstaantallen gedomineerd door brakwatergrondel. In alle locaties is er ook een belangrijke bijdrage van aantal spiering, die toeneemt naar de zomer en het najaar. In de zomer is er in Steendorp en Branst zelfs zo goed als een volledige dominantie van spiering.
+
+Uitgedrukt in biomassa is de dominantie van spiering nog meer uitgesproken dan voor de aantallen met ook in het voorjaar een duidelijke dominantie in Antwerpen en Steendorp (Figuur \@ref(fig:090-figuur-relatieve-biomassa)). Enkel in het voorjaar in Branst komen andere soorten naar voor wat betreft biomassa dan voor aantallen. In Branst is er in het voorjaar namelijk een grote bijdrage van fint en snoekbaars in de biomassa.
 
 ```{r 090-figuur-relatief-aantal, fig.cap=cap_relatief_aantal, out.width="100%"}
 
@@ -190,7 +263,34 @@ knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_gevangen_individ
 
 <br/>
 
-#### Densiteit, biomassa en diversiteit EMSE
+#### Fuikvangsten
+
+<!--# aan te vullen -->
+
+### Densiteit, biomassa en diversiteit binnen EMSE
+
+#### EMSE methodiek in de Zeeschelde
+
+Een overzicht van de waargenomen soorten in de ankerkuilvangsten vanaf 2012 is weergegeven in bijlage in Tabel \@ref(tab:090-tabel-EMSE-soorten). Deze lijst van 70 soorten omvat ook 31 soorten die niet in de opgegeven soortenlijst voor het Schelde estuarium uit de EMSE methodiek staan (zie XXXREF). (merk op dat ook enkele sleutelsoorten uit de EMSE methodiek niet voorkomen in de algemene EMSE soortenlijst). Van deze soorten 31 soorten komen er 26 nog steeds recent (de laatste vijf jaar) voor. Deze soorten zijn mee opgenomen in de huidige rapportage.
+
+Daarnaast is er onder de estuariene soorten en mariene migranten een belangrijk aandeel aan omnivore soorten (Tabel \@ref(tab:090-tabel-EMSE-soorten)). Deze groep is echter niet opgenomen in de EMSE soortenindeling volgens saliniteits- en dieetvoorkeur waarover dient gerapporteerd te worden (Figuur \@ref(fig:090-figuur-controle-EMSE)). Aangezien dit een belangrijke groep is in de Zeeschelde wordt deze hier wel meegenomen in de rapportage.
+
+```{r 090-figuur-controle-EMSE, fig.cap=cap_controle_EMSE, out.width="110%"}
+
+cap_controle_EMSE <-
+  str_c("weergave van de waargenomen soorten in afvissingen met ankerkuilen in de Zeeschelde in de periode 2012-", laatste_jaar, ", met aanduiding van het voorkomen in de EMSE soortenlijst en het voorkomen in de EMSE soortenindeling op basis van saliniteits- en dieetvoorkeur (zoals opgegeven in XXXREF)")
+
+knitr::include_graphics(paste0(pad_figuren, "EMSE_controle.jpg"))
+
+```
+
+<br/>
+
+<!--# aanvullen voor fuikvangsten -->
+
+#### Algemene trends per saliniteits- en dieetvoorkeur
+
+##### Ankerkuil
 
 [Estuariene soorten en mariene migranten]{.underline}
 
@@ -221,7 +321,7 @@ knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMS
 diversiteit_marien_EMSE <-
   str_c("Aantal soorten en diversiteit van estuariene soorten en mariene migranten in de Zeeschelde in de periode 2012-",laatste_jaar,". Jaargemiddelde diversiteit per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
 
-knitr::include_graphics(paste0(pad_figuren, "diversiteit_N_D_EMSE_marien.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "diversiteit_S_D_EMSE_marien.jpg"))
 
 ```
 
@@ -256,7 +356,7 @@ knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMS
 diversiteit_diadroom_EMSE <-
   str_c("Aantal soorten en diversiteit  van diadrome soorten in de Zeeschelde in de periode 2012-",laatste_jaar,". Jaargemiddelde diversiteit per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
 
-knitr::include_graphics(paste0(pad_figuren, "diversiteit_N_D_EMSE_diadroom.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "diversiteit_S_D_EMSE_diadroom.jpg"))
 
 ```
 
@@ -291,15 +391,21 @@ knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMS
 diversiteit_zoetwater_EMSE <-
   str_c("Aantal soorten en diversiteit van zoetwater soorten in de Zeeschelde in de periode 2012-",laatste_jaar,". Jaargemiddelde diversiteit per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
 
-knitr::include_graphics(paste0(pad_figuren, "diversiteit_N_D_EMSE_zoet.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "diversiteit_S_D_EMSE_zoet.jpg"))
 
 ```
 
 <br/>
 
+##### Fuikvissererij
+
+<!--# aan te vullen -->
+
 #### Trends in sleutelsoorten
 
 Een aantal soorten beschouwen we als sleutelsoorten in de Zeeschelde omdat ze informatie geven over één of meerdere ecologische functies van het estuarium. De diadrome sleutelsoorten zijn: fint, spiering, bot, paling en rivierprik. Ze geven informatie over het gebruik van het estuarium als migratiekanaal. Fint- en spieringvangsten geven daarenboven informatie over het gebruik van het estuarium als paaihabitat. Mariene sleutelsoorten zijn haring, zeebaars, tong en ansjovis. Hun aanwezigheid toont aan dat het estuarium als opgroeigebied (kraamkamer) wordt gebruikt. De ecologische eigenschappen van een aantal soorten worden hier kort besproken.
+
+##### Ankerkuil
 
 [Estuariene soorten en mariene migranten]{.underline}
 
@@ -339,6 +445,10 @@ knitr::include_graphics(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.
 ```
 
 <br/>
+
+##### Fuikvissererij
+
+<!--# aan te vullen -->
 
 ## Referenties
 
@@ -395,3 +505,42 @@ Stevens M., Van den Neucker T., Mouton A., Buysse D., Martens S., Baeyens R., Ja
 Van Der Meulen D., Walsh C., Taylor M. & Gray C. (2013). Habitat requirements and spawning strategy of an estuarine-dependent fish, Percalates colonorum. Marine and Freshwater Research. 65 (3): 218-227.
 
 Verreycken H., Galle L., Lambeens I., Maes Y., Terrie T., Van den Berrgh E. & Breine J. (2019). First record of the naked goby, *Gobiosoma bosc* (Actinopergygii: Perciformes: Gobidae), from the Zeeschelde, Belgium. Acta Ichthyologica Piscatoria, 49(3): 291-294.
+
+## Bijlage
+
+```{r 090-tabel-EMSE-soorten}
+
+soortenlijst <- 
+  read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"), 
+            sheet = "EMSE") %>% 
+  select(-inEMSE, -exoot, -opmerking) %>% 
+  rename(`Nederlandse naam` = soort, `Wetensch. naam` = wetensch_naam, Saliniteitsgroep = salgroep, Dieet = dieet)
+
+sleutelsoorten_EMSE <-
+  read_xlsx(str_c(pad_data, "sleutelsoorten EMSE.xlsx"))
+
+cap_soortenlijst <-
+  paste0("Overzicht van de waargenomen vissoorten tijdens de ankerkuilcampagnes in de Zeeschelde in de periode 2012-",
+         laatste_jaar,
+         ". Soorten in vet en cursief geven de sleutelsoorten weer uit de EMSE evaluatie.")
+
+soortenlijst %>% 
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
+  mutate(across(c(-`Nederlandse naam`), ~cell_spec(., color = "black"))) %>%
+  # mutate(across(everything(), ~cell_spec(., , bold = TRUE, italic = TRUE, color = "black", background = "lightgreen"))) %>%
+  mutate(`Nederlandse naam` =
+           if_else(`Nederlandse naam` %in% sleutelsoorten_EMSE$soort,
+                   cell_spec(`Nederlandse naam`, bold = TRUE, italic = TRUE, color = "black"),
+                   cell_spec(`Nederlandse naam`, color = "black"))) %>%
+  knitr::kable(booktabs = TRUE,
+               longtable = TRUE, 
+               caption = cap_soortenlijst,
+               align = rep("l", 4),
+               escape = FALSE) %>%
+  kable_styling("striped",
+                latex_options = c("striped"),
+                font_size = 10)
+
+```
+
+<br/>
