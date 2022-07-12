@@ -144,9 +144,22 @@ knitr::kable(gebiedsgroepenSigma)
 gebiedsgroepenSigma_zeeschelde <- gebiedsgroepenall %>%
   filter(gebiedsgroeptype == "Sigma-gebieden") %>%
   filter(rivier == "Zeeschelde") %>% 
-  mutate(gebiedscode = as.character(gebiedscode))
+  mutate(gebiedscode = as.character(gebiedscode)) %>% 
+  mutate(niveau3 = case_when(
+    gebiedsgroep_code == "MH" ~ "Saliniteitsgradient",
+    gebiedsgroep_code == "OH" ~ "Oligohalien",
+    gebiedsgroep_code == "ZLVT"~ "Zoet lang verblijf",
+    gebiedsgroep_code == "ZKVT"~ "Zoet kort verblijf",
+    gebiedsgroep_code == "Durme"~ "Durme",
+    gebiedsgroep_code == "Rupel"~ "Rupel",
+        TRUE ~ "nvt"
+  ))
 
 knitr::kable(gebiedsgroepenSigma_zeeschelde)
+
+gebiedsgroepenSigma_zeeschelde %>% 
+  write_delim(paste0(pad_tabellen, "gebiedsgroepenSigma_zeeschelde.csv"),
+              delim = ";")
 
 ##vergelijking tussen de files van Wim en Gunther
 # check <- Sigma2 %>%
@@ -257,6 +270,7 @@ overzicht_tellingen %>%
 
 ```
 
+#### teldata uit watervogeldatabank halen
  
 ```{r basis-query bevraging Watervogeldatabank}
 
@@ -496,7 +510,7 @@ Waterbirds_bt_zr_sigma <-
   WaterbirdsBT_ZR %>% 
   bind_rows(waterbirds_sigma)
 
-######
+
 
 
 
@@ -572,6 +586,7 @@ Waterbirds <- Waterbirds_bt_zr_sigma_vallei
 
 ```
 
+#### volledigheid van de tellingen controleren
 
 ```{r basis-query-tellingen}
 
@@ -742,19 +757,39 @@ overzicht_tellingen %>%
   group_by(gebiedscode, gebied, gebiedsgroep_code) %>% 
   count(telseizoen, sort= TRUE) %>% 
   filter (n < 6) # gebieden met minder dan 6 tellingen vertonen ontbrekende wintertellingen
-  
+
+# overzicht_tellingen %>% 
+#   filter (telseizoen == "2021/22") %>% 
+#   filter(month(teldatum) %in% c(10, 11, 12, 1, 2, 3)) %>% 
+#   group_by(gebiedscode, gebied, gebiedsgroep_code) %>% 
+#   count(telseizoen, sort= TRUE) %>% 
+#   filter (n < 6)  # gebieden met minder dan 6 tellingen vertonen ontbrekende wintertellingen
+#   # pull(gebiedscode)
 
 
-overzicht_tellingen %>% 
-  filter (telseizoen == "2020/21") %>% 
-  filter (gebiedscode == 2050810) %>% 
-  select(gebied, teldatum) %>% #kijk alleen naar teldatum want telling en tellingsortorder kloppen niet in databank
+# test <-overzicht_tellingen %>%
+#   mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>%
+#   mutate(jaar = teldatum %>%
+#            ymd() %>%
+#            year(),
+#          maand = teldatum %>%
+#            ymd() %>%
+#            month()) %>%
+#   filter (telseizoen == "2021/22") %>%
+#   filter (gebiedscode == ontbrekendetellingen) %>%
+#   # select(gebied, teldatum) %>% #kijk alleen naar teldatum want telling en tellingsortorder kloppen niet in databank
+#   arrange(teldatum)
+
+overzicht_tellingen %>%
+   filter (telseizoen == "2021/22") %>% 
+  filter (gebiedscode == "3153801") %>% 
+  select(gebiedscode, gebied, teldatum) %>% #kijk alleen naar teldatum want telling en tellingsortorder kloppen niet in databank
   arrange(teldatum)
 
 
 ```
 
-
+#### correcties op de opgehaalde data uit de watervogeldatabank
 
 ```{r correcties-WaterbirdsBT}
 
