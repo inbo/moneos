@@ -741,7 +741,8 @@ data_watervogels %>%
   filter(maand %in% c(10:12, 1:3)) %>% 
   filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
   mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
-  # filter(gebiedsgroep != "Getijdedurme" | telseizoen1 > 2012) %>% #Het telgebied oude durme en durme was vroeger samengeteld - dat is een probleem voor de estuariene evaluatie vn de watervogels
+  filter(telseizoen1 > 2008) %>% 
+  filter(gebiedsgroep != "Getijdedurme" | telseizoen1 > 2012) %>% #Het telgebied oude durme en durme was vroeger samengeteld - dat is een probleem voor de estuariene evaluatie vn de watervogels
     group_by(telseizoen, niveau3, maand) %>% 
   summarise(som = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>%
@@ -755,7 +756,7 @@ data_watervogels %>%
              ncol = 2, scales = "free") +
   theme(axis.text.x = element_text(angle = 90))
 
-ggsave(paste0(pad_figuren, "100_figuur_wintermaxima_nivaue3.jpg"))
+ggsave(paste0(pad_figuren, "100_figuur_wintermaxima_niveau3.jpg"))
 
 
 ```
@@ -1592,18 +1593,36 @@ ggsave(paste0(pad_figuren, "100-figuur_S-IHD_Kleinezwaan.jpg"))
 ## dataset transformeren naar wijd formaat met kolom per jaar en data niveau 3 per soort
 ## obv analyseset boottelling en zijrivieren - estuariene data
 ## centreren op 2009
+## index_1 op basis van totale vogelaantallen - het is beter om te kijken naar de maxima (minder gevoelig als er eens een maand niet geteld is zoals soms voorkomt langsheen zijrivieren)
+
+# data_watervogels_index <- data_watervogels %>%
+#   filter(taxongroepcode != "S" & taxongroepcode != "MS") %>%
+#   filter(maand %in% c(10:12, 1:3)) %>%
+#   group_by(niveau3, telseizoen,telseizoen1) %>%
+#   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+#   ungroup() %>%
+#   complete(niveau3, 
+#            nesting(telseizoen,telseizoen1),
+#            fill = list(aantal = 0)) %>% 
+#   group_by(niveau3) %>%
+#   mutate(rel_aantal = aantal/aantal[telseizoen1 == 2009]) %>%
+#   ungroup()
+
 
 data_watervogels_index <- data_watervogels %>%
   filter(taxongroepcode != "S" & taxongroepcode != "MS") %>%
   filter(maand %in% c(10:12, 1:3)) %>%
-  group_by(niveau3, telseizoen,telseizoen1) %>%
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  group_by(niveau3, telseizoen1, maand) %>%
+  summarise(maandsom = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>%
+  group_by(niveau3, telseizoen1) %>% 
+  summarise(maxwinter = max(maandsom, na.rm = TRUE)) %>% 
+  ungroup() %>% 
   complete(niveau3, 
-           nesting(telseizoen,telseizoen1),
-           fill = list(aantal = 0)) %>% 
+           nesting(telseizoen1),
+           fill = list(maxwinter = 0)) %>% 
   group_by(niveau3) %>%
-  mutate(rel_aantal = aantal/aantal[telseizoen1 == 2009]) %>%
+  mutate(rel_aantal = maxwinter/maxwinter[telseizoen1 == 2009]) %>%
   ungroup()
 
 ## we willen de verschillen tussen jaren vergelijken met 2009 als referentiejaar (kolom 20)
@@ -1629,51 +1648,28 @@ data_watervogels_index %>%
 
 
 # figuur met gemiddelde over tellingen per seizoen en gebiedsgroep 
-data_watervogels %>%
-  filter(maand %in% c(10:12, 1:3)) %>%
-  mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
-  filter(gebiedsgroep != "Getijdedurme" | telseizoen1 > 2012) %>%
-  filter(telseizoen1 > 2008) %>% 
-  filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
-  group_by(telseizoen, niveau3, rivier) %>%
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  group_by(telseizoen, niveau3) %>%
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  ggplot(aes(ordered(telseizoen), aantal)) +
-  geom_col() + 
-  labs(x = "telseizoen",
-       y = "aantal wintergemiddelde") +
-  facet_wrap(~niveau3,
-             ncol = 2, scales = "free") +
-  theme(axis.text.x = element_text(angle = 90)) 
-  
-
-#ggsave(paste0(pad_figuren, "100_figuur_wintergemiddelde_niveau3.jpg"))
 
 #variant1
 data_watervogels %>% 
   filter(maand %in% c(10:12, 1:3)) %>% 
   mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
+  filter(telseizoen1 > 2008) %>% 
   filter(gebiedsgroep != "Getijdedurme" | telseizoen1 > 2012) %>%
   filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
-    group_by(telseizoen, niveau3, maand) %>% 
+  group_by(telseizoen1, niveau3, maand) %>% 
   summarise(som = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>%
-  group_by(telseizoen, niveau3) %>% 
+  group_by(telseizoen1, niveau3) %>% 
   summarise(aantal = mean(som, na.rm = TRUE)) %>% 
-  ggplot(aes(ordered(telseizoen), aantal)) + 
+  ggplot(aes(ordered(telseizoen1), aantal)) + 
   geom_col() +
-  labs(x = "telseizoen", 
+  labs(x = "winter telseizoen", 
        y = "wintergemiddeld aantal watervogels") +
   facet_wrap(~niveau3,
              ncol = 2, scales = "free") +
   theme(axis.text.x = element_text(angle = 90))
  
-  
-
-ggsave(paste0(pad_figuren, "100_figuur_meanwinter_niveau3.jpg"))
+ ggsave(paste0(pad_figuren, "100_figuur_meanwinter_niveau3.jpg"))
 
 data_watervogels %>% 
   filter(maand %in% c(10:12, 1:3)) %>% 
@@ -1735,7 +1731,7 @@ filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen n
 # figuur met gemiddelde over tellingen per seizoen en zijrivier 
 data_watervogels %>% 
   filter(maand %in% c(10:12, 1:3),
-         rivier %in% c("Dijle", "Rupel", "Zenne")) %>% 
+         rivier %in% c("Dijle", "Zenne")) %>% 
 filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas sinds 1999 geteld
     group_by(rivier,telseizoen, maand) %>% 
    summarise(som = sum(aantal, na.rm = TRUE)) %>% 
@@ -1747,7 +1743,7 @@ filter(taxongroepcode != "S" & taxongroepcode != "MS") %>% #meeuwen en sternen n
   geom_col() +
   labs(x = "telseizoen", 
        y = "gemiddeld per maand aantal watervogels per winterseizoen") +
-  facet_wrap(~rivier) +
+  facet_wrap(~rivier, scales = "free_y") +
   theme(axis.text.x = element_text(angle = 90))
 
 ggsave(paste0(pad_figuren, "100_figuur_aantallen_zijrivieren.jpg"))
