@@ -40,16 +40,7 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
 # aanpassen indien er meta-data zijn
 
-# meta_data <- 
-#   read_delim(paste0(pad_data, "meta_data.csv"),
-#              delim = ";")
-#   
-# for(i in 1:nrow(meta_data)){
-#   ##first extract the object value
-#   tempobj=meta_data$waarde[i]
-#   ##now create a new variable with the original name of the list item
-#   eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
-# }
+laatste_jaar <- 2022
 
 ```
 
@@ -81,7 +72,7 @@ knitr::include_graphics(paste0(pad_figuren, "0_OverzichtskaartMoneosraaien_Zeesc
 
 ## Methode
 
-Een overzicht van de ingemeten raaien wordt gegeven in Tabel \@ref(tab:130-tabel-overzicht-raaien) in \@ref(BL1) Bijlage. De meetcampagnes van de raaien gebeuren meestal op het einde van de winterperiode en zijn dus een weerslag van wat na het voorbije jaar is veranderd. Een raai in februari 2020 ingemeten wordt vergeleken met de hoogtes van het jaar ervoor, waarbij de verandering een gevolg zijn van wat gebeurde in 2019. De metingen gebeuren steeds tijdens een springtijperiode vanaf het schor of de dijk tot bij het plaatselijk laagwater. 's Morgens wordt gestart in het stroomafwaartse deel van de Zeeschelde, daarna wordt met het opkomend tij stroomopwaarts telkens een raai opzocht bij opnieuw het plaatselijk laagwater.\
+Een overzicht van de ingemeten raaien wordt gegeven in Tabel \@ref(tab:130-tabel-overzicht-raaien) in \@ref(BL1) Bijlage. De meetcampagnes van de raaien gebeuren meestal op het einde van de winterperiode en zijn dus een weerslag van wat na het voorbije jaar is veranderd. Een raai in februari `r laatste_jaar` ingemeten wordt vergeleken met de hoogtes van het jaar ervoor, waarbij de verandering een gevolg zijn van wat gebeurde in `r laatste_jaar - 1`. De metingen gebeuren steeds tijdens een springtijperiode vanaf het schor of de dijk tot bij het plaatselijk laagwater. 's Morgens wordt gestart in het stroomafwaartse deel van de Zeeschelde, daarna wordt met het opkomend tij stroomopwaarts telkens een raai opzocht bij opnieuw het plaatselijk laagwater.\
 Alle slik- en schorraaien werden tot begin 2012 ingemeten met een RTK-DGPS_Trimble 5800. Vanaf eind 2012 is een RTK-DGPS_Trimble R8 gebruikt waarbij zowel GPS- en GLONASS-satellietsignalen ontvangen kunnen worden. De ingestelde maximale foutenmarge voor een meting te kunnen uitvoeren is 2 cm op de z-waarde maar ligt gemiddeld rond ±1 cm. Bij de meetcampagne wordt een eerdere meetreeks in de RTK-GPS ingelezen. In het veld wordt vervolgens naar elk gemeten punt van de raai teruggaan. Zodoende kan op een efficiënte manier de raaien opnieuw ingemeten worden met een minimale horizontale afwijking.\
 Tijdens de meetcampagne is gebruik gemaakt van het standaard veldwerkprotocol (cfr. 2e lijnsrapportage, Van Braeckel et al., 2014) met beschrijvingen van de schorrand en de verschillende slikzones. De ingemeten data van de raaien worden vervolgens in GIS 'gesnapt' naar een rechte referentieraailijn met de INBO-GIS-tool. Na controle van de GIS-data wordt de data vervolgens in R (R Core Team 2013) geïmporteerd. In eerste instantie wordt de afstand tussen de punten onderling bepaald. Door de hoogtes uit te zetten t.o.v. de afstand tot een nulpunt op de dijk, wordt in R een grafiek per raai gegenereerd met de metingen van de verschillende meetperioden.\
 Voor verdere analyses wordt vervolgens een lineaire interpolatie tussen gecontroleerde data uitgevoerd naar punten met een tussenafstand van een halve meter. Dit zorgt voor een standaardisatie van de afstand tussen ieder punt. Voorheen kon dit verschillen naargelang (micro-) reliëf op de raai (1,5-10m) en tussen jaren aangezien bij een nieuwe sterke hoogtegradiënt extra punten worden ingemeten. Door schoruitbreiding of -erosie kan het startpunt van de raai alsook het lokale laagwater verschillen. Om afwijkingen tussen de jaren te vermijden door meetbereik-of schorveranderingen wordt enkele de gezamenlijk gemeten zone meegenomen in de volgende berekeningen.\
@@ -90,13 +81,13 @@ Op de meeste MONEOS-raaien en sommige NOP's is per ecotoop een vast punt vastgel
 
 ## Exploratieve data-analyse
 
-Illustratief worden hieronder de resultaten getoond van de MONEOSraaien gelegen in de Beneden-Zeeschelde. In 2020 werden geen trendbreuken vastgesteld en evolueren de raaien in de zin van de voorgaande jaren. Het slik aan het Galgenweel (GW) was stabiel in 2020 na een eerder sterke erosie in 2019.
+Illustratief worden hieronder de resultaten getoond van de MONEOSraaien gelegen in de Beneden-Zeeschelde. In `r laatste_jaar` werden geen trendbreuken vastgesteld en evolueren de raaien in de zin van de voorgaande jaren. Het slik aan het Galgenweel (GW) vertoont de laatste jaren een sterke erosie die in `r laatste_jaar` wordt verdergezet, met een verlaging tot 25-50cm ten opzichte van `r laatste_jaar - 1`.
 
 ```{r 130-figuur-GBSa, fig.cap=caption_raai, out.width="100%"}
 
 caption_raai <- "Raai GBSa"
 
-knitr::include_graphics(paste0(pad_figuren, "1_GBSa.png"))
+knitr::include_graphics(paste0(pad_figuren, "GBSa.png"))
 
 ```
 
@@ -106,7 +97,7 @@ knitr::include_graphics(paste0(pad_figuren, "1_GBSa.png"))
 
 caption_raai <- "Raai ODa"
 
-knitr::include_graphics(paste0(pad_figuren, "2_ODa.png"))
+knitr::include_graphics(paste0(pad_figuren, "ODa.png"))
 
 ```
 
@@ -116,7 +107,7 @@ knitr::include_graphics(paste0(pad_figuren, "2_ODa.png"))
 
 caption_raai <- "Raai ODaslik"
 
-knitr::include_graphics(paste0(pad_figuren, "3_ODaslik.png"))
+knitr::include_graphics(paste0(pad_figuren, "ODaslik.png"))
 
 ```
 
@@ -126,7 +117,7 @@ knitr::include_graphics(paste0(pad_figuren, "3_ODaslik.png"))
 
 caption_raai <- "Raai DO"
 
-knitr::include_graphics(paste0(pad_figuren, "4_DO.png"))
+knitr::include_graphics(paste0(pad_figuren, "DO.png"))
 
 ```
 
@@ -136,7 +127,7 @@ knitr::include_graphics(paste0(pad_figuren, "4_DO.png"))
 
 caption_raai <- "Raai GSb"
 
-knitr::include_graphics(paste0(pad_figuren, "5_GSb.png"))
+knitr::include_graphics(paste0(pad_figuren, "GSb.png"))
 
 ```
 
@@ -146,7 +137,7 @@ knitr::include_graphics(paste0(pad_figuren, "5_GSb.png"))
 
 caption_raai <- "Raai GSc"
 
-knitr::include_graphics(paste0(pad_figuren, "6_GSc.png"))
+knitr::include_graphics(paste0(pad_figuren, "GSc.png"))
 
 ```
 
@@ -156,7 +147,7 @@ knitr::include_graphics(paste0(pad_figuren, "6_GSc.png"))
 
 caption_raai <- "Raai LH"
 
-knitr::include_graphics(paste0(pad_figuren, "7_LH.png"))
+knitr::include_graphics(paste0(pad_figuren, "LH.png"))
 
 ```
 
@@ -166,7 +157,7 @@ knitr::include_graphics(paste0(pad_figuren, "7_LH.png"))
 
 caption_raai <- "Raai LP"
 
-knitr::include_graphics(paste0(pad_figuren, "8_LP.png"))
+knitr::include_graphics(paste0(pad_figuren, "LP.png"))
 
 ```
 
@@ -176,7 +167,7 @@ knitr::include_graphics(paste0(pad_figuren, "8_LP.png"))
 
 caption_raai <- "Raai KPb"
 
-knitr::include_graphics(paste0(pad_figuren, "9_KPb.png"))
+knitr::include_graphics(paste0(pad_figuren, "KPb.png"))
 
 ```
 
@@ -186,7 +177,7 @@ knitr::include_graphics(paste0(pad_figuren, "9_KPb.png"))
 
 caption_raai <- "Raai KPe"
 
-knitr::include_graphics(paste0(pad_figuren, "10_KPe.png"))
+knitr::include_graphics(paste0(pad_figuren, "KPe.png"))
 
 ```
 
@@ -196,7 +187,7 @@ knitr::include_graphics(paste0(pad_figuren, "10_KPe.png"))
 
 caption_raai <- "Raai GW"
 
-knitr::include_graphics(paste0(pad_figuren, "11_GW.png"))
+knitr::include_graphics(paste0(pad_figuren, "GW.png"))
 
 ```
 
@@ -206,7 +197,7 @@ knitr::include_graphics(paste0(pad_figuren, "11_GW.png"))
 
 caption_raai <- "Raai HO"
 
-knitr::include_graphics(paste0(pad_figuren, "12_HO.png"))
+knitr::include_graphics(paste0(pad_figuren, "HO.png"))
 
 ```
 
@@ -216,17 +207,12 @@ knitr::include_graphics(paste0(pad_figuren, "12_HO.png"))
 
 \arrayrulecolor{white}
 
-|     |
-|-----|
-|     |
+Table: (\#tab:130-tabel-overzicht-raaien) Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72).
 
-+=======================================================================+ +-----------------------------------------------------------------------+
-
-:   (#tab:130-tabel-overzicht-raaien) Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72).
+| ![image](`r paste0(pad_tabellen, "Tabel_MONEOSraaien.png")`){out.width="100%"} |
+| -- |
 
 \arrayrulecolor{black}
-
-<br/>
 
 ## Referenties
 
