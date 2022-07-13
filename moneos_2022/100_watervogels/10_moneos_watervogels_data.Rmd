@@ -314,29 +314,28 @@ WHERE 1=1
 
 # con <- connect_inbo_dbase("W0004_00_Waterbirds")
 # 
-# q_WVgebiedenLier <- "SELECT *
+# q_WVgebiedenUitbergen <- "SELECT *
 #                      FROM DimLocationWV
-#                      WHERE LocationWVNaam LIKE '%LIER%' AND
-#                            LocationWVNaam NOT LIKE '%LIERE%'"
+#                      WHERE LocationWVNaam LIKE '%UITBERGEN%'"
 # 
 # q_WVgebiedenNete <- "SELECT *
 #                      FROM DimLocationWV
 #                      WHERE LocationWVNaam LIKE '%Nete%'"
 # 
 # 
-# # Selectie gebieden in Lier                     
-# GebiedenLier <- 
-#   tbl(src = con, sql(q_WVgebiedenLier)) %>% 
-#   select(LocationWVCode, LocationWVNaam, IsStandardizedLocationWV) %>% 
+# # Selectie gebieden in Lier
+# GebiedenUitbergen <-
+#   tbl(src = con, sql(q_WVgebiedenUitbergen)) %>%
+#   select(LocationWVCode, LocationWVNaam, IsStandardizedLocationWV) %>%
 #   collect()
 # 
-# GebiedenNete <- 
-#   tbl(src = con, sql(q_WVgebiedenNete)) %>% 
-#   select(LocationWVCode, LocationWVNaam, IsStandardizedLocationWV) %>% 
+# GebiedenNete <-
+#   tbl(src = con, sql(q_WVgebiedenNete)) %>%
+#   select(LocationWVCode, LocationWVNaam, IsStandardizedLocationWV) %>%
 #   collect()
 # 
 # # query midmaandelijkse tellingen
-# q_midmaandtellingen <- 
+# q_midmaandtellingen <-
 #   "SELECT SU.SurveyCode as ProjectCode
 # , SU.SurveyNaam as Project
 # , L.RegioWVCode as RegioCode
@@ -365,34 +364,34 @@ WHERE 1=1
 # WHERE 1=1
 #   "
 # # Selectie midmaandelijkse tellingen in gebieden Lier
-# WaterbirdsLier <- 
-#   tbl(src = con, 
-#       sql(q_midmaandtellingen)) %>% 
-#   filter(GebiedsCode %in% !!GebiedenLier$LocationWVCode) %>% 
+# WaterbirdsUitbergen <-
+#   tbl(src = con,
+#       sql(q_midmaandtellingen)) %>%
+#   filter(GebiedsCode %in% !!GebiedenUitbergen$LocationWVCode) %>%
 #   collect()
 # 
-# WaterbirdsNete <- 
-#   tbl(src = con, 
-#       sql(q_midmaandtellingen)) %>% 
-#   filter(GebiedsCode %in% !!GebiedenNete$LocationWVCode) %>% 
+# WaterbirdsNete <-
+#   tbl(src = con,
+#       sql(q_midmaandtellingen)) %>%
+#   filter(GebiedsCode %in% !!GebiedenNete$LocationWVCode) %>%
 #   collect()
 # 
 # dbDisconnect(con)
 # 
 # # Totalen per gebied per seizoen
-# Totaal_n_Watervogels_Gebied_seizoen_Lier <- 
-#   WaterbirdsLier %>% 
-#   group_by(Gebied, Telseizoen) %>% 
-#   summarise(Totaal = sum(Aantal, na.rm = TRUE)) %>% 
+# Totaal_n_Watervogels_Gebied_seizoen_Uitbergen <-
+#   WaterbirdsUitbergen %>%
+#   group_by(Gebied, Telseizoen) %>%
+#   summarise(Totaal = sum(Aantal, na.rm = TRUE)) %>%
 #   spread(key = Gebied, value = Totaal)
 # 
-# Totaal_n_Watervogels_Gebied_seizoen_Nete <- 
-#   WaterbirdsNete %>% 
-#   group_by(Gebied, Telseizoen) %>% 
-#   summarise(Totaal = sum(Aantal, na.rm = TRUE)) %>% 
+# Totaal_n_Watervogels_Gebied_seizoen_Nete <-
+#   WaterbirdsNete %>%
+#   group_by(Gebied, Telseizoen) %>%
+#   summarise(Totaal = sum(Aantal, na.rm = TRUE)) %>%
 #   spread(key = Gebied, value = Totaal)
 # 
-# 
+# # 
 # # sla op als spreadsheet
 # Totaal_n_Watervogels_Gebied_seizoen_Lier %>% 
 #   write_delim(paste0(pad_data, "Totalen_gebiedenLier.csv"),
@@ -863,10 +862,12 @@ Waterbirds_all <-
 
 Waterbirds_all %>% 
   write_delim(paste0(pad_data, "Watervogels_all_ruwedata.csv"),
-              delim = ";")
-Waterbirds <- 
-  read_delim(paste0(pad_data, "Watervogels_all_ruwedata.csv"),
-              delim = ";")
+                            delim = ";")
+
+####dataset inlezen zonder databank bevraging
+# Waterbirds <- 
+#   read_delim(paste0(pad_data, "Watervogels_all_ruwedata.csv"),
+#               delim = ";")
 
 Waterbirds <- 
   Waterbirds %>% 
@@ -946,7 +947,8 @@ Waterbirds_Moneos <-
 
 Waterbirds_sets <- 
   Waterbirds %>% 
-    group_by(gebiedsgroep_code,
+    group_by(gebiedsgroeptype_code,
+             gebiedsgroep_code,
            gebiedsgroep,
            rivier,
            telseizoen,
