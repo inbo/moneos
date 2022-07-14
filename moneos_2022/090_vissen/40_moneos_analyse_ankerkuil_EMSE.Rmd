@@ -23,8 +23,8 @@ knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, c
 
 library(tidyverse)
 library(lubridate)
-library(writexl)
 library(readxl)
+library(writexl)
 # library(yarrr)
 library(wesanderson)
 library(gridExtra)
@@ -92,21 +92,49 @@ levels_scheldezone_full <-
 
 ##### datasets voor aantal en gewicht:
 
--   *G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/090_vissen/data/ankerkuil_aantallen_2012_2021.csv*
--   *G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/090_vissen/data/ankerkuil_gewicht_2012_2021.csv*
+<!-- -   *G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/090_vissen/data/ankerkuil_aantallen_2012_2021.csv* -->
+<!-- -   *G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/090_vissen/data/ankerkuil_gewicht_2012_2021.csv* -->
+
+-   *G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/090_vissen/data/ankerkuil_VLIZ_2012_2021.csv*
 
 ```{r inlezen-data}
 
 soortenlijst <- 
   read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"), sheet = "EMSE")
 
+# ankerkuil_aantal1 <- 
+#   read_delim(paste0(pad_data, "ankerkuil_aantallen_2012_2021.csv"),
+#              delim = ";")
+# 
+# ankerkuil_gewicht1 <- 
+#   read_delim(paste0(pad_data, "ankerkuil_gewicht_2012_2021.csv"),
+#              delim = ";")
+
 ankerkuil_aantal <- 
-  read_delim(paste0(pad_data, "ankerkuil_aantallen_2012_2021.csv"),
-             delim = ";")
+  read_xlsx(str_c(pad_data, "ankerkuil_VLIZ_2012_2021.xlsx"),
+            sheet = "campagnes") %>% 
+  select(ID_afvissing, locatie, datum, jaar, seizoen, getijde, volume) %>% 
+  left_join(read_xlsx(str_c(pad_data, "ankerkuil_VLIZ_2012_2021.xlsx"),
+                      sheet = "locaties") %>% 
+              select(locatie, OMES, EMSE_niveau3)) %>% 
+  left_join(read_xlsx(str_c(pad_data, "ankerkuil_VLIZ_2012_2021.xlsx"),
+                      sheet = "aantallen")) %>% 
+  select(-ID_afvissing, -datum, -getijde) %>% 
+  group_by(locatie, OMES, EMSE_niveau3, jaar, seizoen) %>% 
+  summarise(across(everything(), ~sum(., na.rm = TRUE)))
 
 ankerkuil_gewicht <- 
-  read_delim(paste0(pad_data, "ankerkuil_gewicht_2012_2021.csv"),
-             delim = ";")
+  read_xlsx(str_c(pad_data, "ankerkuil_VLIZ_2012_2021.xlsx"),
+            sheet = "campagnes") %>% 
+  select(ID_afvissing, locatie, datum, jaar, seizoen, getijde, volume) %>% 
+  left_join(read_xlsx(str_c(pad_data, "ankerkuil_VLIZ_2012_2021.xlsx"),
+                      sheet = "locaties") %>% 
+              select(locatie, OMES, EMSE_niveau3)) %>% 
+  left_join(read_xlsx(str_c(pad_data, "ankerkuil_VLIZ_2012_2021.xlsx"),
+                      sheet = "gewicht")) %>% 
+  select(-ID_afvissing, -datum, -getijde) %>% 
+  group_by(locatie, OMES, EMSE_niveau3, jaar, seizoen) %>% 
+  summarise(across(everything(), ~sum(., na.rm = TRUE)))
 
 data_ankerkuil <- 
   ankerkuil_aantal %>% 
@@ -114,15 +142,11 @@ data_ankerkuil <-
                names_to = "soort",
                values_to = "aantal") %>%
   left_join(ankerkuil_gewicht %>% 
-              select(-uren, -volume) %>% 
+              select(-volume) %>% 
               pivot_longer(cols = `tiendoornige stekelbaars`:last_col(),
                            names_to = "soort",
                            values_to = "gewicht")) %>% 
   mutate(gewicht = if_else(aantal == 0, 0, gewicht),
-         seizoen = recode(seizoen,
-                          VJ = "voorjaar",
-                          NJ = "najaar",
-                          Z = "zomer"),
          seizoen = factor(seizoen, levels = c("voorjaar", "zomer", "najaar")),
          locatie = factor(locatie, levels = c(c("Doel", "Antwerpen", "Steendorp", "Branst")))) %>%
   # filter(!str_detect(soort, "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat")) %>%

@@ -21,6 +21,7 @@ knitr::opts_chunk$set(echo = FALSE, error = FALSE, warning = FALSE, message = FA
 library(tidyverse)
 library(lubridate)
 library(readxl)
+library(writexl)
 
 library(inbodb)
 
@@ -60,10 +61,10 @@ ankerkuil_aantal_historisch <-
   mutate(jaar = year(datum),
          maand = month(datum),
          seizoen = case_when(
-           maand %in% 3:5 ~ "VJ",
-           maand %in% 6:7 ~ "Z",
-           maand %in% 8:10 ~ "NJ")) %>% 
-  select(volgorde, datum, jaar, maand, seizoen, locatie, getijde, uren, volume,
+            maand %in% 3:5 ~ "voorjaar",
+           maand %in% 6:7 ~ "zomer",
+           maand %in% 8:10 ~ "najaar")) %>% 
+ select(volgorde, datum, jaar, maand, seizoen, locatie, getijde, uren, volume,
          everything(),
          -(watertemperatuur:opmerkingen), -mniind)
 
@@ -79,12 +80,31 @@ ankerkuil_gewicht_historisch <-
   mutate(jaar = year(datum),
          maand = month(datum),
          seizoen = case_when(
-           maand %in% 3:5 ~ "VJ",
-           maand %in% 6:7 ~ "Z",
-           maand %in% 8:10 ~ "NJ")) %>% 
+           maand %in% 3:5 ~ "voorjaar",
+           maand %in% 6:7 ~ "zomer",
+           maand %in% 8:10 ~ "najaar")) %>% 
   select(volgorde, datum, jaar, maand, seizoen, locatie, getijde, uren, volume,
          everything(),
          -(watertemperatuur:opmerkingen),-manbio)
+
+
+ankerkuil_fysicochemisch_historisch <- 
+  read_xlsx(paste0(pad_data, "ankerkuil 2012_2021.xlsx"),
+             sheet = "aantal ruw") %>%
+  rename_all(tolower) %>% 
+  rename(volume = `volume (m³)`,
+         temperatuur = watertemperatuur) %>% 
+  # filter(datum != "niet gevist") %>% 
+  mutate(datum = ymd(datum)) %>% 
+  filter(!is.na(datum)) %>%
+  mutate(jaar = year(datum),
+         maand = month(datum),
+         seizoen = case_when(
+           maand %in% 3:5 ~ "voorjaar",
+           maand %in% 6:7 ~ "zomer",
+           maand %in% 8:10 ~ "najaar")) %>% 
+  select(volgorde, datum, jaar, maand, seizoen, locatie, getijde, uren, volume,
+         temperatuur:conductiviteit)
 
 
 # names(ankerkuil_gewicht_historisch)
@@ -97,6 +117,42 @@ ankerkuil_gewicht_historisch <-
 #          `kleine koornaarvis` = `kleine koornaarvis...95` + `kleine koornaarvis...100`,
 #          fint = if_else(fint == "###", 0, as.numeric(fint))) %>% 
 #   select(-`adderzeenaald...67`, -`adderzeenaald...131`, -`kleine koornaarvis...95`, -`kleine koornaarvis...100`)
+
+```
+
+
+```{r aanmaak metadata, eval=FALSE}
+
+ankerkuil_metadata <- 
+  read_xlsx(paste0(pad_data, "ankerkuil 2012_2021.xlsx"),
+            sheet = "uitleg",
+            col_names = FALSE) %>% 
+  rename(variabele = `...1`, betekenis = `...2`) %>% 
+  mutate(variabele = str_to_lower(variabele),
+         variabele = recode(variabele, `volume (m³)` = "volume", watertemperatuur = "temperatuur", o2 = "zuurstof", `o2 %` = "zuurstof_perc")) %>% 
+  filter(!(variabele %in% c("mniind", "manbio"))) %>% 
+  mutate(betekenis = 
+           case_when(
+             variabele == "datum" ~ "datum (jaar/maand/dag) van afvissing",
+             variabele == "getijde" ~ "getijde tijdens afvissing (eb/vloed)",
+             variabele == "uren" ~ "aantal uren net effectief in water",
+             variabele == "volume" ~ "volume water bevist (m³)",
+             variabele == "temperatuur" ~ "watertemperatuur moment van afvissing (°C)",
+             variabele == "zuurstof" ~ "zuurstofconcentratie moment van afvissing (mg/l)",
+             variabele == "ph" ~ "zuurtegraad moment van afvissing",
+             variabele == "turbiditeit" ~ "turbiditeit moment van afvissing (NTU)",
+             variabele == "conductiviteit" ~ "conductiviteit moment van afvissing (µS/cm)",
+             TRUE ~ betekenis),
+         betekenis = str_replace(betekenis, "staalname", "afvissing")) %>% 
+  add_case(variabele = c("X", "Y"), betekenis = c("X coordinaat van locatie (Belge Lambert 72)", "Y coordinaat van locatie (Belge Lambert 72)"), .after = 1) %>% 
+  add_case(variabele = c("OMES", "EMSE_niveau", "KRW"), betekenis = c("OMES indeling in zones", "EMSE indeling in zones", "KRW indeling in zones"), .after = 3) %>% 
+  add_case(variabele = c("jaar", "seizoen"), betekenis = c("jaar van afvissing", "seizoen van afvissing"), .after = 7) %>% 
+  add_case(variabele = c("aantal", "gewicht"), betekenis = c("aantal gevangen individuen", "totaal gewicht gevangen individuen (g)"), .after = 18) %>% 
+  add_case(variabele = "ID_afvissing", betekenis = "unieke identifier voor afvissing", .after = 6)
+
+
+ankerkuil_metadata %>% 
+  write_xlsx(path = str_c(pad_data, "ankerkuil_metadata.xlsx"))
 
 ```
 
@@ -314,14 +370,18 @@ jaar_range <-
 
 ```{r locaties}
 
+# locaties <-
+#   ankerkuil_aantal_historisch %>% 
+#   distinct(locatie) %>% 
+#   pull(locatie)
+
 locaties <-
-  ankerkuil_aantal_historisch %>% 
-  distinct(locatie) %>% 
-  pull(locatie)
+  read_xlsx(paste0(pad_data, "ankerkuil_locaties.xlsx"),
+             sheet = "locaties")
 
 ```
 
--   `r locaties`
+-   `r locaties %>% pull(locatie)`
 
 #### stalen per jaar seizoen en locatie
 
@@ -336,47 +396,80 @@ knitr::kable(stalen)
 
 ```
 
-stalen worden gesommeerd per jaar, seizoen en locatie
+stalen worden gesommeerd per datum, locatie en getijde
 
 ```{r som-over-soorten}
 
 ankerkuil_aantal_historisch <- 
   ankerkuil_aantal_historisch %>% 
-  select(-datum, -maand, -getijde, -volgorde) %>% 
-  group_by(jaar, seizoen, locatie) %>% 
+  select(-volgorde, -maand, -uren, -volume) %>% 
+  group_by(datum, jaar, seizoen, locatie, getijde) %>% 
   summarise_all(~sum(., na.rm = TRUE)) %>% 
-  ungroup()
+  ungroup() %>% 
+  arrange(datum, locatie, getijde) %>% 
+  mutate(ID_afvissing = 1:n()) %>% 
+  select(ID_afvissing, everything(), -(datum:getijde))
 
 ankerkuil_gewicht_historisch <- 
   ankerkuil_gewicht_historisch %>% 
-  select(-datum, -maand, -getijde, -volgorde) %>% 
-  group_by(jaar, seizoen, locatie) %>% 
+  select(-volgorde, -maand, -uren, -volume) %>% 
+  group_by(datum, jaar, seizoen, locatie, getijde) %>% 
   summarise_all(~sum(., na.rm = TRUE)) %>% 
-  ungroup()
+  ungroup() %>% 
+  arrange(datum, locatie, getijde) %>% 
+  mutate(ID_afvissing = 1:n()) %>% 
+  select(ID_afvissing, everything(), -(datum:getijde))
+
+ankerkuil_fysicochemisch_historisch <-
+  ankerkuil_fysicochemisch_historisch %>% 
+  select(-volgorde, -maand) %>% 
+  group_by(datum, jaar, seizoen, locatie, getijde) %>% 
+  summarise(across(c(uren, volume), ~sum(., na.rm = TRUE)),
+            across(temperatuur:conductiviteit, ~mean(., na.rm = TRUE))) %>% 
+  ungroup() %>% 
+  arrange(datum, locatie, getijde) %>% 
+  mutate(ID_afvissing = 1:n()) %>% 
+  rename(zuurstof = o2,
+         zuurstof_perc = `o2 %`) %>% 
+  select(ID_afvissing, locatie, datum, jaar, seizoen, getijde, everything())
 
 ```
+
 
 #### finale data weggeschreven naar:
 
 ```{r filenames}
 
-file_aantallen <-
-  paste0(pad_data, "ankerkuil_aantallen_", paste(jaar_range, collapse = "_"), ".csv")
+# file_aantallen <-
+#   paste0(pad_data, "ankerkuil_aantallen_", paste(jaar_range, collapse = "_"), ".csv")
+# 
+# file_gewicht <-
+#   paste0(pad_data, "ankerkuil_gewicht_", paste(jaar_range, collapse = "_"), ".csv")
 
-file_gewicht <-
-  paste0(pad_data, "ankerkuil_gewicht_", paste(jaar_range, collapse = "_"), ".csv")
+file_VLIZ <-
+  paste0(pad_data, "ankerkuil_VLIZ_", paste(jaar_range, collapse = "_"), ".xlsx")
 
 ```
 
--   `r file_aantallen`
--   `r file_gewicht`
+<!-- -   `r file_aantallen` -->
+<!-- -   `r file_gewicht` -->
+-   `r file_VLIZ`
 
 ```{r wegschrijven-data, eval=FALSE}
 
-ankerkuil_aantal_historisch %>% 
-  write_delim(file_aantallen, delim = ";")
+# ankerkuil_aantal_historisch %>% 
+#   write_delim(file_aantallen, delim = ";")
+# 
+# ankerkuil_gewicht_historisch %>% 
+#   write_delim(file_gewicht, delim = ";")
 
-ankerkuil_gewicht_historisch %>% 
-  write_delim(file_gewicht, delim = ";")
+metadata <- read_xlsx(str_c(pad_data, "ankerkuil_metadata.xlsx"))
+
+write_xlsx(list(locaties = locaties,
+                campagnes = ankerkuil_fysicochemisch_historisch,
+                aantallen = ankerkuil_aantal_historisch,
+                gewicht = ankerkuil_gewicht_historisch,
+                metadata = ankerkuil_metadata),
+           path = file_VLIZ)
 
 ```
