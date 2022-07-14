@@ -36,6 +36,20 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
 ```
 
+```{r 130-dummy-table-function}
+
+options(xtable.include.rownames=FALSE, xtable.comment=FALSE)
+
+dumtab = function(label, caption=NULL) {
+  print(xtable::xtable(setNames(data.frame(x=numeric()), " "),
+               caption=caption,
+               label=paste0("tab:", label)), 
+        hline.after=NULL,
+        booktabs=FALSE)
+}
+
+```
+
 ```{r 130-meta-data}
 
 # aanpassen indien er meta-data zijn
@@ -52,13 +66,15 @@ Fiche nummer: S-MD-V002 Topo-bathymetrie - Sedimentatie en erosie op punten en r
 
 ## Inleiding
 
-Binnen de MONEOS-monitoring wordt de hoogteligging van het slik en de schorrand jaarlijks ingemeten om hoogteveranderingen met een hoge verticale resolutie in beeld te brengen. Deze hoogtemetingen situeren zich doorgaans loodrecht op rivieras, de zogenoemde 'raaien'. De MONEOS-raaien zijn gesitueerd op bredere sliklocaties met overwegend zacht substraat of natuurtechnische oeververdediging (Meire & Maris, 2008). Met de raaien wordt gefocust op grotere, ecologisch waardevollere slik- en schorgebieden. We maken een onderscheid in 3 klassen van raaien afhankelijk van de prioriteit van opmeten:
+Binnen de MONEOS-monitoring wordt de hoogteligging van het slik en de schorrand jaarlijks ingemeten om hoogteveranderingen met een hoge verticale resolutie in beeld te brengen. Deze hoogtemetingen situeren zich doorgaans loodrecht op rivieras, de zogenoemde 'raaien'. De MONEOS-raaien zijn gesitueerd op bredere sliklocaties met overwegend zacht substraat of natuurtechnische oeververdediging (Meire & Maris, 2008). Met de raaien wordt gefocust op grotere, ecologisch waardevollere slik- en schorgebieden. We maken een onderscheid tussen 3 klassen van raaien afhankelijk van de prioriteit van opmeten:
 
--   MONEOS - Vaste: minimaal de slik en schorrand worden jaarlijks ingemeten langs de Zeeschelde (n:24) Figuur \@ref(fig:130-figuur-overzicht-raaien), Durme (n:3) en Rupel (n:2) en 6-jaarlijks voor de tijgebonden zijrivieren (Nete-n:1, Zenne-n:1, Dijle-n:1); deze raaien zijn leidend voor de veldwerkcampagne; de hoge schorplateaus worden 6-jaarlijks gemeten.
+-   MONEOS - Vaste: de slik en schorrand worden jaarlijks ingemeten langs de Zeeschelde (n:24; Figuur \@ref(fig:130-figuur-overzicht-raaien)), Durme (n:3) en Rupel (n:2) en 6-jaarlijks voor de tijgebonden zijrivieren (Nete-n:1, Zenne-n:1, Dijle-n:1); deze raaien zijn leidend voor de veldwerkcampagne; de hoge schorplateaus worden 6-jaarlijks gemeten.
 
--   MONEOS - Aanvullend: bij deze klasse van raaien wordt getracht om een minimale frequentie (2 -- 5 jaar) aan te houden; ze vertonen ontwikkelingen die aanvullende informatie geven over het (deel)gebied die niet altijd door de MONEOS-raaien gecoverd zijn;
+-   MONEOS - Aanvullend: bij deze klasse van raaien wordt getracht om een minimale frequentie (2 -- 5 jaar) aan te houden; ze vertonen ontwikkelingen die aanvullende informatie geven over het (deel)gebied die niet altijd door de MONEOS-raaien gecoverd zijn.
 
 -   Optioneel: raaien die occasioneel worden ingemeten of waar specifieke vraag naar is.
+
+In de huidige rapportage worden de recente trends in de vaste MONEOS raaien van de Zeeschelde bekeken.
 
 ```{r 130-figuur-overzicht-raaien, fig.cap=caption_overzicht, out.width="100%"}
 
@@ -72,110 +88,25 @@ knitr::include_graphics(paste0(pad_figuren, "0_OverzichtskaartMoneosraaien_Zeesc
 
 ## Methode
 
-Een overzicht van de ingemeten raaien wordt gegeven in Tabel \@ref(tab:130-tabel-overzicht-raaien) in \@ref(BL1) Bijlage. De meetcampagnes van de raaien gebeuren meestal op het einde van de winterperiode en zijn dus een weerslag van wat na het voorbije jaar is veranderd. Een raai in februari `r laatste_jaar` ingemeten wordt vergeleken met de hoogtes van het jaar ervoor, waarbij de verandering een gevolg zijn van wat gebeurde in `r laatste_jaar - 1`. De metingen gebeuren steeds tijdens een springtijperiode vanaf het schor of de dijk tot bij het plaatselijk laagwater. 's Morgens wordt gestart in het stroomafwaartse deel van de Zeeschelde, daarna wordt met het opkomend tij stroomopwaarts telkens een raai opzocht bij opnieuw het plaatselijk laagwater.\
-Alle slik- en schorraaien werden tot begin 2012 ingemeten met een RTK-DGPS_Trimble 5800. Vanaf eind 2012 is een RTK-DGPS_Trimble R8 gebruikt waarbij zowel GPS- en GLONASS-satellietsignalen ontvangen kunnen worden. De ingestelde maximale foutenmarge voor een meting te kunnen uitvoeren is 2 cm op de z-waarde maar ligt gemiddeld rond ±1 cm. Bij de meetcampagne wordt een eerdere meetreeks in de RTK-GPS ingelezen. In het veld wordt vervolgens naar elk gemeten punt van de raai teruggaan. Zodoende kan op een efficiënte manier de raaien opnieuw ingemeten worden met een minimale horizontale afwijking.\
-Tijdens de meetcampagne is gebruik gemaakt van het standaard veldwerkprotocol (cfr. 2e lijnsrapportage, Van Braeckel et al., 2014) met beschrijvingen van de schorrand en de verschillende slikzones. De ingemeten data van de raaien worden vervolgens in GIS 'gesnapt' naar een rechte referentieraailijn met de INBO-GIS-tool. Na controle van de GIS-data wordt de data vervolgens in R (R Core Team 2013) geïmporteerd. In eerste instantie wordt de afstand tussen de punten onderling bepaald. Door de hoogtes uit te zetten t.o.v. de afstand tot een nulpunt op de dijk, wordt in R een grafiek per raai gegenereerd met de metingen van de verschillende meetperioden.\
-Voor verdere analyses wordt vervolgens een lineaire interpolatie tussen gecontroleerde data uitgevoerd naar punten met een tussenafstand van een halve meter. Dit zorgt voor een standaardisatie van de afstand tussen ieder punt. Voorheen kon dit verschillen naargelang (micro-) reliëf op de raai (1,5-10m) en tussen jaren aangezien bij een nieuwe sterke hoogtegradiënt extra punten worden ingemeten. Door schoruitbreiding of -erosie kan het startpunt van de raai alsook het lokale laagwater verschillen. Om afwijkingen tussen de jaren te vermijden door meetbereik-of schorveranderingen wordt enkele de gezamenlijk gemeten zone meegenomen in de volgende berekeningen.\
-Naast gemiddelde hoogteverschil over de volledige sliklengte wordt ook de oppervlakte tussen de 2 curven van de 2 opeenvolgende ingemeten jaren bepaald. Deze oppervlakte is een maat voor het volume (m³) afgezet/ geërodeerd sediment op een 1 meter breed slik ter hoogte van de raai. De data werd hierna nog gekoppeld aan gemiddelde droogvalduurdata uit de beginperiode 2013-2016. Zoals bij de ecotopen is hier het gemiddelde 25% droogvalduur percentiel gebruikt voor de afbakening van de grens laag en middelhoog slik en het 75% droogvalduurpercentiel voor de grens middelhoog en hoog slikgrens. De grens tussen hoog slik en de supralitoraal slikzone (potentiële pionierzone) vormt het 85 percentiel van de hoogwaters uit die periode.\
+Een overzicht van de ingemeten vaste MONEOS raaien wordt gegeven in Tabel \@ref(tab:130-tabel-overzicht-raaien) in Bijlage \@ref(BL1). De meetcampagnes van de raaien gebeuren meestal op het einde van de winterperiode en zijn dus een weerslag van wat in het voorbije jaar is veranderd. Een raai in februari `r laatste_jaar` ingemeten wordt vergeleken met de hoogtes van het jaar ervoor, waarbij de veranderingen een gevolg zijn van wat gebeurde in `r laatste_jaar - 1`. De metingen gebeuren steeds tijdens een springtijperiode vanaf het schor of de dijk tot bij het plaatselijk laagwater. 's Morgens wordt gestart in het stroomafwaartse deel van de Zeeschelde, daarna wordt met het opkomend tij stroomopwaarts telkens een raai opzocht bij opnieuw het plaatselijk laagwater.\
+Alle slik- en schorraaien werden tot begin 2012 ingemeten met een RTK-DGPS_Trimble 5800. Vanaf eind 2012 is een RTK-DGPS_Trimble R8 gebruikt, waarbij zowel GPS- en GLONASS-satellietsignalen ontvangen kunnen worden. De ingestelde maximale foutenmarge om een meting te kunnen uitvoeren is 2 cm op de z-waarde maar ligt gemiddeld rond ±1 cm. Bij de meetcampagne wordt een eerdere meetreeks in de RTK-GPS ingelezen. In het veld wordt vervolgens naar elk gemeten punt van de raai teruggaan. Zodoende kunnen de raaien op een efficiënte manier opnieuw ingemeten worden met een minimale horizontale afwijking. Door schoruitbreiding of -erosie kan het startpunt van de raai alsook het lokale laagwater verschillen tussen de jaren.\
+Tijdens de meetcampagne is gebruik gemaakt van het standaard veldwerkprotocol (cfr. 2e lijnsrapportage, Van Braeckel et al., 2014) met beschrijvingen van de schorrand en de verschillende slikzones. De ingemeten data van de raaien worden vervolgens in GIS 'gesnapt' naar een rechte referentieraailijn met de INBO-GIS-tool. Na controle van de GIS-data worden de gegevens vervolgens in R (R Core Team 2013) geïmporteerd voor verdere verwerking.\
 Op de meeste MONEOS-raaien en sommige NOP's is per ecotoop een vast punt vastgelegd waar 3 RTK-GPSmetingen worden uitgevoerd alsook een foto en sedimentstaal (10cm diep) wordt genomen. Voor de berekening van de hoogteverandering op deze vaste punten wordt het gemiddelde genomen van de 3 metingen, wat direct gerelateerd kan worden aan de sedimentverandering.
 
-## Exploratieve data-analyse
+## trends in recente jaren
 
-Illustratief worden hieronder de resultaten getoond van de MONEOSraaien gelegen in de Beneden-Zeeschelde. In `r laatste_jaar` werden geen trendbreuken vastgesteld en evolueren de raaien in de zin van de voorgaande jaren. Het slik aan het Galgenweel (GW) vertoont de laatste jaren een sterke erosie die in `r laatste_jaar` wordt verdergezet, met een verlaging tot 25-50cm ten opzichte van `r laatste_jaar - 1`.
+### Beneden Zeeschelde
 
-```{r 130-figuur-GBSa, fig.cap=caption_raai, out.width="100%"}
+Een overzicht van de raaien in de Beneden Zeeschelde wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BEZ). In `r laatste_jaar` werden voor de meeste raaien geen trendbreuken vastgesteld en evolueren de raaien in de zin van de voorgaande jaren zonder sterke sedimentatie of erosie.\
+Volgende trends zijn het vermelden waard:
 
-caption_raai <- "Raai GBSa"
+-   Aan Ketenisse (KPe) is er de laatste jaren wel een sterke sedimentatie/opbolling in het onderste deel slik van het slik (Figuur \@ref(fig:130-figuur-KPe)).
 
-knitr::include_graphics(paste0(pad_figuren, "GBSa.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-ODa, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai ODa"
-
-knitr::include_graphics(paste0(pad_figuren, "ODa.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-ODaslik, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai ODaslik"
-
-knitr::include_graphics(paste0(pad_figuren, "ODaslik.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-DO, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai DO"
-
-knitr::include_graphics(paste0(pad_figuren, "DO.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-GSb, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai GSb"
-
-knitr::include_graphics(paste0(pad_figuren, "GSb.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-GSc, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai GSc"
-
-knitr::include_graphics(paste0(pad_figuren, "GSc.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-LH, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai LH"
-
-knitr::include_graphics(paste0(pad_figuren, "LH.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-LP, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai LP"
-
-knitr::include_graphics(paste0(pad_figuren, "LP.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-KPb, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai KPb"
-
-knitr::include_graphics(paste0(pad_figuren, "KPb.png"))
-
-```
-
-<br/>
+-   Het slik aan het Galgenweel (GW) vertoont de laatste jaren een vrij sterke erosie die in `r laatste_jaar` wordt verdergezet, met een verlaging tot 25-50cm ten opzichte van `r laatste_jaar - 1` (Figuur \@ref(fig:130-figuur-GW)).
 
 ```{r 130-figuur-KPe, fig.cap=caption_raai, out.width="100%"}
 
-caption_raai <- "Raai KPe"
+caption_raai <- "Raai KPe (Ketenisse)"
 
 knitr::include_graphics(paste0(pad_figuren, "KPe.png"))
 
@@ -185,7 +116,7 @@ knitr::include_graphics(paste0(pad_figuren, "KPe.png"))
 
 ```{r 130-figuur-GW, fig.cap=caption_raai, out.width="100%"}
 
-caption_raai <- "Raai GW"
+caption_raai <- "Raai GW (Galgenweel)"
 
 knitr::include_graphics(paste0(pad_figuren, "GW.png"))
 
@@ -193,11 +124,78 @@ knitr::include_graphics(paste0(pad_figuren, "GW.png"))
 
 <br/>
 
-```{r 130-figuur-HO, fig.cap=caption_raai, out.width="100%"}
+### Boven Zeeschelde
 
-caption_raai <- "Raai HO"
+Een overzicht van de raaien in de Boven Zeeschelde wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BOZ).\
+De meest opvallende trends zijn de volgende:
 
-knitr::include_graphics(paste0(pad_figuren, "HO.png"))
+-   Op raai TB (Slik van het Buitenland) is er in `r laatste_jaar` een duidelijke versteiling van het slik waar te nemen met sedimentatie op het middelhoog slik en erosie op het lager slik.
+
+-   Op raai WE (Slik van Weert) is de kleine geul aan de schorrand in `r laatste_jaar` sterk uitgediept (1 meter diep).
+
+-   Na relatief sterke sedimentatie gedurende de vorige jaren, is het slik op raai BR (Slik bij Branst) in `r laatste_jaar` gestabiliseerd.
+
+-   Het slik op raai PD (Slik aan Driegoten/De Plaat) vertoont de laatste jaren een variabele trend van wisselende sedimentatie - erosie.
+
+-   Op raai MK (Mariekerke) wordt de trend van de laatste jaren tot sterke sedimentatie/opbolling in de onderste helft van het slik verdergezet.
+
+-   Raai BM (Plaat van Bergenmeersen/Taverniers) vertoont in `r laatste_jaar` sterke sedimentatie/opbolling op het middelste deel van het slik.
+
+```{r 130-figuur-TB, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai TB (Slik van het Buitenland)"
+
+knitr::include_graphics(paste0(pad_figuren, "TB.png"))
+
+```
+
+<br/>
+
+```{r 130-figuur-WE, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai WE (Slik van Weert)"
+
+knitr::include_graphics(paste0(pad_figuren, "WE.png"))
+
+```
+
+<br/>
+
+```{r 130-figuur-BR, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai BR (Slik bij Branst)"
+
+knitr::include_graphics(paste0(pad_figuren, "BR.png"))
+
+```
+
+<br/>
+
+```{r 130-figuur-PD, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai PD (Slik aan Driegoten/De Plaat)"
+
+knitr::include_graphics(paste0(pad_figuren, "PD.png"))
+
+```
+
+<br/>
+
+```{r 130-figuur-MK, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai MK (Mariekerke)"
+
+knitr::include_graphics(paste0(pad_figuren, "MK.png"))
+
+```
+
+<br/>
+
+```{r 130-figuur-BM, fig.cap=caption_raai, out.width="100%"}
+
+caption_raai <- "Raai BM (Plaat van Bergenmeersen/Taverniers)"
+
+knitr::include_graphics(paste0(pad_figuren, "BM.png"))
 
 ```
 
@@ -205,14 +203,46 @@ knitr::include_graphics(paste0(pad_figuren, "HO.png"))
 
 ## Bijlage {#BL1}
 
-\arrayrulecolor{white}
+<!-- \arrayrulecolor{white} -->
 
-Table: (\#tab:130-tabel-overzicht-raaien) Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72).
+<!-- Table: (\#tab:130-tabel-overzicht-raaien) Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72). -->
 
-| ![image](`r paste0(pad_tabellen, "Tabel_MONEOSraaien.png")`){out.width="100%"} |
-| -- |
+<!-- | ![image](`r paste0(pad_tabellen, "Tabel_MONEOSraaien.png")`){out.width="100%"} | -->
 
-\arrayrulecolor{black}
+<!-- | -- | -->
+
+<!-- \arrayrulecolor{black} -->
+
+```{r 130-tabel-overzicht-raaien, results="asis", out.width="100%"}
+
+caption_raaien <- "Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72)."
+dumtab("130-tabel-overzicht-raaien", caption_raaien)
+
+knitr::include_graphics(paste0(pad_tabellen, "Tabel_MONEOSraaien.png"))
+
+```
+
+<br/>
+
+```{r 130-figuur-raaien-BEZ, fig.cap=caption_BEZ, out.width="47%", fig.show="hold"}
+
+caption_BEZ <- "Raaien in de Beneden Zeeschelde"
+
+knitr::include_graphics(str_c(pad_figuren, c("GBSa.png", "ODa.png", "DO.png", "GSb.png", "GSc.png", "LH.png", "LP.png", "KPb.png", "KPe.png", "GW.png", "HO.png")))
+
+```
+
+<br/>
+
+```{r 130-figuur-raaien-BOZ, fig.cap=caption_BOZ, out.width="46%", fig.show="hold"}
+
+caption_BOZ <- "Raaien in de Boven Zeeschelde"
+
+knitr::include_graphics(str_c(pad_figuren, c("KV.png", "NOTb.png", "NOTc.png", "BAL.png", "TB.png", "WE.png", "BR.png", "PD.png", "MK.png", "KRb.png", "APa.png", "APc.png", "BM.png")))
+
+```
+
+<br/>
 
 ## Referenties
 
