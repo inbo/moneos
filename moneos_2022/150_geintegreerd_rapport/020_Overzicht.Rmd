@@ -23,6 +23,8 @@ library(readxl)
 library(kableExtra)
 library(rprojroot) ## workaround pad
 library(lubridate, warn.conflicts = FALSE)
+library(INBOtheme)
+
 ```
 
 
@@ -46,7 +48,7 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 __Gunther Van Ryckegem__
 
 ## Overzicht
-In dit hoofdstuk wordt op vraag van de projectgroep Monitoring en Databeheer een overzicht gegeven van de natuurontwikkelingsprojecten die reeds uitgevoerd zijn in de Zeeschelde, met weergave van de voornaamste karakteristieken van het gebied. Onderstaande informatie is beschikbaar gemaakt via het online portaal http://www.abpmer.net/omreg/. Deze website omvat een databank met uitgevoerde estuariene natuurontwikkelingsprojecten.
+In dit hoofdstuk wordt een overzicht gegeven van de natuurontwikkelingsprojecten die reeds uitgevoerd zijn in de Zeeschelde, met weergave van de voornaamste karakteristieken van het gebied. Onderstaande informatie is beschikbaar gemaakt via het online portaal http://www.abpmer.net/omreg/. Deze website omvat een databank met uitgevoerde estuariene natuurontwikkelingsprojecten.
 
 Voor details over de uitvoering en de initiele evoluties in de ontpolderingen wordt verwezen naar Van de Neucker et al., (2007) en Speybroeck et al. (2011). De evoluties in de GGG’s[^footnote-020-1] worden opgevolgd door Universiteit Antwerpen (Maris et al., 2019). In totaal werd er sinds 2003 ruim 400 ha aan estuariene natuurontwikkeling gerealiseerd (Tabel \@ref(tab:020-tabel-natuurontwikkelingsprojecten)).
 
@@ -65,18 +67,14 @@ options(knitr.kable.NA = '')
 tabel_natuurontwikkelingsprojecten[c(7,10),3] <- sapply(tabel_natuurontwikkelingsprojecten[c(7,10),3], 
                                                        function(x) paste0(x, footnote_marker_number(1)))
 
-tabel_natuurontwikkelingsprojecten[c(10),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(10),4], 
+tabel_natuurontwikkelingsprojecten[c(17),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(16),4], 
                                                        function(x) paste0(x, footnote_marker_number(2)))
 
-tabel_natuurontwikkelingsprojecten[c(15),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(15),4], 
+tabel_natuurontwikkelingsprojecten[c(17),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(16),4], 
                                                        function(x) paste0(x, footnote_marker_number(3)))
 
-tabel_natuurontwikkelingsprojecten[c(16),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(16),4], 
+tabel_natuurontwikkelingsprojecten[c(17),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(16),4], 
                                                        function(x) paste0(x, footnote_marker_number(4)))
-tabel_natuurontwikkelingsprojecten[c(16),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(16),4], 
-                                                       function(x) paste0(x, footnote_marker_number(5)))
-tabel_natuurontwikkelingsprojecten[c(16),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(16),4], 
-                                                       function(x) paste0(x, footnote_marker_number(6)))
 
 
 
@@ -87,20 +85,46 @@ tabel_natuurontwikkelingsprojecten %>%
              escape = F) %>% 
     kable_styling(latex_options = c("scale_down"),
                   font_size = 12) %>%
-  footnote(number = c("met koker verbonden (natuurlijk getijpatroon en dynamiek is beïnvloed)", 
-                       "oppervlakte ecotopenkaart 2018",
-                       "oppervlakte ecotopenkaart 2016",
-                       "in de loop van 2017 werd nog een grondstock opgeruimd en toegevoegd aan de ontpoldering (+ 2.2 ha)"),
-                       "in de zomer van 2019 werd een geul gegraven in het westelijk deel van de Wijmeers en ging estuariene oppervlakte tijdelijk verloren dor de aanleg van een zandstock",
-                       "ontpoldering afgesloten voor getij tussen maart 2020 en april 2021 voor de aanleg van een vloedschaar in oostelijk deel",
+  footnote(number = c("met koker verbonden (natuurlijk getijpatroon en dynamiek is beïnvloed)",
+                      "in de loop van 2017 werd nog een grondstock opgeruimd en toegevoegd aan de ontpoldering (+ 2.2 ha)"),
+           "in de zomer van 2019 werd een geul gegraven in het westelijk deel van de Wijmeers en ging estuariene oppervlakte tijdelijk verloren door de aanleg van een zandstock",
+           "ontpoldering afgesloten voor getij tussen maart 2020 en april 2021 voor de aanleg van een vloedschaar in oostelijk deel",
            threeparttable = TRUE)
 
 ```
 
+<br/> 
 
-## Conclusie recente ontwikkelingen
+```{r 020-figuur-oppervlakte-estuariene-natuurontwikkeling, fig.cap=cap_oppervlakte, out.width="80%"}
 
-In 2019 werden de dijkwerken tussen Lillo en Kruisschans afgewerkt (Verlegde Groot Schijn uitwatering). De bepaling van de estuariene ecotoopoppervlakte zal kunnen gebeuren in functie van de ecotopenkaart 2020 (+/- 1 ha). In de lente en zomerperiode van 2019 was de westelijke zone van Wijmeers tijdelijk geen estuarien gebied (+/- 3.5 ha) en kon het dus geen estuariene systeemfuncties vervullen.Vanaf maart 2020 tot april 2021 was de volledige Wijmeers inactief als estuarien gebied door werkzaamheden.
+fig_natuurontwikkeling_opp <- read_excel(paste0(pad_tabellen, "020_Overzicht_tabellen.xlsx"), 
+    sheet = "Blad2", .name_repair = "minimal")
+
+# fig_natuurontwikkeling_opp$Realisatie <- format(tabel_natuurontwikkelingsprojecten$Realisatie, format="%Y-%m")
+# fig_natuurontwikkeling_opp$Realisatie <- as.Date(fig_natuurontwikkeling_opp$Realisatie)
+fig_natuurontwikkeling_opp$Sigmaplan <- as.factor(fig_natuurontwikkeling_opp$`Sigmaplan Estuarien gebied`)
+
+fig_natuurontwikkeling_opp %>%
+  arrange(Realisatie) %>% 
+  mutate(cs = cumsum(Opp)) %>% 
+  ggplot(aes(Realisatie, cs, colour = Sigmaplan)) +
+  geom_point(size = 2)+
+  xlab("Datum realisatie project")+
+  ylab("Cumulatieve oppervlakte (ha)")+
+  theme(axis.text.x = element_text(angle = 0),
+        legend.position = "bottom",
+        legend.title = element_blank())
+ggsave(paste0(pad_figuren, "10_figuur_oppervlakte_estuariene_natuurontwikkeling.jpg"))
+
+cap_oppervlakte <- "Cumulatieve oppervlakte gerealiseerde estuariene natuurontwikkelingsgebieden. Blauwe punten betreffen projecten van het geactualiseerde Sigmaplan; groene punten zijn andere natuurontwikkelingsprojecten."
+
+# knitr::include_graphics(paste0(pad_figuren, "10_figuur_oppervlakte_estuariene_natuurontwikkeling.jpg"))  
+```
+
+
+## Recente ontwikkelingen
+
+Vanaf maart 2020 tot april 2021 was de volledige Wijmeers inactief als estuarien gebied door werkzaamheden. Het Groot Schoor te Hamme werd als ontpoldering gerealiseerd in juli 2021. In maart 2022 werd de Grote vijver Noord als GGG gerealiseerd. In juni 2021 werd ook de ontpoldering/dijkverlegging te Fort Filip gerealiseerd. De exacte netto oppervlakte winst moet nog bepaald worden op basis van de ecotopenkaart 2021 (ongeveer 1-2 hectare). Daarnaast streeft dit project ook naar een habitatkwaliteitsverbetering van een aangrenzend - hoogdynamische zone naar een laagdynamischer zone.
 
 ## Referenties
 
