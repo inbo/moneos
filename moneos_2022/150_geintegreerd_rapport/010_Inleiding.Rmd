@@ -125,19 +125,20 @@ Deze INBO MONEOS data is ook de basis voor de ecologische toestandsbepaling van 
 
 tabel_indeling_schelde_estuarium <- read_excel(paste0(pad_tabellen, "010_Inleiding_tabellen.xlsx"),
     sheet = "indeling-schelde-estuarium2", .name_repair = "minimal") %>%
-  mutate_all(~replace_na(., ""))
+  mutate_all(~replace_na(., "")) %>% 
+  select(-`Model-eenheid`)
 
 cap_indeling_schelde_estuarium <- "Ruimtelijke indeling van het Schelde-estuarium volgens de Evaluatie methodiek (EM), KRW en saliniteitszones."
 
 footnote_text <- "n.v.t. : Deel van Zeeschelde niet beschouwd in Evaluatiemethodiek. Zou onderdeel kunnen worden van Z7. Ook wordt het traject Tijarm Merelbeke-Zwijnaarde (getijde Zeeschelde) niet gerekend tot Zeeschelde I in de KRW indeling. Dit zou beter wel deel worden van deze zone."
 
 tabel_indeling_schelde_estuarium %>%
-  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
-  mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
-  {.[nrow(.)-1,c(1,2,5)] <- map(.[nrow(.)-1,c(1,2,5)],
+  mutate_all(~replace_na(., "")) %>% 
+  mutate_all(~cell_spec(., color = "black")) %>% 
+  {.[nrow(.)-1,c(1,2,3)] <- map(.[nrow(.)-1,c(1,2,3)],
                                 ~paste0(.x, footnote_marker_symbol(1)))
   .} %>%
-  {.[nrow(.),c(1,2,4,5)] <- map(.[nrow(.),c(1,2,4,5)],
+  {.[nrow(.),c(1,2,3,5)] <- map(.[nrow(.),c(1,2,3,5)],
                                 ~paste0(.x, footnote_marker_symbol(1)))
   .} %>%
   knitr::kable(# "latex",
@@ -146,38 +147,18 @@ tabel_indeling_schelde_estuarium %>%
     caption = cap_indeling_schelde_estuarium) %>%
   kable_styling(latex_options = c("scale_down"),
                 font_size = 15) %>%
-  column_spec(1:3,width = "1in") %>%
-  collapse_rows(columns = 1:7, latex_hline = "full", valign = "middle") %>%
-  footnote(symbol = footnote_text %>%
-             cell_spec(color = "black"),
+  # column_spec(1:3,width = "1in") %>%
+  collapse_rows(columns = 1:6, latex_hline = "full", valign = "middle") %>%
+  footnote(symbol = footnote_text,
+           # %>%
+             # cell_spec(color = "black"),
            escape = FALSE,
            threeparttable = TRUE)
 
-
-# tabel_indeling_schelde_estuarium %>%
-#   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
-#   mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
-#   {.[nrow(.)-1,c(1,2,5)] <- map(.[nrow(.)-1,c(1,2,5)],
-#                                 ~paste0(.x, footnote_marker_symbol(1)))
-#   .} %>%
-#   {.[nrow(.),c(1,2,4,5)] <- map(.[nrow(.),c(1,2,4,5)],
-#                                 ~paste0(.x, footnote_marker_symbol(1)))
-#   .} %>%
-#   knitr::kable(# "latex",
-#     escape = FALSE,
-#     booktabs = T,
-#     caption = cap_indeling_schelde_estuarium) %>%
-#   kable_styling(latex_options = c("scale_down"),
-#                 font_size = 15) %>%
-#   column_spec(1:3,width = "1in") %>%
-#   collapse_rows(columns = 1:7, latex_hline = "full", valign = "middle") %>%
-#   footnote(symbol = footnote_text %>%
-#              cell_spec(color = "black"),
-#            escape = FALSE,
-#            threeparttable = TRUE)
-
 ```
+
 <br/>  
+
 \newpage
 \begin{landscape}
 
@@ -186,8 +167,10 @@ tabel_indeling_schelde_estuarium %>%
 knitr::include_graphics(paste0(pad_figuren, "010_kaart_gebiedsindeling.png"))
 
 ```
+
 \end{landscape}
 \newpage
+
 ## Referenties 
 
 EMSE (2021). Evaluatiemethodiek Schelde-estuarium: Update 2021. Antea, Bureau Waardenburg, Deltares, UAntwerpen, UGent, INBO en NIOZ.
