@@ -1615,6 +1615,7 @@ data_split <-
 ggp_all <-
   relatieve_aantallen_EMSE %>% 
   filter(str_detect(salgroep, "diadr")) %>% 
+  # filter(jaar > 2014) %>% 
   ggplot(aes(jaar, relatief_aantal*aantal_per_kub*mult_kub, fill = soort, color = soort)) +
   geom_col(width = 0.7,
            alpha = 0.9,
@@ -1977,9 +1978,9 @@ data_ankerkuil %>%
   filter(soort %in% sleutelsoorten_EMSE$soort,
          str_detect(salgroep, "mari")) %>% 
   left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
-  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
+#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
   group_by(jaar, soort, scheldezone) %>% 
-  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
+  summarise(aantal_per_kub = mean(aantal_per_kub)*mult_kub) %>% 
   ungroup() %>% 
   mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
@@ -1992,10 +1993,12 @@ data_ankerkuil %>%
   labs(# title = "estuariene soorten en mariene migranten",
        y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) + 
   facet_wrap(~soort,
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+             scales = "free_y",
+             ncol = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1),
+        legend.position = "top")
 
-ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marien.jpg"), width = 9, height = 5)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marien.jpg"), width = 6, height = 8)
 
 
 data_ankerkuil %>% 
@@ -2003,9 +2006,9 @@ data_ankerkuil %>%
   filter(soort %in% sleutelsoorten_EMSE$soort,
          str_detect(salgroep, "diadr")) %>% 
   left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
-  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
+#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
   group_by(jaar, soort, scheldezone) %>% 
-  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
+  summarise(aantal_per_kub = mean(aantal_per_kub)*mult_kub) %>% 
   ungroup() %>% 
   mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
@@ -2018,10 +2021,12 @@ data_ankerkuil %>%
   labs(# title = "diadrome soorten",
        y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) + 
   facet_wrap(~soort,
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+             scales = "free_y",
+             ncol = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1),
+        legend.position = "top")
 
-ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadroom.jpg"), width = 9, height = 4)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadroom.jpg"), width = 7, height = 7)
 
 
 data_ankerkuil %>% 
@@ -2029,9 +2034,9 @@ data_ankerkuil %>%
   filter(soort %in% sleutelsoorten_EMSE$soort,
          str_detect(salgroep, "zoet")) %>% 
   left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
-  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
+#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
   group_by(jaar, soort, scheldezone) %>% 
-  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
+  summarise(aantal_per_kub = mean(aantal_per_kub)*mult_kub) %>% 
   ungroup() %>% 
   mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
@@ -2045,10 +2050,101 @@ data_ankerkuil %>%
   labs(# title = "zoetwatersoorten",
        y = expr(paste("gem. aantal ind. / ", !!mult_kub, m^3))) + 
   facet_wrap(~soort,
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+             scales = "free_y",
+             ncol = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1),
+        legend.position = "top")
 
-ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.jpg"), width = 9, height = 5)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.jpg"), width = 6, height = 8)
+
+```
+
+
+```{r sleutelsoorten biomassa}
+
+data_ankerkuil %>% 
+  left_join(locatie_scheldezone) %>% 
+  filter(soort %in% sleutelsoorten_EMSE$soort,
+         str_detect(salgroep, "mari")) %>% 
+  left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
+#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
+  group_by(jaar, soort, scheldezone) %>% 
+  summarise(gewicht_per_kub = mean(gewicht_per_kub)*mult_kub) %>% 
+  ungroup() %>% 
+  mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
+         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
+  ggplot(aes(jaar, gewicht_per_kub, color = scheldezone, fill = scheldezone)) +
+  geom_col(position = position_dodge(width = 0.9),
+           size = 0.5,
+           width = 0.7,
+           alpha = 0.8) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  labs(# title = "estuariene soorten en mariene migranten",
+       y = expr(paste("gem. biomassa [g/", !!mult_kub, m^3, "]"))) + 
+  facet_wrap(~soort,
+             scales = "free_y",
+             ncol = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1),
+        legend.position = "top")
+
+ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_marien.jpg"), width = 6, height = 8)
+
+
+data_ankerkuil %>% 
+  left_join(locatie_scheldezone) %>% 
+  filter(soort %in% sleutelsoorten_EMSE$soort,
+         str_detect(salgroep, "diadr")) %>% 
+  left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
+#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
+  group_by(jaar, soort, scheldezone) %>% 
+  summarise(gewicht_per_kub = mean(gewicht_per_kub)*mult_kub) %>% 
+  ungroup() %>% 
+  mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
+         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
+  ggplot(aes(jaar, gewicht_per_kub, color = scheldezone, fill = scheldezone)) +
+  geom_col(position = position_dodge(width = 0.9),
+           size = 0.5,
+           width = 0.7,
+           alpha = 0.8) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  labs(# title = "diadrome soorten",
+       y = expr(paste("gem. biomassa [g/", !!mult_kub, m^3, "]"))) + 
+  facet_wrap(~soort,
+             scales = "free_y",
+             ncol = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1),
+        legend.position = "top")
+
+ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_diadroom.jpg"), width = 7, height = 7)
+
+
+data_ankerkuil %>% 
+  left_join(locatie_scheldezone) %>% 
+  filter(soort %in% sleutelsoorten_EMSE$soort,
+         str_detect(salgroep, "zoet")) %>% 
+  left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
+#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
+  group_by(jaar, soort, scheldezone) %>% 
+  summarise(gewicht_per_kub = mean(gewicht_per_kub)*mult_kub) %>% 
+  ungroup() %>% 
+  mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
+         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
+  ggplot(aes(jaar, gewicht_per_kub, color = scheldezone, fill = scheldezone)) +
+  geom_col(position = position_dodge(width = 0.9),
+           size = 0.5,
+           width = 0.7,
+           alpha = 0.8) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
+  # scale_x_continuous(breaks = vroegste_jaar:laatste_jaar) +
+  labs(# title = "zoetwatersoorten",
+       y = expr(paste("gem. biomassa [g/", !!mult_kub, m^3, "]"))) + 
+  facet_wrap(~soort,
+             scales = "free_y",
+             ncol = 2) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1),
+        legend.position = "top")
+
+ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_zoet.jpg"), width = 6, height = 8)
 
 ```
 
