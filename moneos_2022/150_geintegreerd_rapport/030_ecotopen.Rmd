@@ -42,7 +42,7 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 ```
 
 
-```{r 030-meta_data, eval=FALSE, include=FALSE}
+```{r 030-meta_data}
 
 meta_data <- 
   read_delim(paste0(pad_data, "meta_data.csv"),
@@ -65,20 +65,36 @@ __Alexander Van Braeckel & Amber Mertens__
 
 ## Inleiding
 
-Om de evolutie van de diversiteit van habitats op te volgen vormt de ecotopenkaart en haar basiskaarten, de fysiotopenkaart en een geomorfologische kaart het belangrijkste instrument. Deze kaarten worden voor de Beneden-Zeeschelde jaarlijks gemaakt, voor de Boven-Zeeschelde, Rupel en Durme is dit 3-jaarlijks. Naast de ecotopenkaart 2020 van de Beneden-Zeeschelde, zal ook de ecotopenkaart 2019 van de Boven-Zeeschelde, Rupel en Durme gerapporteerd worden in dit MONEOSrapport. Voor de ecotopenkaart 2019 van de Beneden-Zeeschelde wordt verwezen naar Van Braeckel & Mertens (2021). In de ecotopenkaart worden natuurontwikkelingsprojecten (NOP’s) zoals ontpolderingen, GGG’s en dijkverleggingen opgenomen wanneer deze een open aansluiting hebben met de Beneden-Zeeschelde. 
+Om de evolutie van de diversiteit van habitats op te volgen vormt de ecotopenkaart en haar basiskaarten, de fysiotopenkaart en een geomorfologische kaart het belangrijkste instrument. Deze kaarten worden voor de Beneden-Zeeschelde jaarlijks gemaakt, voor de Boven-Zeeschelde, Rupel en Durme is dit 3-jaarlijks. Naast de ecotopenkaart `r laatste_jaar` van de Beneden-Zeeschelde, zal ook de ecotopenkaart 2019 van de Boven-Zeeschelde, Rupel en Durme besproken worden in dit MONEOSrapport. Voor de ecotopenkaart 2019 van de Beneden-Zeeschelde wordt verwezen naar Van Braeckel & Mertens (2021). In de ecotopenkaart worden natuurontwikkelingsprojecten (NOP’s) zoals ontpolderingen, GGG’s en dijkverleggingen opgenomen wanneer deze een open aansluiting hebben met de Beneden-Zeeschelde. 
 
-Een ecotopenkaart wordt samengesteld uit enerzijds een geomorfologische kaart en anderzijds een fysiotopenkaart Tabel \@ref(tab:030-tabel-1-tabel-klassen-oud). Voor een uitgebreide bespreking van materiaal en methode word verwezen naar Van Braeckel & Elsen (2018). In 2022 werd een nieuwe methode toegepast om de fysiotopenkaart op te stellen. De ontwikkeling van de nieuwe methode wordt uitgebreid besproken in Van Braeckel et al. (2018) voor het subtidaal en in Van Braeckel et al. (2020) voor het intertidaal. 
+Een ecotopenkaart wordt samengesteld uit enerzijds een geomorfologische kaart en anderzijds een fysiotopenkaart (Tabel \@ref(tab:030-tabel-1-tabel-klassen-oud)). Voor een uitgebreide bespreking van materiaal en methode wordt verwezen naar Van Braeckel & Elsen (2018). Hier worden kort de verschillende ecotopen beschreven. 
 
-In het subtidaal wordt onder de nieuwe methode de hydrodynamiek in rekening gebracht om een onderscheid te maken tussen hoog- en laagdynamische habitats. De grenswaarden voor de hydrodynamische indeling van het subtidaal zijn gebaseerd op de maximale stroomsnelheid bij vloed, berekend volgens het Scaldis 3D-model van het Waterbouwkundig Laboratorium, en variëren naar gelang de waterdiepte onder het gemiddeld laagwater bij springtij, waarvoor de 30% laagwaterfrequentie genomen wordt (LW30). In het ondiep subtidaal (0-2m onder LW30) is de maximale stroomsnelheid voor laagdynamisch habitat 1.01 m/s. In het matig diep subtidaal (2-5m onder LW30) is dit 0.92 m/s en in het diep subtidaal (5-10m onder LW30) wordt 0.83 m/s gehanteerd. Het zeer diep subtidaal (>10m onder LW30) wordt volledig als hoogdynamisch geklasseerd. 
+In de **sublitorale zone** worden de verschillende ecotopen bepaald op basis van waterdiepte onder het gemiddeld laagwater bij springtij, waarvoor het 30e percentiel van het laagwater genomen wordt (LW30). Dit leidt tot de volgende 3 ecotopen:
 
-De voornaamste verandering in het intertidaal is de aanpassing van de grenswaarden om onderscheid te maken tussen het laag, middelhoog en hoog slik. In de nieuwe methode zijn deze grenswaarden afhankelijk van de saliniteit. In de oude methode wordt het 25e percentiel van de droogvalduur (DD25) genomen voor de overgang van laag naar middelhoog slik en het 75e (DD75) voor de overgang van middelhoog naar hoog slik. In de nieuwe methode blijft de overgang tussen laag en middelhoog slik gebaseerd op DD25 in het brakke deel. In het zoete deel wordt de nieuwe grenswaarde DD35. Voor de overgang tussen middelhoog en hoog slik wordt DD60 aangehouden, zowel in het brakke als het zoete deel.
+* Diep subtidaal: >5m onder LW30
+* Matig diep subtidaal: 2-5m onder LW30
+* Ondiep subtidaal: 0-2m onder LW30
 
-Deze nieuwe fysiotopenkaart leidt na combinatie met de geomorfologische kaart tot de nieuwe subtidale ecotopen in Tabel \@ref(tab:030-tabel-1-tabel-klassen-nieuw). In de nieuwe ecotopenkaart wordt tot slot nog rekening gehouden met de hellingsgraad in de zachte slikzones om zo zachte slikken met een steile helling (>25%) aan te duiden, maar deze worden niet als apart ecotoophabitat opgenomen. Wel wordt een vermelding gemaakt van de oppervlaktes.
+Zoals te zien in Tabel \@ref(tab:030-tabel-1-tabel-klassen-oud) wordt er bij de fysiotopen ook een categorie zeer diep subtidaal onderscheiden. Dit heeft een diepte van >10m onder LW30. In de ecotopen wordt dit samengenomen met het diep subtidaal.
 
-In het supralitoraal fysiotoop, onderscheiden we volgende ecotopen:   
+In de **litorale zone** wordt een verdeling gemaakt die enerzijds gebaseerd is op de fysiotopen en anderzijds op de geomorfologie. De ondergrens van het litorale fysiotoop wordt bepaald door LW30 en voor de bovengrens wordt het gemiddeld hoogwater bij doodtij genomen, gebaseerd op het 85e percentiel van het hoogwater (HW85). Voor de verdeling binnenin het litorale fyiosoop wordt gebruik gemaakt van het 25e en 75e percentiel van de droogvalduur (DD). 
 
-* De potentiële pionierzone betreft een onbegroeide zone boven gemiddeld hoog water bij doodtij (HW85). In deze zone zou schoruitbreiding met kenmerkende schorvegetatie mogelijk zijn op basis van de hoogteligging maar zijn de hydrodynamische omstandigheden en/of de waterverzadiging niet geschikt;  
-*	Supralitoraal hard natuurlijk: een zone bestaande uit klei of veen (vaak door erosie vrijgekomen) hoger gelegen dan gemiddeld hoog water bij doodtij (HW85);  
+* Laag slik: tussen LW 30% en DD 25%
+* Middelhoog slik: tussen DD 25% en DD 75%
+* Hoog slik: tussen DD 75% en HW 85%
+
+In de geomorflogische kaart wordt vervolgens een onderscheid gemaakt tussen volgende klassen:
+
+* Zacht substraat
+* Hard natuurlijk
+* Breuksteen (hard antropogeen)
+
+De combinatie van deze geomorfologische klassen en de fysitopen geeft dan de ecotopen zoals weergegeven in Tabel \@ref(tab:030-tabel-1-tabel-klassen-oud) .
+
+Ten slotte onderscheiden we volgende ecotopen in het **supralitoraal**:   
+
+* Potentiële pionierzone: de onbegroeide zone boven HW85. In deze zone zou schoruitbreiding met kenmerkende schorvegetatie mogelijk zijn op basis van de hoogteligging maar zijn de hydrodynamische omstandigheden en/of de waterverzadiging niet geschikt;  
+*	Supralitoraal hard natuurlijk: een zone bestaande uit klei of veen (vaak door erosie vrijgekomen) hoger gelegen dan HW85;  
 *	Schor: de zone begroeid met vegetatie kenmerkend voor estuariene of fluviatiele omstandigheden;  
 *	Getijdeplas: grote waterplas binnen de schorzone;  
 *	Supralitoraal hard antropogeen: zones boven HW85 en bedekt met door de mens aangelegd hard substraat waar vegetatieontwikkeling beperkt mogelijk is en dus een beperkte ecologische waarde aanwezig is;  
@@ -89,10 +105,42 @@ Daarnaast bestaat ook nog het ecotoop antropogeen voor verharde zone zonder enig
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-1-tabel-klassen-oud) Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen (oude methode).
+Table: (\#tab:030-tabel-1-tabel-klassen-oud) Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_1_tabel_klassen_E1.png")`){out.width="100%"} |
 | -- |
+
+\arrayrulecolor{black}
+
+### Aangepaste ecotoopindeling
+
+In 2022 werd een nieuwe methode toegepast om de fysiotopenkaart op te stellen, waardoor er een aangepaste ecotoopindeling onstaan is. De verantwoording en ontwikkeling van de nieuwe methode wordt uitgebreid besproken in Van Braeckel et al. (2018) voor het subtidaal en in Van Braeckel et al. (2020) voor het intertidaal. Hier worden de voornaamste veranderingen kort toegelicht.
+
+In het **subtidaal** wordt onder de nieuwe methode de hydrodynamiek in rekening gebracht om een onderscheid te maken tussen hoog- en laagdynamische habitats. De grenswaarden voor de hydrodynamische indeling van het subtidaal zijn gebaseerd op de maximale stroomsnelheid bij vloed, berekend volgens het Scaldis 3D-model van het Waterbouwkundig Laboratorium. De grenzen variëren naar gelang de waterdiepte onder LW30 (Tabel \@ref(tab:030-tabel-1-tabel-dynamiek-ecotopen)). In het ondiep subtidaal is de maximale stroomsnelheid voor laagdynamisch habitat 1.01 m/s. In het matig diep subtidaal is dit 0.92 m/s en in het diep subtidaal wordt 0.83 m/s gehanteerd. Het zeer diep subtidaal wordt volledig als hoogdynamisch geklasseerd. 
+
+\arrayrulecolor{white}
+
+Table: (\#tab:030-tabel-1-tabel-dynamiek-ecotopen) Grenzen voor hoogdynamisch habitat op basis van maximale stroomsnelheid bij vloed, per diepteklasse (waterdiepte onder het gemiddeld laagwater bij springtij volgens de 30% laagwaterfrequentie).
+
+| ![](`r paste0(pad_tabellen, "003_tabel_1_dynamiek_ecotopen.png")`){out.width="100%"} |
+| -- |
+
+\arrayrulecolor{black}
+
+De voornaamste verandering in het **intertidaal** is de aanpassing van de grenswaarden om onderscheid te maken tussen het laag, middelhoog en hoog slik. In de nieuwe methode zijn deze grenswaarden afhankelijk van de saliniteit, waarbij er een verschil is tussen de brakke of mesohaliene (MH) zone en de zoete zone bestaande uit zoet korte & lange verblijftijd (ZKVT, ZLVT) en oligohalien (Tabel \@ref(tab:030-tabel-1-tabel-slik-ecotopen)). In de oude methode wordt het 25e percentiel van de droogvalduur (DD25) genomen voor de overgang van laag naar middelhoog slik. In de nieuwe methode blijft dit DD25 in het brakke deel, maar in het zoete deel wordt dit DD35. Voor de overgang van middelhoog naar hoog slik wordt DD75 gebruikt in de oude methode. In de nieuwe methode wordt dit DD60, zowel voor het brakke als het zoete deel.
+
+\arrayrulecolor{white}
+
+Table: (\#tab:030-tabel-1-tabel-slik-ecotopen) Grenzen voor slik fysiotopen oude en nieuwe methode op basis van verschillende percentielen van laagwater (LW), hoogwater (HW), en droogvalduur (DD).
+
+| ![](`r paste0(pad_tabellen, "003_tabel_1_slik_ecotopen.png")`){out.width="100%"} |
+| -- |
+
+\arrayrulecolor{black}
+
+Deze nieuwe fysiotopenkaart leidt na combinatie met de geomorfologische kaart tot de nieuwe ecotoopindeling voor het sublitoraal in Tabel \@ref(tab:030-tabel-1-tabel-klassen-nieuw). In de nieuwe ecotopenkaart wordt tot slot nog rekening gehouden met de hellingsgraad in de zachte slikzones om zachte slikken met een steile helling (>25%) aan te duiden, maar deze worden niet als apart ecotoophabitat opgenomen. Wel wordt een vermelding gemaakt van de oppervlaktes.
+
+\arrayrulecolor{white}
 
 Table: (\#tab:030-tabel-1-tabel-klassen-nieuw) Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen (nieuwe methode).
 
@@ -106,15 +154,15 @@ Table: (\#tab:030-tabel-1-tabel-klassen-nieuw) Fysiotoopklassen en geomorftypes 
 
 ## Ecotopen in de Zeeschelde
 
-### Ecotopen van de Beneden-Zeeschelde in 2020
+### Ecotopen van de Beneden-Zeeschelde in `r laatste_jaar`
 
 #### Originele methode
 
-De ecotopenkaart van de Beneden-Zeeschelde in 2020 is te zien in Figuur \@ref(fig:030-figuur-kaart-bez). 
+De ecotopenkaart van de Beneden-Zeeschelde in `r laatste_jaar` is te zien in Figuur \@ref(fig:030-figuur-kaart-bez). 
 
-Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-BEZ) toont de oppervlaktes per ecotoop in de Beneden-Zeeschelde voor elk jaar vanaf 2010. De korte en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-tabel-3-tabel-evolutie-BEZ).
+Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-BEZ) toont de oppervlaktes per ecotoop in de Beneden-Zeeschelde voor elk jaar vanaf `r vroegste_jaar`. De korte en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-tabel-3-tabel-evolutie-BEZ).
 
-In 2020 is het **sublitoraal** licht afgenomen ten opzichte van 2019 (Tabel \@ref(tab:030-tabel-3-tabel-evolutie-BEZ)), maar de oppervlaktes blijven groter dan deze in 2018 (Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-BEZ)). 
+In `r laatste_jaar` is het **sublitoraal** licht afgenomen ten opzichte van 2019 (Tabel \@ref(tab:030-tabel-3-tabel-evolutie-BEZ)), maar de oppervlaktes blijven groter dan deze in 2018 (Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-BEZ)). 
 
 In het **litoraal** leidt een toename van het laag slik zacht substraat en een iets grotere afname van het middelhoog slik zacht substraat tot een totale kleine afname zacht slik. De oppervlakte van het laag slik zacht substraat is, na een daling in 2019, weer vergelijkbaar met de hoeveelheid in 2018. Het middelhoog slik zacht substraat daarentegen is met bijna 16 ha afgenomen sinds 2018. Het hoog slik zacht substraat is stabiel gebleven.
 
@@ -124,9 +172,9 @@ In het **supralitoraal** is een grote toename waargenomen van de oppervlakte pot
 <br/>
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-2-tabel-oppervlakte-BEZ) Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde tussen 2010 en 2020.
+Table: (\#tab:030-tabel-2-tabel-oppervlakte-BEZ) Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde tussen `r vroegste_jaar` en `r laatste_jaar`.
 
-| ![](`r paste0(pad_tabellen, "030_tabel_2_Oppervlakte_BEZ_2010_2020_E1.PNG")`){out.width="80%" out.height="80%"} |
+| ![](`r paste0(pad_tabellen, "030_tabel_2_Oppervlakte_BEZ_2010_2020_E1.PNG")`){out.width="100%"} |
 | -- |
 
 \arrayrulecolor{black}
@@ -135,7 +183,7 @@ Table: (\#tab:030-tabel-2-tabel-oppervlakte-BEZ) Oppervlaktes en oppervlakteperc
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-3-tabel-evolutie-BEZ) Lange- en korte termijnevolutie in de Beneden-Zeeschelde tussen 2010 en 2020.
+Table: (\#tab:030-tabel-3-tabel-evolutie-BEZ) Lange- en korte termijnevolutie in de Beneden-Zeeschelde tussen `r vroegste_jaar` en `r laatste_jaar`.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_3_evolutie_BEZ_E1.PNG")`){out.width="100%"} |
 | -- |
@@ -152,7 +200,7 @@ De oppervlakte potentiele pionierzone was aanzienlijk gestegen in het volledige 
 
 \arrayrulecolor{white}
 
-Table: (\#tab:040-tabel-4-tabel-eng-BEZ) Ecotooparealen in de ‘enge planimetrie’ van de  Beneden‐Zeeschelde zonder deNOP’s of ontpolderingen, dijkverleggingen en aantakkingen tussen 2010 en 2020.
+Table: (\#tab:040-tabel-4-tabel-eng-BEZ) Ecotooparealen in de ‘enge planimetrie’ van de  Beneden‐Zeeschelde zonder deNOP’s of ontpolderingen, dijkverleggingen en aantakkingen tussen `r vroegste_jaar` en `r laatste_jaar`.
 
 | ![](`r paste0(pad_tabellen, "030_tabel4_Oppervlakte_EngePlanimetrie_BEZ_2020.PNG")`){out.width="100%"} |
 | -- |
@@ -168,7 +216,7 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_1_Evolutie_NOPs.png"
 
 ```
 
-
+\newpage
 
 ```{r 030-figuur-kaart-bez, fig.cap=figuur_ecotopenkaart_bez, out.width="100%"}
 
@@ -178,9 +226,11 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_1_2020.png"))
 
 ```
 
+\newpage
+
 #### Aangepaste methode
 
-Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-BEZ-2) toont de oppervlaktes per ecotoop in de Beneden-Zeeschelde 2020 volgens de aangepaste methode. 
+Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-BEZ-2) toont de oppervlaktes per ecotoop in de Beneden-Zeeschelde `r laatste_jaar` volgens de aangepaste methode. 
 
 In het **sublitoraal** is een onderverdeling gemaakt tussen hoog- en laagdynamisch subtidaal, op basis van de maximale stroomsnelheid bij vloed. De tabel toont dat de diepere delen grotendeels hoogdynamisch zijn, terwijl het ondiep subtidaal gelijker verdeeld is tussen hoog- en laagdynamisch. 
 
@@ -190,10 +240,14 @@ In de andere ecotopen zijn minimale verschillen op te merken, vaak van <0.1 ha. 
 
 In de aangepaste methode wordt ook de helling van de slikken in rekening gebracht. De oppervlaktes per slikecotoop met een steile (>25%) en vlakke (<=25%) helling zijn beschreven in Tabel (\@ref(tab:030-tabel-2a-tabel-oppervlakte-helling-BEZ-2)). Zowel het litoraal zacht substraat als het litoraal hard natuurlijk hebben voornamelijk geen steile hellingen. In het litoraal antropogeen hard substraat is wel een redelijk aandeel steil, namelijk 33.1% van het totaal oppervlak slik hard antropogeen. De overige 66.9% slik hard antropogeen heeft dus een hellingsgraad van kleiner of gelijk aan 25%. 
 
+Figuur \@ref(fig:030-figuur-kaart-vgl) toont hoe de verdeling van het hoog/middelhoog slik zich uit ter hoogte van het Paardenschor/Schor Ouden Doel. Dit is gelegen in het brak gebied waar de oorspronkelijk grens van DD25 gebruikt wordt als bovengrens van het laag slik. Voor de overgang van middelhoog naar hoog slik wordt de nieuwe grens van DD60 gebruikt (t.o.v de oude grens van DD75). 
+
+Figuur \@ref(fig:030-figuur-kaart-vgl-2) toont hoe de verdeling van het hoog/middelhoog slik zich uit ter hoogte van Burchtse Weel. Dit is gelegen in het zoet gebied waar de nieuwe grens van DD35 gebruikt wordt als bovengrens van het laag slik. Voor de overgang van middelhoog naar hoog slik wordt ook de nieuwe grens van DD60 gebruikt (t.o.v de oude grens van DD75). In de kaart volgens de oude methode is er vrijwel geen hoog slik aanwezig, terwijl er in de nieuwe kaart wel een dunne laag hoog slik aanwezig is. In de nieuwe kaart is de laag middelhoog slik ook kleiner aan de ondergrens, waar het laag slik verder doorloopt. 
+
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-2-tabel-oppervlakte-BEZ-2) Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde in 2020, volgens de aangepaste methode.
+Table: (\#tab:030-tabel-2-tabel-oppervlakte-BEZ-2) Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde in `r laatste_jaar`, volgens de aangepaste methode.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_2_Oppervlakte_BEZ_2010_2020_E2.PNG")`){out.width="100%"} |
 | -- |
@@ -203,7 +257,7 @@ Table: (\#tab:030-tabel-2-tabel-oppervlakte-BEZ-2) Oppervlaktes en oppervlaktepe
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-2a-tabel-oppervlakte-helling-BEZ-2) Oppervlaktes en percentages van steile en vlakke slikken in de Beneden-Zeeschelde in 2020.
+Table: (\#tab:030-tabel-2a-tabel-oppervlakte-helling-BEZ-2) Oppervlaktes en percentages van steile en vlakke slikken in de Beneden-Zeeschelde in `r laatste_jaar`.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_2a_Oppervlakte_HellingSlik_BEZ_2020_E2.PNG")`){out.width="100%"} |
 | -- |
@@ -211,12 +265,29 @@ Table: (\#tab:030-tabel-2a-tabel-oppervlakte-helling-BEZ-2) Oppervlaktes en perc
 \arrayrulecolor{black}
 <br/>
 
+\newpage
 
 ```{r 030-figuur-kaart-bez-2, fig.cap=figuur_ecotopenkaart_bez_2, out.width="100%"}
 
 figuur_ecotopenkaart_bez_2 <- "Ecotopenkaart 2020 Beneden-Zeeschelde Aangepaste methode"
 
 knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2_2020.png"))
+
+```
+
+```{r 030-figuur-kaart-vgl, fig.cap=figuur_ecotopenkaart_vgl, out.width="100%"}
+
+figuur_ecotopenkaart_vgl <- "Ecotopenkaart 2020 ter hoogte van Paardenschor in de Beneden-Zeeschelde oude methode (boven) en nieuwe methode (onder)."
+
+knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2020_vgl.png"))
+
+```
+
+```{r 030-figuur-kaart-vgl-2, fig.cap=figuur_ecotopenkaart_vgl_2, out.width="100%"}
+
+figuur_ecotopenkaart_vgl_2 <- "Ecotopenkaart 2020 ter hoogte van Burchtse Weel in de Beneden-Zeeschelde oude methode (boven) en nieuwe methode (onder)."
+
+knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2020_vgl_2.png"))
 
 ```
 
@@ -232,7 +303,7 @@ In het **supralitoraal** is een grote toename waargenomen van de oppervlakte hoo
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-2-tabel-oppervlakte-BOZ) Oppervlaktes en oppervlaktepercentages van ecotopen in de Boven-Zeeschelde tussen 2010 en 2019.
+Table: (\#tab:030-tabel-2-tabel-oppervlakte-BOZ) Oppervlaktes en oppervlaktepercentages van ecotopen in de Boven-Zeeschelde tussen `r vroegste_jaar` en 2019.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_2_Oppervlakte_BOZ_2010_2019.PNG")`){out.width="100%"} |
 | -- |
@@ -243,7 +314,7 @@ Table: (\#tab:030-tabel-2-tabel-oppervlakte-BOZ) Oppervlaktes en oppervlakteperc
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-3-tabel-evolutie-BOZ) Lange- en korte termijnevolutie in de Boven-Zeeschelde tussen 2010 en 2019.
+Table: (\#tab:030-tabel-3-tabel-evolutie-BOZ) Lange- en korte termijnevolutie in de Boven-Zeeschelde tussen `r vroegste_jaar` en 2019.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_3_evolutie_BOZ.PNG")`){out.width="100%"} |
 | -- |
@@ -251,6 +322,7 @@ Table: (\#tab:030-tabel-3-tabel-evolutie-BOZ) Lange- en korte termijnevolutie in
 \arrayrulecolor{black}
 <br/>
 
+\newpage
 
 ```{r 030-figuur-kaart-boz, fig.cap=figuur_ecotopenkaart_boz, out.width="100%"}
 
@@ -273,7 +345,7 @@ In het **supralitoraal** zijn de oppervlaktes vrij stabiel gebleven in absolute 
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-2-tabel-oppervlakte-Rupel) Oppervlaktes en oppervlaktepercentages van ecotopen in de Rupel tussen 2010 en 2019.
+Table: (\#tab:030-tabel-2-tabel-oppervlakte-Rupel) Oppervlaktes en oppervlaktepercentages van ecotopen in de Rupel tussen `r vroegste_jaar` en 2019.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_2_Oppervlakte_Rupel_2010_2019.PNG")`){out.width="100%"} |
 | -- |
@@ -284,13 +356,15 @@ Table: (\#tab:030-tabel-2-tabel-oppervlakte-Rupel) Oppervlaktes en oppervlaktepe
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-3-tabel-evolutie-Rupel) Lange- en korte termijnevolutie in de Rupel tussen 2010 en 2019.
+Table: (\#tab:030-tabel-3-tabel-evolutie-Rupel) Lange- en korte termijnevolutie in de Rupel tussen `r vroegste_jaar` en 2019.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_3_evolutie_Rupel.PNG")`){out.width="100%"} |
 | -- |
 
 \arrayrulecolor{black}
 <br/>
+
+\newpage
 
 ```{r 030-figuur-kaart-rupel, fig.cap=figuur_ecotopenkaart_rupel, out.width="100%"}
 
@@ -312,7 +386,7 @@ In het **supralitoraal** is het schor licht afgenomen, terwijl het hoog supralit
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-2-tabel-oppervlakte-Durme) Oppervlaktes en oppervlaktepercentages van ecotopen in de Durme tussen 2010 en 2019.
+Table: (\#tab:030-tabel-2-tabel-oppervlakte-Durme) Oppervlaktes en oppervlaktepercentages van ecotopen in de Durme tussen `r vroegste_jaar` en 2019.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_2_Oppervlakte_Durme_2010_2019.PNG")`){out.width="100%"} |
 | -- |
@@ -323,7 +397,7 @@ Table: (\#tab:030-tabel-2-tabel-oppervlakte-Durme) Oppervlaktes en oppervlaktepe
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-3-tabel-evolutie-Durme) Lange- en korte termijnevolutie in de Durme tussen 2010 en 2019.
+Table: (\#tab:030-tabel-3-tabel-evolutie-Durme) Lange- en korte termijnevolutie in de Durme tussen `r vroegste_jaar` en 2019.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_3_evolutie_Durme.PNG")`){out.width="100%"} |
 | -- |
@@ -331,6 +405,7 @@ Table: (\#tab:030-tabel-3-tabel-evolutie-Durme) Lange- en korte termijnevolutie 
 \arrayrulecolor{black}
 <br/>
 
+\newpage
 
 ```{r 030-figuur-kaart-durme, fig.cap=figuur_ecotopenkaart_durme, out.width="100%"}
 
@@ -353,7 +428,7 @@ In het **supralitoraal** is het schor licht afgenomen. Het hoog supralitoraal is
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-2-tabel-oppervlakte-RingvaartTijarmZw) Oppervlaktes en oppervlaktepercentages van ecotopen in de Ringvaart en tijarm Zwijnaarde tussen 2010 en 2019.
+Table: (\#tab:030-tabel-2-tabel-oppervlakte-RingvaartTijarmZw) Oppervlaktes en oppervlaktepercentages van ecotopen in de Ringvaart en tijarm Zwijnaarde tussen `r vroegste_jaar` en 2019.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_2_Oppervlakte_RingvaartTijarmZw_2010_2019.PNG")`){out.width="100%"} |
 | -- |
@@ -364,7 +439,7 @@ Table: (\#tab:030-tabel-2-tabel-oppervlakte-RingvaartTijarmZw) Oppervlaktes en o
 
 \arrayrulecolor{white}
 
-Table: (\#tab:030-tabel-3-tabel-evolutie-RingvaartTijarmZw) Korte termijnevolutie in de Ringvaart en tijarm Zwijnaarde tussen 2010 en 2019.
+Table: (\#tab:030-tabel-3-tabel-evolutie-RingvaartTijarmZw) Korte termijnevolutie in de Ringvaart en tijarm Zwijnaarde tussen `r vroegste_jaar` en 2019.
 
 | ![](`r paste0(pad_tabellen, "030_tabel_3_evolutie_RingvaartTijarmZw.PNG")`){out.width="100%"} |
 | -- |
@@ -372,6 +447,7 @@ Table: (\#tab:030-tabel-3-tabel-evolutie-RingvaartTijarmZw) Korte termijnevoluti
 \arrayrulecolor{black}
 <br/>
 
+\newpage
 
 ```{r 030-figuur-kaart-tijarm, fig.cap=figuur_ecotopenkaart_tijarm, out.width="100%"}
 
