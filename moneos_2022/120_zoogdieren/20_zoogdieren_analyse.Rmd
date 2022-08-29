@@ -3,8 +3,6 @@ params:
   hoofdstuk: "120_zoogdieren"
 # knit: (function(inputFile, encoding) {
 #         rmarkdown::render(inputFile,
-#                           encoding=encoding,
-#                           output_dir = paste0(
 #                           rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
                            
 title: "MONEOS analyse - zoogdieren"
@@ -213,7 +211,7 @@ knitr::kable(n_indiv_with_dead,
 
 <!-- ``` -->
 
-```{r 120_fig_aantal_indiv, fig.height=5, fig.width=8}
+```{r 120_fig_aantal_indiv}
 fig_1 <- 
   zoogdier_data %>% 
   filter(!(gedrag %in% c("sporen", "onbekend")),
@@ -227,12 +225,13 @@ fig_1 <-
   geom_line(lwd = 1) +
   scale_x_continuous(breaks = seq(2010, 2021, by =1)) +
   theme(axis.title = element_blank(),
-        legend.title = element_blank()) +
+        legend.title = element_blank(),
+        legend.position = "bottom") +
   facet_wrap(facets = ~facet, scales = "free") +
   scale_x_continuous(breaks = seq(2010, 2022, by = 2))
 
 fig_1
-ggsave(paste0(pad_figuren, "120_fig1_aantal_ind.jpg"))
+ggsave(paste0(pad_figuren, "120_fig1_aantal_ind.jpg"), width = 8, height = 4)
 ```
 
 # Verspreidingskaartjes bever

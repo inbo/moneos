@@ -109,12 +109,13 @@ footnote_text <-
 aantal_waarnemingen %>%
   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
   mutate(across(everything(), ~cell_spec(., color = "black", align = "c"))) %>%
-    knitr::kable(escape = FALSE,
+  knitr::kable(escape = FALSE,
                booktabs = TRUE,
                caption = caption_x_waarden) %>%
   footnote(number = footnote_text,
            escape = FALSE,
-           threeparttable = FALSE)
+           threeparttable = FALSE) %>% 
+  kable_styling(latex_options = c("scale_down"))
 ```
 
 <br/>
@@ -136,18 +137,19 @@ footnote_text <-
 aantal_ind %>%
   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
   mutate(across(everything(), ~cell_spec(., color = "black", align = "c"))) %>%
-    knitr::kable(escape = FALSE,
+  knitr::kable(escape = FALSE,
                booktabs = TRUE,
                caption = caption_x_waarden) %>%
   footnote(number = footnote_text,
            escape = FALSE,
-           threeparttable = FALSE)
+           threeparttable = FALSE) %>% 
+  kable_styling(latex_options = c("scale_down"))
 
 ```
 
 <br/>
 
-```{r 120-figuur1, fig.cap=caption_figuur1, out.width="80%"}
+```{r 120-figuur1, fig.cap=caption_figuur1, out.width="95%"}
 
 caption_figuur1 <- "Evolutie van het aantal waargenomen exemplaren van bever, otter, bruinvis, gewone zeehond en grijze zeehond."
 
@@ -158,7 +160,7 @@ knitr::include_graphics(paste0(pad_figuren, "120_fig1_aantal_ind.jpg"))
 
 ### Overzicht waarnemingen 2021
 
-**Bever**
+#### Bever
 
 De gestage uitbreiding van de bever in de Scheldevallei (Mertens, 2016) zet zich 2021 voort.
 Het aantal ingevoerde waarnemingen lag hoger dan in 2020, het totaal aantal ingevoerde individuen iets lager.
@@ -253,8 +255,10 @@ zeehond2021 %>%
   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
   mutate(across(everything(), ~cell_spec(., color = "black", font_size = 8))) %>%
     knitr::kable(escape = FALSE,
-               booktabs = TRUE,
-               caption = caption_x_waarden)
+               booktabs = TRUE, 
+               longtable = TRUE,
+               caption = caption_x_waarden) %>% 
+  kable_styling(latex_options = c("scale_down", "repeat_header"))
 ```
 
 <br/>
@@ -282,9 +286,11 @@ caption_x_waarden <- "Waarnemingen van grijze zeehond in 2021."
 grijzezeehond2021 %>%
   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
   mutate(across(everything(), ~cell_spec(., color = "black", font_size = 8))) %>%
-    knitr::kable(escape = FALSE,
+  knitr::kable(escape = FALSE,
                booktabs = TRUE,
-               caption = caption_x_waarden)
+               caption = caption_x_waarden) %>% 
+  kable_styling(latex_options = c("scale_down"))
+
 ```
 
 <br/>
@@ -308,9 +314,10 @@ caption_x_waarden <- "Waarnemingen van bruinvis in 2021."
 bruinvis2021 %>%
   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
   mutate(across(everything(), ~cell_spec(., color = "black", font_size = 8))) %>%
-    knitr::kable(escape = FALSE,
+  knitr::kable(escape = FALSE,
                booktabs = TRUE,
-               caption = caption_x_waarden)
+               caption = caption_x_waarden) %>% 
+  kable_styling(latex_options = c("scale_down"))
 ```
 
 <br/>
