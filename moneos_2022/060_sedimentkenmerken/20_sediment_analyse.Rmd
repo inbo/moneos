@@ -43,8 +43,7 @@ library(INBOtheme)
 # pad naar figuren : pad_figuren
 
 # source("../pad.R")
-source(find_root_file("pad.R", criterion = is_rstudio_project)) #workaround pc Gunther
-
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
 pad_data <- maak_pad(params$hoofdstuk, "data")
 pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
@@ -123,6 +122,7 @@ ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) 
 test <- sediment_data %>%
   pivot_wider(names_from = variabele, values_from = waarde)
 
+
 test %>%
   ggplot(aes(slib, mediaan)) +
   geom_point() +
@@ -183,6 +183,7 @@ meta_data %>%
 
 table(sediment_data$tidaal)
 sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "intertidaal"
+sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "Intertidaal"
 sediment_data$tidaal[sediment_data$tidaal=="sub"] <- "subtidaal"
 
   table(sediment_data$waterloop)
@@ -199,9 +200,10 @@ sediment_data$tidaal[sediment_data$tidaal=="sub"] <- "subtidaal"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="hoge slikzone"] <- "hoog"
     sediment_data$fysiotoop[sediment_data$fysiotoop=="lage slikzone"] <- "laag"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="laag intertidaal"] <- "laag"
-  
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laag slik"] <- "laag"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="matig diep subtidaal"] <- "matig diep"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoge slikzone"] <- "midden"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoog slik"] <- "midden"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="nog te bepalen - sub"] <- "sub indet."
   sediment_data$fysiotoop[sediment_data$fysiotoop=="ondiep subtidaal"] <- "ondiep"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="slik onbepaald"] <- "inter indet."
@@ -794,3 +796,290 @@ grafdat %>%
                  
 
 ```
+
+```{r Grafieken durme}
+
+tabel_jaar_waarden_Durme <- 
+  sediment_data %>% 
+  mutate(jaarcat = cut(jaar, floor(vroegste_jaar-1):ceiling(recentste_jaar+1))) %>% 
+  filter(waterloop == "Durme") %>% 
+  count(jaarcat)
+
+knitr::kable(tabel_jaar_waarden_Durme)
+
+
+####################
+##slib intertidaal
+#################
+
+var <- "slib"
+  partim <- zij
+  deel <- "zijrivieren"
+  fysn <- inter
+  tidaal <- "intertidaal"
+  sediment_datab <- sediment_data[sediment_data$variabele == var,]
+  sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
+  sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
+  grafdat <- sediment_datab %>% 
+    filter (waterloop == "Durme") 
+    
+    ggplot(grafdat, 
+         aes(x=factor(jaar),y=waarde)) +
+    geom_boxplot(aes(fill=fysiotoop)) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    xlab("") + ylab("slib %")
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durme.jpg"))
+
+  ggplot(grafdat, 
+         aes(x=factor(jaar),y=waarde)) +
+    geom_boxplot(aes()) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    xlab("") + ylab("slib % intertidaal")
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"boxDurme.jpg"))
+
+grafdat %>%
+  group_by(jaar) %>% 
+  summarise(slibmean = (mean(waarde))) %>% 
+ggplot(aes(x = jaar, y = slibmean))+
+  geom_boxplot(aes()) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    xlab("") + ylab("slibmean %")
+
+
+ggplot(grafdat,
+         aes(x=jaar,y=waarde)) +
+    geom_point(aes(color=fysiotoop)) + 
+    geom_smooth(aes(color=fysiotoop)) +
+    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") +
+    scale_x_continuous (name = "jaar",
+                      breaks = grafdat$jaar,
+                      labels = grafdat$jaar) 
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durmetrend.jpg"))
+
+grafdat %>% 
+  filter(jaar > 2016) %>% 
+  ggplot(aes(x = fysiotoop, y = waarde)) +
+  geom_boxplot((aes(color = fysiotoop))) +
+  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
+  
+####################
+##slib subtidaal
+#################
+               
+var <- "slib"
+  partim <- zij
+  deel <- "zijrivieren"
+  fysn <- sub
+  tidaal <- "subtidaal"
+  sediment_datab <- sediment_data[sediment_data$variabele == var,]
+  sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
+  sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
+  grafdat <- sediment_datab %>% 
+    filter (waterloop == "Durme") 
+    
+  
+  ggplot(grafdat, 
+         aes(x=factor(jaar),y=waarde)) +
+    geom_boxplot(aes(fill=fysiotoop)) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    xlab("") + ylab("slib %")
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durme.jpg"))
+
+ggplot(grafdat, 
+         aes(x=factor(jaar),y=waarde)) +
+    geom_boxplot(aes()) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    xlab("") + ylab("slib % subtidaal")
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"boxDurme.jpg"))
+
+####################
+##mediaan intertidaal
+#################
+
+var <- "mediaan"
+  partim <- zij
+  deel <- "zijrivieren"
+  fysn <- inter
+  tidaal <- "intertidaal"
+  sediment_datab <- sediment_data[sediment_data$variabele == var,]
+  sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
+  sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
+  grafdat <- sediment_datab %>% 
+    filter (waterloop == "Durme") 
+    
+  
+  ggplot(grafdat, 
+         aes(x=factor(jaar),y=waarde)) +
+    geom_boxplot(aes(fill=fysiotoop)) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    xlab("") + ylab("mediaan")
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durme.jpg"))
+
+
+
+ggplot(grafdat,
+         aes(x=jaar,y=waarde)) +
+    geom_point(aes(color=fysiotoop)) + 
+    geom_smooth(aes(color=fysiotoop)) +
+    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("mediaan") +
+    scale_x_continuous (name = "jaar",
+                      breaks = grafdat$jaar,
+                      labels = grafdat$jaar) 
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durmetrend.jpg"))
+
+grafdat %>% 
+  filter(jaar > 2016) %>% 
+  ggplot(aes(x = fysiotoop, y = waarde)) +
+  geom_boxplot((aes(color = fysiotoop))) +
+  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("mediaan") 
+  
+####################
+##mediaan subtidaal
+#################
+               
+var <- "mediaan"
+  partim <- zij
+  deel <- "zijrivieren"
+  fysn <- sub
+  tidaal <- "subtidaal"
+  sediment_datab <- sediment_data[sediment_data$variabele == var,]
+  sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
+  sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
+  grafdat <- sediment_datab %>% 
+    filter (waterloop == "Durme") 
+    
+  
+  ggplot(grafdat, 
+         aes(x=factor(jaar),y=waarde)) +
+    geom_boxplot(aes(fill=fysiotoop)) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    xlab("") + ylab("mediaan")
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durme.jpg"))
+
+
+ggplot(grafdat,
+         aes(x=jaar,y=waarde)) +
+    geom_point(aes(color=fysiotoop)) + 
+    geom_smooth(aes(color=fysiotoop)) +
+    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("mediaan") +
+    scale_x_continuous (name = "jaar",
+                      breaks = grafdat$jaar,
+                      labels = grafdat$jaar) 
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durmetrend.jpg"))
+
+grafdat %>% 
+  filter(jaar > 2016) %>% 
+  ggplot(aes(x = fysiotoop, y = waarde)) +
+  geom_boxplot((aes(color = fysiotoop))) +
+  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("mediaan")
+
+####################
+##OM intertidaal
+#################
+
+var <- "OM"
+  partim <- zij
+  deel <- "zijrivieren"
+  fysn <- inter
+  tidaal <- "intertidaal"
+  sediment_datab <- sediment_data[sediment_data$variabele == var,]
+  sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
+  sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
+  grafdat <- sediment_datab %>% 
+    filter (waterloop == "Durme") 
+    
+  
+  ggplot(grafdat, 
+         aes(x=factor(jaar),y=waarde)) +
+    geom_boxplot(aes(fill=fysiotoop)) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    xlab("") + ylab("OM%")
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durme.jpg"))
+
+ggplot(grafdat, 
+         aes(x=factor(jaar),y=waarde)) +
+    geom_boxplot(aes()) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    xlab("") + ylab("OM % intertidaal")
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"boxDurme.jpg"))
+
+ggplot(grafdat,
+         aes(x=jaar,y=waarde)) +
+    geom_point(aes(color=fysiotoop)) + 
+    geom_smooth(aes(color=fysiotoop)) +
+    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("OM%") +
+    scale_x_continuous (name = "jaar",
+                      breaks = grafdat$jaar,
+                      labels = grafdat$jaar) 
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durmetrend.jpg"))
+
+grafdat %>% 
+  filter(jaar > 2016) %>% 
+  ggplot(aes(x = fysiotoop, y = waarde)) +
+  geom_boxplot((aes(color = fysiotoop))) +
+  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("OM%") 
+  
+####################
+##OM subtidaal
+#################
+               
+var <- "OM"
+  partim <- zij
+  deel <- "zijrivieren"
+  fysn <- sub
+  tidaal <- "subtidaal"
+  sediment_datab <- sediment_data[sediment_data$variabele == var,]
+  sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
+  sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
+  grafdat <- sediment_datab %>% 
+    filter (waterloop == "Durme") 
+    
+  
+  ggplot(grafdat, 
+         aes(x=factor(jaar),y=waarde)) +
+    geom_boxplot(aes(fill=fysiotoop)) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    xlab("") + ylab("OM%")
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durme.jpg"))
+
+
+ggplot(grafdat,
+         aes(x=jaar,y=waarde)) +
+    geom_point(aes(color=fysiotoop)) + 
+    geom_smooth(aes(color=fysiotoop)) +
+    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("OM%") +
+    scale_x_continuous (name = "jaar",
+                      breaks = grafdat$jaar,
+                      labels = grafdat$jaar) 
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durmetrend.jpg"))
+
+grafdat %>% 
+  filter(jaar > 2016) %>% 
+  ggplot(aes(x = fysiotoop, y = waarde)) +
+  geom_boxplot((aes(color = fysiotoop))) +
+  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("OM%")
+
+```
+
