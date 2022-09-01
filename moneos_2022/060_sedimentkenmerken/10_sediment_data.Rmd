@@ -63,8 +63,14 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
   data2020 <- data2020 %>% 
     select(jaar, campagne, waterloop, tidaal, fysiotoop, locatie, X, Y, mediaan, OM, slib) %>% 
     gather("mediaan", "OM", "slib", key = variabele, value = waarde, na.rm = TRUE)  
-    
+  
+  
+  dubbel <-data2020 %>%
+    dplyr::group_by(jaar, campagne, waterloop, tidaal, fysiotoop, locatie, X, Y, variabele) %>%
+    dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+    dplyr::filter(n > 1L)  
  
+  
   data <- read_excel(paste0(pad_data, "S_DS_V_004a_sediment_data2008_2019_rapportage2021.xlsx"))
   
   
