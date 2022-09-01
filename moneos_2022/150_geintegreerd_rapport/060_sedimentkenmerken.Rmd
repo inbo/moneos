@@ -77,7 +77,7 @@ De aangeleverde data omvat de outputvariabelen mediane korrelgrootte (D50), het 
 
 De data werden gegenereerd in R (R Core Team, 2019).
 
-De sedimentwaarden zijn verdeeld zoals weergegeven in Tabel \@ref(tab:060-tabel-sediment).
+Het aantal sedimentstalen per campagne is weergegeven in Tabel \@ref(tab:060-tabel-sediment).
 
 In het veld wordt net naast elk macrozoöbenthosstaal een sedimentstaal verzameld met een inox steekbuis (diameter 2cm) tot op 10 cm diepte. De jaarlijkse campagnes vallen steeds in september – oktober. 
 Het organische stofgehalte van het sediment wordt bepaald door een hoeveelheid sediment te drogen (bij 105°C tot constante massa), te wegen en vervolgens gedurende 2 uur te verassen bij 550°C. Het bekomen verlies aan massa ten gevolge van het verbranden van de organische component, het asvrij drooggewicht, wordt uitgedrukt als percentage van de oorspronkelijke droge massa van het deelmonster.
@@ -93,11 +93,11 @@ tabel_x_waarden <-
              .name_repair = "minimal")
 
 # hoofding tabel
-caption_x_waarden <- "Verdeling van de sedimentwaarden per jaar."
+caption_x_waarden <- "Aantal sedimentstalen per jaar."
 
 # opmaak tabel
 tabel_x_waarden %>%
-  mutate_all(~replace_na(., "")) %>%
+  # dplyr::mutate_all(~replace_na(., "")) %>%
   kable(caption = caption_x_waarden,
         booktabs = TRUE) %>%
   kable_styling(latex_options = "HOLD_position")
@@ -112,13 +112,15 @@ tabel_x_waarden %>%
 
 ## Resultaten
 
-In deze eerstelijnsrapportage wordt de nadruk gelegd op de resultaten van de outputvariabele slibgehalte voor de periode 2008-2019. In slibrijke bodems (> 25% slib) vertonen de drie beschouwde variabelen in de dataset (mediane korrelgrootte, slibgehalte en organisch mateiraal) een sterk onderling verband. Daarom beperken we de eerstelijnsbespreking tot het slibgehalte van de sedimenten.
+In deze eerstelijnsrapportage wordt de nadruk gelegd op de resultaten van de outputvariabele slibgehalte voor de periode 2008-`r recentste_jaar`. In slibrijke bodems (> 25% slib) vertonen de drie beschouwde variabelen in de dataset (mediane korrelgrootte, slibgehalte en organisch mateiraal) een sterk onderling verband. Daarom beperken we de eerstelijnsbespreking tot het slibgehalte van de sedimenten.
 Doorheen het estuarium is er een grotere spreiding op de metingen van het subtidale tegenover het intertidale gebied (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-boxplotfysiotopen)). 
 In de Zeeschelde wordt het sediment sinds 2011 slibrijker in het intertidale gebied en in het ondiep en ook matig diep subtidaal (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-intertidaaltrend) en Figuur \@ref(fig:060-figuur-slib-Zeeschelde-intertidaaltrend)). In de diepere delen is de variatie groter en zonder duidelijk patroon. In Zeeschelde I zijn de trends in het toenemende slibgehalte enigszins met voorzichtigheid te interpreteren omdat er meer stalen genomen werden in de meest bovenstroomse delen : tijarm Zwijnaarde en de Scheldemeander tussen ringvaart en Gentbrugge. In het diep subtidaal lijkt er zelfs eerder sprake van een afnemend slibgehalte (de trends wijzen ook in Zeeschelde II op een afname in slib in het diep subtidaal). In Zeeschelde III is de variatie in de gemeten sedimentkarakteristieken groot. 
 Deze tendens tot slibrijkere sedimenten is ook zichtbaar in de Rupel (min of meer vanaf 2011) maar is minder duidelijk in de zijrivieren Figuur \@ref(fig:060-figuur-slib-zijrivieren-intertidaaltrend) en Figuur \@ref(fig:060-figuur-slib-zijrivieren-subtidaaltrend)). De opslibbing van de Durme met slibrijke sedimenten is ook duidelijk zichtbaar in de figuren. In de overige zijrivieren werden geen sedimentstalen genomen in 2018 en 2019.
 ```{r 060-figuur-slib-Zeeschelde-boxplotfysiotopen, fig.cap=slib_Zeeschelde_boxplotfysiotopen, out.width="80%"}
 
-slib_Zeeschelde_boxplotfysiotopen <- "Boxplot van het slibpercentage per fysiotoop in het intertidaal en subtidaal van de Zeeschelde (data 2008-2019)."
+slib_Zeeschelde_boxplotfysiotopen <- paste0("Boxplot van het slibpercentage per fysiotoop in het intertidaal en subtidaal van de Zeeschelde (data 2008-",recentste_jaar,").")
+
+
 
 knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_boxplotfysiotopen.jpg"))
 
@@ -128,7 +130,7 @@ knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_boxplotf
 
 ```{r 060-figuur-slib-Zeeschelde-intertidaaltrend, fig.cap=slib_Zeeschelde_intertidaaltrend, out.width="80%"}
 
-slib_Zeeschelde_intertidaaltrend <- "Slibgehalte (\\%) – Zeeschelde intertidaal. Geen data in 2015 en 2013 voor intertidaal Zeeschelde IV. Loess smoother als trendlijn (data 2008-2019)."
+slib_Zeeschelde_intertidaaltrend <- paste0("Slibgehalte (\\%) – Zeeschelde intertidaal. Geen data in 2015 en 2013 voor intertidaal Zeeschelde IV. Loess smoother als trendlijn (data 2008-",recentste_jaar,").")
 
 knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_intertidaaltrend.jpg"))
 
@@ -139,7 +141,7 @@ knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_intertid
 
 ```{r 060-figuur-slib-Zeeschelde-subtidaaltrend, fig.cap=slib_Zeeschelde_subtidaaltrend, out.width="80%"}
 
-slib_Zeeschelde_subtidaaltrend <- "Slibgehalte (\\%) – Zeeschelde subtidaal. Geen data in 2013 voor subtidaal Zeeschelde I. Loess smoother als trendlijn (data 2008-2019)."
+slib_Zeeschelde_subtidaaltrend <- paste0("Slibgehalte (\\%) – Zeeschelde subtidaal. Geen data in 2013 voor subtidaal Zeeschelde I. Loess smoother als trendlijn (data 2008-",recentste_jaar,").")
 
 knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_subtidaaltrend.jpg"))
 
@@ -149,7 +151,7 @@ knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_subtidaa
 
 ```{r 060-figuur-slib-zijrivieren-intertidaaltrend, fig.cap=slib_zijrivieren_intertidaaltrend, out.width="80%"}
 
-slib_zijrivieren_intertidaaltrend <- "Slibgehalte (\\%) – zijrivieren intertidaal. In 2018 en 2019 werden de zijrivieren Nete, Dijle en Zenne niet bemonsterd. Loess smoother als trendlijn (data 2008-2019)."
+slib_zijrivieren_intertidaaltrend <- paste0("Slibgehalte (\\%) – zijrivieren intertidaal. In 2018 en 2019 werden de zijrivieren Nete, Dijle en Zenne niet bemonsterd. Loess smoother als trendlijn (data 2008-",recentste_jaar,").")
 
 knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_zijrivieren_intertidaaltrend.jpg"))
 
@@ -159,7 +161,7 @@ knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_zijrivieren_interti
 
 ```{r 060-figuur-slib-zijrivieren-subtidaaltrend, fig.cap=slib_zijrivieren_subtidaaltrend, out.width="80%"}
 
-slib_zijrivieren_subtidaaltrend <- "Slibgehalte (\\%) – zijrivieren subtidaal. In 2018 en 2019 werden de zijrivieren Nete, Dijle en Zenne niet bemonsterd. Loess smoother als trendlijn (data 2008-2019)."
+slib_zijrivieren_subtidaaltrend <- paste0("Slibgehalte (\\%) – zijrivieren subtidaal. In 2018 en 2019 werden de zijrivieren Nete, Dijle en Zenne niet bemonsterd. Loess smoother als trendlijn (data 2008-",recentste_jaar,").")
 
 knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_zijrivieren_subtidaaltrend.jpg"))
 
