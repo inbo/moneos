@@ -88,10 +88,16 @@ recentste_jaar <-
 
 ```{r 000-tabel-jaar-waarden}
 
+# tabel_jaar_waarden1 <- 
+#   sediment_data %>% 
+#   mutate(jaarcat = cut(jaar, floor(vroegste_jaar-1):ceiling(recentste_jaar+1))) %>% 
+#   count(jaarcat) 
+  
+
 tabel_jaar_waarden <- 
   sediment_data %>% 
-  mutate(jaarcat = cut(jaar, floor(vroegste_jaar-1):ceiling(recentste_jaar+1))) %>% 
-  count(jaarcat)
+  group_by(jaar,campagne) %>% 
+  summarise (count = n_distinct(locatie)) 
 
 knitr::kable(tabel_jaar_waarden)
 
