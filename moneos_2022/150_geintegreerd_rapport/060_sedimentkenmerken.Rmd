@@ -1,259 +1,180 @@
----
 
----
+```{r 060-hoofdstuk, include=FALSE}
 
-
-```{r 130-hoofdstuk, include=FALSE}
-
-hoofdstuk <- "130_sedimentatie_erosie"
+hoofdstuk <- "060_sedimentkenmerken"
 
 ```
 
 
-```{r 130-setup, include=FALSE}
+```{r 060-setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.pos = "H", out.extra = '')
 knitr::opts_knit$set(eval.after = "fig.cap")
 
+
 ```
 
 
-```{r 130-libraries}
+```{r 060-libraries}
 
 library(tidyverse)
 library(readxl)
 library(kableExtra)
 library(INBOtheme)
+library(rprojroot)
 
 ```
 
 
-```{r 130-pad}
+```{r 060-pad}
 
 # inlezen van variabelen
 # pad naar data : pad_data
 # pad naar tabellen : pad_tabellen
 # pad naar figuren : pad_figuren
 
-source("../pad.R")
+# source("../pad.R")
 
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
 pad_data <- maak_pad(hoofdstuk, "data")
 pad_figuren <- maak_pad(hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+```
+
+
+```{r 060-meta-data}
+
+meta_data <- 
+  read_delim(paste0(pad_data, "meta_data.csv"),
+             delim = ";")
+  
+for(i in 1:nrow(meta_data)){
+  ##first extract the object value
+  tempobj=meta_data$waarde[i]
+  ##now create a new variable with the original name of the list item
+  eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+}
 
 ```
 
 
-```{r 130-meta-data}
 
-# aanpassen indien er meta-data zijn
+# Sedimentkenmerken
 
-# meta_data <- 
-#   read_delim(paste0(pad_data, "meta_data.csv"),
-#              delim = ";")
-#   
-# for(i in 1:nrow(meta_data)){
-#   ##first extract the object value
-#   tempobj=meta_data$waarde[i]
-#   ##now create a new variable with the original name of the list item
-#   eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
-# }
+Fichenummer: S-MD-V004a – Sedimentkenmerken (in functie van benthos) 
 
-```
-
-
-
-# Sedimentatie en erosie op punten en raaien
-
-Fiche nummer: S-MD-V002 Topo-bathymetrie - Sedimentatie en erosie op punten en raaien
-
-__Alexander Van Braeckel, Ruben Elsen, Dimitri Buerms & Joram De Beukelaer__
+__Gunther Van Ryckegem__
 
 
 ## Inleiding
 
-Binnen de MONEOS-monitoring wordt de hoogteligging van het slik en de schorrand jaarlijks ingemeten om hoogteveranderingen met een hoge verticale resolutie in beeld te brengen. Deze hoogtemetingen situeren zich doorgaans loodrecht op rivieras, de zogenoemde ‘raaien’. 
-De MONEOS-raaien zijn gesitueerd op bredere sliklocaties met overwegend zacht substraat of natuurtechnische oeververdediging (Meire & Maris, 2008). Met de raaien wordt gefocust op grotere, ecologisch waardevollere slik- en schorgebieden.
-We maken een onderscheid in 3 klassen van raaien afhankelijk van de prioriteit van opmeten:
-
-o	MONEOS - Vaste: minimaal de slik en schorrand worden jaarlijks ingemeten langs de Zeeschelde (n:24) Figuur \@ref(fig:130-figuur-overzicht-raaien), Durme (n:3) en Rupel (n:2) en 6-jaarlijks voor de tijgebonden zijrivieren (Nete-n:1, Zenne-n:1, Dijle-n:1); deze raaien zijn leidend voor de veldwerkcampagne; de hoge schorplateaus worden 6-jaarlijks gemeten  
-o	MONEOS - Aanvullend: bij deze klasse van raaien wordt getracht om een minimale frequentie (2 – 5 jaar) aan te houden; ze vertonen ontwikkelingen die aanvullende informatie geven over het (deel)gebied die niet altijd door de MONEOS-raaien gecoverd zijn;  
-o	Optioneel: raaien die occasioneel worden ingemeten of waar specifieke vraag naar is.  
+Op elke locatie waar monsters voor het macrozoöbenthos worden genomen (zie Hoofdstuk 5), wordt een begeleidend sedimentstaal genomen. Van deze stalen worden de granulometrische karakteristieken bepaald door laserdiffractie (LDIF) en wordt het gehalte aan organisch materiaal (OM%) bepaald door verassing (LOI). 
+De korrelgrootte en hoeveelheid organisch materiaal geven respectievelijk informatie over de fysische structuur van de bodem en de mogelijke voedselrijkdom in het sediment – rechtstreeks als voedsel of onrechtstreeks als proxy voor potentiële bacteriële activiteit. Hiermee zijn het interessante verklarende factoren voor het verklaren van trends in de bodemdierengemeenschappen en algemeen indicatief voor het functioneren van het bentisch ecosysteem als matrix voor bodemprocessen. 
+De aangeleverde data omvat de outputvariabelen mediane korrelgrootte (D50), het slibgehalte (percentage van het staalvolume dat een korrelgrootte heeft die kleiner is dan 63µm) en organisch materiaal (percentage verbrandt bij 550°C).
 
 
-```{r 130-figuur-overzicht-raaien, fig.cap=caption_overzicht, out.width="100%"}
+## Materiaal en methode
 
-caption_overzicht <- "Situering van de 24 vaste MONEOS-raaien binnen de Zeeschelde. Zie tabel in bijlage voor naamgeving."
+De data werden gegenereerd in R (R Core Team, 2019).
 
-knitr::include_graphics(paste0(pad_figuren, "0_OverzichtskaartMoneosraaien_Zeeschelde.jpg"))
+De sedimentwaarden zijn verdeeld zoals weergegeven in Tabel \@ref(tab:060-tabel-sediment).
+
+In het veld wordt net naast elk macrozoöbenthosstaal een sedimentstaal verzameld met een inox steekbuis (diameter 2cm) tot op 10 cm diepte. De jaarlijkse campagnes vallen steeds in september – oktober. 
+Het organische stofgehalte van het sediment wordt bepaald door een hoeveelheid sediment te drogen (bij 105°C tot constante massa), te wegen en vervolgens gedurende 2 uur te verassen bij 550°C. Het bekomen verlies aan massa ten gevolge van het verbranden van de organische component, het asvrij drooggewicht, wordt uitgedrukt als percentage van de oorspronkelijke droge massa van het deelmonster.
+In Van Ryckegem et al. (2017) wordt uitvoerig de analyseprocedure en de datacorrectie besproken naar aanleiding van veranderingen in protocol en meettoestellen. De geleverde data is de gecorrigeerde data. In 2015 en 2013 bleken de korrelgrootte analyses voor de intertidale batch Zeeschelde IV en in 2013 voor de subtidale batch Zeeschelde I onbetrouwbaar. Deze data werd niet aangeleverd en is buiten de analyse gelaten.  
+
+
+```{r 060-tabel-sediment}
+
+# inlezen tabel
+tabel_x_waarden <-
+  read_excel(paste0(pad_tabellen, "sediment_tabellen.xlsx"),
+             sheet = "jaar_waarden",
+             .name_repair = "minimal")
+
+# hoofding tabel
+caption_x_waarden <- "Verdeling van de sedimentwaarden per jaar."
+
+# opmaak tabel
+tabel_x_waarden %>%
+  mutate_all(~replace_na(., "")) %>%
+  kable(caption = caption_x_waarden,
+        booktabs = TRUE) %>%
+  kable_styling(latex_options = "HOLD_position")
+
+```
+
+<!-- lege lijn na tabel -->
+<br/>
+<br/>
+
+
+
+## Resultaten
+
+In deze eerstelijnsrapportage wordt de nadruk gelegd op de resultaten van de outputvariabele slibgehalte voor de periode 2008-2019. In slibrijke bodems (> 25% slib) vertonen de drie beschouwde variabelen in de dataset (mediane korrelgrootte, slibgehalte en organisch mateiraal) een sterk onderling verband. Daarom beperken we de eerstelijnsbespreking tot het slibgehalte van de sedimenten.
+Doorheen het estuarium is er een grotere spreiding op de metingen van het subtidale tegenover het intertidale gebied (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-boxplotfysiotopen)). 
+In de Zeeschelde wordt het sediment sinds 2011 slibrijker in het intertidale gebied en in het ondiep en ook matig diep subtidaal (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-intertidaaltrend) en Figuur \@ref(fig:060-figuur-slib-Zeeschelde-intertidaaltrend)). In de diepere delen is de variatie groter en zonder duidelijk patroon. In Zeeschelde I zijn de trends in het toenemende slibgehalte enigszins met voorzichtigheid te interpreteren omdat er meer stalen genomen werden in de meest bovenstroomse delen : tijarm Zwijnaarde en de Scheldemeander tussen ringvaart en Gentbrugge. In het diep subtidaal lijkt er zelfs eerder sprake van een afnemend slibgehalte (de trends wijzen ook in Zeeschelde II op een afname in slib in het diep subtidaal). In Zeeschelde III is de variatie in de gemeten sedimentkarakteristieken groot. 
+Deze tendens tot slibrijkere sedimenten is ook zichtbaar in de Rupel (min of meer vanaf 2011) maar is minder duidelijk in de zijrivieren Figuur \@ref(fig:060-figuur-slib-zijrivieren-intertidaaltrend) en Figuur \@ref(fig:060-figuur-slib-zijrivieren-subtidaaltrend)). De opslibbing van de Durme met slibrijke sedimenten is ook duidelijk zichtbaar in de figuren. In de overige zijrivieren werden geen sedimentstalen genomen in 2018 en 2019.
+```{r 060-figuur-slib-Zeeschelde-boxplotfysiotopen, fig.cap=slib_Zeeschelde_boxplotfysiotopen, out.width="80%"}
+
+slib_Zeeschelde_boxplotfysiotopen <- "Boxplot van het slibpercentage per fysiotoop in het intertidaal en subtidaal van de Zeeschelde (data 2008-2019)."
+
+knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_boxplotfysiotopen.jpg"))
+
+```
+
+<br/>
+
+```{r 060-figuur-slib-Zeeschelde-intertidaaltrend, fig.cap=slib_Zeeschelde_intertidaaltrend, out.width="80%"}
+
+slib_Zeeschelde_intertidaaltrend <- "Slibgehalte (\\%) – Zeeschelde intertidaal. Geen data in 2015 en 2013 voor intertidaal Zeeschelde IV. Loess smoother als trendlijn (data 2008-2019)."
+
+knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_intertidaaltrend.jpg"))
 
 ```
 
 <br/>
 
 
-## Methode
+```{r 060-figuur-slib-Zeeschelde-subtidaaltrend, fig.cap=slib_Zeeschelde_subtidaaltrend, out.width="80%"}
 
-Een overzicht van de ingemeten raaien wordt gegeven in Tabel \@ref(tab:130-tabel-overzicht-raaien) in \@ref(BL1) Bijlage. De meetcampagnes van de raaien gebeuren meestal op het einde van de winterperiode en zijn dus een weerslag van wat na het voorbije jaar is veranderd. Een raai in februari 2020 ingemeten wordt vergeleken met de hoogtes van het jaar ervoor, waarbij de verandering een gevolg zijn van wat gebeurde in 2019. De metingen gebeuren steeds tijdens een springtijperiode vanaf het schor of de dijk tot bij het plaatselijk laagwater. ’s Morgens wordt gestart in het stroomafwaartse deel van de Zeeschelde, daarna wordt met het opkomend tij stroomopwaarts telkens een raai opzocht bij opnieuw het plaatselijk laagwater.   
-Alle slik- en schorraaien werden tot begin 2012 ingemeten met een RTK-DGPS_Trimble 5800. Vanaf eind 2012 is een RTK-DGPS_Trimble R8 gebruikt waarbij zowel GPS- en GLONASS-satellietsignalen ontvangen kunnen worden. De ingestelde maximale foutenmarge voor een meting te kunnen uitvoeren is 2 cm op de z-waarde maar ligt gemiddeld rond ±1 cm. Bij de meetcampagne wordt een eerdere meetreeks in de RTK-GPS ingelezen. In het veld wordt vervolgens naar elk gemeten punt van de raai teruggaan. Zodoende kan op een efficiënte manier de raaien opnieuw ingemeten worden met een minimale horizontale afwijking.  
-Tijdens de meetcampagne is gebruik gemaakt van het standaard veldwerkprotocol (cfr. 2e lijnsrapportage, Van Braeckel et al., 2014) met beschrijvingen van de schorrand en de verschillende slikzones. De ingemeten data van de raaien worden vervolgens in GIS ‘gesnapt’ naar een  rechte referentieraailijn met de INBO-GIS-tool. Na controle van de GIS-data wordt de data vervolgens in R (R Core Team 2013) geïmporteerd. In eerste instantie wordt de afstand tussen de punten onderling bepaald. Door de hoogtes uit te zetten t.o.v. de afstand tot een nulpunt op de dijk, wordt in R een grafiek per raai gegenereerd met de metingen van de verschillende meetperioden.   
-Voor verdere analyses wordt vervolgens een lineaire interpolatie tussen gecontroleerde data uitgevoerd naar punten met een tussenafstand van een halve meter. Dit zorgt voor een standaardisatie van de afstand tussen ieder punt. Voorheen kon dit verschillen naargelang  (micro-) reliëf op de raai (1,5-10m) en tussen jaren aangezien bij een nieuwe sterke hoogtegradiënt extra punten worden ingemeten. Door schoruitbreiding of -erosie kan het startpunt van de raai alsook het lokale laagwater verschillen. Om afwijkingen tussen de jaren te vermijden door meetbereik-of schorveranderingen wordt enkele de gezamenlijk gemeten zone meegenomen in de volgende berekeningen.     
-Naast gemiddelde hoogteverschil over de volledige sliklengte wordt ook de oppervlakte tussen de 2 curven van de 2 opeenvolgende ingemeten jaren bepaald. Deze oppervlakte is een maat voor het volume (m³) afgezet/ geërodeerd sediment op een 1 meter breed slik ter hoogte van de raai. De data werd hierna nog gekoppeld aan gemiddelde droogvalduurdata uit de beginperiode 2013-2016. Zoals bij de ecotopen is hier het gemiddelde 25% droogvalduur percentiel gebruikt voor de afbakening van de grens laag en middelhoog slik en het 75% droogvalduurpercentiel voor de grens middelhoog en hoog slikgrens. De grens tussen hoog slik en de supralitoraal slikzone (potentiële pionierzone) vormt het 85 percentiel van de hoogwaters uit die periode.   
-Op de meeste MONEOS-raaien en sommige NOP’s is per ecotoop een vast punt vastgelegd waar 3 RTK-GPSmetingen worden uitgevoerd alsook een foto en sedimentstaal (10cm diep) wordt genomen. Voor de berekening van de hoogteverandering op deze vaste punten wordt het gemiddelde genomen van de 3 metingen, wat direct gerelateerd kan worden aan de sedimentverandering.  
+slib_Zeeschelde_subtidaaltrend <- "Slibgehalte (\\%) – Zeeschelde subtidaal. Geen data in 2013 voor subtidaal Zeeschelde I. Loess smoother als trendlijn (data 2008-2019)."
 
-
-## Exploratieve data-analyse
-
-Illustratief worden hieronder de resultaten getoond van de MONEOSraaien gelegen in de Beneden-Zeeschelde. In 2020 werden geen trendbreuken vastgesteld en evolueren de raaien in de zin van de voorgaande jaren. Het slik aan het Galgenweel (GW) was stabiel in 2020 na een eerder sterke erosie in 2019. 
-
-```{r 130-figuur-GBSa, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai GBSa"
-
-knitr::include_graphics(paste0(pad_figuren, "1_GBSa.png"))
+knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_subtidaaltrend.jpg"))
 
 ```
 
 <br/>
 
+```{r 060-figuur-slib-zijrivieren-intertidaaltrend, fig.cap=slib_zijrivieren_intertidaaltrend, out.width="80%"}
 
+slib_zijrivieren_intertidaaltrend <- "Slibgehalte (\\%) – zijrivieren intertidaal. In 2018 en 2019 werden de zijrivieren Nete, Dijle en Zenne niet bemonsterd. Loess smoother als trendlijn (data 2008-2019)."
 
-```{r 130-figuur-ODa, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai ODa"
-
-knitr::include_graphics(paste0(pad_figuren, "2_ODa.png"))
+knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_zijrivieren_intertidaaltrend.jpg"))
 
 ```
 
 <br/>
 
+```{r 060-figuur-slib-zijrivieren-subtidaaltrend, fig.cap=slib_zijrivieren_subtidaaltrend, out.width="80%"}
 
-```{r 130-figuur-ODaslik, fig.cap=caption_raai, out.width="100%"}
+slib_zijrivieren_subtidaaltrend <- "Slibgehalte (\\%) – zijrivieren subtidaal. In 2018 en 2019 werden de zijrivieren Nete, Dijle en Zenne niet bemonsterd. Loess smoother als trendlijn (data 2008-2019)."
 
-caption_raai <- "Raai ODaslik"
-
-knitr::include_graphics(paste0(pad_figuren, "3_ODaslik.png"))
-
-```
-
-<br/>
-
-
-```{r 130-figuur-DO, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai DO"
-
-knitr::include_graphics(paste0(pad_figuren, "4_DO.png"))
+knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_zijrivieren_subtidaaltrend.jpg"))
 
 ```
 
 <br/>
 
+## Algemene conclusie
 
-```{r 130-figuur-GSb, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai GSb"
-
-knitr::include_graphics(paste0(pad_figuren, "5_GSb.png"))
-
-```
-
-<br/>
-
-
-```{r 130-figuur-GSc, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai GSc"
-
-knitr::include_graphics(paste0(pad_figuren, "6_GSc.png"))
-
-```
-
-<br/>
-
-
-```{r 130-figuur-LH, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai LH"
-
-knitr::include_graphics(paste0(pad_figuren, "7_LH.png"))
-
-```
-
-<br/>
-
-
-```{r 130-figuur-LP, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai LP"
-
-knitr::include_graphics(paste0(pad_figuren, "8_LP.png"))
-
-```
-
-<br/>
-
-
-```{r 130-figuur-KPb, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai KPb"
-
-knitr::include_graphics(paste0(pad_figuren, "9_KPb.png"))
-
-```
-
-<br/>
-
-
-```{r 130-figuur-KPe, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai KPe"
-
-knitr::include_graphics(paste0(pad_figuren, "10_KPe.png"))
-
-```
-
-<br/>
-
-
-```{r 130-figuur-GW, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai GW"
-
-knitr::include_graphics(paste0(pad_figuren, "11_GW.png"))
-
-```
-
-<br/>
-
-
-```{r 130-figuur-HO, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai HO"
-
-knitr::include_graphics(paste0(pad_figuren, "12_HO.png"))
-
-```
-
-<br/>
-
-
-## Bijlage {#BL1}
-
-\arrayrulecolor{white}
-
-Table: (\#tab:130-tabel-overzicht-raaien) Overzicht van de MONEOS raaien langs de Zeeschelde. Saliniteitszone, campagne, raaicode, naam en X,Y coördinaat (Lambert 72).
-
-| ![](`r paste0(pad_tabellen, "Tabel_MONEOSraaien.png")`){out.width="100%"} |
-| -- |
-
-\arrayrulecolor{black}
-<br/>
+In de Zeeschelde en zijrivieren wordt het sediment sinds 2011 slibrijker in het intertidale gebied en in het ondiep en ook matig diep subtidaal. In de diepere geul is de variatie groot en zonder duidelijk patroon. In de bovenstroomse delen van de Zeeschelde is er tendens tot het zandiger worden van het fysiotoop diep water. 
 
 
 ## Referenties
 
-Van Braeckel A., Elsen R. en Van den Bergh E. (2014). MONEOS – Geomorfologie. Hoogteraaien van slik en schor in de Zeeschelde Evolutie van toestand tot 2012. Rapporten van het Instituut voor Natuur- en Bosonderzoek 2014 (1860252). Instituut voor Natuur- en Bosonderzoek, Brussel
+R Core Team (2019). R: A Language and Environment for Statistical Computing. R Foundation for
+Statistical Computing, Vienna, Austria. https://www.R-project.org/.
 
-R Core Team 2013. R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL http://www.R-project.org/.
+Van Ryckegem G., Van Braeckel A., Elsen R., Speybroeck J., Vandevoorde B., Mertens W., Breine J., Spanoghe G., Buerms D., De Beukelaer J., De Regge N., Hessel K., Soors J., Terrie T., Van Lierop F. & Van den Bergh E. (2017). MONEOS – Geïntegreerd datarapport INBO: Toestand Zeeschelde 2016: monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten. Rapporten van het Instituut voor Natuur- en Bosonderzoek 2017 (37). Instituut voor Natuur- en Bosonderzoek, Brussel. 
