@@ -805,15 +805,18 @@ grafdat %>%
 
 ```{r Grafieken durme}
 
+
 tabel_jaar_waarden_Durme <- 
-  sediment_data %>% 
-  mutate(jaarcat = cut(jaar, floor(vroegste_jaar-1):ceiling(recentste_jaar+1))) %>% 
+  sediment_data %>%
   filter(waterloop == "Durme") %>% 
-  count(jaarcat)
+  group_by(jaar,campagne,tidaal) %>% 
+  summarise (count = n_distinct(locatie)) %>% 
+  spread(tidaal, count)
 
 knitr::kable(tabel_jaar_waarden_Durme)
 
-
+write_xlsx(list(jaar_waarden = tabel_jaar_waarden_Durme),
+           paste0(pad_tabellen, "sediment_tabel_Durme.xlsx"))
 ####################
 ##slib intertidaal
 #################
@@ -829,12 +832,11 @@ var <- "slib"
   grafdat <- sediment_datab %>% 
     filter (waterloop == "Durme") 
     
-    ggplot(grafdat, 
-         aes(x=factor(jaar),y=waarde)) +
+  grafdat %>% 
+    filter(jaar == 2011| jaar > 2015) %>% 
+    ggplot(aes(x=factor(jaar),y=waarde)) +
     geom_boxplot(aes(fill=fysiotoop)) + 
-    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
-    # coord_trans(y="log") +
-    xlab("") + ylab("slib %")
+    xlab("") + ylab("slib % intertidaal")
 
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durme.jpg"))
 
@@ -889,14 +891,23 @@ var <- "slib"
     filter (waterloop == "Durme") 
     
   
-  ggplot(grafdat, 
-         aes(x=factor(jaar),y=waarde)) +
+ grafdat %>% 
+    filter(jaar == 2012| jaar > 2015) %>% 
+    ggplot(aes(x=factor(jaar),y=waarde)) +
     geom_boxplot(aes(fill=fysiotoop)) + 
-    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
-    # coord_trans(y="log") +
-    xlab("") + ylab("slib %")
+    xlab("") + ylab("slib % intertidaal")
+
 
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durme.jpg"))
+
+ ggplot(grafdat, 
+         aes(x=factor(jaar),y=waarde)) +
+    geom_boxplot(aes()) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    xlab("") + ylab("slib % subtidaal")
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"boxDurme.jpg"))
+
 
 ggplot(grafdat, 
          aes(x=factor(jaar),y=waarde)) +
