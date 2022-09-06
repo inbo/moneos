@@ -56,14 +56,14 @@ jaren <- 2009:2020
 vangstmethode <- c('Schietfuik')
 
 # Zeeschelde vissen
-# locaties_name <- "fuikvangsten_Zeeschelde_locaties"
-# metadata_name <- "fuikvangsten_Zeeschelde_metadata"
-# filename <- "fuikdata_Zeeschelde"
+locaties_name <- "fuikvangsten_Zeeschelde_locaties"
+metadata_name <- "fuikvangsten_Zeeschelde_metadata"
+filename <- "fuikdata_Zeeschelde"
 
 # zijrivieren vissen
-locaties_name <- "fuikvangsten_zijrivieren_locaties"
-metadata_name <- "fuikvangsten_zijrivieren_metadata"
-filename <- "fuikdata_zijrivieren"
+# locaties_name <- "fuikvangsten_zijrivieren_locaties"
+# metadata_name <- "fuikvangsten_zijrivieren_metadata"
+# filename <- "fuikdata_zijrivieren"
 
 locaties <-
   read_xlsx(str_c(pad_data, "metadata VLIZ/", locaties_name, ".xlsx"))
@@ -164,6 +164,15 @@ dbDisconnect(VIS2)
 ```
 
 
+```{r check dubbelgewicht}
+
+dubbel_gewicht <-
+  data %>% 
+  filter(!is.na(TAXONGEW) & !is.na(TAXONTOTGEW))
+
+```
+
+
 ```{r postprocessing data}
 
 # data %>% 
@@ -225,6 +234,24 @@ data_per_datum <-
 
 ```{r controle gegevens}
 
+campagnes <- 
+  data_per_datum %>% 
+  select(locatie, jaar, maand) %>% 
+  distinct() %>% 
+  mutate(seizoen = 
+           case_when(
+             maand %in% 3:5 ~ "voorjaar",
+             maand %in% 6:8 ~ "zomer",
+             maand %in% 9:11 ~ "najaar",
+             maand %in% 12:1 ~ "winter"))
+
+camp_tot <-
+  campagnes %>% 
+  expand(locatie, jaar, seizoen)
+  
+
+ontbrekende_campagnes 
+
 campagnes_NA_or_0 <-
   data_per_datum %>% 
   select(locatiecode, locatie, datum, jaar, maand, aantal_dagen, aantal_fuiken) %>% 
@@ -257,6 +284,16 @@ uniek_aantal_of_gewicht_inv <-
 #          Gebiedcode == "81500000",
 #          year(Begindatum) == 2008,
 #          month(Begindatum) == 3)
+
+campagnes_nulvangsten <-
+  data_per_datum %>% 
+  group_by(locatiecode, locatie, datum, jaar, maand, aantal_dagen, aantal_fuiken) %>% 
+  summarise(n = sum(n), aantal = sum(aantal, na.rm = TRUE), gewicht = sum(gewicht, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  arrange(datum, locatie) %>% 
+  filter(if_any(.fns = ~is.na(.)) | 
+           if_any(c(aantal_dagen, aantal_fuiken), ~near(., 0)))
+
 
 ```
 
