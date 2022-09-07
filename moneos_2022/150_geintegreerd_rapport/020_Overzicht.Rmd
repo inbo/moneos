@@ -78,7 +78,7 @@ tabel_natuurontwikkelingsprojecten[c(17),4] <- sapply(tabel_natuurontwikkelingsp
 
 
 tabel_natuurontwikkelingsprojecten %>% 
-  knitr::kable(caption = "Overzicht van de uitgevoerde estuariene natuurontwikkelingsprojecten langsheen de Zeeschelde en zijrivieren. De gebieden staan gerangschikt van grens BE-NL stroomopwaarts.",
+  knitr::kable(caption = "Overzicht van de uitgevoerde estuariene natuurontwikkelingsprojecten langsheen de Zeeschelde en zijrivieren. De gebieden staan gerangschikt van grens BE-NL stroomopwaarts. MWeA - Meest Wenselijk Alternatief - geactualiseerd Sigmaplan gebieden zijn geselecteerd (Synthesenota, 2005).",
              # "latex", 
              booktabs = T,
              escape = F) %>% 
@@ -101,7 +101,7 @@ fig_natuurontwikkeling_opp <- read_excel(paste0(pad_tabellen, "020_Overzicht_tab
 
 # fig_natuurontwikkeling_opp$Realisatie <- format(tabel_natuurontwikkelingsprojecten$Realisatie, format="%Y-%m")
 # fig_natuurontwikkeling_opp$Realisatie <- as.Date(fig_natuurontwikkeling_opp$Realisatie)
-fig_natuurontwikkeling_opp$Sigmaplan <- as.factor(fig_natuurontwikkeling_opp$`Sigmaplan Estuarien gebied`)
+fig_natuurontwikkeling_opp$Sigmaplan <- as.factor(fig_natuurontwikkeling_opp$`MWeA Estuarien gebied`)
 
 fig_natuurontwikkeling_opp %>%
   arrange(Realisatie) %>% 
@@ -115,7 +115,7 @@ fig_natuurontwikkeling_opp %>%
         legend.title = element_blank())
 ggsave(paste0(pad_figuren, "10_figuur_oppervlakte_estuariene_natuurontwikkeling.jpg"))
 
-cap_oppervlakte <- "Cumulatieve oppervlakte gerealiseerde estuariene natuurontwikkelingsgebieden. Blauwe punten betreffen projecten van het geactualiseerde Sigmaplan; groene punten zijn andere natuurontwikkelingsprojecten."
+cap_oppervlakte <- "Cumulatieve oppervlakte gerealiseerde estuariene natuurontwikkelingsgebieden. Blauwe punten betreffen projecten van het geactualiseerde Sigmaplan (MWeA); groene punten zijn andere natuurontwikkelingsprojecten."
 
 # knitr::include_graphics(paste0(pad_figuren, "10_figuur_oppervlakte_estuariene_natuurontwikkeling.jpg"))  
 ```
@@ -148,6 +148,10 @@ Evaluatie van natuurontwikkelingsprojecten in het Schelde-estuarium.
 Rapport INBO.R.2011.21.
 160pp.
 Instituut voor Natuur-en Bosonderzoek, Brussel.
+
+Synthesenota (2005).
+Geactualiseerd Sigmaplan voor veiligheid en natuurlijkheid in het bekken van de Zeeschelde.
+Waterwegen en Zeekanaal NV.
 
 Van den Neucker T., Verbessem I., Van Braeckel A., Stevens M., Spanoghe G., Gyselings R., Soors J., De Regge N., De Belder W & Van den Bergh E.
 (2007).
