@@ -53,7 +53,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 ```{r data-watervogels inlezen}
 
 data_watervogels <- 
-  read_delim(paste0(pad_data, "Watervogels_Zeeschelde.csv"),
+  read_delim(paste0(pad_data, "Watervogels_Zeeschelde_Moneos.csv"),
               delim = ";")
 data_watervogels <- data_watervogels %>% 
 mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) 
@@ -298,33 +298,34 @@ laatste_jaar <-
 
 
 ```{r data-trofische-groep}
+##deze stap werd verhuisd naar data script
 
-data_trofische_groep <- 
-  read_delim(paste0(pad_data, "Voedselgilde_exoten_Moneosrapport.csv"), 
-             delim = ";")  
-
-data_trofische_groep <- data_trofische_groep %>% 
-              rename_all(tolower) %>% 
-              rename(nednaam = species)
-
-# testen voor dubbels in trofische groep
-# data_trofische_groep %>% 
-#   group_by(Species, Indicator) %>% 
-#   summarise(n = n()) %>% 
-#   ungroup() %>% 
-#   filter(n > 1)
+# data_trofische_groep <- 
+#   read_delim(paste0(pad_data, "Voedselgilde_exoten_Moneosrapport.csv"), 
+#              delim = ";")  
 # 
-# data_trofische_groep %>% 
-#   group_by(Species) %>% 
-#   summarise(n = n()) %>% 
-#   ungroup() %>% 
-#   filter(n > 1)
-
-
-# toevoegen trofisch groep aan dataset
-data_watervogels <- 
-  data_watervogels %>% 
-  left_join(data_trofische_groep)
+# data_trofische_groep <- data_trofische_groep %>% 
+#               rename_all(tolower) %>% 
+#               rename(nednaam = species)
+# 
+# # testen voor dubbels in trofische groep
+# # data_trofische_groep %>% 
+# #   group_by(Species, Indicator) %>% 
+# #   summarise(n = n()) %>% 
+# #   ungroup() %>% 
+# #   filter(n > 1)
+# # 
+# # data_trofische_groep %>% 
+# #   group_by(Species) %>% 
+# #   summarise(n = n()) %>% 
+# #   ungroup() %>% 
+# #   filter(n > 1)
+# 
+# 
+# # toevoegen trofisch groep aan dataset
+# data_watervogels <- 
+#   data_watervogels %>% 
+#   left_join(data_trofische_groep)
 
 ```
 
@@ -364,40 +365,40 @@ knitr::kable(rivieren)
 
 ```{r gebiedsindeling T2021}
 
-data_gebiedsindeling_T2021 <- 
-  read_delim(paste0(pad_data, "Gebiedsindeling_T2021.csv"), 
-             delim = ";")  
-
-data_gebiedsindeling_T2021 <-
-  data_gebiedsindeling_T2021 %>% 
-  mutate(rivier = case_when(
-    niveau4 == "Rupel" ~ "Rupel",
-    niveau4 == "GetijdeDurme" ~ "Durme",
-    niveau4 == "GetijdeDijle" ~ "Dijle",
-    niveau4 == "GetijdeZenne" ~ "Zenne",
-    niveau4 == "Monding" ~ "Monding",
-    niveau2 == "Westerschelde" ~"Westerschelde",
-    TRUE ~ "Zeeschelde"
-  ))
-
-data_gebiedsindeling_T2021 <- data_gebiedsindeling_T2021 %>% 
-  rename(gebiedsgroep = krw) %>% 
-  select("niveau1", "niveau2","niveau3", "gebiedsgroep", "rivier") %>% 
-  distinct() %>% 
-  filter(gebiedsgroep != "Getijdenetes")
-
-knitr::kable(data_gebiedsindeling_T2021)
-
-
-#### toevoegen gebiedsindeling EMSE
- data_watervogels <- 
-  data_watervogels %>% 
-  left_join(data_gebiedsindeling_T2021, na.rm = TRUE) %>% 
-   mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme", "Zoet zijrivier")))
-   
-data_watervogels %>% 
-  distinct(niveau3)
-
+# data_gebiedsindeling_T2021 <- 
+#   read_delim(paste0(pad_data, "Gebiedsindeling_T2021.csv"), 
+#              delim = ";")  
+# 
+# data_gebiedsindeling_T2021 <-
+#   data_gebiedsindeling_T2021 %>% 
+#   mutate(rivier = case_when(
+#     niveau4 == "Rupel" ~ "Rupel",
+#     niveau4 == "GetijdeDurme" ~ "Durme",
+#     niveau4 == "GetijdeDijle" ~ "Dijle",
+#     niveau4 == "GetijdeZenne" ~ "Zenne",
+#     niveau4 == "Monding" ~ "Monding",
+#     niveau2 == "Westerschelde" ~"Westerschelde",
+#     TRUE ~ "Zeeschelde"
+#   ))
+# 
+# data_gebiedsindeling_T2021 <- data_gebiedsindeling_T2021 %>% 
+#   rename(gebiedsgroep = krw) %>% 
+#   select("niveau1", "niveau2","niveau3", "gebiedsgroep", "rivier") %>% 
+#   distinct() %>% 
+#   filter(gebiedsgroep != "Getijdenetes")
+# 
+# knitr::kable(data_gebiedsindeling_T2021)
+# 
+# 
+# #### toevoegen gebiedsindeling EMSE
+#  data_watervogels <- 
+#   data_watervogels %>% 
+#   left_join(data_gebiedsindeling_T2021, na.rm = TRUE) %>% 
+#    mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme", "Zoet zijrivier")))
+#    
+# data_watervogels %>% 
+#   distinct(niveau3)
+# 
 
 
 # data_watervogels$niveau3  <- factor(data_watervogels1$niveau3, levels = c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme", "Zoet zijrivier")) %>%   
@@ -2374,7 +2375,6 @@ ggsave(paste0(pad_figuren, "100_figuur_aantallen_steltlopers.jpg"))
 
 ```{r dichtheden winter watervogels per zone}
 
-##gekoppelde dataset bevat nog beperkt aantal jaren en aantal jaargangen moeten er nog uit
 
 
   data_watervogels %>% 
