@@ -59,11 +59,11 @@ data_watervogels <- data_watervogels %>%
 mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) 
 
 
-data_analysesets <-
-   read_delim(paste0(pad_data, "Watervogels_analysesets.csv"),
-              delim = ";")
-data_analysesets <- data_analysesets %>% 
-mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) 
+# data_analysesets <-
+#    read_delim(paste0(pad_data, "Watervogels_analysesets.csv"),
+#               delim = ";")
+# data_analysesets <- data_analysesets %>%
+# mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4)))
 
 Waterbirds <- 
   read_delim(paste0(pad_data, "Watervogels_all_ruwedata.csv"),
@@ -165,6 +165,15 @@ data_watervogels <-
 
 data_analysesets <- 
   data_analysesets %>% 
+  mutate(jaar = teldatum %>% 
+           ymd() %>% 
+           year(),
+         maand = teldatum %>% 
+           ymd() %>% 
+           month())
+
+Waterbirds <- 
+  Waterbirds %>% 
   mutate(jaar = teldatum %>% 
            ymd() %>% 
            year(),
@@ -828,10 +837,10 @@ ggsave(paste0(pad_figuren, "100_figuur_wintermaxima_rivier.jpg"))
 
 ```{r winteraantallen Sigma}
 
-table(data_analysesets$analyseset)
-table(data_analysesets$gebiedsgroep)
+table(Waterbirds$analyseset)
+table(Waterbirds$gebiedsgroep)
 
-data_analysesets %>% 
+Waterbirds %>% 
   filter(maand %in% c(10:12, 1:3)) %>% 
   mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
  # filter(telseizoen1 > 2009) %>% 
@@ -853,7 +862,7 @@ data_analysesets %>%
 
 ggsave(paste0(pad_figuren, "100_figuur_wintermaxima_sigma_estuarien_wetland.jpg"))
 
-data_analysesets %>% 
+Waterbirds %>% 
   filter(maand %in% c(10:12, 1:3)) %>% 
   mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
  # filter(telseizoen1 > 2009) %>% 
@@ -942,9 +951,28 @@ Wmax_Zsch <- data_watervogels %>%
   filter(rivier == "Zeeschelde") %>% 
   SeizMax("Zeeschelde") #zonder de boottellingen op de rupel
 
-table(data_analysesets$gebiedsgroep_code)
+##voor natuurindicator
+Wmax_Zsch_ZR <- data_watervogels %>% 
+  SeizMax("Zeeschelde + zijrivieren") 
+Wmax_Zsch_ZR_Sigma <- Waterbirds %>% 
+  filter(analyseset != "VALLEI_MIDMA") %>%
+  filter(gebiedsgroep_code == "ZSEST"| gebiedsgroep_code == "WETL" ) %>% 
+  group_by(telseizoen1,
+           gebiedsgroep_code,
+           gebiedsgroep,
+           rivier,
+           telseizoen,
+           teldatum,
+           nednaam,
+           taxongroepcode,
+           maand) %>%
+  summarise(aantal = sum(aantal)) %>% 
+  SeizMax("Zeeschelde + zijrivieren + Sigma")
 
-Wmax_Zsch_boottelling <- data_analysesets %>% 
+
+table(Waterbirds$gebiedsgroep_code)
+
+Wmax_Zsch_boottelling <- Waterbirds %>% 
   filter(gebiedsgroep_code == "ZSEST") %>% 
   filter(analyseset == "boottelling") %>%
   group_by(telseizoen1,
@@ -977,7 +1005,7 @@ Wmax_Zsch_boottelling <- data_analysesets %>%
 
 
 #wwintermaximum Zeeschelde (zonder ZR) en sigmagebieden estuarien (langs Zeeschelde)
-Wmax_Zsch_Sigma_estuarien <- data_analysesets %>% 
+Wmax_Zsch_Sigma_estuarien <- Waterbirds %>% 
   filter(analyseset == "boottelling" | analyseset == "SIGMA_MIDMA") %>%
   filter(gebiedsgroep_code == "ZSEST" ) %>% 
   filter(rivier == "Zeeschelde") %>%
@@ -994,7 +1022,7 @@ Wmax_Zsch_Sigma_estuarien <- data_analysesets %>%
   SeizMax("Zeeschelde_boottelling_Sigma_estuarien")
 
 #wwintermaximum Zeeschelde (zonder ZR) en sigmagebieden estuarien (langs Zeeschelde)
-Wmax_Zsch_Sigma_estuarien_wetland <- data_analysesets %>% 
+Wmax_Zsch_Sigma_estuarien_wetland <- Waterbirds %>% 
   filter(analyseset == "boottelling" | analyseset == "SIGMA_MIDMA") %>%
   filter(gebiedsgroep_code == "ZSEST"| gebiedsgroep_code == "WETL" ) %>% 
   filter(rivier == "Zeeschelde") %>%
@@ -1010,7 +1038,7 @@ Wmax_Zsch_Sigma_estuarien_wetland <- data_analysesets %>%
   summarise(aantal = sum(aantal)) %>% 
   SeizMax("Zeeschelde_boottelling_Sigma_estuarien_wetland")
 
-table(data_analysesets$analyseset)
+
 
 
 
@@ -1036,8 +1064,9 @@ mav_Zscboottelling <- Wmax_Zsch_boottelling %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 mav_ZschSigma_estuarien <- Wmax_Zsch_Sigma_estuarien %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 mav_ZschSigma_estuarien_wetland <- Wmax_Zsch_Sigma_estuarien_wetland %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 
-# mav_ZscZR <- Wmax_ZschZR %>% mav_wm(.$telseizoen1, .$Wmax, 5)
-# mav_ZscZRSigma <- Wmax_ZschZRSigma %>% mav_wm(.$telseizoen1, .$Wmax, 5)
+##voor natuurindicator
+mav_Zsc_ZR <- Wmax_Zsch_ZR %>% mav_wm(.$telseizoen1, .$Wmax, 5)
+mav_Zsc_ZR_Sigma <- Wmax_Zsch_ZR_Sigma %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 # mav_ZscZRSigmaVallei <- Wmax_ZschZRSigmaVallei %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 # mav_ZscSigma <- Wmax_Zsch_Sigma %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 # mav_ZscSigmaVallei <- Wmax_Zsch_Sigma_vallei %>% mav_wm(.$telseizoen1, .$Wmax, 5)
@@ -1191,12 +1220,13 @@ plot_mav <- function(data){
 # # mav_Zsc %>% bind_rows(mav_ZscSigma) %>% 
 # #   plot_mav()
 # 
-mav_Zsc %>% bind_rows(mav_ZschSigma_estuarien) %>%
-  plot_mav()
 
-ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_glijdendgemiddelde_Zeeschelde_estuarien.jpg"))
+mav_Zsc %>%   plot_mav()
 
-mav_Zsc %>% bind_rows(mav_ZschSigma_estuarien) %>% bind_rows(mav_ZschSigma_estuarien_wetland) %>% 
+# ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_glijdendgemiddelde_Zeeschelde_estuarien.jpg"))
+
+mav_Zsc_ZR %>%   plot_mav()
+mav_Zsc_ZR %>% bind_rows(mav_Zsch_ZR_Sigma)  %>% 
   plot_mav()
 
 ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_glijdendgemiddelde_Zeeschelde_estuarien_wetland.png"), width = 30, height = 15, units = "cm")
