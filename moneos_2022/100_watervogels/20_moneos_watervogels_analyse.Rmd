@@ -13,13 +13,11 @@ output:
   bookdown::word_document2
 ---
 
-
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.showtext = TRUE, dpi = 300)
 
 ```
-
 
 ```{r libraries}
 
@@ -31,7 +29,6 @@ library(writexl)
 library(rprojroot) ## workaround pad
 library(RcppRoll)
 ```
-
 
 ```{r pad}
 
@@ -47,8 +44,6 @@ pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ```
-
-
 
 ```{r data-watervogels inlezen}
 
@@ -305,7 +300,6 @@ laatste_jaar <-
 
 ```
 
-
 ```{r data-trofische-groep}
 ##deze stap werd verhuisd naar data script
 
@@ -338,8 +332,6 @@ laatste_jaar <-
 
 ```
 
-
-
 ##### testen voor dubbels
 
 ```{r data-controle}
@@ -355,8 +347,7 @@ dubbele_tellingen <-
 
 ```
 
-  - Er zijn `r nrow(dubbele_tellingen)` dubbele tellingen in de dataset 
-
+-   Er zijn `r nrow(dubbele_tellingen)` dubbele tellingen in de dataset
 
 ##### rivieren in de dataset
 
@@ -472,7 +463,6 @@ library(zoo)
 
 ```
 
-
 ##### soorten in de dataset
 
 ```{r soorten}
@@ -519,12 +509,12 @@ tabel_trofische_groep <-
 
 ```
 
-  - Er zijn `r nrow(soortnamen)` soorten in de dataset
-  - `r length(geen_trofische_groep)` soorten hebben geen indicatie van trofische groep
-    + `r geen_trofische_groep`
-  - de overige soorten behoren tot volgende trofische groepen
-    + `r knitr::kable(tabel_trofische_groep)`
-    
+-   Er zijn `r nrow(soortnamen)` soorten in de dataset
+-   `r length(geen_trofische_groep)` soorten hebben geen indicatie van trofische groep
+    -   `r geen_trofische_groep`
+-   de overige soorten behoren tot volgende trofische groepen
+    -   `r knitr::kable(tabel_trofische_groep)`
+
 #### shannon diversity
 
 ```{r Shannon index}
@@ -568,8 +558,6 @@ levels(data_watervogels$niveau3)
  
 ```
 
-
-
 ##### figuur maandelijkse totalen wintervogels Zeeschelde
 
 ```{r 100-figuur-maandelijkse-totalen-winter-Zeeschelde, fig.height=5, fig.width=8}
@@ -611,6 +599,7 @@ ggsave(paste0(pad_figuren, "100_figuur_maandelijkse_totalen_ZSwinter.jpg"))
 ```
 
 ##### figuur maandelijkse totalen vogels Zeeschelde IV - Saliniteitsgradiënt
+
 ```{r 100-figuur-maandelijkse-totalen-ZeescheldeIV, fig.height=5, fig.width=8}
 data_watervogels %>% 
   filter(gebiedsgroep_code == "ZS4") %>% 
@@ -722,7 +711,6 @@ ggsave(paste0(pad_figuren, "100_figuur_verhouding_aantallen_niveau3Zeeschelde.jp
 #         legend.title = element_blank())
 
 ```
-
 
 ##### figuur wintermaxima Zeeschelde
 
@@ -924,9 +912,6 @@ ggsave(paste0(pad_figuren, "100_figuur_wintermaxima_sigmagebieden_estuarien.jpg"
 
 ```
 
-
-
-
 #### Natuurindicator berekening IHD-Z
 
 ```{r wintermaximum-Natuurindicatorberekening, fig.height=6, fig.width=8}
@@ -951,7 +936,7 @@ Wmax_Zsch <- data_watervogels %>%
   filter(rivier == "Zeeschelde") %>% 
   SeizMax("Zeeschelde") #zonder de boottellingen op de rupel
 
-##voor natuurindicator
+##voor natuurindicator met zijrivieren
 Wmax_Zsch_ZR <- data_watervogels %>% 
   SeizMax("Zeeschelde + zijrivieren") 
 Wmax_Zsch_ZR_Sigma <- Waterbirds %>% 
@@ -1066,7 +1051,12 @@ mav_ZschSigma_estuarien_wetland <- Wmax_Zsch_Sigma_estuarien_wetland %>% mav_wm(
 
 ##voor natuurindicator
 mav_Zsc_ZR <- Wmax_Zsch_ZR %>% mav_wm(.$telseizoen1, .$Wmax, 5)
+
+mav_Zsc_ZR %>%   write_delim(paste0(pad_tabellen, "mav_Zsc_ZR.csv", row.names=FALSE, delim = ";"))
+mav_Zsc_ZR %>%   write_tsv(paste0(pad_tabellen, "mav_Zsc_ZR.tsv"))
 mav_Zsc_ZR_Sigma <- Wmax_Zsch_ZR_Sigma %>% mav_wm(.$telseizoen1, .$Wmax, 5)
+mav_Zsc_ZR_Sigma %>%   write_tsv(paste0(pad_tabellen, "mav_Zsc_ZR_Sigma.tsv"))
+
 # mav_ZscZRSigmaVallei <- Wmax_ZschZRSigmaVallei %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 # mav_ZscSigma <- Wmax_Zsch_Sigma %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 # mav_ZscSigmaVallei <- Wmax_Zsch_Sigma_vallei %>% mav_wm(.$telseizoen1, .$Wmax, 5)
@@ -1226,10 +1216,10 @@ mav_Zsc %>%   plot_mav()
 # ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_glijdendgemiddelde_Zeeschelde_estuarien.jpg"))
 
 mav_Zsc_ZR %>%   plot_mav()
-mav_Zsc_ZR %>% bind_rows(mav_Zsch_ZR_Sigma)  %>% 
+mav_Zsc_ZR %>% bind_rows(mav_Zsc_ZR_Sigma)  %>% 
   plot_mav()
 
-ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_glijdendgemiddelde_Zeeschelde_estuarien_wetland.png"), width = 30, height = 15, units = "cm")
+ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_website2022.png"), width = 30, height = 15, units = "cm")
 
 # mav_Zsc %>% bind_rows(mav_ZschSigma_estuarien) %>% bind_rows(mav_ZscSigma) %>% 
 #   plot_mav()
@@ -1257,8 +1247,6 @@ ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_glijdendgemiddelde_Zeesch
 ```
 
 ### IHD overwinterende watervogels - soortdoelstellingen S-IHD besluit
-
-
 
 ```{r berekening s-IHD soortdoelstellingen}
 
@@ -1693,7 +1681,7 @@ ggsave(paste0(pad_figuren, "100-figuur_S-IHD_Kleinezwaan.jpg"))
 
 ```
 
-##### indexberekening 
+##### indexberekening
 
 ```{r index berekening}
 
@@ -1814,7 +1802,6 @@ data_watervogels_index_trofniv3 %>%
  
 ```
 
-
 ##### figuur wintergemiddelde aantallen per KRWzone
 
 ```{r 100-figuur-aantallen-niveau3, fig.height=6, fig.width=8}
@@ -1896,7 +1883,6 @@ filter(taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas
 
 ```
 
-
 ##### figuur wintergemiddelde aantallen per zijrivier
 
 ```{r 100-figuur-aantallen-zijrivieren, fig.height=4, fig.width=12}
@@ -1954,7 +1940,6 @@ filter(taxongroepcode != "MS") %>% #meeuwen en sternen niet meetellen worden pas
 #   theme(axis.text.x = element_text(angle = 90))
 
 ```
-
 
 ##### figuur wintergemiddelde aantallen per trofische groep
 
@@ -2106,7 +2091,7 @@ ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgro
         legend.title = element_blank())
 ```
 
-##### figuur abundante soorten met > 5% per KRWzone voor en na 2009
+##### figuur abundante soorten met \> 5% per KRWzone voor en na 2009
 
 ```{r 100-figuur-abundante-soorten, fig.height=5, fig.width=7}
 
@@ -2247,7 +2232,6 @@ data_watervogels %>%
 ggsave(paste0(pad_figuren, "100_figuur_aantallen_abundante_soorten_niveau3.jpg"))
 
 ```
-
 
 ##### figuur wintergemiddelde aantallen voor viseters en steltlopers
 
@@ -2401,6 +2385,7 @@ data_watervogels %>%
 ggsave(paste0(pad_figuren, "100_figuur_aantallen_steltlopers.jpg"))
 
 ```
+
 ##### figuur wintergemiddelde vogeldichtheid per zones
 
 ```{r dichtheden winter watervogels per zone}
@@ -2638,7 +2623,6 @@ ggsave(paste0(pad_figuren, "100_figuur_totaalaantal_exoten.jpg"))
 
 ```
 
-
 ```{r meta-data}
 
 meta_data <- 
@@ -2654,4 +2638,3 @@ meta_data %>%
               delim = ";")
 
 ```
-
