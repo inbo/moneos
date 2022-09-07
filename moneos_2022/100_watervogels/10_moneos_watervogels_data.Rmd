@@ -790,7 +790,7 @@ overzicht_tellingen %>%
 
 #### correcties op de opgehaalde data uit de watervogeldatabank
 
-```{r correcties-WaterbirdsBT}
+```{r correcties-Waterbirds}
 
 # checken voor dubbels in de dataset
 Waterbirds  %>% 
@@ -865,14 +865,17 @@ Waterbirds_all %>%
                             delim = ";")
 
 ####dataset inlezen zonder databank bevraging
-# Waterbirds <- 
+# Waterbirds <-
 #   read_delim(paste0(pad_data, "Watervogels_all_ruwedata.csv"),
 #               delim = ";")
 
-Waterbirds <- 
-  Waterbirds %>% 
-  rename_all(tolower) %>% 
-  left_join(gebiedsgroepen) %>% 
+
+#MONEOStelgebieden gebiedsgroepinfo (niet voor sigma, vallei)
+Waterbirds <-
+  Waterbirds %>%
+  rename_all(tolower) %>%
+  mutate(gebiedscode = as.character(gebiedscode)) %>%
+  left_join(gebiedsgroepen) %>%
   select(gebiedsgroeptype_code,
     gebiedsgroep_code,
          gebiedsgroep,
@@ -887,41 +890,45 @@ Waterbirds <-
          aantal,
          analyseset)
 
-Waterbirdsall <- 
-   Waterbirds
+
 
 
 ```
 
 ```{r controle volledigheid}
-Aantaltellingenpergebied0 <- WaterbirdsBT %>% 
-    filter (telseizoen == "2020/21") %>% 
-  count(gebiedsgroep_code, telseizoen, teldatum) 
+Aantaltellingenpergebied0 <- WaterbirdsBT %>%
+  rename_all(tolower) %>%
+    filter (telseizoen == "2020/21") %>%
+  distinct(gebiedscode, telseizoen, teldatum) %>% 
+  count(gebiedscode, telseizoen, teldatum) 
   
 # aantal tellingen per telseizoen ingevoerd 
-Aantaltellingenpergebied <- WaterbirdsBT %>% 
+Aantaltellingenpergebied <- WaterbirdsBT %>%
+  rename_all(tolower) %>%
   filter(analyseset =="boottelling") %>% 
   filter (telseizoen == "2020/21") %>% 
-  distinct(gebiedsgroep_code, gebiedscode, teldatum, telseizoen) %>% 
-  count(gebiedsgroep_code, gebiedscode, telseizoen) 
+  distinct(gebiedscode, teldatum, telseizoen) %>% 
+  count(gebiedscode, telseizoen) 
   
 
 knitr::kable(Aantaltellingenpergebied)
 
-Aantaltellingenpergebied <- WaterbirdsBT %>% 
+Aantaltellingenpergebied <- WaterbirdsBT %>%
+  rename_all(tolower) %>%
   filter(analyseset =="zijrivier_MIDMA") %>% 
   filter (telseizoen == "2021/22") %>% 
-  distinct(gebiedsgroep_code, gebiedscode, teldatum, telseizoen) %>% 
-  count(gebiedsgroep_code, gebiedscode, telseizoen) 
+  distinct(gebiedscode, teldatum, telseizoen) %>% 
+  count(gebiedscode, telseizoen) 
   
 
 knitr::kable(Aantaltellingenpergebied)
 
 Aantaltellingenpergebied <- WaterbirdsBT %>% 
+  rename_all(tolower) %>%
   filter(analyseset =="SIGMA_MIDMA") %>% 
   filter (telseizoen == "2021/22") %>% 
-  distinct(gebiedsgroep_code, gebiedscode, teldatum, telseizoen) %>% 
-  count(gebiedsgroep_code, gebiedscode, telseizoen) 
+  distinct(gebiedscode, teldatum, telseizoen) %>% 
+  count(gebiedscode, telseizoen) 
   
 
 knitr::kable(Aantaltellingenpergebied)
@@ -944,6 +951,8 @@ Waterbirds_Moneos <-
   summarise(aantal = sum(aantal)) %>% 
   ungroup() %>% 
   mutate(analyseset = "Zeeschelde en Zijrivieren")
+
+
 
 Waterbirds_sets <- 
   Waterbirds %>% 
@@ -1112,7 +1121,11 @@ Waterbirds_sets <-
   complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
            nesting(nednaam, wetnaam, taxongroepcode),
            fill = list(0))
-
+Waterbirds_all <- 
+  Waterbirds_all %>% 
+  complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
+           nesting(nednaam, wetnaam, taxongroepcode),
+           fill = list(0))
 # WaterbirdsBT_ZSCH <- 
 #   WaterbirdsBT_ZSCH %>% 
 #   complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
@@ -1130,16 +1143,7 @@ Waterbirds_sets <-
 #   complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
 #            nesting(nednaam, wetnaam, taxongroepcode),
 #            fill = list(0))
-
-
-WaterbirdsBT_sigma_estuarien <- 
-  Waterbirds_sets %>%
-  filter(analyseset == "SIGMA_MIDMA") %>% 
-  filter(gebiedsgroep == "Ontpoldering" | gebiedsgroep == "GGG") %>% 
-  complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
-           nesting(nednaam, wetnaam, taxongroepcode),
-           fill = list(0))
-
+# 
 # WaterbirdsBT_sigma_wetland <- 
 #   WaterbirdsBT_sigma_wetland %>% 
 #   complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
@@ -1161,6 +1165,99 @@ WaterbirdsBT_sigma_estuarien <-
 ```
 
 
+
+```{r data-trofische-groep}
+
+data_trofische_groep <- 
+  read_delim(paste0(pad_data, "Voedselgilde_exoten_Moneosrapport.csv"), 
+             delim = ";")  
+
+data_trofische_groep <- data_trofische_groep %>% 
+              rename_all(tolower) %>% 
+              rename(nednaam = species)
+
+# testen voor dubbels in trofische groep
+# data_trofische_groep %>% 
+#   group_by(Species, Indicator) %>% 
+#   summarise(n = n()) %>% 
+#   ungroup() %>% 
+#   filter(n > 1)
+# 
+# data_trofische_groep %>% 
+#   group_by(Species) %>% 
+#   summarise(n = n()) %>% 
+#   ungroup() %>% 
+#   filter(n > 1)
+
+
+# toevoegen trofisch groep aan dataset
+Waterbirds_Moneos <- 
+  Waterbirds_Moneos %>% 
+  left_join(data_trofische_groep)
+
+```
+
+
+
+##### gebiedsindeling T2021
+
+```{r gebiedsindeling T2021}
+
+data_gebiedsindeling_T2021 <- 
+  read_delim(paste0(pad_data, "Gebiedsindeling_T2021.csv"), 
+             delim = ";")  
+
+data_gebiedsindeling_T2021 <-
+  data_gebiedsindeling_T2021 %>% 
+  mutate(rivier = case_when(
+    niveau4 == "Rupel" ~ "Rupel",
+    niveau4 == "GetijdeDurme" ~ "Durme",
+    niveau4 == "GetijdeDijle" ~ "Dijle",
+    niveau4 == "GetijdeZenne" ~ "Zenne",
+    niveau4 == "Monding" ~ "Monding",
+    niveau2 == "Westerschelde" ~"Westerschelde",
+    TRUE ~ "Zeeschelde"
+  ))
+
+data_gebiedsindeling_T2021 <- data_gebiedsindeling_T2021 %>% 
+  rename(gebiedsgroep = krw) %>% 
+  select("niveau1", "niveau2","niveau3", "gebiedsgroep", "rivier") %>% 
+  distinct() %>% 
+  filter(gebiedsgroep != "Getijdenetes")
+
+knitr::kable(data_gebiedsindeling_T2021)
+
+
+#### toevoegen gebiedsindeling EMSE
+ Waterbirds_Moneos <- 
+  Waterbirds_Moneos %>% 
+  left_join(data_gebiedsindeling_T2021, na.rm = TRUE) %>% 
+   mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme", "Zoet zijrivier")))
+   
+Waterbirds_Moneos %>% 
+  distinct(niveau3)
+
+Waterbirds_sets <- 
+  Waterbirds_sets %>% 
+  left_join(data_gebiedsindeling_T2021, na.rm = TRUE) %>% 
+   mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme", "Zoet zijrivier")))
+   
+Waterbirds_sets %>% 
+  distinct(niveau3)
+
+# Waterbirds_all <- 
+#   Waterbirds_all %>% 
+#   left_join(data_gebiedsindeling_T2021, na.rm = TRUE) %>% 
+#    mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme", "Zoet zijrivier")))
+#    
+# Waterbirds_all %>% 
+#   distinct(niveau3)
+
+# data_watervogels$niveau3  <- factor(data_watervogels1$niveau3, levels = c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme", "Zoet zijrivier")) %>%   
+
+```
+
+
 ```{r wegschrijven-data}
 
 Waterbirds_Moneos %>% 
@@ -1171,13 +1268,23 @@ Waterbirds_sets %>%
   write_delim(paste0(pad_data, "Watervogels_analysesets.csv"),
               delim = ";")
 
+table(Waterbirds_Moneos$gebiedsgroep_code)
+
 Waterbirds_Moneos %>% 
-  mutate(maand = month(teldatum)) %>% 
-  dplyr::select(-c(taxongroepcode,gebiedsgroep_code, wetnaam, teldatum, analyseset)) %>% 
+  mutate(maand = month(teldatum)) %>%
+   dplyr::select(-c(taxongroepcode,gebiedsgroep_code, wetnaam, teldatum, analyseset)) %>% 
   dplyr::rename(KRW_zone = gebiedsgroep) %>% 
   write_delim(paste0(pad_data, "Watervogels_ZeescheldeVLIZ.csv"),
               delim = ";")
 
+
+WaterbirdsBT_sigma_estuarien <- 
+  Waterbirds_all %>%
+  filter(analyseset == "SIGMA_MIDMA") %>% 
+  filter(gebiedsgroep == "Ontpoldering" | gebiedsgroep == "GGG") %>% 
+  complete(nesting(gebiedsgroep_code, gebiedsgroep, rivier, telseizoen, teldatum),
+           nesting(nednaam, wetnaam, taxongroepcode),
+           fill = list(0))
 
 WaterbirdsBT_sigma_estuarien %>% 
   mutate(maand = month(teldatum)) %>% 
@@ -1191,7 +1298,7 @@ WaterbirdsBT_sigma_estuarien %>%
     gebiedsgroep_code == "Rupel"~ "Rupel",
         TRUE ~ "Zoet zijrivier"
   )) %>% 
-   dplyr::select(-c(gebiedsgroep_code, taxongroepcode, wetnaam, teldatum, analyseset)) %>% 
+   dplyr::select(-c(gebiedsgroep_code, taxongroepcode, wetnaam, teldatum, analyseset, gebiedscode, gebied)) %>% 
    write_delim(paste0(pad_data, "Watervogels_Sigma_estuarienVLIZ.csv"),
               delim = ";")
 # WaterbirdsBT_ZSCH %>% 
