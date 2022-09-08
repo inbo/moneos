@@ -1,0 +1,140 @@
+---
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r 140-slik_schorrand, include=FALSE}
+
+hoofdstuk <- "140_slik_schorrand"
+
+```
+
+
+```{r 140-setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+knitr::opts_knit$set(eval.after = "fig.cap")
+
+```
+
+
+```{r 140-libraries}
+
+library(tidyverse)
+library(readxl)
+library(kableExtra)
+library(INBOtheme)
+library(rprojroot) ## workaround pad
+
+```
+
+
+```{r 140-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+
+```
+
+
+```{r 140-meta_data}
+
+meta_data <- 
+  read_delim(paste0(pad_data, "meta_data.csv"),
+             delim = ";")
+  
+for(i in 1:nrow(meta_data)){
+  ##first extract the object value
+  tempobj=meta_data$waarde[i]
+  ##now create a new variable with the original name of the list item
+  eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+}
+
+```
+
+
+
+# Monitoring Slik en Schorrand
+
+
+__Gunther Van Ryckegem & Amber Mertens__
+
+
+## Inleiding
+
+In het voorjaar van 2021 werd door INBO een voorstel tot duurzaam oeverbeheer uitgewerkt voor de volledige Zeeschelde (Van Ryckegem et al., 2021). In de studie wordt een kader geschetst, geschematiseerd door een beslisboom, om de beheerder te helpen bij de keuze van het type oeververdediging indien zich erosie voordoet aan de schorrand of voorliggende slik.
+
+Naast ogen op het terrein kan een (desktop) monitoringsprotocol helpen bij het het vaststellen van erosieve oevers. Het monitoringsprotocol wordt 3-jaarlijks doorlopen. De hieronder gebruikte hulpmiddelen zijn:
+
+• Schorranderosiekaarten
+• Breuksteenverschilkaarten
+• Hoogteverschilkaarten combigrids (schor, slik en ondiep water)
+• Bathymetrische verschilkaarten (laag slik en ondiep water)
+
+Vastgestelde erosieve zones worden op terrein onderzocht en bij het vaststellen van sterke schorrandof slikerosie kan voor die specifieke locaties het meest aangewezen type oeververdediging bepaald worden door de beslisboom te doorlopen of door de oeververdedigingsatlas te raadplegen.
+
+
+## Materiaal en methode
+
+De hulpmiddelen die gebruikt worden om de slik- en schorrand te monitoren worden hiërarchisch overlopen in een GISomgeving (Figuur \@ref(fig:140-figuur-stappenplan)). De focus zal liggen op de schorranderosiekaarten, die elke 3 jaar gemaakt worden. Vervolgens worden, ook 3-jaarlijks, breuksteenverschilkaarten onderzocht in combinatie met de combigrids. Indien er erosie is geweest waar geen breuksteen meer zichtbaar is wijst dit op wegspoeling van breuksteen. Tenslotte worden ook jaarlijks de bathymetrische verschilkaarten gemaakt van het laag slik en ondiep water. Dit is eerder een ‘early warning’ kaart die informatie geeft over potentieel erosieve oevers indien de erosie zich doorzet op het hogere slik door terugschrijdende erosie van het ondiep water naar het slik.
+
+
+```{r 000-figuur-stappenplan, fig.cap=caption_stappenplan, out.width="80%"}
+
+caption_stappenplan <- "Stappen monitoringsprotocol slik- en schorrandbeheer"
+
+knitr::include_graphics(paste0(pad_figuren, "140_figuur_stappenplan.jpg"))
+
+```
+
+<br/>
+
+### Schorranderosiekaart
+
+3-jaarlijks, gelijklopend met de opmaak van de ecotopenkaarten van de volledige Zeeschelde (2013, 2016, 2019, 2022, 2025,…)[^voetnoot-140-1] kunnen schorranderosiekaarten gemaakt worden. Dit gebeurt op basis van de geomorfologische kaart (zie hoofdstuk ecotopen). Zones met een terugschrijdende erosie over periode van 3 jaar meer dan 2 m worden gevisualiseerd. In Van Ryckegem et al. (2021) werd voorgesteld om zones te evalueren waar de terugschrijdende erosie over een periode van 3 jaar meer dan 1 m. Deze buffer bleek echter te klein t.a.v. de digitalisatiefout van de schorrand op basis van luchtfoto’s. 
+
+Voor deze rapportage werd geen schorranderosiekaart gemaakt. In Van Ryckegem et al. (2021) werden schorrand verschilkaarten gemaakt tussen 2019 en 2016, 2019 en 2010, 2016 en 2010.
+
+[^voetnoot-140-1]: De afgewerkte kaarten zijn beschikbaar 2 jaar na karteerdatum.
+
+### Breuksteen verschilkaart
+
+3-jaarlijks, gelijklopend met de opmaak van de ecotopenkaarten van de volledige Zeeschelde (2013, 2016, 2019, 2022, 2025,…) kunnen breuksteen verschilkaarten gemaakt worden. Dit gebeurt op basis van de geomorfologische kaart (zie hoofdstuk ecotopen). De verschilkaarten tonen waar breuksteen verdween of verscheen. Indien er in de recente kaart breuksteen verdween kan dit wijzen op erosie of het kan wijzen op sedimentatie van de breuksteen. Voor de interpretatie is het dus ook nodig om gezamenlijk de verschilkaarten van de combigrid, bathymetrie en/of luchtfoto’s te bekijken. 
+
+Voor deze rapportage werd geen breuksteen verschilkaart gemaakt. In Van Ryckegem et al. (2021) werden breuksteen verschilkaarten gemaakt tussen 2019, 2016 en 2013.
+
+### Combigrid (lidar - bathymetrie) verschilkaart
+3-jaarlijks, gelijklopend met de opmaak van de ecotopenkaarten van de volledige Zeeschelde (2013, 2016, 2019, 2022, 2025,…) kunnen combigrid verschilkaarten gemaakt worden. Dit gebeurt op basis van de gecombineerde gegevens van de lidardata en de gemeten bathymetriën. Voor deze rapportage werden verschilkaarten gemaakt tussen 2019, 2016 en 2013. Voor de inspectie worden de grids geklassificeerd op verschillen meer of minder dan 50 cm (Van Ryckegem et al., 2021). Deze arbitraire keuze is ingegeven door een gemiddelde diameter van breuksteenstorting. Indien deze verdwijnt door erosie, wegspoeling of inschuiving dan verwachten we deze hoogteverandering. Voor de zacht substraat zones werd deze hoogteverandering ook als significant beschouwd bij de inspectie. De focus ligt op de schorrandzone en het (middel)hoog slik.
+
+Voor deze rapportage werd geen combigrid verschilkaart gemaakt. In Van Ryckegem et al. (2021) werden combigrid verschilkaarten gemaakt tussen 2019, 2016 en 2013.
+
+### Bathymetrische verschilkaart
+
+Jaarlijks zijn volledige bathymetrische gegevens beschikbaar van de Zeeschelde. Deze zijn vooral bruikbaar voor de laagste oeverzone (laag slik en ondiep water). Deze verschilkaarten zijn aanvullend bij de interpretatie van erosie van hoger slik en schorrand. Gecombineerd geven ze een beeld van de volledige oever met een kleiner tijdsinterval.
+
+Voor deze rapportage werden verschilkaarten gemaakt tussen 2021, 2020, 2019 en 2018. Voor de inspectie werden de grids geklassificeerd op verschillen meer of minder dan 50 cm (Van Ryckegem et al., 2021). Deze arbitraire keuze is ingegeven door een gemiddelde diameter van breuksteenstorting. Indien deze verdwijnt door erosie, wegspoeling of inschuiving dan verwachten we deze hoogteverandering. Voor de zacht substraat zones werd deze hoogteverandering ook als significant beschouwd bij de inspectie. De focus ligt op de laag slik en ondiep water.
+
+
+## Exploratieve Data-Analyse
+
+
+
+## Referenties
+
+Van Ryckegem G., Vanoverbeke J., Van Braeckel A., Van de Meutter F., Mertens W. Mertens A. & Breine J. (2021). MONEOS-Datarapport INBO: toestand Zeeschelde 2020. Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten. Rapporten van het Instituut voor Natuur- en Bosonderzoek 2021 (47). Instituut voor Natuur- en Bosonderzoek, Brussel. DOI: doi.org/10.21436/inbor.52484672
+
+Van Ryckegem G., Vanoverbeke J., Elsen R. & Van Braeckel A.(2021). Duurzaam beheer van schorrand en slikken langsheen de Zeeschelde. Een klimaatadaptief beheer na erosie van de Schelde oevers. Rapporten van het Instituut voor Natuur- en Bosonderzoek 2021 (6). Instituut voor Natuur- en Bosonderzoek, Brussel. DOI: doi.org/10.21436/inbor.26162584
+
+
+
+
+
