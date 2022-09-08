@@ -253,7 +253,7 @@ tabel_sigma_estuarien %>%
 
 De exploratieve data-analyse van de overwinterende watervogels van de Zeeschelde en getijgebonden zijrivieren volgt de vernieuwde evaluatiemethodiek (EMSE, 2021) mits een aantal doorgevoerde aanpassingen:
 
-*voedselgroepen*: de weerhouden vogelsoorten (met meer dan 30 waarnemingen cf. EMSE, 2021) werden ingedeeld in 4 categoriën (Tabel \@ref(tab:100-tabel-trofischegroepsoorten).: benthoseters (omvatten: schelpdiereters, wormeneters, hyperbenthoseters en epibenthoseters), viseters, herbivoren en omnivoren (omvatten bijna alle eendensoorten in de Zeeschelde - deze voeden zich doorgaans opportunisistisch maar in belangrijke mate met Oligochaeta).
+*voedselgroepen*: de weerhouden vogelsoorten (met meer dan 30 waarnemingen cf. EMSE, 2021) werden ingedeeld in 4 categoriën (Tabel \@ref(tab:100-tabel-trofischegroepsoorten)): benthoseters (omvatten: schelpdiereters, wormeneters, hyperbenthoseters en epibenthoseters), viseters, herbivoren en omnivoren (omvatten bijna alle eendensoorten in de Zeeschelde - deze voeden zich doorgaans opportunisistisch maar in belangrijke mate met Oligochaeta).
 De vleeseters (roofvogels) worden niet systematiesch geteld bij de watervogeltellingen.
 Deze categorie werd niet meegenomen. 
 
@@ -655,10 +655,13 @@ tabel_trofischegroep <-
 cap_trofischegroepsoorten <- "Vogelsoorten (met meer dan 30 waarnemingen) werden ingedeeld in 4 groepen: benthoseters (NBenth) (omvatten: schelpdiereters, wormeneters, hyperbenthoseters en epibenthoseters), viseters (NPisc), herbivoren (Nherb) en omnivoren (Nomn). Soorten die beschouwd worden als exoten geselecteerd."
 
 tabel_trofischegroep  %>%
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
   knitr::kable(booktabs = TRUE,
                escape = FALSE,
+               longtable = TRUE, 
                caption = cap_trofischegroepsoorten) %>%
-  kableExtra::kable_styling(latex_options = c("scale_down"),font_size = 15) 
+  kableExtra::kable_styling(latex_options = c("scale_down", "repeat_header"),
+                            font_size = 8) 
 
 ```
 
