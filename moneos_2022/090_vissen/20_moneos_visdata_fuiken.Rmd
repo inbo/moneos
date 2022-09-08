@@ -34,41 +34,62 @@ library(rprojroot) ## workaround pad
 ```
 
 
-```{r pad}
+```{r, pad}
 
 # inlezen van variabelen
 # pad naar data : pad_data
 # pad naar tabellen : pad_tabellen
 # pad naar figuren : pad_figuren
 
-source(find_root_file("../pad.R", criterion = is_rstudio_project))
+run_pad <- function() {
+  
+  source(find_root_file("../pad.R", criterion = is_rstudio_project))
+  
+  pad_data <- maak_pad(params$hoofdstuk, "data")
+  pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+  pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+  
+  # print(ls())
+  
+  sapply(ls(), function(x) assign(x, get(x), .GlobalEnv))
+  
+}
 
-pad_data <- maak_pad(params$hoofdstuk, "data")
-pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
-pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+run_pad()
 
 ```
 
 
-```{r variabelen}
+```{r, variabelen}
 
-jaren <- 2009:2020
-vangstmethode <- c('Schietfuik')
+run_variabelen <- 
+  function () {
 
-# Zeeschelde vissen
-locaties_name <- "fuikvangsten_Zeeschelde_locaties"
-metadata_name <- "fuikvangsten_Zeeschelde_metadata"
-filename <- "fuikdata_Zeeschelde"
+    jaren <- 2009:2020
+    vangstmethode <- c('Schietfuik')
+    
+    # Zeeschelde vissen
+    locaties_name <- "fuikvangsten_Zeeschelde_locaties"
+    metadata_name <- "fuikvangsten_Zeeschelde_metadata"
+    filename <- "fuikdata_Zeeschelde"
+    
+    # zijrivieren vissen
+    # locaties_name <- "fuikvangsten_zijrivieren_locaties"
+    # metadata_name <- "fuikvangsten_zijrivieren_metadata"
+    # filename <- "fuikdata_zijrivieren"
+    
+    locaties <-
+      read_xlsx(str_c(pad_data, "metadata VLIZ/", locaties_name, ".xlsx"))
+    locatie_nrs <- locaties$locatiecode %>% as.character()
+    locatie_namen <- locaties$locatie
 
-# zijrivieren vissen
-# locaties_name <- "fuikvangsten_zijrivieren_locaties"
-# metadata_name <- "fuikvangsten_zijrivieren_metadata"
-# filename <- "fuikdata_zijrivieren"
+    # print(ls())
 
-locaties <-
-  read_xlsx(str_c(pad_data, "metadata VLIZ/", locaties_name, ".xlsx"))
-locatie_nrs <- locaties$locatiecode %>% as.character()
-locatie_namen <- locaties$locatie
+    sapply(ls(), function(x) assign(x, get(x), .GlobalEnv))
+    
+  }
+
+run_variabelen()
 
 ```
 
@@ -164,11 +185,17 @@ dbDisconnect(VIS2)
 ```
 
 
-```{r check dubbelgewicht}
+```{r hervariabel, ref.label=c('pad', 'variabelen')}
 
-dubbel_gewicht <-
-  data %>% 
-  filter(!is.na(TAXONGEW) & !is.na(TAXONTOTGEW))
+rm(list = ls()[-which(ls() %in% c("data", "params", "run_pad", "run_variabelen"))])
+
+run_pad()
+run_variabelen()
+
+```
+
+
+```{r check dubbelgewicht}
 
 ```
 
@@ -221,9 +248,11 @@ data_per_datum <-
   group_by(locatiecode, locatie, datum, jaar, maand, aantal_dagen, aantal_fuiken, fuikdagen, soort) %>% 
   summarise(n = n(),
             aantal = sum(aantal, na.rm = FALSE),
+            # gewicht = sum(if_else(is.na(gewicht_ind), 
+            #                   if_else(is.na(gewicht_tot), NA_real_, gewicht_tot), 
+            #                   if_else(is.na(gewicht_tot), gewicht_ind, gewicht_ind + gewicht_tot)),
             gewicht = sum(if_else(is.na(gewicht_ind), 
-                              if_else(is.na(gewicht_tot), NA_real_, gewicht_tot), 
-                              if_else(is.na(gewicht_tot), gewicht_ind, gewicht_ind + gewicht_tot)),
+                                  gewicht_tot, gewicht_ind),
                           na.rm = FALSE),
             across(c(temperatuur, zuurstof,	zuurstof_perc, ph,	turbiditeit, conductiviteit), 
                    ~mean(., na.rm = TRUE)),
@@ -234,6 +263,13 @@ data_per_datum <-
 
 ```{r controle gegevens}
 
+# dubbel gewicht in ruwe data
+dubbel_gewicht <-
+  data %>% 
+  filter(!is.na(TAXONGEW) & !is.na(TAXONTOTGEW))
+
+
+# ontbrekende campagnes
 campagnes <- 
   data_per_datum %>% 
   select(locatie, jaar, maand) %>% 
@@ -249,16 +285,49 @@ camp_tot <-
   campagnes %>% 
   expand(locatie, jaar, seizoen)
   
+campagnes_ontbrekend <-
+  camp_tot %>% 
+  anti_join(campagnes)
 
-ontbrekende_campagnes 
+write_xlsx(list(campagnes_ontbrekend = campagnes_ontbrekend),
+           path = str_c(pad_data, "campagnes_ontbrekend.xlsx"))
+
 
 campagnes_NA_or_0 <-
   data_per_datum %>% 
-  select(locatiecode, locatie, datum, jaar, maand, aantal_dagen, aantal_fuiken) %>% 
-  distinct() %>% 
+  group_by(locatiecode, locatie, datum, jaar, maand, aantal_dagen, aantal_fuiken) %>% 
+  summarise(n = sum(n), aantal = sum(aantal, na.rm = TRUE), gewicht = sum(gewicht, na.rm = TRUE)) %>% 
+  ungroup() %>% 
   arrange(datum, locatie) %>% 
   filter(if_any(.fns = ~is.na(.)) | 
            if_any(c(aantal_dagen, aantal_fuiken), ~near(., 0)))
+
+
+
+# NA of 0 in aantal of gewicht
+
+aantal_NA_of_0_ruw <-
+  data %>% 
+  filter(is.na(TAXONAANTAL) |
+           near(TAXONAANTAL, 0)) %>% 
+  select("MetingPivotKey", "WaarnemingKey", "WaarnemingID", "GebiedKey", "Gebiedcode", 
+         "LambertX", "LambertY", "Gebiednaam", 
+         "Begindatum", "Month", "Year", "MethodeKey", "Methodenaam", "Methodegroepcode", 
+         "AantalDagen", "AantalFuiken", 
+         "TaxonKey", "Soort", 
+         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
+
+gewicht_NA_of_0_ruw <-
+  data %>% 
+  filter(if_all(c(TAXONGEW, TAXONTOTGEW), ~is.na(.)) |
+           if_all(c(TAXONGEW, TAXONTOTGEW), ~near(., 0))) %>% 
+  select("MetingPivotKey", "WaarnemingKey", "WaarnemingID", "GebiedKey", "Gebiedcode", 
+         "LambertX", "LambertY", "Gebiednaam", 
+         "Begindatum", "Month", "Year", "MethodeKey", "Methodenaam", "Methodegroepcode", 
+         "AantalDagen", "AantalFuiken", 
+         "TaxonKey", "Soort", 
+         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
+
 
 uniek_aantal_of_gewicht <-
   data_per_datum %>% 
@@ -277,22 +346,18 @@ uniek_aantal_of_gewicht_inv <-
   filter(str_detect(str_to_lower(soort), "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat"))
 
 # data_check <-
-#   data %>% 
+#   data %>%
 #   filter(
-#     # Soort == "bot",
-#          # Gebiedcode %in% {uniek_aantal_of_gewicht %>% filter(soort == "brakwatergrondel") %>% pull(locatiecode) %>% unique()},
-#          Gebiedcode == "81500000",
-#          year(Begindatum) == 2008,
-#          month(Begindatum) == 3)
+#     Soort == "bot",
+#     Gebiedcode == "85000225",
+#     year(Begindatum) == 2016,
+#     month(Begindatum) == 8)
 
-campagnes_nulvangsten <-
-  data_per_datum %>% 
-  group_by(locatiecode, locatie, datum, jaar, maand, aantal_dagen, aantal_fuiken) %>% 
-  summarise(n = sum(n), aantal = sum(aantal, na.rm = TRUE), gewicht = sum(gewicht, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  arrange(datum, locatie) %>% 
-  filter(if_any(.fns = ~is.na(.)) | 
-           if_any(c(aantal_dagen, aantal_fuiken), ~near(., 0)))
+write_xlsx(list(NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
+                NA_aantal = aantal_NA_of_0_ruw,
+                NA_gewicht = aantal_NA_of_0_ruw),
+           path = str_c(pad_data, "NA_aantal_of_gewicht.xlsx"))
+
 
 
 ```
