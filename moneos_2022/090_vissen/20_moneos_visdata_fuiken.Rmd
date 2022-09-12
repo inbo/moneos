@@ -129,9 +129,20 @@ AbiotischeMeting <-
     tbl(VIS2, "AbiotischeMeting")
   
 
+tbl_campagnes <-
+  DimWaarneming %>% 
+  inner_join(DimGebied, 
+             by = "GebiedKey") %>% 
+  inner_join(DimDate, by = c("BeginDatumKey" = "DateKey")) %>% 
+  inner_join(DimMethode, by = "MethodeKey") %>% 
+  filter(Year %in% jaren,
+         Gebiedcode %in% locatie_nrs,
+         Methodenaam %in% vangstmethode) %>% 
+  select(WaarnemingKey, WaarnemingID, GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, Begindatum, Month, Year, MethodeKey, Methodenaam, Methodegroepcode, AantalDagen, AantalFuiken)
+
 tbl_data <-
   FactMeting_Pivot %>% 
-  inner_join(DimWaarneming %>% 
+  right_join(DimWaarneming %>% 
                inner_join(DimGebied, 
                           by = "GebiedKey") %>% 
                inner_join(DimDate, by = c("BeginDatumKey" = "DateKey")),
@@ -157,11 +168,11 @@ waarneming_IDs <-
   collect() %>% 
   pull()
 
-tbl_locatie_gegevens <- 
-  Vispunten %>% 
-  inner_join(VHAVispunten, by = c("VIP_ID" = "VHP_VIP_ID")) %>% 
-  select(VIP_CDE, VIP_Omschrijving, VHP_LOTIC_NAAM, VHP_LOTIC_BekNaam, VHP_LOTIC_STROOMGEBIED, VHP_GEMEENTE) %>% 
-  filter(VIP_CDE %in% gebied_codes)
+# tbl_locatie_gegevens <- 
+#   Vispunten %>% 
+#   inner_join(VHAVispunten, by = c("VIP_ID" = "VHP_VIP_ID")) %>% 
+#   select(VIP_CDE, VIP_Omschrijving, VHP_LOTIC_NAAM, VHP_LOTIC_BekNaam, VHP_LOTIC_STROOMGEBIED, VHP_GEMEENTE) %>% 
+#   filter(VIP_CDE %in% gebied_codes)
 
 tbl_abiotiek <- 
   AbiotischeMeting %>% 
@@ -171,7 +182,13 @@ tbl_abiotiek <-
 data <-
   tbl_data %>% 
   collect() %>% 
-  left_join(tbl_locatie_gegevens %>% collect(), by = c("Gebiedcode" = "VIP_CDE")) %>% 
+  # left_join(tbl_locatie_gegevens %>% collect(), by = c("Gebiedcode" = "VIP_CDE")) %>% 
+  left_join(tbl_abiotiek %>% collect(), by = c("WaarnemingID" = "ABME_WRNG_ID"))
+
+campagnes <-
+  tbl_campagnes %>% 
+  collect() %>% 
+  # left_join(tbl_locatie_gegevens %>% collect(), by = c("Gebiedcode" = "VIP_CDE")) %>% 
   left_join(tbl_abiotiek %>% collect(), by = c("WaarnemingID" = "ABME_WRNG_ID"))
 
 ```
@@ -185,17 +202,25 @@ dbDisconnect(VIS2)
 ```
 
 
+```{r check campagnes, eval=FALSE}
+
+campagnes_dstnct <-
+  campagnes %>% 
+  distinct(Gebiedcode, Gebiednaam, Begindatum, Month, Year)
+
+campagnes_dstnct2 <-
+  data %>% 
+  distinct(Gebiedcode, Gebiednaam, Begindatum, Month, Year)
+
+```
+
+
 ```{r hervariabel, ref.label=c('pad', 'variabelen')}
 
 rm(list = ls()[-which(ls() %in% c("data", "params", "run_pad", "run_variabelen"))])
 
 run_pad()
 run_variabelen()
-
-```
-
-
-```{r check dubbelgewicht}
 
 ```
 
@@ -225,13 +250,13 @@ old_names <-
 
 (gebieden <- 
   data %>% 
-  distinct(Gebiedcode, Gebiednaam, VHP_LOTIC_NAAM, round(LambertX), round(LambertY)) %>% 
+  # distinct(Gebiedcode, Gebiednaam, VHP_LOTIC_NAAM, round(LambertX), round(LambertY)) %>% 
+  distinct(Gebiedcode, Gebiednaam, round(LambertX), round(LambertY)) %>% 
   arrange(Gebiedcode) %>% 
   mutate(new_names = locatie_namen[order(locatie_nrs)]))
 
 level_key <- locatie_namen[order(locatie_nrs)]
 names(level_key) <- old_names
-
 
 data_per_datum <- 
   data %>% 
