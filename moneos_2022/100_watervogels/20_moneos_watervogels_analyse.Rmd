@@ -365,30 +365,30 @@ knitr::kable(rivieren)
 
 ```{r gebiedsindeling T2021}
 
-# data_gebiedsindeling_T2021 <- 
-#   read_delim(paste0(pad_data, "Gebiedsindeling_T2021.csv"), 
-#              delim = ";")  
-# 
-# data_gebiedsindeling_T2021 <-
-#   data_gebiedsindeling_T2021 %>% 
-#   mutate(rivier = case_when(
-#     niveau4 == "Rupel" ~ "Rupel",
-#     niveau4 == "GetijdeDurme" ~ "Durme",
-#     niveau4 == "GetijdeDijle" ~ "Dijle",
-#     niveau4 == "GetijdeZenne" ~ "Zenne",
-#     niveau4 == "Monding" ~ "Monding",
-#     niveau2 == "Westerschelde" ~"Westerschelde",
-#     TRUE ~ "Zeeschelde"
-#   ))
-# 
-# data_gebiedsindeling_T2021 <- data_gebiedsindeling_T2021 %>% 
-#   rename(gebiedsgroep = krw) %>% 
-#   select("niveau1", "niveau2","niveau3", "gebiedsgroep", "rivier") %>% 
-#   distinct() %>% 
-#   filter(gebiedsgroep != "Getijdenetes")
-# 
-# knitr::kable(data_gebiedsindeling_T2021)
-# 
+data_gebiedsindeling_T2021 <-
+  read_delim(paste0(pad_data, "Gebiedsindeling_T2021.csv"),
+             delim = ";")
+
+data_gebiedsindeling_T2021 <-
+  data_gebiedsindeling_T2021 %>%
+  mutate(rivier = case_when(
+    niveau4 == "Rupel" ~ "Rupel",
+    niveau4 == "GetijdeDurme" ~ "Durme",
+    niveau4 == "GetijdeDijle" ~ "Dijle",
+    niveau4 == "GetijdeZenne" ~ "Zenne",
+    niveau4 == "Monding" ~ "Monding",
+    niveau2 == "Westerschelde" ~"Westerschelde",
+    TRUE ~ "Zeeschelde"
+  ))
+
+data_gebiedsindeling_T2021 <- data_gebiedsindeling_T2021 %>%
+  rename(gebiedsgroep = krw) %>%
+  select("niveau1", "niveau2","niveau3", "gebiedsgroep", "rivier") %>%
+  distinct() %>%
+  filter(gebiedsgroep != "Getijdenetes")
+
+knitr::kable(data_gebiedsindeling_T2021)
+
 # 
 # #### toevoegen gebiedsindeling EMSE
 #  data_watervogels <- 
@@ -401,7 +401,7 @@ knitr::kable(rivieren)
 # 
 
 
-# data_watervogels$niveau3  <- factor(data_watervogels1$niveau3, levels = c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme", "Zoet zijrivier")) %>%   
+data_watervogels$niveau3  <- factor(data_watervogels$niveau3, levels = c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme", "Zoet zijrivier"))
 
 ```
 
@@ -440,11 +440,17 @@ data_oppzachtslikKRWZS <- data_oppecotoop %>%
   group_by(niveau3,Jaar,telseizoen) %>% 
   summarise(somha = sum(SomVanShape_Area/10000)) %>%
   rename(jaar = Jaar) %>% 
-  ungroup()
+  ungroup()  
+  
+##correctie op Durme slikoppervlakte : stroomopwaartse oppervlakte 4.8ha (ongeveer) er vanaf getrokken
+data_oppzachtslikKRWZS <- data_oppzachtslikKRWZS %>%
+  mutate(somha = case_when(niveau3 == "Durme" ~ somha - 4.8,
+                           TRUE ~ somha))
 
-data_oppzachtslikKRWZS %>% 
-  write_delim(paste0(pad_data, "data_oppzachtslikKRWZS.csv"),
-              delim = ";")
+
+# data_oppzachtslikKRWZS %>% 
+#   write_delim(paste0(pad_data, "data_oppzachtslikKRWZS.csv"),
+#               delim = ";")
 #we koppelen de data aan volledige jaren (jaar x = juni x tot juli x+1) of aan winterjaar of wintertelseizoen (okt jaar x - mrt jaar x+1)
 
 ###dataset nog niet goed de jaargangen met Zeeschelde III vr 2012,2014,2015,2017,2018 moeten eruit - slechts gedeeltelijke data 
@@ -1705,7 +1711,7 @@ ggsave(paste0(pad_figuren, "100-figuur_S-IHD_Kleinezwaan.jpg"))
 
 
 data_watervogels_index <- data_watervogels %>%
-  filter(taxongroepcode != "MS") %>%
+  filter(taxongroepcode != "MS") %>% # zonder meeuwen en sternen
   filter(maand %in% c(10:12, 1:3)) %>%
   group_by(niveau3, telseizoen1, maand) %>%
   summarise(maandsom = sum(aantal, na.rm = TRUE)) %>% 
@@ -2420,6 +2426,36 @@ ggsave(paste0(pad_figuren, "100_figuur_aantallen_steltlopers.jpg"))
 
 ggsave(paste0(pad_figuren, "100_figuur_dichtheid.jpg"))
 
+data_watervogels %>% 
+  filter(maand %in% c(10:12, 1:3)) %>% 
+  # filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
+  filter(niveau3 != "Zoet zijrivier") %>%
+  filter(niveau3 != "Rupel") %>%
+  filter(niveau3 != "Saliniteitsgradient") %>%
+  filter(niveau3 != "Zoet kort verblijf") %>%
+  filter(telseizoen %in% c("2001/02","2010/11","2013/14","2016/17","2019/20")) %>%
+  filter(nednaam != "Tafeleend" & nednaam != "Kuifeend") %>%
+  filter(trofische_groep != "Npisc" & trofische_groep != "Nherb") %>% 
+  left_join(data_oppzachtslikKRWZS, by = c("niveau3","telseizoen")) %>% 
+  group_by(telseizoen, maand, niveau3, somha) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  group_by(telseizoen, niveau3, somha) %>% 
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  group_by(telseizoen, niveau3, somha) %>% 
+  summarise(dichtheid = mean(aantal/somha, na.rm = TRUE)) %>% 
+  ggplot(aes(ordered(telseizoen), dichtheid, group = niveau3, color = niveau3)) + 
+  geom_point(aes(shape = niveau3)) +
+  geom_line() + 
+    labs(x = "telseizoen", 
+       y = "dichtheid overwinterende watervogel (#/ha)") +
+    theme(axis.text.x = element_text(angle = 0),
+        legend.position = "bottom",
+        legend.title = element_blank())+
+  scale_y_continuous(breaks = seq(0,140,20))
+
+ggsave(paste0(pad_figuren, "100_figuur_dichtheidDurme.jpg"))
 
 ##Zeeschelde IV wintertrends
 data_watervogels %>% 
