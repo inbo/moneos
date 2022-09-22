@@ -124,12 +124,12 @@ In de geomorfologische kaart wordt vervolgens een onderscheid gemaakt tussen:
 -   Hard natuurlijk substraat
 -   Breuksteen of hard antropogeen
 
-De combinatie van deze geomorfologische klassen en de fysiotopen geeft dan de ecotopen zoals weergegeven in Tabel \@ref(tab:030-tabel-1-tabel-klassen-oud) .
+Zacht substraat in de geomorfologische kaart is steeds onbegroeid. Wanneer de zone begroeid is wordt dit aangeduid als 'schor' of wanneer het een opgehoogde zone betreft als 'antropogene verhoging dijk' (zie hieronder ecotopen in het supralitoraal). De combinatie van deze geomorfologische klassen en de fysiotopen geeft dan de ecotopen zoals weergegeven in Tabel \@ref(tab:030-tabel-1-tabel-klassen-oud).
 
 Ten slotte onderscheiden we volgende ecotopen in het **supralitoraal**:
 
 -   Potentiële pionierzone: de onbegroeide zone op zacht substraat boven HW85. In deze zone zou, op basis van de hoogteligging in het getijvenster, schoruitbreiding met kenmerkende schorvegetatie mogelijk zijn. Aangezien deze zone onbegroeid blijft zijn de hydrodynamische omstandigheden en/of de waterverzadiging er niet geschikt voor vegetatievestiging;
--   Schor: zone boven HW85 begroeid met vegetatie kenmerkend voor estuariene of fluviatiele omstandigheden;
+-   Schor: zone boven HW85 begroeid met vegetatie kenmerkend voor estuariene of fluviatiele omstandigheden.;
 -   Getijdeplas: grote waterplas binnen de schorzone;
 -   Supralitoraal hard natuurlijk: een zone bestaande uit klei of veen (vaak door erosie vrijgekomen) hoger gelegen dan HW85;
 -   Supralitoraal hard antropogeen: zones boven HW85 en bedekt met door de mens aangelegd hard substraat (meestal breuksteen) waar vegetatieontwikkeling beperkt mogelijk is en dus ook een beperkt ecologisch potentieel aanwezig is;
@@ -197,7 +197,7 @@ Het zeer diep subtidaal (\> 10 m onder LW30) wordt volledig als hoogdynamisch ge
 
 ```{r 030-tabel-1-tabel-dynamiek-ecotopen, results="asis", fig.show='hide', out.width="100%"}
 
-caption_tab <- "afbakening van hoogdynamisch habitat op basis van maximale stroomsnelheid bij vloed, per diepteklasse (waterdiepte onder het gemiddeld laagwater bij springtij volgens de 30\\% laagwaterfrequentie)."
+caption_tab <- "Afbakening van hoogdynamisch habitat op basis van maximale stroomsnelheid bij vloed, per diepteklasse (waterdiepte onder het gemiddeld laagwater bij springtij volgens de 30\\% laagwaterfrequentie)."
 
 img_file <- paste0(pad_tabellen, "030_tabel_1_dynamiek_ecotopen.png")
 
@@ -230,22 +230,8 @@ figtab(knitr::opts_current$get()$label,
 
 <br/>
 
-Deze nieuwe fysiotopenkaart leidt na combinatie met de geomorfologische kaart tot de ecotoopindeling 2.0 voor het litoraal in Tabel \@ref(tab:030-tabel-1-tabel-klassen-nieuw).
 In de ecotopenkaart 2.0 wordt tot slot nog rekening gehouden met de hellingsgraad in de zachte slikzones om zachte slikken met een steile helling (\>25%) aan te duiden. Deze worden niet als apart ecotoophabitat opgenomen, maar de oppervlaktes worden wel berekend.
 
-```{r 030-tabel-1-tabel-klassen-nieuw, results="asis", fig.show='hide', out.width="100%"}
-
-caption_tab <- "Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen (Zeeschelde 2.0)."
-
-img_file <- paste0(pad_tabellen, "030_tabel_1_tabel_klassen_E2.png")
-
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
-```
-
-<br/>
 
 ## Ecotopen in de Zeeschelde
 
@@ -267,16 +253,17 @@ De oppervlakte van het laag slik zacht substraat is, na een daling in 2019, weer
 Dit is mogelijk te wijten aan een iets andere toepassing van de methode en afbakening van het gebied in 2019.
 In het middelhoog slik zacht substraat daarentegen is de daling van `r laatste_jaar - 1` wel doorgezet in `r laatste_jaar`, en is inmiddels 12.5 ha afgenomen sinds `r laatste_jaar - 1`.
 Deze afname van het middelhoog slik komt deels door een uitbreiding langs de bovengrens van het laag slik.
-Het hoog slik zacht substraat is stabiel gebleven.
+Het hoog slik zacht substraat is over het geheel bekeken stabiel gebleven.
 
 In het **supralitoraal** is een grote toename waargenomen van de oppervlakte potentiële pionierzone (15 ha) en hoog supralitoraal (18 ha, verdrievoudigd sinds 2019).
-De verandering in potentiële pionierzone is voornamelijk het resultaat van antropogene wijzigingen in de morfologie zoals het verleggen van dijken.
-Dit is bijvoorbeeld het geval in de zone rondom Fort Sint-Filips waar veel schor verwijderd is (Figuur \@ref(fig:030-figuur-kaart-verschil-ff)).
+De verandering in potentiële pionierzone is voornamelijk het resultaat van antropogene wijzigingen in de morfologie zoals het verleggen van dijken. Dit is bijvoorbeeld het geval in de zone rondom Fort Filip waar veel schor verwijderd is tijdens de herinrichting. Dit is een tijdelijke situatie en de toestand zal pas geëvalueerd worden na afronding van de herinrichting (kaart van 2021). 
 De oppervlakte hoog supralitoraal is erg gewijzigd door een verandering in de methodologie.
 Voorheen werd dit grotendeels toegekend op basis van gekende verhoogde zones, maar in `r laatste_jaar` werd dit gedaan op basis van de hoogte in meter TAW (zie Methodologie voor de exacte hoogtes).
 Hierdoor is het supralitoraal hard antropogeen grotendeels omgezet in hoog supralitoraal.
 Dit effect zorgt voor een totale afname van antropogeen hard substraat van 18 ha.
 Het ecotoop antropogeen (verharde zones zonder enige ecologische waarde) is echter toegenomen met ongeveer 4 ha en is daarmee groter dan in alle voorgaande jaren.
+
+Figuur \@ref(fig:030-figuur-kaart-verschil-vs) toont de situatie in 2019 en 2020 ter hoogte van de Verlegde Schijn. Op deze plaats is een dijkaanpassing gebeurd die in oktober 2019 voltooid is. Op de kaart is te zien dat de er een grote hoeveelheid hoog slik bij is gekomen. 
 
 <br/>
 
@@ -304,11 +291,11 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-```{r 030-figuur-kaart-verschil-ff, fig.cap=figuur_kaart_ff, out.width="100%"}
+```{r 030-figuur-kaart-verschil-vs, fig.cap=figuur_kaart_vs, out.width="100%"}
 
-figuur_kaart_ff <- "Verschil ecotopenkaart Fort Filips 2019 (links) en 2020 (rechts). Grote hoeveelheid schor omgezet in potentiële pionierzone door aanpassingen aan de morfologie."
+figuur_kaart_vs <- "Verschil ecotopenkaart dijkverlegging Verlegde Schijn 2019 (links) en 2020 (rechts)."
 
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_verschil_2020_2019_FortFilips.png"))
+knitr::include_graphics(paste0(pad_figuren, "003_figuur_verschil_2020_2019_VerlegdeSchijn.png"))
 
 ```
 
@@ -355,7 +342,7 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_1_Evolutie_NOPs.png"
 
 ```{r 030-figuur-kaart-bez, fig.cap=figuur_ecotopenkaart_bez, out.width="100%"}
 
-figuur_ecotopenkaart_bez <- "Ecotopenkaart 2020 Beneden-Zeeschelde"
+figuur_ecotopenkaart_bez <- "Ecotopenkaart 2020 Beneden-Zeeschelde 1.0"
 
 knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_1_2020.png"))
 
@@ -412,7 +399,7 @@ figtab(knitr::opts_current$get()$label,
 
 ```{r 030-tabel-2a-tabel-oppervlakte-helling-BEZ-2, results="asis", fig.show='hide', out.width="100%"}
 
-caption_tab <- str_c("Oppervlaktes en percentages van steile en vlakke slikken in de Beneden-Zeeschelde in ", laatste_jaar, ".")
+caption_tab <- str_c("Oppervlaktes en percentages van steile en vlakke slikken in de Beneden-Zeeschelde in ", laatste_jaar, ", volgens de Zeeschelde ecotopen 2.0.")
 
 img_file <- paste0(pad_tabellen, "030_tabel_2a_Oppervlakte_HellingSlik_BEZ_2020_E2.PNG")
 
@@ -426,7 +413,7 @@ figtab(knitr::opts_current$get()$label,
 
 ```{r 030-figuur-kaart-bez-2, fig.cap=figuur_ecotopenkaart_bez_2, out.width="100%"}
 
-figuur_ecotopenkaart_bez_2 <- "Ecotopenkaart 2020 Beneden-Zeeschelde methode 2.0"
+figuur_ecotopenkaart_bez_2 <- "Ecotopenkaart 2020 Beneden-Zeeschelde 2.0"
 
 knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2_2020.png"))
 
@@ -511,7 +498,7 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_BOZ_2019.png"))
 
 \newpage
 
-### Ecotopen van Rupel en Durme in 2019, versie 1.0
+### Ecotopen van Rupel en Durme in 2019 (versie 1.0)
 
 De Rupel en de Durme worden samen met de Boven-Zeeschelde elke drie jaar gekarteerd.
 De resultaten worden hier apart besproken.
