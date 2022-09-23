@@ -158,14 +158,14 @@ data_watervogels <-
            ymd() %>% 
            month())
 
-data_analysesets <- 
-  data_analysesets %>% 
-  mutate(jaar = teldatum %>% 
-           ymd() %>% 
-           year(),
-         maand = teldatum %>% 
-           ymd() %>% 
-           month())
+# data_analysesets <- 
+#   data_analysesets %>% 
+#   mutate(jaar = teldatum %>% 
+#            ymd() %>% 
+#            year(),
+#          maand = teldatum %>% 
+#            ymd() %>% 
+#            month())
 
 Waterbirds <- 
   Waterbirds %>% 
@@ -303,14 +303,14 @@ laatste_jaar <-
 ```{r data-trofische-groep}
 ##deze stap werd verhuisd naar data script
 
-# data_trofische_groep <- 
-#   read_delim(paste0(pad_data, "Voedselgilde_exoten_Moneosrapport.csv"), 
-#              delim = ";")  
-# 
-# data_trofische_groep <- data_trofische_groep %>% 
-#               rename_all(tolower) %>% 
-#               rename(nednaam = species)
-# 
+data_trofische_groep <-
+  read_delim(paste0(pad_data, "Voedselgilde_exoten_Moneosrapport.csv"),
+             delim = ";")
+
+data_trofische_groep <- data_trofische_groep %>%
+              rename_all(tolower) %>%
+              rename(nednaam = species)
+
 # # testen voor dubbels in trofische groep
 # # data_trofische_groep %>% 
 # #   group_by(Species, Indicator) %>% 
@@ -402,6 +402,7 @@ knitr::kable(data_gebiedsindeling_T2021)
 
 
 data_watervogels$niveau3  <- factor(data_watervogels$niveau3, levels = c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme", "Zoet zijrivier"))
+data_watervogels$niveau2 <- factor(data_watervogels$niveau2)
 
 ```
 
@@ -483,8 +484,10 @@ soortnamen <-
 overzichtsoorten_analyse <-
   data_watervogels %>% 
   group_by(nednaam) %>% 
+  filter(nednaam != "Morinelplevier") %>%
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
   filter(aantal > 30) %>% 
+  select(nednaam) %>% 
   ungroup()
 
 #ontbreken er soorten waarvan we geen dieet opnamen in data trofische groep?
@@ -496,6 +499,18 @@ trofische_groep_aanvullen <-
 # trofische_groep_aanvullen %>% 
   # write_delim(paste0(pad_data, "trofischegroepaanvullen.csv"),
               # delim = ";")
+
+Soorten_analyse_trofisch <-
+  left_join(overzichtsoorten_analyse, data_trofische_groep)
+
+Soorten_analyse_trofisch %>% 
+  write_delim(paste0(pad_tabellen, "Soorten_EMSE_analyse.csv"),
+              delim = ";")
+
+###verwijder alle soorten die niet voldoen aan het criterium van minimaal 30 wrn EMSE
+
+data_watervogels <- data_watervogels %>%
+    filter(nednaam %in% overzichtsoorten_analyse$nednaam)
 
 geen_trofische_groep <- 
   data_watervogels %>%
@@ -527,7 +542,7 @@ tabel_trofische_groep <-
 
 ## inclusief exoten, inclusief meeuwen en sternen  
  
-data_watervogels %>% 
+data_watervogels %>%
     mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
     filter(telseizoen1 %in% c(2001:2021)) %>%  
     # filter(taxongroepcode != "MS") %>% # geen meeuwen of sternen  # geen meeuwen of sternen
