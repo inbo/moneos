@@ -279,7 +279,7 @@ De globale patronen in de maandelijkse wintervogelaantallen langsheen de Zeesche
 Na een dal in de winter van 2019 en uitzonderlijke winterpiek tijdens de winter van 2020 is het wintermaximum[^watervogels-2] van 2021 vergelijkbaar aan de winters van 2017-2018 (Figuur \@ref(fig:100-figuur-wintermaxima-Zeeschelde)).
 De laagste aantallen in de winterperiode worden doorgaans geteld in maart.
 De vogelaantallen namen sterk af tussen 2002 en 2007.
-Tussen 2008 en 2010 was er een klein herstel maar sinds 2012 zijn de vogelaantallen verder afnemend tot stabiel (Figuur \@ref(fig:100-figuur-index-niveau3)).
+Tussen 2008 en 2010 was er een klein herstel maar sinds 2012 zijn de vogelaantallen verder afnemend tot stabiel (Figuur \@ref(fig:100-figuur-index-niveau2), Figuur \@ref(fig:100-figuur-index-niveau3)).
 De proportionele verdeling van de watervogels in de verschillende zones van de Zeeschelde (zie in Figuur 1.1) toont na de sterke afname van de watervogels in winter 2006/07, vooral in de oligohaliene zone, een geleidelijke toename van het aandeel vogels dat verblijft in de sterke saliniteitsgradiënt (Beneden-Zeeschelde), Zeeschelde I en de zijrivieren.
 Sinds 2010/11 is het proportioneel aandeel van elke zone relatief stabiel (Figuur \@ref(fig:100-figuur-verhouding-aantallen)).
 
@@ -363,9 +363,20 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_verhouding_aantallen_niv
 
 <br/>
 
+```{r 100-figuur-index-niveau2, fig.cap=cap_index_niveau2, out.width="80%"}
+
+cap_index_niveau2 <- paste0("Index van de maximale wintervogelaantallen in de Zeeschelde en zijrivieren (2009/10 – ",laatste_telseizoen, 
+                                "). Index gestandaardiseerd naar winter 2009/10.")
+
+knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen_niv2.jpg"))
+
+```
+
+<br/>
+
 ```{r 100-figuur-index-niveau3, fig.cap=cap_index_niveau3, out.width="80%"}
 
-cap_index_niveau3 <- paste0("Index van de maximale wintervogelaantallen in de verschillende zones (2005/06 – ",laatste_telseizoen, 
+cap_index_niveau3 <- paste0("Index van de maximale wintervogelaantallen in de verschillende zones (2009/10 – ",laatste_telseizoen, 
                                 "). Index gestandaardiseerd naar winter 2009/10.")
 
 knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen.jpg"))
@@ -649,7 +660,7 @@ EMSE (2021). Evaluatiemethodiek Schelde‐estuarium: Update 2021. Antea, Bureau 
 ```{r 100-tabel-trofischegroepsoorten}
 
 tabel_trofischegroep <- 
-  read_delim(paste0(pad_tabellen, "Voedselgilde_exoten_Moneosrapport.csv"),
+  read_delim(paste0(pad_tabellen, "Soorten_EMSE_analyse.csv"),
               delim = ";")
 
 cap_trofischegroepsoorten <- "Vogelsoorten (met meer dan 30 waarnemingen) werden ingedeeld in 4 groepen: benthoseters (NBenth) (omvatten: schelpdiereters, wormeneters, hyperbenthoseters en epibenthoseters), viseters (NPisc), herbivoren (Nherb) en omnivoren (Nomn). Soorten die beschouwd worden als exoten geselecteerd."
