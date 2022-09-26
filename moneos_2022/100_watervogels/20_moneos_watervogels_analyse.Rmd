@@ -503,7 +503,10 @@ trofische_groep_aanvullen <-
 Soorten_analyse_trofisch <-
   left_join(overzichtsoorten_analyse, data_trofische_groep)
 
-Soorten_analyse_trofisch %>% 
+Soorten_analyse_trofisch %>%
+  rename(Soort = nednaam) %>% 
+  rename(Trofie = trofische_groep) %>% 
+  rename(Exoot = exoot) %>% 
   write_delim(paste0(pad_tabellen, "Soorten_EMSE_analyse.csv"),
               delim = ";")
 
@@ -1856,6 +1859,37 @@ data_watervogels_index_trofniv3 %>%
        y = "index ")
 
  ggsave(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen_trofischegroepZSniv3.jpg"))
+ 
+ 
+ #### index niveau 2
+ 
+ data_watervogels_index_niv2 <- data_watervogels %>%
+  filter(taxongroepcode != "MS") %>% # zonder meeuwen en sternen
+  filter(maand %in% c(10:12, 1:3)) %>%
+  group_by(niveau2, telseizoen1, maand) %>%
+  summarise(maandsom = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>%
+  group_by(niveau2, telseizoen1) %>% 
+  summarise(maxwinter = max(maandsom, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  complete(niveau2, 
+           nesting(telseizoen1),
+           fill = list(maxwinter = 0)) %>% 
+  group_by(niveau2) %>%
+  mutate(rel_aantal = maxwinter/maxwinter[telseizoen1 == 2009]) %>%
+  ungroup()
+ 
+ data_watervogels_index_niv2 %>%
+  filter(telseizoen1 > 2008) %>% 
+  ggplot(aes(telseizoen1, rel_aantal))+
+  geom_line() +
+  geom_hline(yintercept = 1, linetype = 2, size = 1.4) +
+    facet_wrap(~niveau2) +
+  scale_y_log10(breaks = c(0.01, 0.03, 0.1, 0.3, 0.5, 1, 3,10))+
+  labs(x = "telseizoen", 
+       y = "index ")
+
+ ggsave(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen_niv2.jpg"))
  
 ```
 
