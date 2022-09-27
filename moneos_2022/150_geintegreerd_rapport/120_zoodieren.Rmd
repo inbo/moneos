@@ -68,7 +68,7 @@ Van Den Berge *et al.* (2019) geeft een uitgebreid overzicht van recente waarnem
 Alle aangeleverde data zijn afkomstig van [waarnemingen.be](http://www.waarnemingen.be/), de website voor natuurinformatie van Natuurpunt en Stichting Natuurinformatie, ter beschikking gesteld door Natuurpunt Studie vzw.\
 De bever heeft zich na 2007 gevestigd in de valleien van de Schelde- en haar zijrivieren.
 Tot 2010 was Dendermonde de enige gekende locatie.
-Sindsdien duiken er steeds meer waarnemingslocaties op en plant de soort zich over het volledig estuarien valleigebied voort.\
+Sindsdien duiken er steeds meer waarnemingslocaties op en plant de soort zich over het volledige estuarien valleigebied voort.\
 Grijze zeehond en bruinvis worden min of meer regelmatig werden waargenomen.
 Daarom worden de waarnemingen van deze soorten ook opgenomen in de rapportage.
 
@@ -83,12 +83,12 @@ De losse waarnemingen kunnen worden gebruikt om veranderingen in verspreiding va
 De data kunnen niet worden gebruikt voor nauwkeurige trendbepaling o.a.
 omdat de zoekinspanning niet gekend is en het meldingsgedrag variabel is.
 De hier behandelde soorten zijn echter meldenswaardige soorten.
-Ruwe trendinschatting zijn met het nodige voorbehoud eventueel wel zinvol (Herremans et al. 2018).\
+Ruwe trendinschattingen zijn met het nodige voorbehoud eventueel wel zinvol (Herremans et al. 2018).\
 Data van 2020 en vroeger kunnen verschillen van vorige dataleveringen als gevolg van retroactieve ingave van waarnemingen.
 
 ## Resultaten
 
-### Overzicht van de waarnemingn sinds 2010
+### Overzicht van de waarnemingen sinds 2010
 
 Tabel \@ref(tab:120-tabel1) geeft een overzicht van het totaal aantal waarnemingen van bever, otter, bruinvis, gewone zeehond en grijze zeehond.
 Tabel \@ref(tab:120-tabel2) en figuur \@ref(fig:120-figuur1) geven een overzicht van het totaal aantal ingevoerde exemplaren van de soorten.
@@ -99,7 +99,7 @@ aantal_waarnemingen <-
   read_csv(paste0(pad_tabellen, "aantal_waarnemingen2.csv"))
 
 # hoofding tabel
-caption_x_waarden <- "Totaal aantal waarnemingen in de vallei van de Zeeschelde en haar bijrivieren (inclusief niet gevalideerde waarnemingen). "
+caption_x_waarden <- "Totaal aantal waarnemingen in de vallei van de Zeeschelde en haar zijrivieren (inclusief niet gevalideerde waarnemingen). "
 
 # voetnoten bij tabel
 footnote_text <-
@@ -165,7 +165,7 @@ knitr::include_graphics(paste0(pad_figuren, "120_fig1_aantal_ind.jpg"))
 De gestage uitbreiding van de bever in de Scheldevallei (Mertens, 2016) zet zich 2021 voort.
 Het aantal ingevoerde waarnemingen lag hoger dan in 2020, het totaal aantal ingevoerde individuen iets lager.
 Het aantal km-hokken met waarnemingen steeg van 128 in 2020 naar 143 in 2021.\
-In stroomgebied van de Grote Nete blijft de soort beperkt tot de vallei van de de Grote Laak.
+In het stroomgebied van de Grote Nete blijft de soort beperkt tot de vallei van de Grote Laak.
 Opmerkelijk zijn nieuwe waarnemingslocaties in de buurt van Antwerpen en de Antwerpse haven.
 
 ```{r figuur2, fig.cap=caption_figuur2, out.width="80%"}
@@ -201,7 +201,7 @@ Tot 2019 werden slechts sporadisch sporen of dieren waargenomen in de omgeving v
 Gerichte opvolging (spraints, cameravallen) in deze omgeving toonde aan dat de soort sinds 2014 constant aanwezig is en zich vermoedelijk voortplant (Gouwy et al., 2017).
 Na de vondst van uitwerpselen in Waasmunster in 2019 leidde gericht onderzoek o.a.
 met cameravallen, in de Durmevallei en verder stroomopwaarts langs de Schelde tot veel bijkomende waarnemingen.
-In 2020 waren er (`r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2020 & str_detect(zoogdier_data$status, "Goed")),])` gevalideerde waarnemingen en 2021 `r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2021 & str_detect(zoogdier_data$status, "Goed")),])`.
+In 2020 waren er (`r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2020 & str_detect(zoogdier_data$status, "Goed")),])` gevalideerde waarnemingen en in 2021 `r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2021 & str_detect(zoogdier_data$status, "Goed")),])`.
 De meeste waarneming vonden plaats langs de Durme in de buurt van het Molsbroek, maar ook in Berlare langs de Schelde en in Willebroek langs de Rupel werd otter waargenomen.
 Er waren geen meldingen uit de Polders van Kruibeke, waar de otter voorgaande jaren werd waargenomen.
 Toch was de soort hier wel aanwezig (mond. mededelingen Koen Van Den Berge, Bram Vereecken).
@@ -229,7 +229,8 @@ knitr::include_graphics(paste0(pad_figuren, "otter2021.png"))
 #### Gewone zeehond
 
 Jaarlijks zwemmen zeehonden in kleine aantallen de Zeeschelde op en verblijven er min of meer lange tijd.
-De soort plant zich niet voort in het Belgisch deel van het Schelde-estuarium.\
+De soort plant zich niet voort in het Belgisch deel van het Schelde-estuarium.
+<!--# Er is op de brantse plaat wel eens een jong geboren een jaar of 10 geleden -->\
 <br/>
 
 Gewone zeehonden hielden zich in 2021 net als voorgaande jaren voornamelijk op nabij de grens met Nederland ter hoogte van het Groot Buitenschoor en het Schor Ouden Doel.
@@ -327,7 +328,7 @@ bruinvis2021 %>%
 Noch voor gewone zeehond, noch voor grijze zeehond zijn er instandhoudingsdoelstelling voor de Zeeschelde.
 Veel waarnemingen van de zeehondensoorten zijn niet gevalideerd en dus onzeker, zoals blijkt uit de dubbele determinatie op 23 april in Hingene.
 Gewone zeehond werd in 2021 regelmatig waargenomen ter hoogte van de grens.
-Slechts vier exemplaren werden stroomopwaarts Anwterpen gespot.
+Slechts vier exemplaren werden stroomopwaarts Antwerpen gespot.
 Met zes waarnemingen blijft de grijze zeehond een weinig frequente verschijning.
 Dit kan ook gezegd worden van de bruinsvis met 4 waarneminen in 2021.
 
@@ -336,7 +337,7 @@ Adriaensen *et al.* (2005) stellen dat voldoende ruimte en geschikt habitat aanw
 40 families (ca. 160 individuen), verspreid over verschillende deelgebieden.
 Voor otter moet er voldoende potentieel leefgebied zijn om een leefbare kernpopulatie van 20-25 individuen te onderhouden, verspreid over 3 - 4 deelgebieden.\
 Bij een doorgedreven inventarisatie van beverterritoria in Vlaanderen vonden Huysentruyt *et al.* (2019) in 2017 29 beverterritoria in de vallei van de Zeeschelde en tijgebonden zijrivieren.
-In dat zelfde jaar werden beverwaarnemingen verricht in 64 km-hokken, m.a.w. een verhouding van `r round(64/29, 2)` km-hokken per territoria.
+In dat zelfde jaar werden bevers waargenomen in 64 km-hokken, m.a.w. een verhouding van `r round(64/29, 2)` km-hokken per territoria.
 Indien deze verhouding een constante is, zouden er in 2021 ca.
 `r round(143/(64/29),0)` territoria zijn.
 Volgens de methode in Huysentruyt *et al.* (2019) stemt dit overeen met `r round(143/(64/29)*0.6,0)` reproductieve eenheden (families) en `r round(143/(64/29)*2.8,0)` individuen.
