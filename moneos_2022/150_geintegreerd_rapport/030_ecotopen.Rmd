@@ -239,7 +239,7 @@ Deze worden niet als apart ecotoophabitat opgenomen, maar de oppervlaktes worden
 
 ## Ecotopen in de Zeeschelde
 
-### Ecotopen van de Beneden-Zeeschelde in `r laatste_jaar`
+### Ecotopen van de Beneden-Zeeschelde in `r laatste_jaar` {#BEZ}
 
 #### Zeeschelde ecotopen 1.0
 
@@ -437,7 +437,6 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2_2020.png"))
 
 ```
 
-\newpage
 
 ```{r 030-figuur-kaart-vgl, fig.cap=figuur_ecotopenkaart_vgl, out.width="100%"}
 
@@ -447,7 +446,6 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2020_vgl.png"))
 
 ```
 
-\newpage
 
 ```{r 030-figuur-kaart-vgl-2, fig.cap=figuur_ecotopenkaart_vgl_2, out.width="100%"}
 
@@ -459,7 +457,7 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2020_vgl_2.png"))
 
 \newpage
 
-### Ecotopen van de Boven-Zeeschelde in 2019 (versie 1.0)
+### Ecotopen van de Boven-Zeeschelde in 2019 (versie 1.0) {#BOZ}
 
 De ecotopenkaart van 2019 voor de Boven-Zeeschelde wordt weergegeven in (Figuur \@ref(fig:030-figuur-kaart-boz)).
 
@@ -503,6 +501,41 @@ img_file <- paste0(pad_tabellen, "030_tabel_3_evolutie_BOZ.PNG")
 figtab(knitr::opts_current$get()$label, 
        img_file,
        caption_tab)
+
+```
+
+Ook bij de Boven-Zeeschelde is het relevant om naar de 'enge' planimetrie van het estuarium te kijken, zonder de laterale uitbreidingen van de natuurontwikkelingsprojecten (zie [Ecotopen van de Beneden-Zeeschelde in `r laatste_jaar`](#BEZ)).
+Op deze manier wordt de evolutie van de ecotopen in de Boven-Zeeschelde onder rechtstreekse invloed van verandingen in de vaargeul en van het hydraulisch regime beter beschreven.
+De oppervlaktes van de ecotopen binnen de 'enge' planimetrie zijn weergegeven in Tabel \@ref(tab:030-tabel-4-tabel-eng-boz) en het verschil in evolutie binnen het gehele estuarien gebied en enkel de 'enge' planimetrie is te zien in Figuur \@ref(fig:030-figuur-evolutie-boz).
+
+Wat de korte termijn evolutie betreft (= verschil tussen 2019 en `r 2019 - 3`), is er binnen de 'enge' planimetrie een afname van sublitoraal die overeenkomt met de veranderingen in de volledige planimetrie.
+Dit wil zeggen dat de daling van het sublitoraal voornamelijk in de vaargeul plaatsvond.
+Hetzelfde geldt voor de toename in laag en middelhoog slik zacht substraat.
+De toename in het hoog slik zacht substraat uit de volledige planimetrie is echter niet zichtbaar in de evolutie van de 'enge' planimetrie, wat wil zeggen dat deze toename vooral in de NOP's plaatsvond.
+
+Het schor is binnen de 'enge' planimetrie wat gedaald, terwijl in het volledige gebied een stijging plaatsvond.
+Schortoename in de NOP's heeft dus de schorafname binnen de 'enge' planimetrie wat gecompenseerd.
+De evolutie van het hoog supralitoraal en antropogeen hard substraat is binnen de 'enge' planimetrie gelijkaardig aan de evolutie in het volledige gebied.
+
+<br/>
+
+```{r 030-tabel-4-tabel-eng-boz, results="asis", fig.show='hide', out.width="100%"}
+
+caption_tab <- str_c("Ecotooparealen in de ‘enge planimetrie’ van de  Boven‐Zeeschelde zonder de NOP’s of ontpolderingen, dijkverleggingen en aantakkingen tussen ", vroegste_jaar, " en 2019.")
+
+img_file <- paste0(pad_tabellen, "030_tabel4_Oppervlakte_EngePlanimetrie_BOZ_2019.PNG")
+
+figtab(knitr::opts_current$get()$label, 
+       img_file,
+       caption_tab)
+
+```
+
+```{r 030-figuur-evolutie-boz, fig.cap=figuur_evolutie_boz, out.width="100%"}
+
+figuur_evolutie_boz <- "Temporele evolutie van de oppervlakte van de ecologisch belangrijke ecotopen in de Boven-Zeeschelde met en zonder NOP's (natuurontwikkelingsprojecten zoals ontpolderingen, GGG’s en dijkverleggingen)"
+
+knitr::include_graphics(paste0(pad_figuren, "003_figuur_BOZ_1_Evolutie_NOPs.png"))
 
 ```
 
