@@ -1,20 +1,19 @@
 
 library(protocolhelper)
 
-# convert_docx_to_rmd(from = "120_zoogdieren/120_Zoogdieren_20-07-2021.docx",
-#                     to = "150_geintegreerd_rapport/120_Zoogdieren_magweg.Rmd",
-#                     dir_media = "../120_zoogdieren/figuren_zoogdieren")
-# 
-# add_captions(from = "150_geintegreerd_rapport/120_Zoogdieren_magweg.Rmd",
-#              to = "150_geintegreerd_rapport/120_Zoogdieren.Rmd")
-# 
-# unlink("150_geintegreerd_rapport/120_Zoogdieren_magweg.Rmd")
+source("../pad.R")
+
+hoofdstuk <- "050_hogere_planten"
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
 convert_docx_to_rmd(from = "050_hogere_planten/BV_Hogereplanten.docx",
                     to = "150_geintegreerd_rapport/050_hogere_planten_magweg.Rmd",
-                    dir_media = "../050_hogere_planten/figuren")
+                    dir_media = pad_figuren)
 
-add_captions(from = "150_geintegreerd_rapport/140_Monitoring_slik_schorrand_magweg.Rmd",
-             to = "150_geintegreerd_rapport/140_Monitoring_slik_schorrand.Rmd")
+add_captions(from = "150_geintegreerd_rapport/050_hogere_planten_magweg.Rmd",
+             to = "150_geintegreerd_rapport/050_hogere_planten.Rmd")
 
 unlink("150_geintegreerd_rapport/050_hogere_planten_magweg.Rmd")
+
