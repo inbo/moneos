@@ -111,7 +111,7 @@ In de ecotopenkaart wordt dit samengenomen met het diep subtidaal.
 
 In de **litorale zone** worden ecotopen onderscheiden op basis van droogvalpercentage en geomorfologie.
 Litorale fysiotopen liggen tussen gemiddeld laagwater en gemiddelde hoogwater bij springtij (GLWS-GHWS).
-De gebruikte referenties zijn LW30 en HW85, het 85e percentiel van het hoogwater.
+De gebruikte referenties zijn de hoogte bij LW30 (het 30e percentiel van de laagwaters) en bij HW85 (het 85e percentiel van de hoogwaters).
 Er worden 3 litorale zones onderscheiden op basis van het 25e en 75e percentiel van de droogvalduur (DD):
 
 -   Laag slik: tussen LW 30% en DD 25%
@@ -185,7 +185,7 @@ figtab(knitr::opts_current$get()$label,
 
 De ecotopenkaart van de Beneden-Zeeschelde 2020 werd ook opgemaakt volgens het Zeeschelde ecotopenstelsel 2.0.
 Dit nieuwe ecotopenstelsel is het resultaat van een analyse van biomassa en gemeenschapssamenstelling van ongewervelde bodemdieren in functie van bepalende factoren zoals hoogte in het getijvenster en stroomsnelheid.
-Het wordt uitgebreid besproken in Van Braeckel et al. (2018) voor de sublitorale en in Van Braeckel et al. (2020) voor de litorale zone.
+Het wordt uitgebreid besproken in Van Braeckel et al. (2018) voor de sublitorale zone en in Van Braeckel et al. (2020) voor de litorale zone.
 De nieuwe indeling van de ecotopen weerspiegelt beter de leefgebieden van verschillende levensgemeenschappen.
 
 In de **sublitorale zone** blijven de dieptegrenzen gehandhaafd maar daarbovenop worden hoog- en laagdynamische habitats onderscheiden.
@@ -260,8 +260,8 @@ Deze afname van het middelhoog slik komt deels door een uitbreiding langs de bov
 Het hoog slik zacht substraat is over het geheel bekeken stabiel gebleven.
 
 In het **supralitoraal** is een grote toename waargenomen van de oppervlakte potentiële pionierzone (15 ha) en hoog supralitoraal (18 ha, verdrievoudigd sinds 2019).
-De verandering in potentiële pionierzone is voornamelijk het resultaat van antropogene wijzigingen in de morfologie zoals het verleggen van dijken.
-Dit is bijvoorbeeld het geval in de zone rondom Fort Filip waar veel schor verwijderd is tijdens de herinrichting.
+De verandering in potentiële pionierzone is voornamelijk het resultaat van antropogene in wijzigingen in de waterstanden van de GGGs en wijzigingen in de morfologie zoals het verleggen van dijken.
+Een toename in estuarien gebied (gereflecteerd in meer potentiële pionierzone) door gewijzigde waterstanden is bijvoorbeeld het geval in het Bazels GGG. Een wijziging in de morfologie is bijvoorbeeld het geval in de zone rondom Fort Filip waar veel schor verwijderd is tijdens de herinrichting.
 Dit is een tijdelijke situatie en de toestand zal pas geëvalueerd worden na afronding van de herinrichting (kaart van 2021).
 De oppervlakte hoog supralitoraal is erg gewijzigd door een verandering in de methodologie.
 Voorheen werd dit grotendeels toegekend op basis van gekende verhoogde zones, maar in `r laatste_jaar` werd dit gedaan op basis van de hoogte in meter TAW (zie Methodologie voor de exacte hoogtes).
@@ -377,7 +377,7 @@ In het **sublitoraal** is een onderverdeling gemaakt tussen hoog- en laagdynamis
 De tabel toont dat de diepere delen (diep en matig diep subtidaal) grotendeels hoogdynamisch zijn.
 Het aandeel laagdynamisch is relatief groter het ondiep subtidaal.
 
-Bij de berekening van het **litoraal** zijn aangepaste grenzen gebruikt, afhankelijk van de saliniteit.
+Bij de berekening van het **litoraal** zijn aangepaste grenzen gebruikt ten opzichte van ecotopen 1.0, afhankelijk van de saliniteit.
 Doordat de grens tussen middelhoog en hoog slik in de aangepaste methode lager ligt dan in de oude methode (van 75% DD naar 60% DD), is het aandeel hoog slik zacht substraat meer dan verdubbeld in vergelijking met de oude methode, ten koste van het middelhoog slik zacht substraat.
 De slikken zijn nu gelijkmatiger verdeeld.
 Ook in het hard antropogeen slik is het hoog slik verdrievoudigd ten koste van het middelhoog slik, in vergelijking met de oude methode.
@@ -396,7 +396,7 @@ In de andere ecotopen zijn minimale verschillen op te merken in vergelijking met
 Deze kleine verschillen zijn voornamelijk te wijten aan het modelleringsproces waarbij soms geïnterpoleerd wordt en datarasters vereenvoudigd worden.
 
 In de aangepaste methode wordt ook de helling van de slikken in rekening gebracht.
-De oppervlaktes per slikecotoop met een steile (\>25%) en vlakke (\<=25%) helling zijn beschreven in Tabel (\@ref(tab:030-tabel-2a-tabel-oppervlakte-helling-BEZ-2)).
+De oppervlaktes per slikecotoop met een steile (\>25%) en zwakke (\<=25%) helling zijn beschreven in Tabel (\@ref(tab:030-tabel-2a-tabel-oppervlakte-helling-BEZ-2)).
 Zowel het litoraal zacht substraat als het litoraal hard natuurlijk hebben voornamelijk geen steile hellingen (\> 98% van het natuurlijk substraat).
 In het litoraal antropogeen hard substraat is wel een redelijk aandeel steil, namelijk 33.1% van het totaal oppervlak litoraal hard antropogeen.
 De overige 66.9% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad van kleiner dan of gelijk aan 25%.
@@ -437,7 +437,6 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2_2020.png"))
 
 ```
 
-
 ```{r 030-figuur-kaart-vgl, fig.cap=figuur_ecotopenkaart_vgl, out.width="100%"}
 
 figuur_ecotopenkaart_vgl <- "Ecotopenkaart 2020 ter hoogte van Paardenschor in de Beneden-Zeeschelde 1.0 (boven) en 2.0 (onder)."
@@ -445,7 +444,6 @@ figuur_ecotopenkaart_vgl <- "Ecotopenkaart 2020 ter hoogte van Paardenschor in d
 knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2020_vgl.png"))
 
 ```
-
 
 ```{r 030-figuur-kaart-vgl-2, fig.cap=figuur_ecotopenkaart_vgl_2, out.width="100%"}
 
