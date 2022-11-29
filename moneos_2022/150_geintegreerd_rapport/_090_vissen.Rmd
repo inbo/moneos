@@ -1039,10 +1039,11 @@ soortenlijst %>%
                    cell_spec(`Nederlandse naam`, color = "black"))) %>%
   knitr::kable(escape = FALSE,
                booktabs = TRUE,
-               longtable = TRUE,
+               longtable = TRUE, 
                caption = cap_soortenlijst,
                align = c(rep("l", 4), rep("c", 2))) %>%
-  kable_styling(latex_options = c("striped", "scale_down", "repeat_header"),
+  kable_styling("striped",
+                latex_options = c("striped", "scale_down", "repeat_header"),
                 font_size = 9)
 
 ```
