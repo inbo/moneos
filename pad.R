@@ -13,7 +13,6 @@ if (jaar_moneos == "") {
 }
 # indien het bestand .Renviron nog niet bestaat, maak dit dan aan in de lokale moneos_XX (XX = jaar) folder en voeg de volgende lijnen toe:
 # pad_prj_schelde="G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/"
-# basis_pad="//Client/G$/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/"
 # pad_moneos="VNSC/Rapportage_INBO/"
 # pad_jaar=XX # XX = rapportagejaar 
 
