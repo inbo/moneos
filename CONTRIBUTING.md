@@ -5,10 +5,16 @@
 
 # setup
 
-### copy the moneos project to your pc
+### setup case 1: you have a local (git) folder 'moneos' already on your computer
 
--   if you have a folder 'moneos' existing on your local computer, delete it (make sure to back up files you migh still need somewhere else!)
+-   you have a local folder 'moneos' on your computer from working on the MONEOS report using github in previous years
 -   open Rstudio
+-   open the project from previous year 
+
+<img width="526" alt="image" src="https://user-images.githubusercontent.com/45075881/229511254-10852610-0eaf-45eb-8347-c8477c045722.png">
+
+### setup case 1: you have a no local (git) folder 'moneos' on your computer
+
 -   create a new project using 'file' -\> 'New Project...' -\> 'version control' -\> 'git'
     -   add '<https://github.com/inbo/moneos>' to 'repository url'
     -   the name of the project (moneos) should appear automatically; if not, fill it in
