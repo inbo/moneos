@@ -17,10 +17,10 @@
 
 <img width="156" alt="image" src="https://user-images.githubusercontent.com/45075881/229516889-93711696-89d1-4de0-90bb-10975f84fb9b.png">
 
--   pull the latest changes from github 
+-   pull <img width="30" alt="image" src="https://user-images.githubusercontent.com/45075881/229517328-5ade9550-8dac-4729-b8e9-455287d5f449.png"> the latest changes from github 
 
 <img width="272" alt="image" src="https://user-images.githubusercontent.com/45075881/229517253-b9a6f905-9c42-4d0c-bdc1-fef2419bcb27.png">
-<img width="30" alt="image" src="https://user-images.githubusercontent.com/45075881/229517328-5ade9550-8dac-4729-b8e9-455287d5f449.png">
+
 
 
 ## setup case 2: you don't have a local (git) folder 'moneos' on your computer
