@@ -3,17 +3,27 @@
 -   working in Rstudio : <https://inbo.github.io/git-course/workflow_rstudio.html>
 -   collaboration : <https://inbo.github.io/git-course/workflow_review.html>
 
-# setup
+# setup local moneos folder on your pc 
 
-### setup case 1: you have a local (git) folder 'moneos' already on your computer
+## setup case 1: you already have a local (git) folder 'moneos' on your computer
 
--   you have a local folder 'moneos' on your computer from working on the MONEOS report using github in previous years
+-   you have a local folder 'moneos' on your computer from working on the MONEOS report using github in previous year(s)
 -   open Rstudio
--   open the project from previous year 
+-   open the project from previous year ('moneos_XXX.Rproj'), where XXX is a previous year
 
 <img width="526" alt="image" src="https://user-images.githubusercontent.com/45075881/229511254-10852610-0eaf-45eb-8347-c8477c045722.png">
 
-### setup case 1: you have a no local (git) folder 'moneos' on your computer
+-   in the Git side panel, make sure to select the main branch
+
+<img width="156" alt="image" src="https://user-images.githubusercontent.com/45075881/229516889-93711696-89d1-4de0-90bb-10975f84fb9b.png">
+
+-   pull the latest changes from github 
+
+<img width="272" alt="image" src="https://user-images.githubusercontent.com/45075881/229517253-b9a6f905-9c42-4d0c-bdc1-fef2419bcb27.png">
+<img width="30" alt="image" src="https://user-images.githubusercontent.com/45075881/229517328-5ade9550-8dac-4729-b8e9-455287d5f449.png">
+
+
+## setup case 2: you don't have a local (git) folder 'moneos' on your computer
 
 -   create a new project using 'file' -\> 'New Project...' -\> 'version control' -\> 'git'
     -   add '<https://github.com/inbo/moneos>' to 'repository url'
@@ -23,21 +33,13 @@
 
 ![image](https://user-images.githubusercontent.com/45075881/170995002-4847b3b7-d0c6-4aef-93c4-48b9470b032d.png)
 
-### add a .Renviron file
-
--   browse to the folder 'moneos/moneos_XXX/000_template', where XXX stands for the year of reporting (e.g. 2022)
--   copy the file '\_.Renviron' to the folder 'moneos/moneos_XXX'
--   rename the '\_.Renviron' under 'moneos/moneos_XXX' to '.Renviron' (remove the underscore '\_')
--   in a text editor or in Rstudio, open the '.Renviron' file and adjust the folder paths to the paths used on your local pc
--   if you are already working in Rstudio, close Rstudio and reopen it
-
-# open the moneos project for a given year in Rstudio
+# Open and setup the moneos project for the current year in Rstudio
 
 -   select 'file' -\> 'open project'
--   under the moneos folder, browse to the subfolder for the year of reporting (folder 'moneos_XXX' where XXX is the year)
+-   under the moneos folder, browse to the subfolder for the year of reporting (folder 'moneos_XXX' where XXX is the current year)
 -   select the 'moneos_XXX.Rproj' project
 
-# Rstudio settings for the moneos project
+## Rstudio settings for the moneos project
 
 -   under 'Tools' -\> 'Global Options'
     -   under 'R markdown'
@@ -48,7 +50,15 @@
         -   check that 'Book output format(s)' is set to 'INBOmd::pdf_report'
         -   check that 'Site directory' is set to '150_geintegreerd_rapport' ![image](https://user-images.githubusercontent.com/45075881/171019335-e213f765-ccab-43df-88bf-92f0ee053fe1.png)
 
-# create a moneos chapter branch
+## add a .Renviron file to the project folder
+
+-   browse to the folder 'moneos/moneos_XXX/000_template', where XXX stands for the year of reporting (e.g. 2022)
+-   copy the file '\_.Renviron' to the folder 'moneos/moneos_XXX'
+-   rename the '\_.Renviron' under 'moneos/moneos_XXX' to '.Renviron' (remove the underscore '\_')
+-   in a text editor or in Rstudio, open the '.Renviron' file and adjust the folder paths to the paths used on your local pc
+-   if you are already working in Rstudio, close Rstudio and reopen it
+
+# Create a moneos chapter branch
 
 -   read <https://inbo.github.io/git-course/workflow_rstudio.html>
 -   create a new branch for your chapter
