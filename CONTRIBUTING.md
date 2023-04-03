@@ -13,7 +13,7 @@
 
 <img width="526" alt="image" src="https://user-images.githubusercontent.com/45075881/229511254-10852610-0eaf-45eb-8347-c8477c045722.png">
 
--   in the Git side panel, make sure to select the main branch
+-   in the Git side panel, make sure to select the 'main' branch
 
 <img width="156" alt="image" src="https://user-images.githubusercontent.com/45075881/229516889-93711696-89d1-4de0-90bb-10975f84fb9b.png">
 
