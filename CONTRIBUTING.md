@@ -3,12 +3,28 @@
 -   working in Rstudio : <https://inbo.github.io/git-course/workflow_rstudio.html>
 -   collaboration : <https://inbo.github.io/git-course/workflow_review.html>
 
-# setup
+# Local 'moneos' folder on your pc 
 
-### copy the moneos project to your pc
+## Case 1: you already have a local (git) folder 'moneos' on your computer
 
--   if you have a folder 'moneos' existing on your local computer, delete it (make sure to back up files you migh still need somewhere else!)
+-   you have a local folder 'moneos' on your computer from working on the MONEOS report using github in previous year(s)
 -   open Rstudio
+-   open the project from previous year ('moneos_XXX.Rproj'), where XXX is a previous year
+
+<img width="700" alt="image" src="https://user-images.githubusercontent.com/45075881/229511254-10852610-0eaf-45eb-8347-c8477c045722.png">
+
+-   in the Git side panel, make sure to select the 'main' branch
+
+<img width="300" alt="image" src="https://user-images.githubusercontent.com/45075881/229516889-93711696-89d1-4de0-90bb-10975f84fb9b.png">
+
+-   pull <img width="40" alt="image" src="https://user-images.githubusercontent.com/45075881/229517328-5ade9550-8dac-4729-b8e9-455287d5f449.png"> the latest changes from github 
+
+<img width="500" alt="image" src="https://user-images.githubusercontent.com/45075881/229517253-b9a6f905-9c42-4d0c-bdc1-fef2419bcb27.png">
+
+
+
+## Case 2: you don't have a local (git) folder 'moneos' on your computer
+
 -   create a new project using 'file' -\> 'New Project...' -\> 'version control' -\> 'git'
     -   add '<https://github.com/inbo/moneos>' to 'repository url'
     -   the name of the project (moneos) should appear automatically; if not, fill it in
@@ -17,21 +33,13 @@
 
 ![image](https://user-images.githubusercontent.com/45075881/170995002-4847b3b7-d0c6-4aef-93c4-48b9470b032d.png)
 
-### add a .Renviron file
-
--   browse to the folder 'moneos/moneos_XXX/000_template', where XXX stands for the year of reporting (e.g. 2022)
--   copy the file '\_.Renviron' to the folder 'moneos/moneos_XXX'
--   rename the '\_.Renviron' under 'moneos/moneos_XXX' to '.Renviron' (remove the underscore '\_')
--   in a text editor or in Rstudio, open the '.Renviron' file and adjust the folder paths to the paths used on your local pc
--   if you are already working in Rstudio, close Rstudio and reopen it
-
-# open the moneos project for a given year in Rstudio
+# Open and setup the moneos project for the current year in Rstudio
 
 -   select 'file' -\> 'open project'
--   under the moneos folder, browse to the subfolder for the year of reporting (folder 'moneos_XXX' where XXX is the year)
+-   under the moneos folder, browse to the subfolder for the year of reporting (folder 'moneos_XXX' where XXX is the current year)
 -   select the 'moneos_XXX.Rproj' project
 
-# Rstudio settings for the moneos project
+## Rstudio settings for the moneos project
 
 -   under 'Tools' -\> 'Global Options'
     -   under 'R markdown'
@@ -42,37 +50,83 @@
         -   check that 'Book output format(s)' is set to 'INBOmd::pdf_report'
         -   check that 'Site directory' is set to '150_geintegreerd_rapport' ![image](https://user-images.githubusercontent.com/45075881/171019335-e213f765-ccab-43df-88bf-92f0ee053fe1.png)
 
-# create a moneos chapter branch
+## Add a .Renviron file to the project folder
 
--   read <https://inbo.github.io/git-course/workflow_rstudio.html>
--   create a new branch for your chapter
-    -   name the branch according to:
-        -   010_inleiding
-        -   020_overzicht
-        -   030_ecotopen
-        -   040_vegetatiekaart
-        -   050_hogere_planten
-        -   060_sedimentkenmerken
-        -   070_macrozoobenthos
-        -   080_hyperbenthos
-        -   090_vissen
-        -   100_watervogels
-        -   110_broedvogels
-        -   120_zoogieren
-        -   130_sedimentatie_erosie
-        -   140_slik_schorrand
--   while being in your chapter branch
-    -   under 'moneos/moneos_XXX/150_geintegreerd_rapport' create a `.Rmd` file for your chapter
-        -   name this file the same as the branch
-        -   you can use the file '000_template.Rmd' under 'moneos/moneos_XXX/000_template' as template
-            -   make sure to change the variable 'hoofstuk' in the template .Rmd to the name of your chapter
-            -   make sure to replace the '000' in the Rmd chunk titles with the number of your chapter
-        -   instead of creating a new file, you can also copy from a previous version of the report
-            -   **but** make sure to check that the chunks at the top of the file (chunks -hoofdstuk to -pad) correspond to the example as given in the 000_template.Rmd file
-    -   under the folder 'moneos/moneos_XXX' create a subfolder for your chapter with the same name as the chapter
-        -   use this folder to store `.Rmd` files for data management and analysis
-        -   examples of such files are given in the folder 'moneos/moneos_XXX/000_template'
-        -   make sure that the yaml header at the top of these files (between ---) has the correct information (copy from the templates and change 'hoofdstuk:' and 'title:')
+-   browse to the folder 'moneos/moneos_XXX/000_template', where XXX stands for the year of reporting (e.g. 2022)
+-   copy the file '\_.Renviron' to the folder 'moneos/moneos_XXX'
+-   rename the '\_.Renviron' under 'moneos/moneos_XXX' to '.Renviron' (remove the underscore '\_')
+-   in a text editor or in Rstudio, open the '.Renviron' file and adjust the folder paths to the paths used on your local pc
+-   if you are already working in Rstudio, close Rstudio and reopen it
+
+# Moneos chapter branch
+
+-   For each chapter in the moneos report use a separate branch to work in.
+-   In doing so you can work independently of other chapters and avoid interference between work done on different chapters. 
+-   read <https://inbo.github.io/git-course/workflow_rstudio.html> for more information on working with branches.
+-   The chapter branches should be named as follows:  
+    -   010_inleiding_en_overzicht
+    -   030_ecotopen
+    -   040_vegetatiekaart
+    -   050_hogere_planten
+    -   060_sedimentkenmerken
+    -   070_macrozoobenthos
+    -   080_hyperbenthos
+    -   090_vissen
+    -   100_watervogels
+    -   110_broedvogels
+    -   120_zoogieren
+    -   130_sedimentatie_erosie
+    -   140_slik_schorrand
+
+-   Check in the git panel in Rstudio (or on github) if the chapter branch you want to work in already exists
+
+<img width="500" alt="image" src="https://user-images.githubusercontent.com/45075881/230022712-02400828-9d98-40cf-a1d6-9aab87ba2443.png">
+
+## Case 1: the moneos chapter branch you intend to work in already exists
+
+-   Select the branch for the chapter you want to work on.
+
+## Case 2: the moneos chapter branch you intend to work in does not yet exist
+
+-   create a new branch for your chapter <img width="60" alt="image" src="https://user-images.githubusercontent.com/45075881/230027175-e753193c-84c9-430d-8e66-bddfcddb97d3.png">
+
+    -   name the branch according to the list above
+
+<img width="400" alt="image" src="https://user-images.githubusercontent.com/45075881/230026926-905f1b81-51c3-452a-8c35-64dd1ca6fa61.png">
+
+
+# Setup chapter R(md) files
+
+-   While being in your chapter branch:
+    -   Under the folder 'moneos/moneos_XXX' create a subfolder for your chapter with the same name as the chapter.
+    -   Use this folder to store `.Rmd` files for data management and analysis.
+
+-   The folder 'moneos/moneos_XXXcurrentYearXXX/000_template' contains a number of template/example files for: 
+    -   data preparation: '10_template_data.Rmd'
+    -   analysis and creation of figures and tables: '20_template_analyse.Rmd'
+    -   writing the report: '000_template_rapport.Rmd'
+
+## Case 1: scripting files already exist from previous year(s)
+### Data management and analysis scripts
+-   Go to the folder 'moneos/moneos_ZZZpreviousYearZZZ/chapterYYY', with _ZZZpreviousYearZZZ_ the year you want to copy from and _chapterYYY_ the chapter of interest.
+-   Copy the script files for data management and analysis to the folder 'moneos/moneos_XXXcurrentYearXXX/chapterYYY' you created earlier.   
+-   Make sure that the yaml header at the top of these files (between ---) has the correct information. __!!This may change between years!!__
+    -   You can check this in the templates for data preparation and analysis in the folder 'moneos/moneos_XXXcurrentYearXXX/000_template'.
+    -   Make sure that 'hoofdstuk:' in the yaml header refers to the correct chapter.
+    -   You can also specify a different 'title:'.
+-   Check that the chunk named '{r pad} corresponds to the examples in the template directory.
+
+### Bookdown script for writing the chapter report
+-   Under 'moneos/moneos_XXXcurrentYearXXX/150_geintegreerd_rapport' copy the bookdown script file from a previous year.
+-   Make sure the file has the same name as the chapter branch.
+-   Check that the chunks at the top of the file (chunks -hoofdstuk to -pad) correspond to the example as given in the '000_template.Rmd' file in the template directory ('moneos/moneos_XXXcurrentYearXXX/000_template'). __!!This may change between years!!__
+-   Make sure that the variable 'hoofstuk' in the top chunk is specified correctly for your chapter.
+-   Make sure to start the name of all chunks with the number of the corresponding chapter: 
+    -   {r XXX-chunkname} with XXX the number of the chapter (in the templates this number is 000)
+
+## Case 2: no scripting files exist yet for the current chapter
+
+-   follow the guidelines as above but use the template files in the folder 'moneos/moneos_XXXcurrentYearXXX/000_template' as a starting point.
 
 # building the report pdf
 
