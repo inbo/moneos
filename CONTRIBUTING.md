@@ -3,9 +3,9 @@
 -   working in Rstudio : <https://inbo.github.io/git-course/workflow_rstudio.html>
 -   collaboration : <https://inbo.github.io/git-course/workflow_review.html>
 
-# setup local moneos folder on your pc 
+# Local 'moneos' folder on your pc 
 
-## setup case 1: you already have a local (git) folder 'moneos' on your computer
+## Case 1: you already have a local (git) folder 'moneos' on your computer
 
 -   you have a local folder 'moneos' on your computer from working on the MONEOS report using github in previous year(s)
 -   open Rstudio
@@ -23,7 +23,7 @@
 
 
 
-## setup case 2: you don't have a local (git) folder 'moneos' on your computer
+## Case 2: you don't have a local (git) folder 'moneos' on your computer
 
 -   create a new project using 'file' -\> 'New Project...' -\> 'version control' -\> 'git'
     -   add '<https://github.com/inbo/moneos>' to 'repository url'
@@ -58,13 +58,14 @@
 -   in a text editor or in Rstudio, open the '.Renviron' file and adjust the folder paths to the paths used on your local pc
 -   if you are already working in Rstudio, close Rstudio and reopen it
 
-# Create a moneos chapter branch
+# Moneos chapter branch
 
--   read <https://inbo.github.io/git-course/workflow_rstudio.html>
--   create a new branch for your chapter
-    -   name the branch according to:
-        -   010_inleiding
-        -   020_overzicht
+-   For each chapter in the moneos report use a separate branch to work in.
+-   In doing so you can work independently of other chapters and avoid interference between work done on different chapters. 
+-   read <https://inbo.github.io/git-course/workflow_rstudio.html> for more information on working with branches
+
+-   The chapter branches should be named as follows
+        -   010_inleiding_en_overzicht
         -   030_ecotopen
         -   040_vegetatiekaart
         -   050_hogere_planten
@@ -77,6 +78,27 @@
         -   120_zoogieren
         -   130_sedimentatie_erosie
         -   140_slik_schorrand
+
+-   Check in the git panel in Rstudio (or on github) if the chapter branch you want to work in already exists
+
+<img width="334" alt="image" src="https://user-images.githubusercontent.com/45075881/230022712-02400828-9d98-40cf-a1d6-9aab87ba2443.png">
+
+## Case 1: the moneos chapter branch you intend to work in already exists
+
+-   create a new branch for your chapter
+    -   name the branch according to the list above
+
+## Case 2: the moneos chapter branch you intend to work in already exists
+
+-   create a new branch for your chapter
+    -   name the branch according to the list above
+
+# setup chapter R(md) files
+
+## Case 1: scripting files already exist from previous year
+
+## Case 2: no scripting files exist yet for the current chapter
+
 -   while being in your chapter branch
     -   under 'moneos/moneos_XXX/150_geintegreerd_rapport' create a `.Rmd` file for your chapter
         -   name this file the same as the branch
