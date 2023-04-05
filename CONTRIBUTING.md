@@ -11,15 +11,15 @@
 -   open Rstudio
 -   open the project from previous year ('moneos_XXX.Rproj'), where XXX is a previous year
 
-<img width="526" alt="image" src="https://user-images.githubusercontent.com/45075881/229511254-10852610-0eaf-45eb-8347-c8477c045722.png">
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/45075881/229511254-10852610-0eaf-45eb-8347-c8477c045722.png">
 
 -   in the Git side panel, make sure to select the 'main' branch
 
-<img width="156" alt="image" src="https://user-images.githubusercontent.com/45075881/229516889-93711696-89d1-4de0-90bb-10975f84fb9b.png">
+<img width="200" alt="image" src="https://user-images.githubusercontent.com/45075881/229516889-93711696-89d1-4de0-90bb-10975f84fb9b.png">
 
--   pull <img width="30" alt="image" src="https://user-images.githubusercontent.com/45075881/229517328-5ade9550-8dac-4729-b8e9-455287d5f449.png"> the latest changes from github 
+-   pull <img width="35" alt="image" src="https://user-images.githubusercontent.com/45075881/229517328-5ade9550-8dac-4729-b8e9-455287d5f449.png"> the latest changes from github 
 
-<img width="272" alt="image" src="https://user-images.githubusercontent.com/45075881/229517253-b9a6f905-9c42-4d0c-bdc1-fef2419bcb27.png">
+<img width="350" alt="image" src="https://user-images.githubusercontent.com/45075881/229517253-b9a6f905-9c42-4d0c-bdc1-fef2419bcb27.png">
 
 
 
@@ -62,36 +62,39 @@
 
 -   For each chapter in the moneos report use a separate branch to work in.
 -   In doing so you can work independently of other chapters and avoid interference between work done on different chapters. 
--   read <https://inbo.github.io/git-course/workflow_rstudio.html> for more information on working with branches
-
--   The chapter branches should be named as follows
-        -   010_inleiding_en_overzicht
-        -   030_ecotopen
-        -   040_vegetatiekaart
-        -   050_hogere_planten
-        -   060_sedimentkenmerken
-        -   070_macrozoobenthos
-        -   080_hyperbenthos
-        -   090_vissen
-        -   100_watervogels
-        -   110_broedvogels
-        -   120_zoogieren
-        -   130_sedimentatie_erosie
-        -   140_slik_schorrand
+-   read <https://inbo.github.io/git-course/workflow_rstudio.html> for more information on working with branches.
+-   The chapter branches should be named as follows:  
+    -   010_inleiding_en_overzicht
+    -   030_ecotopen
+    -   040_vegetatiekaart
+    -   050_hogere_planten
+    -   060_sedimentkenmerken
+    -   070_macrozoobenthos
+    -   080_hyperbenthos
+    -   090_vissen
+    -   100_watervogels
+    -   110_broedvogels
+    -   120_zoogieren
+    -   130_sedimentatie_erosie
+    -   140_slik_schorrand
 
 -   Check in the git panel in Rstudio (or on github) if the chapter branch you want to work in already exists
 
-<img width="334" alt="image" src="https://user-images.githubusercontent.com/45075881/230022712-02400828-9d98-40cf-a1d6-9aab87ba2443.png">
+<img width="400" alt="image" src="https://user-images.githubusercontent.com/45075881/230022712-02400828-9d98-40cf-a1d6-9aab87ba2443.png">
 
 ## Case 1: the moneos chapter branch you intend to work in already exists
 
--   create a new branch for your chapter
+-   Select the branch for the chapter you want to work on.
+
+## Case 2: the moneos chapter branch you intend to work in does not yet exist
+
+-   create a new branch for your chapter <img width="50" alt="image" src="https://user-images.githubusercontent.com/45075881/230027175-e753193c-84c9-430d-8e66-bddfcddb97d3.png">
+
     -   name the branch according to the list above
 
-## Case 2: the moneos chapter branch you intend to work in already exists
 
--   create a new branch for your chapter
-    -   name the branch according to the list above
+<img width="350" alt="image" src="https://user-images.githubusercontent.com/45075881/230026926-905f1b81-51c3-452a-8c35-64dd1ca6fa61.png">
+
 
 # setup chapter R(md) files
 
