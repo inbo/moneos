@@ -17,11 +17,7 @@
 
 <img width="300" alt="image" src="https://user-images.githubusercontent.com/45075881/229516889-93711696-89d1-4de0-90bb-10975f84fb9b.png">
 
--   pull <img width="40" alt="image" src="https://user-images.githubusercontent.com/45075881/229517328-5ade9550-8dac-4729-b8e9-455287d5f449.png"> the latest changes from github 
-
-<img width="500" alt="image" src="https://user-images.githubusercontent.com/45075881/229517253-b9a6f905-9c42-4d0c-bdc1-fef2419bcb27.png">
-
-
+-   `pull` ![image](https://user-images.githubusercontent.com/45075881/231096880-4d9c4b7c-930d-4838-99bf-7728baafb278.png) the latest changes from github 
 
 ## Case 2: you don't have a local (git) folder 'moneos' on your computer
 
@@ -98,7 +94,7 @@
 # Setup chapter R(md) files
 
 -   While being in your chapter branch:
-    -   Under the folder 'moneos/moneos_XXX' create a subfolder for your chapter with the same name as the chapter.
+    -   Under the folder 'moneos/moneos_XXXcurrentYearXXX' create a subfolder for your chapter with the same name as the chapter.
     -   Use this folder to store `.Rmd` files for data management and analysis.
 
 -   The folder 'moneos/moneos_XXXcurrentYearXXX/000_template' contains a number of template/example files for: 
@@ -128,25 +124,49 @@
 
 -   follow the guidelines as above but use the template files in the folder 'moneos/moneos_XXXcurrentYearXXX/000_template' as a starting point.
 
-# building the report pdf
+# Working on a chapter
 
--   to build the report, go to the tab 'Build'
--   make sure the 'pdf_report' is selected under 'build book'
--   hit the build book button
+-   The following applies both for data analysis as for writing the report.
+-   Make sure to be in the git branch for the chapter you want to work on.
+-   make a habit of `pulling` ![image](https://user-images.githubusercontent.com/45075881/231096746-42c55df8-61b7-4a54-86c8-9561f2158553.png) potential work of others to the chapter, before you start to apply changes. 
+    -   In doing so, you are sure to work on the latest version.
+    -   A good habit is to do this daily.
+-   On a regular basis (e.g. daily, at the end of the day) `commit` ![image](https://user-images.githubusercontent.com/45075881/231097461-beb20592-1e46-407a-8c2c-6913713b915c.png) and `push` ![image](https://user-images.githubusercontent.com/45075881/231096204-e9a59481-4790-4b8f-9545-3a9132750d23.png) your changes to github.
+    -   In doing so, you ensure that they are visible to coworkers, and they can incorporate the changes in their version.
+
+### Commiting changes
+-   Select the files you want to commit from the git sidepanel
+
+![image](https://user-images.githubusercontent.com/45075881/231098543-db8e6ae0-9878-49a9-84df-547d723e5817.png)
+
+-   In the commit window
+    -   Add a sensible 'commit message' to the committed changes.
+    -   Hit the `commit` button.
+
+![image](https://user-images.githubusercontent.com/45075881/231098773-a0cf7ba8-893a-4e54-8076-001c783a2e6f.png)
+
+-   You can subsequently `push` ![image](https://user-images.githubusercontent.com/45075881/231096204-e9a59481-4790-4b8f-9545-3a9132750d23.png) the changes to github from the commit window or from the main github sidepanel.
+
+
+# Building the report pdf
+
+-   To build the report, go to the tab 'Build'.
+-   Make sure the 'pdf_report' is selected under 'build book'.
+-   Hit the build book button.
 
 ![image](https://user-images.githubusercontent.com/45075881/171016595-b1a3f3a1-d8b6-4d5b-80f7-9f787fcc9827.png)
 
--   when other chapters have been merged with main and are visible in your branch (see below)
-    -   you can hide them by putting an underscore '\_' in front of the chapter .Rmd filename
-    -   make sure to remove these underscores before merging with the main branch
+-   When other chapters have been merged with main and are visible in your branch (see below).
+    -   You can hide them by putting an underscore '\_' in front of the chapter `.Rmd` filename.
+    -   Make sure to remove these underscores before merging with the main branch.
 
-# merging your branch with the main branch (pull request)
+# Merging your branch with the main branch (pull request)
 
 -   make sure you merged the latest version of the main branch (potentially comprising already merged chapters) into your chapter branch before you make a pull request
     -   to merge the latest version of the main branch
         -   see <https://inbo.github.io/git-course/workflow_review.html#Merge_changes_to_main>
         -   switch to the main branch in Rstudio
-        -   hit the 'pull' button
+        -   hit the `pull` button
         -   switch back to your chapter branch
         -   open the (Git) Shell and enter the command: 'git merge main'
 
@@ -162,9 +182,9 @@
 
 
 
-# avoiding GIT conflicts
+# Avoiding GIT conflicts
 
--   In the first phase, only work in your own branch and on your own chapter (chapter directory and chapter .Rmd files)
+-   In the first phase, only work in your own branch and on your own chapter (chapter directory and chapter `.Rmd` files)
 -   if contribution to another chapter is needed
     -   work in the branch for that chapter
     -   communicate between contributors and make good agreements on who works when on the chapter
