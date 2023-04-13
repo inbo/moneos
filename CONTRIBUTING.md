@@ -1,9 +1,9 @@
-# workflows
+# Useful workflows
 
 -   working in Rstudio : <https://inbo.github.io/git-course/workflow_rstudio.html>
 -   collaboration : <https://inbo.github.io/git-course/workflow_review.html>
 
-# Local 'moneos' folder on your pc 
+# Update/add local 'moneos' folder on your pc 
 
 ## Case 1: you already have a local (git) folder 'moneos' on your computer
 
