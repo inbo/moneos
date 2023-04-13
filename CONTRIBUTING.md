@@ -147,6 +147,33 @@
 
 -   You can subsequently `push` ![image](https://user-images.githubusercontent.com/45075881/231096204-e9a59481-4790-4b8f-9545-3a9132750d23.png) the changes to github from the commit window or from the main github sidepanel.
 
+# Working in `Visual` mode
+
+-   To write the chapter report, it can be useful to use the `Visual` mode in the RStudio editing panel.
+
+![image](https://user-images.githubusercontent.com/45075881/231721587-8515138d-386a-4c16-81f0-f76d83e1ca7d.png)
+
+-   `Visual` mode works as a text editor and thus facilitates text editing. 
+  
+![image](https://user-images.githubusercontent.com/45075881/231722730-6ae5da1b-280e-45d9-8b3c-c12b7e209248.png)
+
+-   To collapse (hide) the R code chunks you can choose `Collapse all` under `Edit` -> `Folding`.
+
+![image](https://user-images.githubusercontent.com/45075881/231721255-b0a640de-bee7-4426-8b97-b4de27d18c45.png)
+
+-   To visualize figures and tables, you can run `Run all`.
+
+![image](https://user-images.githubusercontent.com/45075881/231723955-8c18cf05-ae5f-4691-8549-637fb8d37c44.png)
+
+![image](https://user-images.githubusercontent.com/45075881/231724596-fd3071dd-9483-46b8-b378-d9450c54ecc6.png)
+
+-   Under `Tools` -> `Project Options` -> `Spelling` you can set the dictionary language, which enables spell checking in the designated language.
+
+![image](https://user-images.githubusercontent.com/45075881/231725551-0163bd39-8ec3-4f24-b823-330d756d6c33.png)
+
+-   Co-authors can add comments blocks (which will not be rendered in the pdf report) during reviewing.
+
+![image](https://user-images.githubusercontent.com/45075881/231726186-2f240adc-ce20-47ea-badd-ac210f3aad2b.png)
 
 # Building the report pdf
 
@@ -159,6 +186,16 @@
 -   When other chapters have been merged with main and are visible in your branch (see below).
     -   You can hide them by putting an underscore '\_' in front of the chapter `.Rmd` filename.
     -   Make sure to remove these underscores before merging with the main branch.
+
+## Avoiding build problems 
+
+-   Don't use '%' as is in captions of figures and tables.
+    -   Use '\\\\%' instead. 
+
+![image](https://user-images.githubusercontent.com/45075881/231728266-bf3428ca-81f7-45b1-b357-2c12335f8aec.png)
+
+-   Don't use underscore '\_' in column names of tables.
+
 
 # Merging your branch with the main branch (pull request)
 
@@ -179,8 +216,6 @@
 
 ![image](https://user-images.githubusercontent.com/45075881/171813020-738149a3-cb49-4e66-818d-77979a42e415.png)
 ![image](https://user-images.githubusercontent.com/45075881/171812792-974b89a7-fa56-48cf-ab1b-2a7b41b1494c.png)
-
-
 
 # Avoiding GIT conflicts
 
