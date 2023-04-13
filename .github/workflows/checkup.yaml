@@ -16,7 +16,7 @@ jobs:
 
       - name: Check for underscores
         run: |
-          chapters <- list.files(path = "moneos_2022/150_geintegreerd_rapport")
+          chapters <- list.files(path = "moneos_2023/150_geintegreerd_rapport")
           if (any(grepl("^_.*\\.Rmd$", chapters))) {
             stop("Verwijder de underscores voor de hoofdstuknamen!")
           }
