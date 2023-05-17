@@ -122,10 +122,10 @@ DimDate <-
     tbl(VIS, "DimDate")
 
 
-Vispunten <- 
-    tbl(VIS2, "Vispunten")
-VHAVispunten <- 
-    tbl(VIS2, "VHAVispunten")
+# Vispunten <- 
+#     tbl(VIS2, "Vispunten")
+# VHAVispunten <- 
+#     tbl(VIS2, "VHAVispunten")
 AbiotischeMeting <- 
     tbl(VIS2, "AbiotischeMeting")
   
@@ -255,6 +255,17 @@ old_names <-
   distinct(Gebiedcode, Gebiednaam, round(LambertX), round(LambertY)) %>% 
   arrange(Gebiedcode) %>% 
   mutate(new_names = locatie_namen[order(locatie_nrs)]))
+
+(gebieden <- 
+    data %>% 
+    # distinct(Gebiedcode, Gebiednaam, VHP_LOTIC_NAAM, round(LambertX), round(LambertY)) %>% 
+    distinct(Gebiedcode, Gebiednaam, round(LambertX), round(LambertY)) %>% 
+    arrange(Gebiedcode) %>% 
+    left_join(locaties %>% 
+                select(Gebiedcode = locatiecode, new_names = locatie) %>% 
+                mutate(Gebiedcode = as.character(Gebiedcode))) %>% 
+    arrange(Gebiedcode))
+
 
 level_key <- locatie_namen[order(locatie_nrs)]
 names(level_key) <- old_names
