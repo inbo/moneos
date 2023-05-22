@@ -15,15 +15,19 @@ library(writexl)
 jaar <- 2023
 
 # locatie waar file wordt weggeschreven
+# locatie <- 
+#   "//Client/G$/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Projectgroep_Monitoring&Databeheer/Data_aanleveringen/"
+# filename <-
+#   str_c(locatie, jaar, "/130_sedimentatie_erosie/TOPOdata_MONEOSraai_INBO_", jaar, ".xlsx")
 locatie <- 
-  "//Client/G$/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Projectgroep_Monitoring&Databeheer/Data_aanleveringen/"
+  ""
 filename <-
-  str_c(locatie, jaar, "/130_sedimentatie_erosie/TOPOdata_MONEOSraai_INBO_", jaar, ".xlsx")
+  str_c(locatie, jaar, "/TOPOdata_MONEOSraai_INBO_", jaar, ".xlsx")
 
 
 #### ophalen gegevens uit databank ####
-pad_databank <- "Z:/Topografie/slikschorprofiel/Databank/"
-# pad_databank <- "Q:/Projects/PRJ_Schelde/Topografie/slikschorprofiel/Databank/"
+# pad_databank <- "Z:/Topografie/slikschorprofiel/Databank/"
+pad_databank <- "Q:/Projects/PRJ_Schelde/Topografie/slikschorprofiel/Databank/"
 
 conn <- 
   dbConnect(odbc::odbc(),
@@ -36,6 +40,17 @@ cdeRaai <-
   tbl(conn, "cdeRaai")
 cdeDatumCampagneJaar <-
   tbl(conn, "cdeDatumCampagneJaar")
+tblToevoegingNAwaardesinR_Slikschorprofiel <-
+  tbl(conn, "tblToevoegingNAwaardesinR_Slikschorprofiel")
+
+
+sqlCode_NA <- 
+  "SELECT tblToevoegingNAwaardesinR_Slikschorprofiel.Reekscode, tblToevoegingNAwaardesinR_Slikschorprofiel.datum, 
+tblToevoegingNAwaardesinR_Slikschorprofiel.afstand, tblToevoegingNAwaardesinR_Slikschorprofiel.NA, tblToevoegingNAwaardesinR_Slikschorprofiel.Campagne, tblToevoegingNAwaardesinR_Slikschorprofiel.Habitat
+FROM tblToevoegingNAwaardesinR_Slikschorprofiel";
+
+ToevoegingMONEOSNAraai <- 
+  sqlQuery(channel = MDB, sqlCode_NA)
 
 data_MONEOS_db <- 
   tblData_Dwarsprofiel %>% 
@@ -53,6 +68,11 @@ data_MONEOS <-
   collect() %>% 
   mutate(Salzone = ifelse(str_starts(Salzone, "Zone grote saliniteitsgradi"), "Zone grote saliniteitsgradient", Salzone),
          DATUM = date(DATUM))
+
+toevoeging_NA <-
+  collect(tblToevoegingNAwaardesinR_Slikschorprofiel) %>% 
+  select(REEKSCODE = Reekscode, DATUM = datum, distance_prof = afstand) %>% 
+  mutate(DATUM = date(DATUM))
 
 dbDisconnect(conn)
 
@@ -73,6 +93,11 @@ tbl_gemeten_raaien <-
 data_MONEOS <-
   data_MONEOS %>% 
   filter(!is.na(MeetCampagneJaar))
+
+toevoeging_NA <-
+  toevoeging_NA %>% 
+  filter(REEKSCODE %in% unique(data_MONEOS$REEKSCODE),
+         DATUM %in% unique(data_MONEOS$DATUM))
 
 
 #### wegschrijven van de data naar excel file ####
@@ -95,6 +120,8 @@ write_xlsx(list(Legende = legende, TOPOdata_MONEOSRAAIEN_INBO = data_MONEOS),
            filename)
 
 
+toevoeging_NA %>% 
+  write_xlsx(path = str_c(locatie, jaar, "/toevoeging_NA_grafieken_", jaar, ".xlsx"))
 
 
 
