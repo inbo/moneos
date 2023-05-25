@@ -1,0 +1,184 @@
+---
+params:
+  hoofdstuk: "130_sedimentatie_erosie"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "figuren historiek MONEOS raaien"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(readxl)
+library(INBOtheme)
+library(rprojroot)
+
+conflicted::conflicts_prefer(dplyr::filter)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r data}
+
+jaar <- 2023
+campagne <- "C2022"
+
+data_MONEOS <- 
+  read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_2023.xlsx"),
+            sheet = "TOPOdata_MONEOSRAAIEN_INBO")
+data_NA <-
+  read_xlsx(path = str_c(pad_data, "toevoeging_NA_grafieken_2023.xlsx"))
+
+raai_campagne <- 
+  data_MONEOS %>% 
+  distinct(MeetCampagneJaar, Salzone, Omes, DATUM, REEKSCODE, Campagne)
+
+data_NA <-
+  data_NA %>% 
+  left_join(raai_campagne) %>% 
+  drop_na()
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  bind_rows(data_NA)
+ 
+year_colors <-
+  tibble(Year = unique(year(data_MONEOS$DATUM))) %>% 
+  arrange(Year) %>% 
+  mutate(Colour = c(rev(terrain.colors(n()+1))[c(-1,-2)], 'red'))
+
+```
+
+
+```{r functie figuren}
+
+fig_raai <- 
+  function(naam, dat_raai) {
+    
+    dat_raai <-
+      dat_raai %>% 
+      filter(distance_prof >= Afstand_begin) %>% 
+      mutate(Year = year(DATUM),
+             Month = month(DATUM),
+             Datum = factor(DATUM)) %>% 
+      arrange(Datum, distance_prof)
+    
+        # dat_last <-
+        #   dat %>%
+        #   filter(!is.na(Campagne) & Campagne == campagne)
+        colors <- 
+          dat_raai %>% 
+          distinct(Year, Datum) %>% 
+          arrange(Datum) %>% 
+          left_join(year_colors)
+        p <- 
+          ggplot(dat_raai, aes(distance_prof, HOOGTE__MT, group = Datum, colour = Datum)) +  
+          geom_line(size = 1) + 
+          geom_point(size = 2) + 
+          # geom_line(data = dat_last, size = 1) +
+          # geom_point(data = dat_last, size = 2) +
+          scale_y_continuous(breaks = pretty(dat_raai$distance_prof, 10)) +
+          scale_colour_manual(values = colors$Colour) +
+          labs(title = naam,
+               x = "Afstand tot de dijk (m)",
+               y = " m T.A.W.") + 
+          theme_bw() + 
+          theme(plot.title = element_text(size = 20, hjust = 0.5),
+                axis.title = element_text(size = 18),
+                axis.text = element_text(size = 15),
+                legend.title = element_text(size = 20), 
+                legend.text = element_text(size = 14),
+                panel.border = element_blank(),
+                panel.grid.minor = element_blank(), 
+                panel.grid.major = element_line(colour = "grey")) 
+        
+        # if(Afst[i,"Oever"]) {
+        #   p <- p + scale_x_reverse(breaks = pretty(dat$Afstand,10))
+        # } else {
+        #   p <- p + scale_x_continuous(breaks = pretty(dat$Afstand,10))
+        # }
+        p
+  }
+
+```
+
+
+```{r figuren historiek}
+
+Afst <- 
+  data.frame(REEKSCODE=c("GBSa","ODa","ODa","DO","GSb","GSc","LH","LP","LP","KPb","KPe","KPe","GW",
+                         "HO","KV","NOTb","NOTc","BAL","TB",
+                         "WE","WE","BR","BR","PD","MK","KRb",
+                         "APa","APc","BM"), 
+             Naam=c("GBSa","ODa","ODaslik","DO","GSb","GSc","LH","LP","LPslik","KPb","KPe","KPeslik","GW",
+                    "HO","KV","NOTb","NOTc","BAL","TB",
+                    "WE","WEslik","BR","BRslik","PD","MK","KRb",
+                    "APa","APc","BM"), 
+             Afstand_begin=c(25,15,250,15,150,205,5,20,218,10,20,205,50,
+                             5,60,130,10,102,40,
+                             0,130,5,70,70,5,5,
+                             30,0,540))
+
+
+# Afst <- 
+#   data.frame(REEKSCODE=c("GBSa","APa","APc","BAL","BM","BOE","BR","BR","DO","ODa","ODa",
+#                          "GBa","GBSb","GBSd","GSb","GSc","GSHb","GSHb","GW","HO","KPe","KPe",
+#                          "KRb","KS","KS","KV","NOTb","PA","TB","LH","MK","PD","VL","LP","LP",
+#                          "DM","DU","KPb","WE","WE","NOTc","HEUc","HEUf"), 
+#              Naam=c("GBSa","APa","APc","BAL","BM","BOE","BR","BRslik","ODa","ODa","DO",
+#                     "GBa","GBSb","GBSd","GSb","GSc","GSHb","GSHbslik","GW","HO","KPe","KPeslik",
+#                     "KRb","KS","KSslik","KV","NOTb","PA","TB","LH","MK","PD","VL","LP","LPslik",
+#                     "DM","DU","KPb","WE","WEslik","NOTc","HEUc","HEUf"), 
+#              Afstand_begin=c(25,30,0,102,540,10,5,70,15,15,250,
+#                              45,25,25,150,205,0,120,50,5,20,205,
+#                              5,5,37,60,130,5,40,5,5,70,25,20,218,
+#                              180,0,0,0,130,10,10,10))
+
+data_fig <-
+  Afst %>% 
+  left_join(data_MONEOS,
+            relationship = "many-to-many")
+
+figuren_MONEOS <-
+  data_fig %>% 
+  filter(REEKSCODE == "KPb") %>% 
+  group_by(Naam) %>% 
+  nest() %>% 
+  mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
+
+figuren_MONEOS$fig
+
+walk2(figuren_MONEOS$Naam, figuren_MONEOS$fig, 
+      ~ggsave(.y, file=str_c(pad_figuren, .x, "_", campagne, ".png"), 
+              width=16, height=8, dpi= 350))
+
+```
+
