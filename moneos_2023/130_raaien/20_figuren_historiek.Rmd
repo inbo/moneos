@@ -85,7 +85,6 @@ fig_raai <-
     
     dat_raai <-
       dat_raai %>% 
-      filter(distance_prof >= Afstand_begin) %>% 
       mutate(Year = year(DATUM),
              Month = month(DATUM),
              Datum = factor(DATUM)) %>% 
@@ -101,7 +100,7 @@ fig_raai <-
           left_join(year_colors)
         p <- 
           ggplot(dat_raai, aes(distance_prof, HOOGTE__MT, group = Datum, colour = Datum)) +  
-          geom_line(size = 1) + 
+          geom_line(linewidth = 1) + 
           geom_point(size = 2) + 
           # geom_line(data = dat_last, size = 1) +
           # geom_point(data = dat_last, size = 2) +
@@ -165,19 +164,37 @@ Afst <-
 data_fig <-
   Afst %>% 
   left_join(data_MONEOS,
-            relationship = "many-to-many")
+            relationship = "many-to-many") %>% 
+      filter(distance_prof >= Afstand_begin)
 
 figuren_MONEOS <-
   data_fig %>% 
-  filter(REEKSCODE == "KPb") %>% 
+  # filter(REEKSCODE == "KPb") %>% 
   group_by(Naam) %>% 
   nest() %>% 
   mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
 
 figuren_MONEOS$fig
 
-walk2(figuren_MONEOS$Naam, figuren_MONEOS$fig, 
-      ~ggsave(.y, file=str_c(pad_figuren, .x, "_", campagne, ".png"), 
+walk2(str_c("Vast_", figuren_MONEOS$Naam), figuren_MONEOS$fig, 
+      ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, "_", campagne, ".png"), 
+              width=16, height=8, dpi= 350))
+
+data_opt <-
+  data_MONEOS %>% 
+  anti_join(Afst) %>% 
+  mutate(Naam = REEKSCODE)
+
+figuren_opt <-
+  data_opt %>% 
+  group_by(Naam) %>% 
+  nest() %>% 
+  mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
+
+figuren_opt$fig
+
+walk2(str_c("Optioneel_", figuren_opt$Naam), figuren_opt$fig, 
+      ~ggsave(.y, file=str_c(pad_figuren, "optioneel/", .x, "_", campagne, ".png"), 
               width=16, height=8, dpi= 350))
 
 ```
