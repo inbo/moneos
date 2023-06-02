@@ -82,17 +82,17 @@ levels_indeling <-
     "Diadr -- Benth", "Diadr -- Omn", "Diadr -- Pisc",
     "Zoetw -- Benth", "Zoetw -- Omn", "Zoetw -- Pisc")
 
-order()
-
 locatie_scheldezone <- 
   read_xlsx(str_c(pad_data, "metadata VLIZ/fuikvangsten_Zeeschelde_locaties.xlsx")) %>% 
   mutate(locatie = factor(locatie, levels = locatie[order(Y, decreasing = TRUE)])) %>% 
   select(locatie, scheldezone_full = EMSE_niveau3) %>% 
-  mutate(scheldezone = case_when(
-    scheldezone_full == "saliniteitsgradient" ~ "SG",
-    scheldezone_full == "oligohalien" ~ "OH",
-    scheldezone_full == "zoet lang verblijf" ~ "ZL",
-    scheldezone_full == "zoet kort verblijf" ~ "ZK"))
+  mutate(scheldezone_full = str_remove(scheldezone_full, " verblijf"),
+         scheldezone = 
+           case_when(
+             scheldezone_full == "saliniteitsgradient" ~ "SG",
+             scheldezone_full == "oligohalien" ~ "OH",
+             scheldezone_full == "zoet lang" ~ "ZL",
+             scheldezone_full == "zoet kort" ~ "ZK"))
 
 levels_locatie <- levels(locatie_scheldezone$locatie)
 
@@ -105,8 +105,7 @@ levels_scheldezone <-
   c("SG", "OH", "ZL", "ZK")
 
 levels_scheldezone_full <-
-  c(SG = "saliniteitsgradient", OH = "oligohalien", ZL = "zoet lang verblijf", ZK = "zoet kort verblijf")
-  # c("saliniteitsgradient", "oligohalien", "zoet lang", "zoet kort")
+  c(SG = "saliniteitsgradient", OH = "oligohalien", ZL = "zoet lang", ZK = "zoet kort")
 
 # levels_scheldezone_refactor <- c(SG = "saliniteitsgradient", OH = "oligohalien", ZL = "zoet lang", ZK = "zoet kort")
 
@@ -781,7 +780,7 @@ gemiddeld_aantal_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "aantallen_EMSE_marien.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "aantallen_EMSE_marien.jpg"), width = 10, height = 6)
 
 
 gemiddeld_aantal_EMSE %>% 
@@ -799,7 +798,7 @@ gemiddeld_aantal_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "aantallen_EMSE_diadroom.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "aantallen_EMSE_diadroom.jpg"), width = 10, height = 6)
 
 
 gemiddeld_aantal_EMSE %>% 
@@ -817,7 +816,7 @@ gemiddeld_aantal_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "aantallen_EMSE_zoet.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "aantallen_EMSE_zoet.jpg"), width = 10, height = 6)
 
 ```
 
@@ -861,7 +860,7 @@ gemiddeld_gewicht_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "biomassa_EMSE_marien.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "biomassa_EMSE_marien.jpg"), width = 10, height = 6)
 
 
 gemiddeld_gewicht_EMSE %>% 
@@ -879,7 +878,7 @@ gemiddeld_gewicht_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "biomassa_EMSE_diadroom.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "biomassa_EMSE_diadroom.jpg"), width = 10, height = 6)
 
 
 gemiddeld_gewicht_EMSE %>% 
@@ -898,7 +897,7 @@ gemiddeld_gewicht_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "biomassa_EMSE_zoet.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "biomassa_EMSE_zoet.jpg"), width = 10, height = 6)
 
 ```
 
@@ -948,7 +947,7 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_N_EMSE_marien.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "diversiteit_N_EMSE_marien.jpg"), width = 10, height = 6)
 
 gemiddeld_diversiteit_EMSE %>% 
   filter(str_detect(salgroep, "diadr")) %>% 
@@ -965,7 +964,7 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_N_EMSE_diadroom.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "diversiteit_N_EMSE_diadroom.jpg"), width = 10, height = 6)
 
 gemiddeld_diversiteit_EMSE %>% 
   filter(str_detect(salgroep, "zoet")) %>% 
@@ -982,7 +981,7 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_N_EMSE_zoet.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "diversiteit_N_EMSE_zoet.jpg"), width = 10, height = 6)
 
 
 gemiddeld_diversiteit_EMSE %>% 
@@ -999,7 +998,7 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_H_shannon_EMSE_marien.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "diversiteit_H_shannon_EMSE_marien.jpg"), width = 10, height = 6)
 
 gemiddeld_diversiteit_EMSE %>% 
   filter(str_detect(salgroep, "diadr")) %>% 
@@ -1015,7 +1014,7 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_H_shannon_EMSE_diadroom.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "diversiteit_H_shannon_EMSE_diadroom.jpg"), width = 10, height = 6)
 
 gemiddeld_diversiteit_EMSE %>% 
   filter(str_detect(salgroep, "zoet")) %>% 
@@ -1031,7 +1030,7 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_H_shannon_EMSE_zoet.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "diversiteit_H_shannon_EMSE_zoet.jpg"), width = 10, height = 6)
 
 
 gemiddeld_diversiteit_EMSE %>% 
@@ -1049,7 +1048,7 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_D_shannon_EMSE_marien.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "diversiteit_D_shannon_EMSE_marien.jpg"), width = 10, height = 6)
 
 gemiddeld_diversiteit_EMSE %>% 
   filter(str_detect(salgroep, "diadr")) %>% 
@@ -1066,7 +1065,7 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_D_shannon_EMSE_diadroom.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "diversiteit_D_shannon_EMSE_diadroom.jpg"), width = 10, height = 6)
 
 gemiddeld_diversiteit_EMSE %>% 
   filter(str_detect(salgroep, "zoet")) %>% 
@@ -1083,7 +1082,7 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_D_shannon_EMSE_zoet.jpg"), width = 10, height = 6)
+# ggsave(paste0(pad_figuren, "diversiteit_D_shannon_EMSE_zoet.jpg"), width = 10, height = 6)
 
 
 gemiddeld_diversiteit_EMSE %>% 
@@ -1254,7 +1253,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.1,1,0.05)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_EMSE_marien.jpg"), width = 14, height = 7, bg = "white")
+# ggsave(paste0(pad_figuren, "relatieve_aantallen_EMSE_marien.jpg"), width = 14, height = 7, bg = "white")
 
 
 data_split <-
@@ -1316,7 +1315,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.1,1,0.05)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_EMSE_diadroom.jpg"), width = 14, height = 7, bg = "white")
+# ggsave(paste0(pad_figuren, "relatieve_aantallen_EMSE_diadroom.jpg"), width = 14, height = 7, bg = "white")
 
 
 data_split <-
@@ -1378,7 +1377,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.1,1,0.05)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_EMSE_zoet.jpg"), width = 14, height = 7, bg = "white")
+# ggsave(paste0(pad_figuren, "relatieve_aantallen_EMSE_zoet.jpg"), width = 14, height = 7, bg = "white")
 
 ```
 
@@ -1445,7 +1444,7 @@ data_split <-
                     scale_x_continuous(breaks = 
                                          seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
                     scale_fill_manual(values = pal_split) +
-                    labs(y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen")),
+                    labs(y = get_lab_aantal(),
                          fill = ind) + 
                     guides(fill=guide_legend(nrow=4)) +
                     theme(legend.justification = c(0,1),
@@ -1464,7 +1463,7 @@ ggp_all <-
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
-  labs(y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen"))) +
+  labs(y = get_lab_aantal()) +
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none",
         axis.text = element_text(size = 8))
@@ -1504,7 +1503,7 @@ data_split <-
                     scale_x_continuous(breaks = 
                                          seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
                     scale_fill_manual(values = pal_split) +
-                    labs(y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen")),
+                    labs(y = get_lab_aantal(),
                          fill = ind) + 
                     guides(fill=guide_legend(nrow=4)) +
                     theme(legend.justification = c(0,1),
@@ -1523,7 +1522,7 @@ ggp_all <-
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
-  labs(y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen"))) +
+  labs(y = get_lab_aantal()) +
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none",
         axis.text = element_text(size = 8))
@@ -1563,7 +1562,7 @@ data_split <-
                     scale_x_continuous(breaks = 
                                          seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
                     scale_fill_manual(values = pal_split) +
-                    labs(y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen")),
+                    labs(y = get_lab_aantal(),
                          fill = ind) + 
                     guides(fill=guide_legend(nrow=4)) +
                     theme(legend.justification = c(0,1),
@@ -1582,7 +1581,7 @@ ggp_all <-
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
-  labs(y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen"))) +
+  labs(y = get_lab_aantal()) +
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none",
         axis.text = element_text(size = 8))
@@ -1664,7 +1663,7 @@ data_split <-
                     scale_x_continuous(breaks = 
                                          seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
                     scale_fill_manual(values = pal_split) +
-                    labs(y = expr(paste("gem. biomassa [g/", !!mult_fuik, "fuikdagen", "]")),
+                    labs(y = get_lab_gewicht(),
                          fill = ind) + 
                     guides(fill=guide_legend(nrow=4)) +
                     theme(legend.justification = c(0,1),
@@ -1686,7 +1685,7 @@ ggp_all <-
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
   labs(# title = "estuariene soorten en mariene migranten",
-       y = expr(paste("gem. biomassa [g/", !!mult_fuik, "fuikdagen", "]"))) + 
+       y = get_lab_gewicht()) + 
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none",
         axis.text = element_text(size = 8))
@@ -1726,7 +1725,7 @@ data_split <-
                     scale_x_continuous(breaks = 
                                          seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
                     scale_fill_manual(values = pal_split) +
-                    labs(y = expr(paste("gem. biomassa [g/", !!mult_fuik, "fuikdagen", "]")),
+                    labs(y = get_lab_gewicht(),
                          fill = ind) + 
                     guides(fill=guide_legend(nrow=4)) +
                     theme(legend.justification = c(0,1),
@@ -1746,7 +1745,7 @@ ggp_all <-
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
   labs(# title = "diadrome soorten",
-       y = expr(paste("gem. biomassa [g/", !!mult_fuik, "fuikdagen", "]"))) + 
+       y = get_lab_gewicht()) + 
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none",
         axis.text = element_text(size = 8))
@@ -1786,7 +1785,7 @@ data_split <-
                     scale_x_continuous(breaks = 
                                          seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
                     scale_fill_manual(values = pal_split) +
-                    labs(y = expr(paste("gem. biomassa [g/", !!mult_fuik, "fuikdagen", "]")),
+                    labs(y = get_lab_gewicht(),
                          fill = ind) + 
                     guides(fill=guide_legend(nrow=4)) +
                     theme(legend.justification = c(0,1),
@@ -1806,7 +1805,7 @@ ggp_all <-
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
   labs(# title = "zoetwater soorten",
-       y = expr(paste("gem. biomassa [g/", !!mult_fuik, "fuikdagen", "]"))) + 
+       y = get_lab_gewicht()) + 
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(legend.position = "none",
         axis.text = element_text(size = 8))
@@ -1843,12 +1842,12 @@ data_fuiken %>%
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
   ggplot(aes(jaar, aantal_per_fuikdag, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
-           size = 0.5,
+           linewidth = 0.5,
            width = 0.7,
            alpha = 0.8) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   labs(# title = "estuariene soorten en mariene migranten",
-       y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen"))) + 
+       y = get_lab_aantal()) + 
   facet_wrap(~soort,
              scales = "free_y",
              ncol = 2) +
@@ -1871,12 +1870,12 @@ data_fuiken %>%
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
   ggplot(aes(jaar, aantal_per_fuikdag, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
-           size = 0.5,
+           linewidth = 0.5,
            width = 0.7,
            alpha = 0.8) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   labs(# title = "diadrome soorten",
-       y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen"))) + 
+       y = get_lab_aantal()) + 
   facet_wrap(~soort,
              scales = "free_y",
              ncol = 2) +
@@ -1899,13 +1898,13 @@ data_fuiken %>%
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
   ggplot(aes(jaar, aantal_per_fuikdag, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
-           size = 0.5,
+           linewidth = 0.5,
            width = 0.7,
            alpha = 0.8) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_x_continuous(breaks = vroegste_jaar:laatste_jaar) +
   labs(# title = "zoetwatersoorten",
-       y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen"))) + 
+       y = get_lab_aantal()) + 
   facet_wrap(~soort,
              scales = "free_y",
              ncol = 2) +
@@ -1917,7 +1916,7 @@ ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.jpg"), width = 6,
 ```
 
 
-```{r sleutelsoorten biomassa}
+```{r sleutelsoorten biomassa, eval=FALSE}
 
 data_fuiken %>% 
   left_join(locatie_scheldezone) %>% 
@@ -1932,12 +1931,12 @@ data_fuiken %>%
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
   ggplot(aes(jaar, gewicht_per_fuikdag, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
-           size = 0.5,
+           linewidth = 0.5,
            width = 0.7,
            alpha = 0.8) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   labs(# title = "estuariene soorten en mariene migranten",
-       y = expr(paste("gem. biomassa [g/", !!mult_fuik, "fuikdagen", "]"))) + 
+       y = get_lab_gewicht()) + 
   facet_wrap(~soort,
              scales = "free_y",
              ncol = 2) +
@@ -1960,12 +1959,12 @@ data_fuiken %>%
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
   ggplot(aes(jaar, gewicht_per_fuikdag, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
-           size = 0.5,
+           linewidth = 0.5,
            width = 0.7,
            alpha = 0.8) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   labs(# title = "diadrome soorten",
-       y = expr(paste("gem. biomassa [g/", !!mult_fuik, "fuikdagen", "]"))) + 
+       y = get_lab_gewicht()) + 
   facet_wrap(~soort,
              scales = "free_y",
              ncol = 2) +
@@ -1988,13 +1987,13 @@ data_fuiken %>%
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
   ggplot(aes(jaar, gewicht_per_fuikdag, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
-           size = 0.5,
+           linewidth = 0.5,
            width = 0.7,
            alpha = 0.8) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_x_continuous(breaks = vroegste_jaar:laatste_jaar) +
   labs(# title = "zoetwatersoorten",
-       y = expr(paste("gem. biomassa [g/", !!mult_fuik, "fuikdagen", "]"))) + 
+       y = get_lab_gewicht()) + 
   facet_wrap(~soort,
              scales = "free_y",
              ncol = 2) +
@@ -2083,9 +2082,9 @@ data_split <-
                     scale_x_continuous(breaks = 
                                          seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
                     scale_fill_manual(values = pal_split) +
-                    labs(y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen")),
+                    labs(y = get_lab_aantal(),
                          fill = ind) + 
-                    guides(fill=guide_legend(nrow=4)) +
+                    guides(fill=guide_legend(nrow=5)) +
                     theme(#rect = element_blank(),
                           # rect = element_rect(fill = 'transparent', colour = NA_character_),
                           legend.justification = c(0,1),
@@ -2096,23 +2095,25 @@ data_split <-
                   plt %>% 
                     get_legend()
                   }))
-# data_split$legend
 
 ggp_all <-
   relatieve_aantallen_saliniteit %>% 
   ggplot(aes(jaar, relatief_aantal*aantal_per_fuikdag*mult_fuik, fill = soort, color = soort)) +
   geom_col(width = 0.7,
            alpha = 0.9,
-           size = 0.1) +
+           linewidth = 0.1) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
   # scale_y_log10() +
   # scale_fill_brewer(palette = "Paired") +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
   labs(# title = "estuariene soorten en mariene migranten",
-       y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen"))) +
+       y = get_lab_aantal()) +
   facet_grid(salgroep ~ scheldezone, scales = "free_y") +
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+        axis.text = element_text(size = 10),
+        axis.text.x = element_text(angle = 90, vjust = 0.5),
+        strip.text = element_text(size = 11))
 
 
 plot_grid(ggp_all,
@@ -2122,9 +2123,9 @@ plot_grid(ggp_all,
                     align = "h", ncol = 1),
                     NULL,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
-          ncol = 3, rel_widths = c(1.2,0.05,0.5))
+          ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 12, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 14, height = 8, bg = "white")
 
 
 ggp_all <-
@@ -2132,16 +2133,19 @@ ggp_all <-
   ggplot(aes(jaar, relatief_gewicht*gewicht_per_fuikdag*mult_fuik, fill = soort, color = soort)) +
   geom_col(width = 0.7,
            alpha = 0.9,
-           size = 0.1) +
+           linewidth = 0.1) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
   # scale_y_log10() +
   # scale_fill_brewer(palette = "Paired") +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
   labs(# title = "estuariene soorten en mariene migranten",
-       y = expr(paste("gem. biomassa [g/", !!mult_fuik, "fuikdagen", "]"))) + 
+       y = get_lab_gewicht()) + 
   facet_grid(salgroep ~ scheldezone, scales = "free_y") +
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+        axis.text = element_text(size = 10),
+        axis.text.x = element_text(angle = 90, vjust = 0.5),
+        strip.text = element_text(size = 12))
 
 
 plot_grid(ggp_all,
@@ -2151,9 +2155,9 @@ plot_grid(ggp_all,
                     align = "h", ncol = 1),
                     NULL,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
-          ncol = 3, rel_widths = c(1.2,0.05,0.5))
+          ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 12, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 14, height = 8, bg = "white")
 
 ```
 
@@ -2235,7 +2239,7 @@ data_split <-
                     scale_x_continuous(breaks = 
                                          seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
                     scale_fill_manual(values = pal_split) +
-                    labs(y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen")),
+                    labs(y = get_lab_aantal(),
                          fill = ind) + 
                     guides(fill=guide_legend(nrow=4)) +
                     theme(#rect = element_blank(),
@@ -2248,23 +2252,25 @@ data_split <-
                   plt %>% 
                     get_legend()
                   }))
-# data_split$legend
 
 ggp_all <-
   relatieve_aantallen_dieet %>% 
   ggplot(aes(jaar, relatief_aantal*aantal_per_fuikdag*mult_fuik, fill = soort, color = soort)) +
   geom_col(width = 0.7,
            alpha = 0.9,
-           size = 0.1) +
+           linewidth = 0.1) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
   # scale_y_log10() +
   # scale_fill_brewer(palette = "Paired") +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
   labs(# title = "estuariene soorten en mariene migranten",
-       y = expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen"))) +
+       y = get_lab_aantal()) +
   facet_grid(dieet ~ scheldezone, scales = "free_y") +
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+        axis.text = element_text(size = 10),
+        axis.text.x = element_text(angle = 90, vjust = 0.5),
+        strip.text = element_text(size = 12))
 
 
 plot_grid(ggp_all,
@@ -2274,9 +2280,9 @@ plot_grid(ggp_all,
                     align = "h", ncol = 1),
                     NULL,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
-          ncol = 3, rel_widths = c(1.2,0.05,0.5))
+          ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_dieet.jpg"), width = 10, height = 6, bg = "white")
+ggsave(paste0(pad_figuren, "alternatief/relatieve_aantallen_tot_aantal_dieet.jpg"), width = 14, height = 8, bg = "white")
 
 
 ggp_all <-
@@ -2284,16 +2290,19 @@ ggp_all <-
   ggplot(aes(jaar, relatief_gewicht*gewicht_per_fuikdag*mult_fuik, fill = soort, color = soort)) +
   geom_col(width = 0.7,
            alpha = 0.9,
-           size = 0.1) +
+           linewidth = 0.1) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
   # scale_y_log10() +
   # scale_fill_brewer(palette = "Paired") +
   scale_fill_manual(values = my_pal_wes) +
   scale_color_manual(values = my_pal_wes) +
   labs(# title = "estuariene soorten en mariene migranten",
-       y = expr(paste("gem. biomassa [g/", !!mult_fuik, "fuikdagen", "]"))) + 
+       y = get_lab_gewicht()) + 
   facet_grid(dieet ~ scheldezone, scales = "free_y") +
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+        axis.text = element_text(size = 10),
+        axis.text.x = element_text(angle = 90, vjust = 0.5),
+        strip.text = element_text(size = 12))
 
 
 plot_grid(ggp_all,
@@ -2303,9 +2312,9 @@ plot_grid(ggp_all,
                     align = "h", ncol = 1),
                     NULL,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
-          ncol = 3, rel_widths = c(1.2,0.05,0.5))
+          ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 10, height = 6, bg = "white")
+ggsave(paste0(pad_figuren, "alternatief/relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 14, height = 8, bg = "white")
 
 ```
 
@@ -2339,21 +2348,23 @@ gemiddeld_diversiteit_salgroep %>%
   ggplot(aes(jaar, N)) +
   geom_col(position = position_dodge(),
            color = "steelblue4",
-           size = 0.5,
+           linewidth = 0.5,
            width = 0.7,
            alpha = 0.25) +
   geom_col(aes(y = D_sh),
            color = "steelblue4",
-           size = 0.5,
+           linewidth = 0.5,
            position = position_dodge(),
            width = 0.7,
            alpha = 0.8) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_y_log10() +
   labs(y = "S -- D") +
-  facet_grid(salgroep ~ scheldezone, scales = "free_y")
+  facet_grid(salgroep ~ scheldezone, scales = "free_y") +
+  theme(axis.text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
 
-ggsave(paste0(pad_figuren, "diversiteit_S_D_salgroep.jpg"), width = 10, height = 7)
+ggsave(paste0(pad_figuren, "alternatief/diversiteit_S_D_salgroep.jpg"), width = 10, height = 7)
 
 ```
 
@@ -2386,21 +2397,23 @@ gemiddeld_diversiteit_dieet %>%
   ggplot(aes(jaar, N)) +
   geom_col(position = position_dodge(),
            color = "steelblue4",
-           size = 0.5,
+           linewidth = 0.5,
            width = 0.7,
            alpha = 0.25) +
   geom_col(aes(y = D_sh),
            color = "steelblue4",
-           size = 0.5,
+           linewidth = 0.5,
            position = position_dodge(),
            width = 0.7,
            alpha = 0.8) +
   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   # scale_y_log10() +
   labs(y = "S -- D") +
-  facet_grid(dieet ~ scheldezone, scales = "free_y")
+  facet_grid(dieet ~ scheldezone, scales = "free_y") +
+  theme(axis.text = element_text(size = 8),
+        axis.text.x = element_text(angle = 90, vjust = 0.5))
 
-ggsave(paste0(pad_figuren, "diversiteit_S_D_dieet.jpg"), width = 7, height = 6)
+ggsave(paste0(pad_figuren, "alternatief/diversiteit_S_D_dieet.jpg"), width = 7, height = 6)
 
 ```
 

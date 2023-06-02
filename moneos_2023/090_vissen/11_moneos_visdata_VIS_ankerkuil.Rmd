@@ -24,6 +24,7 @@ knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, c
 ```{r libraries}
 
 library(tidyverse)
+library(tidyjson)
 library(lubridate)
 library(readxl)
 library(writexl)
@@ -128,6 +129,10 @@ DimDate <-
 #     tbl(VIS2, "VHAVispunten")
 AbiotischeMeting <- 
     tbl(VIS2, "AbiotischeMeting")
+Waarneming <- 
+    tbl(VIS2, "Waarneming")
+
+# informatie ivm met berekening en eenheid voor catch per unit effort zijn te vinden in VIS2 tabel 'Methode' (en 'MethodeCpueParameter')
   
 
 tbl_campagnes <-
@@ -179,16 +184,35 @@ tbl_abiotiek <-
   select(ABME_WRNG_ID, ABME_ZUURSTOF, ABME_ZUURSTOFPROCENT, ABME_TEMPERATUUR, ABME_PH, ABME_CONDUCTIVITEIT, ABME_TURBIDITEIT, ABME_SALINITEIT_PRM) %>% 
   filter(ABME_WRNG_ID %in% waarneming_IDs)
 
+tbl_volume <- 
+  Waarneming %>% 
+  select(WRNG_ID, WRNG_WGST_CDE, WRNG_METH_CDE, WRNG_OCR, WRNG_CPUE_PARAMETERS) %>% 
+  filter(WRNG_ID %in% waarneming_IDs)
+
+volume <-
+  tbl_volume %>% 
+  collect() %>% 
+  bind_cols(., .$WRNG_CPUE_PARAMETERS %>% 
+              spread_all() %>% 
+              select(AantalUrenStuurboord, AantalUrenBakboord, AfgevistVolumeStuurboord, AfgevistVolumeBakboord) %>%
+              as_tibble()) %>% 
+  replace_na(list(AantalUrenStuurboord = 0, AantalUrenBakboord = 0,
+                  AfgevistVolumeStuurboord = 0, AfgevistVolumeBakboord = 0)) %>% 
+  mutate(uren = AantalUrenStuurboord + AantalUrenBakboord,
+         volume = AfgevistVolumeStuurboord + AfgevistVolumeBakboord)
+
 data <-
   tbl_data %>% 
   collect() %>% 
   # left_join(tbl_locatie_gegevens %>% collect(), by = c("Gebiedcode" = "VIP_CDE")) %>% 
+  left_join(volume %>% select(WRNG_ID, uren, volume), by = c("WaarnemingID" = "WRNG_ID")) %>% 
   left_join(tbl_abiotiek %>% collect(), by = c("WaarnemingID" = "ABME_WRNG_ID"))
 
 campagnes <-
   tbl_campagnes %>% 
   collect() %>% 
   # left_join(tbl_locatie_gegevens %>% collect(), by = c("Gebiedcode" = "VIP_CDE")) %>% 
+  left_join(volume %>% select(WRNG_ID, uren, volume), by = c("WaarnemingID" = "WRNG_ID")) %>% 
   left_join(tbl_abiotiek %>% collect(), by = c("WaarnemingID" = "ABME_WRNG_ID"))
 
 ```
