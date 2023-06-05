@@ -163,6 +163,33 @@ dubbel_gewicht <-
 ```
 
 
+```{r controle individu en TAXONTOTGEW in ruwe data}
+
+individu_TAXONTOTGEW <-
+  data_recent %>% 
+  filter(TAXONAANTAL == 1 &
+           TAXONTOTGEW > 0) %>% 
+  select("MetingPivotKey", "WaarnemingKey", "WaarnemingID", "GebiedKey", "Gebiedcode", 
+         "LambertX", "LambertY", "Gebiednaam", 
+         "Begindatum", "Month", "Year", "MethodeKey", "Methodenaam", "Methodegroepcode", 
+         "AantalDagen", "AantalFuiken", 
+         "TaxonKey", "Soort", 
+         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
+
+individuen_TAXONGEW <-
+  data_recent %>% 
+  filter(TAXONAANTAL > 1 &
+           TAXONGEW > 0) %>% 
+  select("MetingPivotKey", "WaarnemingKey", "WaarnemingID", "GebiedKey", "Gebiedcode", 
+         "LambertX", "LambertY", "Gebiednaam", 
+         "Begindatum", "Month", "Year", "MethodeKey", "Methodenaam", "Methodegroepcode", 
+         "AantalDagen", "AantalFuiken", 
+         "TaxonKey", "Soort", 
+         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
+
+```
+
+
 ```{r controle uniek aantal of gewicht in ruwe data}
 
 aantal_NA_of_0_ruw <-
