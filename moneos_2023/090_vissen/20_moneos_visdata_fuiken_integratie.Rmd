@@ -71,6 +71,17 @@ campagnes_historisch <-
                                               ".xlsx")),
             sheet = "campagnes")
 
+# omzetten maand naar seizoen
+campagnes_historisch <-
+  campagnes_historisch %>%
+  mutate(seizoen =
+           case_when(
+             maand %in% 3:5 ~ "voorjaar",
+             maand %in% 6:8 ~ "zomer",
+             maand %in% 9:11 ~ "najaar",
+             maand %in% 12:2 ~ "winter")) %>%
+  select(ID_afvissing:jaar, seizoen, everything(), -maand)
+
 aantal_historisch <- 
   read_xlsx(str_c(pad_data_historisch, str_c("fuikdata_Zeeschelde_2009_", 
                                               laatste_jaar - 1 ,
@@ -128,33 +139,17 @@ names(level_key) <- old_names
 ```
 
 
-```{r data per datum}
+```{r correcties soortnamen}
 
-data_per_datum <- 
-  data_recent %>% 
-  select(locatiecode = Gebiedcode, locatie = Gebiednaam, datum = Begindatum, 
-         aantal_dagen = AantalDagen, aantal_fuiken = AantalFuiken, soort = Soort, 
-         aantal = TAXONAANTAL, gewicht_ind = TAXONGEW, gewicht_tot = TAXONTOTGEW, 
-         temperatuur = ABME_TEMPERATUUR, zuurstof = ABME_ZUURSTOF,	zuurstof_perc = ABME_ZUURSTOFPROCENT,	
-         ph = ABME_PH,	turbiditeit = ABME_TURBIDITEIT,	conductiviteit = ABME_CONDUCTIVITEIT) %>% 
-  mutate(locatie = recode(locatie, !!!level_key),
-         fuikdagen = aantal_dagen * aantal_fuiken,
-         datum = date(datum),
-         jaar = year(datum),
-         maand = month(datum),
-         soort = str_to_lower(soort)) %>% 
-  group_by(locatiecode, locatie, datum, jaar, maand, aantal_dagen, aantal_fuiken, fuikdagen, soort) %>% 
-  summarise(n = n(),
-            aantal = sum(aantal, na.rm = FALSE),
-            # gewicht = sum(if_else(is.na(gewicht_ind), 
-            #                   if_else(is.na(gewicht_tot), NA_real_, gewicht_tot), 
-            #                   if_else(is.na(gewicht_tot), gewicht_ind, gewicht_ind + gewicht_tot)),
-            gewicht = sum(if_else(is.na(gewicht_ind), 
-                                  gewicht_tot, gewicht_ind),
-                          na.rm = FALSE),
-            across(c(temperatuur, zuurstof,	zuurstof_perc, ph,	turbiditeit, conductiviteit), 
-                   ~mean(., na.rm = TRUE)),
-            .groups = "drop")
+rename_vector <-
+  c("kleine koornaarvis" = "koornaarvis")
+
+aantal_historisch <-
+  aantal_historisch %>% 
+  rename(!!!rename_vector)
+gewicht_historisch <-
+  gewicht_historisch %>% 
+  rename(!!!rename_vector)
 
 ```
 
@@ -168,40 +163,7 @@ dubbel_gewicht <-
 ```
 
 
-```{r controle ontbrekende campagnes}
-
-campagnes <- 
-  data_per_datum %>% 
-  select(locatie, jaar, maand) %>% 
-  distinct() %>% 
-  mutate(seizoen = 
-           case_when(
-             maand %in% 3:5 ~ "voorjaar",
-             maand %in% 6:8 ~ "zomer",
-             maand %in% 9:11 ~ "najaar",
-             maand %in% 12:2 ~ "winter"))
-
-camp_tot <-
-  campagnes %>% 
-  expand(locatie, jaar, seizoen)
-  
-campagnes_ontbrekend <-
-  camp_tot %>% 
-  anti_join(campagnes)
-
-campagnes_NA_or_0 <-
-  data_per_datum %>% 
-  group_by(locatiecode, locatie, datum, jaar, maand, aantal_dagen, aantal_fuiken) %>% 
-  summarise(n = sum(n), aantal = sum(aantal, na.rm = TRUE), gewicht = sum(gewicht, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  arrange(datum, locatie) %>% 
-  filter(if_any(.cols = everything(), .fns = ~is.na(.)) | 
-           if_any(.cols = c(aantal_dagen, aantal_fuiken), ~near(., 0)))
-
-```
-
-
-```{r controle uniek aantal of gewicht}
+```{r controle uniek aantal of gewicht in ruwe data}
 
 aantal_NA_of_0_ruw <-
   data_recent %>% 
@@ -226,10 +188,167 @@ gewicht_NA_of_0_ruw <-
          "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
 
 
+soort_NA <-
+  gewicht_NA_of_0_ruw %>% 
+  filter(TAXONAANTAL == 1) %>% 
+  pull(Soort) %>% 
+  unique()
+
+data_lengte <-
+  data_recent %>% 
+  filter(Soort %in% soort_NA,
+         !is.na(TAXONLEN)) %>% 
+  select(Soort, TAXONAANTAL, TAXONGEW, TAXONLEN)
+  
+data_lengte %>% 
+  ggplot(aes(TAXONLEN, TAXONGEW)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  scale_x_log10() +
+  scale_y_log10() +
+  facet_wrap(~Soort)
+
+regressie_lengte <-
+  data_lengte %>% 
+  group_by(Soort) %>% 
+  summarise(int = coef(lm(log(TAXONGEW)~log(TAXONLEN)))[1],
+            slope = coef(lm(log(TAXONGEW)~log(TAXONLEN)))[2]) %>% 
+  ungroup()
+
+datum_soort <-
+  data_recent %>% 
+  mutate(gewicht = if_else(is.na(TAXONGEW), 
+                                  TAXONTOTGEW, TAXONGEW)) %>% 
+  select(Gebiedcode, Gebiednaam, Begindatum, Soort, aantal = TAXONAANTAL, gewicht) %>% 
+  filter(str_c(Gebiedcode, Begindatum, Soort) %in% unique(str_c(gewicht_NA_of_0_ruw$Gebiedcode, gewicht_NA_of_0_ruw$Begindatum, gewicht_NA_of_0_ruw$Soort))) %>% 
+  drop_na() %>% 
+  group_by(Gebiedcode, Gebiednaam, Begindatum, Soort) %>% 
+  summarise(across(everything(), sum)) %>% 
+  ungroup()
+
+
+gewicht_NA <-
+  gewicht_NA_of_0_ruw %>% 
+  select(MetingPivotKey, Gebiedcode, Gebiednaam, Begindatum, Month, Year, Methodenaam, 
+         TaxonKey, Soort, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN) %>% 
+  left_join(datum_soort) %>% 
+  left_join(regressie_lengte) %>% 
+  replace_na(list(aantal = 0, gewicht = 0)) %>% 
+  mutate(prop_aantal = TAXONAANTAL/(TAXONAANTAL + aantal),
+         gewicht_imputed = 
+           case_when(
+             TAXONAANTAL > 1 ~ gewicht*prop_aantal,
+             TRUE ~ exp(int + slope*log(TAXONLEN))
+           ))
+  
+
+write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
+                # NA_aantal = aantal_NA_of_0_ruw,
+                NA_gewicht = gewicht_NA),
+           path = str_c(pad_data, "controle/controle_NA_aantal_of_gewicht_fuiken.xlsx"))
+
+```
+
+
+```{r toevoegen imputation aan ruwe data}
+
+keys <- gewicht_NA$MetingPivotKey
+
+dat_before <-
+  data_recent %>% 
+  filter(MetingPivotKey %in% keys)
+
+for(k in keys) {
+  data_recent$TAXONGEW[data_recent$MetingPivotKey == k] <-
+    gewicht_NA$gewicht_imputed[gewicht_NA$MetingPivotKey == k]
+}
+
+dat_after <-
+  data_recent %>% 
+  filter(MetingPivotKey %in% keys)
+
+```
+
+
+```{r data per datum}
+
+data_per_datum <- 
+  data_recent %>% 
+  select(locatiecode = Gebiedcode, locatie = Gebiednaam, datum = Begindatum, 
+         aantal_dagen = AantalDagen, aantal_fuiken = AantalFuiken, soort = Soort, 
+         aantal = TAXONAANTAL, gewicht_ind = TAXONGEW, gewicht_tot = TAXONTOTGEW, 
+         temperatuur = ABME_TEMPERATUUR, zuurstof = ABME_ZUURSTOF,	zuurstof_perc = ABME_ZUURSTOFPROCENT,	
+         ph = ABME_PH,	turbiditeit = ABME_TURBIDITEIT,	conductiviteit = ABME_CONDUCTIVITEIT) %>% 
+  mutate(locatie = recode(locatie, !!!level_key),
+         fuikdagen = aantal_dagen * aantal_fuiken,
+         datum = date(datum),
+         jaar = year(datum),
+         maand = month(datum),
+         seizoen = 
+           case_when(
+             maand %in% 3:5 ~ "voorjaar",
+             maand %in% 6:8 ~ "zomer",
+             maand %in% 9:11 ~ "najaar",
+             maand %in% 12:2 ~ "winter"),
+         soort = str_to_lower(soort)) %>% 
+  group_by(locatiecode, locatie, datum, jaar, maand, seizoen, aantal_dagen, aantal_fuiken, fuikdagen, soort) %>% 
+  summarise(n = n(),
+            aantal = sum(aantal, na.rm = FALSE),
+            # gewicht = sum(if_else(is.na(gewicht_ind), 
+            #                   if_else(is.na(gewicht_tot), NA_real_, gewicht_tot), 
+            #                   if_else(is.na(gewicht_tot), gewicht_ind, gewicht_ind + gewicht_tot)),
+            gewicht = sum(if_else(is.na(gewicht_ind), 
+                                  gewicht_tot, gewicht_ind),
+                          na.rm = FALSE),
+            across(c(temperatuur, zuurstof,	zuurstof_perc, ph,	turbiditeit, conductiviteit), 
+                   ~mean(., na.rm = TRUE)),
+            .groups = "drop")
+
+```
+
+
+```{r controle NA in aantal of gewicht in geaggregeerde data}
+
+dat_NA <-
+  data_per_datum %>% 
+  filter(is.na(aantal) | is.na(gewicht))
+
+```
+
+
+```{r controle ontbrekende campagnes}
+
+campagnes <- 
+  data_per_datum %>% 
+  select(locatie, jaar, maand, seizoen) %>% 
+  distinct()
+
+camp_tot <-
+  campagnes %>% 
+  expand(locatie, jaar, seizoen)
+  
+campagnes_ontbrekend <-
+  camp_tot %>% 
+  anti_join(campagnes)
+
+campagnes_NA_or_0 <-
+  data_per_datum %>% 
+  group_by(locatiecode, locatie, datum, jaar, maand, seizoen, aantal_dagen, aantal_fuiken) %>% 
+  summarise(n = sum(n), aantal = sum(aantal, na.rm = TRUE), gewicht = sum(gewicht, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  arrange(datum, locatie, seizoen) %>% 
+  filter(if_any(.cols = everything(), .fns = ~is.na(.)) | 
+           if_any(.cols = c(aantal_dagen, aantal_fuiken), ~near(., 0)))
+
+```
+
+
+```{r controle uniek aantal of gewicht in geaggregeerde data}
+
 uniek_aantal_of_gewicht <-
   data_per_datum %>% 
-  select(locatiecode, locatie, datum, jaar, maand, aantal_dagen, aantal_fuiken, fuikdagen, soort, n, aantal, gewicht) %>% 
-  arrange(datum, locatie) %>% 
+  select(locatiecode, locatie, datum, jaar, maand, seizoen, aantal_dagen, aantal_fuiken, fuikdagen, soort, n, aantal, gewicht) %>% 
+  arrange(datum, locatie, seizoen) %>% 
   filter(if_any(c(aantal, gewicht), ~is.na(.)) |
            (if_any(c(aantal, gewicht), ~near(., 0)) & !if_all(c(aantal, gewicht), ~near(., 0))))
 
@@ -242,16 +361,10 @@ uniek_aantal_of_gewicht_inv <-
   uniek_aantal_of_gewicht %>% 
   filter(str_detect(str_to_lower(soort), "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat"))
 
-
-write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
-                NA_aantal = aantal_NA_of_0_ruw,
-                NA_gewicht = gewicht_NA_of_0_ruw),
-           path = str_c(pad_data, "controle/controle_NA_aantal_of_gewicht_fuiken.xlsx"))
-
 ```
 
 
-```{r vergelijking soorten met historisch}
+```{r vergelijking soortennamen met historisch}
 
 (soorten_historisch_aanwezig <-
   aantal_historisch %>% 
@@ -308,7 +421,7 @@ write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
 
 campagnes_recent <-
   data_per_datum %>% 
-  select(locatie, datum, jaar, maand, fuikdagen, 
+  select(locatie, datum, jaar, seizoen, fuikdagen, 
          temperatuur, zuurstof,	zuurstof_perc, ph,	turbiditeit, conductiviteit) %>% 
   distinct() %>% 
   arrange(datum, locatie) %>% 
@@ -370,25 +483,24 @@ aantal_recent_finaal <-
   aantallen_recent %>% 
   mutate(ID_afvissing = ID_afvissing + start_ID) %>% 
   add_column(matrix(data = 0, nrow = nrow(aantallen_recent), ncol = length(unieke_soorten_historisch)) %>% 
-               as.tibble() %>% 
+               as_tibble() %>% 
                rename_at(., vars(names(.)), ~ unieke_soorten_historisch))
 
 gewicht_recent_finaal <-
   gewicht_recent %>% 
   mutate(ID_afvissing = ID_afvissing + start_ID) %>% 
   add_column(matrix(data = 0, nrow = nrow(gewicht_recent), ncol = length(unieke_soorten_historisch)) %>% 
-               as.tibble() %>% 
+               as_tibble() %>% 
                rename_at(., vars(names(.)), ~ unieke_soorten_historisch))
 
 
 soorten_order <- 
-  c(unieke_soorten_historisch, unieke_soorten_recent) %>% 
+  union(union(soorten_historisch_aanwezig, soorten_historisch_nul), soorten_recent_aanwezig) %>% 
   sort()
 
 campagnes <-
   campagnes_historisch %>% 
-  bind_rows(campagnes_recent_finaal) %>% 
-  mutate(datum = ymd(datum))
+  bind_rows(campagnes_recent_finaal)
 
 aantallen <-
   aantal_historisch_finaal %>% 

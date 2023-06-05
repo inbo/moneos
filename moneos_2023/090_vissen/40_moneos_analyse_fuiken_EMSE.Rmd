@@ -23,6 +23,7 @@ knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, c
 
 library(tidyverse)
 library(lubridate)
+library(janitor)
 library(readxl)
 library(writexl)
 # library(yarrr)
@@ -50,10 +51,8 @@ conflicted::conflicts_prefer(dplyr::filter)
 source(find_root_file("../pad.R", criterion = is_rstudio_project))
 
 pad_data <- maak_pad(params$hoofdstuk, "data")
-pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
-pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
-
-pad_figuren <- str_c(pad_figuren, "fuiken/")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren/fuiken")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen/fuiken")
 
 ```
 
@@ -124,26 +123,26 @@ filename <-
 fuiken_aantal <- 
   read_xlsx(str_c(pad_data, filename),
             sheet = "campagnes") %>% 
-  select(ID_afvissing, locatie, datum, jaar, maand, fuikdagen) %>% 
+  select(ID_afvissing, locatie, datum, jaar, seizoen, fuikdagen) %>% 
   left_join(read_xlsx(str_c(pad_data, filename),
                       sheet = "locaties") %>% 
               select(locatie, OMES, EMSE_niveau3)) %>% 
   left_join(read_xlsx(str_c(pad_data, filename),
                       sheet = "aantallen")) %>% 
   select(-ID_afvissing) %>% 
-  select(locatie, OMES, EMSE_niveau3, datum, jaar, maand, everything())
+  select(locatie, OMES, EMSE_niveau3, datum, jaar, seizoen, everything())
 
 fuiken_gewicht <- 
   read_xlsx(str_c(pad_data, filename),
             sheet = "campagnes") %>% 
-  select(ID_afvissing, locatie, datum, jaar, maand, fuikdagen) %>% 
+  select(ID_afvissing, locatie, datum, jaar, seizoen, fuikdagen) %>% 
   left_join(read_xlsx(str_c(pad_data, filename),
                       sheet = "locaties") %>% 
               select(locatie, OMES, EMSE_niveau3)) %>% 
   left_join(read_xlsx(str_c(pad_data, filename),
                       sheet = "gewicht")) %>% 
   select(-ID_afvissing) %>% 
-  select(locatie, OMES, EMSE_niveau3, datum, jaar, maand, everything())
+  select(locatie, OMES, EMSE_niveau3, datum, jaar, seizoen, everything())
 
 
 data_fuiken <- 
@@ -156,11 +155,6 @@ data_fuiken <-
                            names_to = "soort",
                            values_to = "gewicht")) %>% 
   mutate(gewicht = if_else(aantal == 0, 0, gewicht),
-         seizoen = case_when(
-           maand %in% 3:5 ~ "voorjaar",
-           maand %in% 6:8 ~ "zomer",
-           maand %in% 9:11 ~ "najaar",
-           TRUE ~ "winter"),
          seizoen = factor(seizoen, levels = c("voorjaar", "zomer", "najaar", "winter")),
          locatie = factor(locatie, levels = levels_locatie)) %>%
   group_by(soort) %>% 
@@ -170,6 +164,58 @@ data_fuiken <-
   select(-anyN) %>% 
   left_join(soortenlijst %>% 
               select(-opmerking))
+
+```
+
+
+```{r check meerdere datums per locatie en seizoen}
+
+campagne_dupes <-
+  data_fuiken %>% 
+  select(locatie:seizoen) %>% 
+  distinct() %>% 
+  # select(-datum) %>% 
+  get_dupes(locatie, jaar, seizoen)
+
+```
+
+
+```{r samenvoegen Zandvliet en Paardenschor}
+
+data_fuiken <-
+  data_fuiken %>% 
+  mutate(locatie = 
+           if_else(locatie == "Zandvliet",
+                   "Paardenschor",
+                   locatie))
+
+```
+
+
+```{r optellen datums per locatie & campagne}
+
+dupes_voor <-
+  data_fuiken %>% 
+  select(locatie:seizoen) %>% 
+  distinct() %>% 
+  get_dupes(locatie, jaar, seizoen)
+
+groupvars <- 
+  names(data_fuiken) %>% 
+  setdiff(c("datum", "fuikdagen", "aantal", "gewicht"))
+
+data_fuiken <-
+  data_fuiken %>% 
+  select(-datum) %>% 
+  group_by(across(all_of(groupvars))) %>% 
+  summarise(across(everything(), sum)) %>% 
+  ungroup()
+
+dupes_na <-
+  data_fuiken %>% 
+  select(locatie:seizoen) %>% 
+  distinct() %>% 
+  get_dupes(locatie, jaar, seizoen)
 
 ```
 

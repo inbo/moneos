@@ -93,8 +93,6 @@ data_recent <-
                     ".xlsx"),
              sheet = "data")
 
-  
-
 (old_names <- 
   data_recent %>% 
   distinct(Gebiedcode, Gebiednaam) %>% 
@@ -125,12 +123,16 @@ names(level_key) <- old_names
 
 ```{r correcties soortnamen}
 
+rename_vector_historisch <-
+  c("chinese wolhandkrab" = "wolhandkrab")
+
 aantal_historisch <-
   aantal_historisch %>% 
-  rename(`chinese wolhandkrab` = wolhandkrab)
+  rename(!!!rename_vector_historisch)
 gewicht_historisch <-
   gewicht_historisch %>% 
-  rename(`chinese wolhandkrab` = wolhandkrab)
+  rename(!!!rename_vector_historisch)
+
 
 data_recent <- 
   data_recent %>% 
