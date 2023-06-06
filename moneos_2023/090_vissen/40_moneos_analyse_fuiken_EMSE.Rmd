@@ -726,7 +726,7 @@ relatief_aantal_laatste_jaar <-
 
 
 the_pal <- 
-  my_pal_wes[names(my_pal_wes) %in% unique(relatief_aantal$soort)]
+  my_pal_wes[names(my_pal_wes) %in% unique(relatief_aantal_laatste_jaar$soort)]
 
 relatief_aantal_laatste_jaar %>% 
   mutate(aantal = if_else(aantal == 0, NA_real_, aantal)) %>% 
@@ -788,7 +788,7 @@ relatief_gewicht_laatste_jaar <-
 
 
 the_pal <- 
-  my_pal_wes[names(my_pal_wes) %in% unique(relatief_aantal$soort)]
+  my_pal_wes[names(my_pal_wes) %in% unique(relatief_aantal_laatste_jaar$soort)]
 
 relatief_gewicht_laatste_jaar %>% 
   mutate(gewicht = if_else(gewicht == 0, NA_real_, gewicht)) %>% 
@@ -1903,12 +1903,12 @@ ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_zoet.jpg"), wid
 
 sheets_figuren[["aantallen_en_gewichten_EMSE"]] <- 
   relatieve_aantallen_EMSE %>% 
-  select(jaar, scheldezone, soort, salgroep, indeling, 
+  select(jaar, scheldezone, soort, salgroep, dieet, indeling, 
          relatief_aantal, aantal_per_fuikdag, relatief_gewicht, gewicht_per_fuikdag)
 
 sheets_figuren[["diversiteit_EMSE"]] <- 
   gemiddeld_diversiteit_EMSE %>% 
-  select(jaar, scheldezone, salgroep, indeling, 
+  select(jaar, scheldezone, salgroep, dieet, indeling, 
          N, D_sh)
 
 ```
@@ -1916,20 +1916,32 @@ sheets_figuren[["diversiteit_EMSE"]] <-
 
 #### sleutelsoorten EMSE 
 
-```{r sleutelsoorten aantal}
+```{r data sleutelsoorten}
 
-data_fuiken %>% 
+data_sleutelsoorten_EMSE <-
+  data_fuiken %>% 
   left_join(locatie_scheldezone) %>% 
-  filter(soort %in% sleutelsoorten_EMSE$soort,
-         str_detect(salgroep, "mari")) %>% 
+  filter(soort %in% sleutelsoorten_EMSE$soort) %>% 
   left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
-#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
-  group_by(jaar, soort, scheldezone) %>% 
-  summarise(aantal_per_fuikdag = mean(aantal_per_fuikdag)*mult_fuik) %>% 
+  #  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
+  group_by(jaar, soort, salgroep, scheldezone) %>% 
+  summarise(aantal_per_fuikdag = mean(aantal_per_fuikdag),
+            gewicht_per_fuikdag = mean(gewicht_per_fuikdag)) %>% 
   ungroup() %>% 
   mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
-         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
-  ggplot(aes(jaar, aantal_per_fuikdag, color = scheldezone, fill = scheldezone)) +
+         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full))
+
+sheets_figuren[["sleutelsoorten_EMSE"]] <- 
+  data_sleutelsoorten_EMSE
+
+```
+
+
+```{r sleutelsoorten aantal}
+
+data_sleutelsoorten_EMSE %>% 
+  filter(str_detect(salgroep, "mari")) %>% 
+  ggplot(aes(jaar, aantal_per_fuikdag*mult_fuik, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
            linewidth = 0.5,
            width = 0.7,
@@ -1946,18 +1958,9 @@ data_fuiken %>%
 ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marien.jpg"), width = 6, height = 8)
 
 
-data_fuiken %>% 
-  left_join(locatie_scheldezone) %>% 
-  filter(soort %in% sleutelsoorten_EMSE$soort,
-         str_detect(salgroep, "diadr")) %>% 
-  left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
-#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
-  group_by(jaar, soort, scheldezone) %>% 
-  summarise(aantal_per_fuikdag = mean(aantal_per_fuikdag)*mult_fuik) %>% 
-  ungroup() %>% 
-  mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
-         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
-  ggplot(aes(jaar, aantal_per_fuikdag, color = scheldezone, fill = scheldezone)) +
+data_sleutelsoorten_EMSE %>% 
+  filter(str_detect(salgroep, "diadr")) %>% 
+  ggplot(aes(jaar, aantal_per_fuikdag*mult_fuik, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
            linewidth = 0.5,
            width = 0.7,
@@ -1974,18 +1977,9 @@ data_fuiken %>%
 ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadroom.jpg"), width = 7, height = 7)
 
 
-data_fuiken %>% 
-  left_join(locatie_scheldezone) %>% 
-  filter(soort %in% sleutelsoorten_EMSE$soort,
-         str_detect(salgroep, "zoet")) %>% 
-  left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
-#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
-  group_by(jaar, soort, scheldezone) %>% 
-  summarise(aantal_per_fuikdag = mean(aantal_per_fuikdag)*mult_fuik) %>% 
-  ungroup() %>% 
-  mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
-         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
-  ggplot(aes(jaar, aantal_per_fuikdag, color = scheldezone, fill = scheldezone)) +
+data_sleutelsoorten_EMSE %>% 
+  filter(str_detect(salgroep, "zoet")) %>% 
+  ggplot(aes(jaar, aantal_per_fuikdag*mult_fuik, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
            linewidth = 0.5,
            width = 0.7,
@@ -2007,18 +2001,9 @@ ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.jpg"), width = 6,
 
 ```{r sleutelsoorten biomassa, eval=FALSE}
 
-data_fuiken %>% 
-  left_join(locatie_scheldezone) %>% 
-  filter(soort %in% sleutelsoorten_EMSE$soort,
-         str_detect(salgroep, "mari")) %>% 
-  left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
-#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
-  group_by(jaar, soort, scheldezone) %>% 
-  summarise(gewicht_per_fuikdag = mean(gewicht_per_fuikdag)*mult_fuik) %>% 
-  ungroup() %>% 
-  mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
-         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
-  ggplot(aes(jaar, gewicht_per_fuikdag, color = scheldezone, fill = scheldezone)) +
+data_sleutelsoorten_EMSE %>% 
+  filter(str_detect(salgroep, "mari")) %>% 
+  ggplot(aes(jaar, gewicht_per_fuikdag*mult_fuik, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
            linewidth = 0.5,
            width = 0.7,
@@ -2035,18 +2020,9 @@ data_fuiken %>%
 ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_marien.jpg"), width = 6, height = 8)
 
 
-data_fuiken %>% 
-  left_join(locatie_scheldezone) %>% 
-  filter(soort %in% sleutelsoorten_EMSE$soort,
-         str_detect(salgroep, "diadr")) %>% 
-  left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
-#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
-  group_by(jaar, soort, scheldezone) %>% 
-  summarise(gewicht_per_fuikdag = mean(gewicht_per_fuikdag)*mult_fuik) %>% 
-  ungroup() %>% 
-  mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
-         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
-  ggplot(aes(jaar, gewicht_per_fuikdag, color = scheldezone, fill = scheldezone)) +
+data_sleutelsoorten_EMSE %>% 
+  filter(str_detect(salgroep, "diadr")) %>% 
+  ggplot(aes(jaar, gewicht_per_fuikdag*mult_fuik, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
            linewidth = 0.5,
            width = 0.7,
@@ -2063,18 +2039,9 @@ data_fuiken %>%
 ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_diadroom.jpg"), width = 7, height = 7)
 
 
-data_fuiken %>% 
-  left_join(locatie_scheldezone) %>% 
-  filter(soort %in% sleutelsoorten_EMSE$soort,
-         str_detect(salgroep, "zoet")) %>% 
-  left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
-#  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
-  group_by(jaar, soort, scheldezone) %>% 
-  summarise(gewicht_per_fuikdag = mean(gewicht_per_fuikdag)*mult_fuik) %>% 
-  ungroup() %>% 
-  mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
-         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full)) %>% 
-  ggplot(aes(jaar, gewicht_per_fuikdag, color = scheldezone, fill = scheldezone)) +
+data_sleutelsoorten_EMSE %>% 
+  filter(str_detect(salgroep, "zoet")) %>% 
+  ggplot(aes(jaar, gewicht_per_fuikdag*mult_fuik, color = scheldezone, fill = scheldezone)) +
   geom_col(position = position_dodge(width = 0.9),
            linewidth = 0.5,
            width = 0.7,
@@ -2094,11 +2061,13 @@ ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_zoet.jpg"), width = 6, 
 ```
 
 
+
+
 #### aantallen en biomassa per saliniteit en dieet
 
-```{r aantallen en biomassa per saliniteit}
+```{r aantallen en biomassa per salgroep}
 
-gemiddeld_aantal_saliniteit <- 
+gemiddeld_aantal_salgroep <- 
   data_fuiken %>% 
   left_join(locatie_scheldezone) %>% 
   group_by(jaar, scheldezone, seizoen, locatie, salgroep) %>%
@@ -2113,7 +2082,7 @@ gemiddeld_aantal_saliniteit <-
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full))
 
 
-relatieve_aantallen_saliniteit <- 
+relatieve_aantallen_salgroep <- 
   data_fuiken %>% 
   left_join(locatie_scheldezone) %>% 
   filter(aantal > 0) %>% 
@@ -2146,12 +2115,12 @@ relatieve_aantallen_saliniteit <-
                           setdiff("rest") %>% 
                           c(., "rest"))) %>% 
   select(-aantal_per_fuikdag, -gewicht_per_fuikdag) %>% 
-  left_join(gemiddeld_aantal_saliniteit) %>% 
+  left_join(gemiddeld_aantal_salgroep) %>% 
   mutate(salgroep = factor(salgroep, levels = c("mariene en estuariene soorten", "diadrome soorten", "zoetwatersoorten")))
 
 
 data_split <-
-  relatieve_aantallen_saliniteit %>% 
+  relatieve_aantallen_salgroep %>% 
   group_by(salgroep) %>% 
   nest()
 
@@ -2186,7 +2155,7 @@ data_split <-
                   }))
 
 ggp_all <-
-  relatieve_aantallen_saliniteit %>% 
+  relatieve_aantallen_salgroep %>% 
   ggplot(aes(jaar, aantal_per_fuikdag*mult_fuik, fill = soort, color = soort)) +
   geom_col(width = 0.7,
            alpha = 0.9,
@@ -2218,7 +2187,7 @@ ggsave(paste0(pad_figuren, "alternatief/relatieve_aantallen_tot_aantal_salgroep.
 
 
 ggp_all <-
-  relatieve_aantallen_saliniteit %>% 
+  relatieve_aantallen_salgroep %>% 
   ggplot(aes(jaar, gewicht_per_fuikdag*mult_fuik, fill = soort, color = soort)) +
   geom_col(width = 0.7,
            alpha = 0.9,
@@ -2410,7 +2379,7 @@ ggsave(paste0(pad_figuren, "alternatief/relatieve_biomassa_tot_biomassa_dieet.jp
 
 #### diversiteit per saliniteit en dieet
 
-```{r diversiteit per saliniteit}
+```{r diversiteit per salgroep}
 
 gemiddeld_diversiteit_salgroep <- 
   data_fuiken %>% 
@@ -2505,6 +2474,32 @@ gemiddeld_diversiteit_dieet %>%
 ggsave(paste0(pad_figuren, "alternatief/diversiteit_S_D_dieet.jpg"), width = 7, height = 6)
 
 ```
+
+
+```{r tabellen per saliniteit en dieet}
+
+sheets_figuren[["aantallen_en_gewichten_salgroep"]] <- 
+  relatieve_aantallen_salgroep %>% 
+  select(jaar, scheldezone, soort, salgroep, 
+         relatief_aantal, aantal_per_fuikdag, relatief_gewicht, gewicht_per_fuikdag)
+
+sheets_figuren[["aantallen_en_gewichten_dieet"]] <- 
+  relatieve_aantallen_dieet %>% 
+  select(jaar, scheldezone, soort, dieet, 
+         relatief_aantal, aantal_per_fuikdag, relatief_gewicht, gewicht_per_fuikdag)
+
+sheets_figuren[["diversieit_salgroep"]] <- 
+  gemiddeld_diversiteit_salgroep %>% 
+  select(jaar, scheldezone, salgroep, 
+         N, D_sh)
+
+sheets_figuren[["diversieit_dieet"]] <- 
+  gemiddeld_diversiteit_dieet %>% 
+  select(jaar, scheldezone, dieet, 
+         N, D_sh)
+
+```
+
 
 #### wegschrijven tabellen en metadata
 

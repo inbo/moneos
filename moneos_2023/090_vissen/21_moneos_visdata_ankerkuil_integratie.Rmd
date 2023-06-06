@@ -309,10 +309,10 @@ data_per_datum <-
          soort = str_to_lower(soort)) %>% 
   group_by(locatiecode, locatie, datum, jaar, maand, seizoen, getijde, uren, volume, soort) %>% 
   summarise(n = n(),
-            aantal = sum(aantal, na.rm = FALSE),
             gewicht = sum(if_else(is.na(gewicht_ind), 
-                                  gewicht_tot, gewicht_ind),
+                                  gewicht_tot, gewicht_ind*aantal),
                           na.rm = FALSE),
+            aantal = sum(aantal, na.rm = FALSE),
             across(c(temperatuur, zuurstof,	zuurstof_perc, ph,	turbiditeit, conductiviteit), 
                    ~mean(., na.rm = TRUE)),
             .groups = "drop")

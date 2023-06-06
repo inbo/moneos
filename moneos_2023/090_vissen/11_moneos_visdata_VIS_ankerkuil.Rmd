@@ -167,11 +167,11 @@ tbl_data <-
          Gebiedcode %in% locatie_nrs,
          Methodenaam %in% vangstmethode)
 
-gebied_codes <-
+(gebied_codes <-
   tbl_data %>% 
   distinct(Gebiedcode) %>% 
   collect() %>% 
-  pull()
+  pull())
 
 waarneming_IDs <- 
   tbl_data %>% 
@@ -232,6 +232,15 @@ rm(list = ls()[-which(ls() %in% c("data", "campagnes", "params", "run_pad", "run
 
 run_pad()
 run_variabelen()
+
+```
+
+
+```{r controle dubbel gewicht in ruwe data}
+
+dubbel_gewicht <-
+  data %>% 
+  filter(!is.na(TAXONGEW) & !is.na(TAXONTOTGEW))
 
 ```
 

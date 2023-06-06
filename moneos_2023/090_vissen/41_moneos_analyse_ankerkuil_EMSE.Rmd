@@ -111,7 +111,7 @@ soortenlijst <-
 #              delim = ";")
 
 ankerkuil_aantal <- 
-  read_xlsx(str_c(pad_data, "ankerkuil_VLIZ_2012_2021.xlsx"),
+  read_xlsx(str_c(pad_data, "ankerkuil_Zeeschelde_VLIZ_2012_2021.xlsx"),
             sheet = "campagnes") %>% 
   select(ID_afvissing, locatie, datum, jaar, seizoen, getijde, volume) %>% 
   left_join(read_xlsx(str_c(pad_data, "ankerkuil_VLIZ_2012_2021.xlsx"),
