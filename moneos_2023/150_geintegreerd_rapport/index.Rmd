@@ -15,15 +15,13 @@ author:
     orcid: ""
     affiliation: ""
     email: joost.vanoverbeke@inbo.be
-shortauthor: 
-  - Van Ryckegem, G., Vanoverbeke, J., Van de Meutter, F., Vandevoorde, B., Mertens, W., Mertens, A., Van Braeckel, A., Smeekens, V., Thibau, K., Bezdenjesnji, O., Buerms, D., De Regge, N., Hessel, K., Lefranc, C., Soors, J., Van Lierop, F.
-reviewer: 
+reviewer:
   - name:
-      given: ""
-      family: ""
-    orcid: ""
-    affiliation: ""
-# year: "`r Sys.getenv('jaar_moneos')`"
+      given: Floris
+      family: Vanderhaeghe
+    email: floris.vanderhaeghe@inbo.be
+    affiliation: Research Institute for Nature and Forest (INBO)
+    orcid: 0000-0002-6378-6229
 year: 2022
 github-repo: inbo/moneos
 funder: Research Institute for Nature and Forest (INBO) 
@@ -31,7 +29,7 @@ rightsholder: Research Institute for Nature and Forest (INBO)
 community: inbo
 keywords: ""
 publication_type: report
-cover_photo: "
+cover_photo: ""
 cover_description: ""
 # cover: media/cover.pdf # link naar pdf met cover
 doi: 10.5281/zenodo.842223
@@ -67,6 +65,7 @@ opts_chunk$set(
 # library(ggplot2)
 library(tidyverse)
 library(INBOtheme)
+library(kableExtra)
 if (interactive()) {
   theme_set(
     theme_inbo(
@@ -103,4 +102,3 @@ set.seed(20190117)
 
 # Dankwoord {-}
 
-`r paragraph(n = 5)`
