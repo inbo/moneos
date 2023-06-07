@@ -1,0 +1,340 @@
+```{r 093-hoofdstuk, include=FALSE}
+
+hoofdstuk <- "090_vissen"
+
+```
+
+```{r 093-setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.pos = "H")
+knitr::opts_knit$set(eval.after = "fig.cap")
+
+```
+
+```{r 093-libraries}
+
+library(tidyverse)
+library(readxl)
+library(kableExtra)
+library(rprojroot) ## workaround pad
+
+```
+
+```{r 093-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+
+```
+
+```{r 093-table_from_figure-function}
+figtab <- 
+  function(label, image_file, caption=NULL) {
+    txt <- sprintf('\\begin{table}[H]\n\\caption{%s}\n\\label{tab:%s}\n\\includegraphics{%s}\n\\end{table}', 
+                   caption, 
+                   label, 
+                   image_file)
+    magick::image_read(image_file) %>% magick::image_ggplot() %>% print()
+    writeLines(txt)
+  }
+```
+
+```{r 093-meta-data}
+
+meta_data <- 
+  read_delim(paste0(pad_data, "vissen_meta_data.csv"),
+             delim = ";")
+  
+for(i in 1:nrow(meta_data)){
+  ##first extract the object value
+  tempobj=meta_data$waarde[i]
+  ##now create a new variable with the original name of the list item
+  eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+}
+
+```
+
+## Algemene conclusie
+
+In deze rapportage werd de EMSE evaluatiemethodiek voor vissen van de Zeeschelde toegepast op de ankerkuildata.
+Daartoe moesten de EMSE soortenlijsten en categorieën aangevuld en aangepast worden.
+
+Het aantal vissoorten dat jaarlijks met de ankerkuil gevangen wordt in de Zeeschelde vertoont weinig trends sinds 2012 en schommelt rond 40.
+In 2021 werden 42 soorten gevangen.
+Het gemiddeld aantal soorten per vangst nam af van brak naar zoet.
+
+In de zomer en het najaar van 2021 was spiering de dominante soort in alle saliniteitszones zowel in aantallen als in biomassa.
+In het voorjaar was haring meest abundant in Doel en Antwerpen en brakwatergrondel in Branst.
+Door de sterke dominantie van enkele soorten blijft de diversiteit van de visgemeenschap in de Zeeschelde laag in alle zones.
+
+Ingedeeld naar estuariene gebruik gilde is spiering de dominante diadrome vissoort in de Zeeschelde en brakwatergrondel de meest abundante estuariene soort.
+Haring, sprot en zeebaars zijn de belangrijkste mariene migranten die komen opgroeien in het estuarium en snoekbaars is de meest algemene zoetwatersoort.
+Recrutering van de verschillende estuariene gebruik groepen wordt met de EMSE methodiek niet geëvalueerd.
+
+Naar dieet ingedeeld zijn haring en sprot de belangrijkste planktivoren, voornamelijk in de zone met sterke saliniteit gradiënt.
+Brakwatergrondel en dikkopje zijn de voornaamste benthivoren, vooral te vinden in Branst en Steendorp.
+Omnivoren, met de spiering, overheersen de visgemeenschap vooral in de oligohaliene en zoete zone.
+Het aantal piscivore individuen en soorten is zeer beperkt, baars is de meest voorkomende.
+
+Brakwatergrondel, dikkopje en zeebaars, marien-estuariene sleutelsoorten, werden relatief weinig gevangen in 2021.
+De aantallen haringen zijn relatief stabiel.
+
+Spieringen en finten zijn pelagiale diadrome sleutelsoorten.
+Het aantal spieringen is weer licht toegenomen, het aantal finten was eerder laag in 2021.
+Variatie in de aantallen kan zowel door paaitrek als recruteringssucces veroorzaakt zijn.
+
+Bot en paling zijn eerder benthische diadrome sleutelsoorten.
+Het aantal gevangen individuen van bot was hoog in 2021, voor paling was dit vergelijkbaar aan vorige jaren.
+Deze soorten kunnen beter geëvalueerd worden op basis van fuikgegeven.
+
+Blankvoorn, brasem en snoekbaars, de belangrijkste zoetwater sleutelsoorten werden in 2021 meer gevangen dan in 2020.
+
+## Referenties
+
+Able K.
+(2005).
+A re-examination of fish estuarine dependence: Evidence for connectivity between estuarine and ocean habitats.
+Estuarine, Coastal and Shelf Science.
+64 (1): 5-17.
+
+Aprahamian M.W., Aprahamian C.D., Baglinière J.L., Sabatié R.
+& Alexandrino P. (2003).
+*Alosa alosa* and *Alosa fallax spp*.
+Literature Review and Bibliography.
+R&D TECHNICAL REPORT W1-014/TR.
+374pp.
+
+Baldoa F.
+& Drake P. (2002).
+A multivariate approach to the feeding habits of small fishes in the Guadalquivir Estuary.
+Journal of Fish Biology.
+61: 21-32.
+
+Breine J.
+& Van Thuyne G.
+(2012).
+Opvolging van het visbestand van de Zeeschelde: resultaten voor 2011 (INBO.R.2012.24), 47pp.
+
+Breine J., De Bruyn A., Galle L., Lambeens I., Maes Y.
+& Van Thuyne G.
+(2018).
+Monitoring van de visgemeenschap in het Zeeschelde-estuarium: Ankerkuilcampagnes 2017.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek 2018 (3).
+66pp.
+
+Breine J., De Bruyn A., Galle L., Lambeens I., Maes Y., Terrie T., & Van Thuyne G.
+(2021).
+Monitoring van de visgemeenschap in het Zeeschelde-estuarium.
+Ankerkuilcampagnes 2020.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek.
+Instituut voor Natuur- en Bosonderzoek.
+<https://doi.org/10.21436/inbor.29272200>
+
+Breine, J., Lambeens, I., Maes, Y., De Bruyn, A.
+& Galle L.
+(2017a).
+First record of the fourfinger threadfin, *Eleutheronema tetradactylum* (Shaw, 1804) in Belgium.
+Estuarine, Coastal and Shelf Science.
+187: 28-30.
+
+Breine, J.J., Maes, J., Quataert, P., Van den Bergh, E., Simoens, I., Van Thuyne, G.
+& C.
+Belpaire (2007).
+A fish-based assessment tool for the ecological quality of the brackish Schelde estuary in Flanders (Belgium).
+Hydrobiologia, 575: 141-159.
+
+Breine, J., Quataert, P., Stevens, M., Ollevier, F., Volckaert, F.A.M., Van den Bergh, E.
+& J.
+Maes (2010).
+A zone-specific fish-based biotic index as a management tool for the Zeeschelde estuary (Belgium).
+Marine Pollution Bulletin, 60: 1099-1112.
+
+Breine J., Van den Bergh E., Terrie T., Lambeens I., Maes Y., Galle L.& Verreycken H.
+(2019).
+First record of the target fish, *Terapon jarbua* (Forsskål, 1775) in the Zeeschelde, Belgium.
+Estuarine, Coastal and Shelf Science, 222: 151-153.
+
+Brevé N.W.P. (2007).
+Kennisdocument Atlantische haring, *Clupea harengus harengus* (Linnaeus, 1758).
+Kennisdocument 18, Sportvisserij Nederland.
+108pp.
+
+Brosens D., Breine J., Van Thuyne G., Belpaire C., Desmet P. & Verreycken H.
+(2015) VIS - A database on the distribution of fishes in inland and estuarine waters in Flanders, Belgium.
+ZooKeys 475: 119-145.
+doi: 10.3897/zookeys.475.8556
+
+CTGREF, 1979.
+Etude halieutique de l'estuaire de la Gironde.
+Bordeaux (Rapport Centre Tech. du Génie rural des Eaux et Forêts): 214pp.
+
+Elliott M.
+& Hemingway K.L.
+(2002).
+In: Elliott, M.
+& Hemingway K.L.
+(Editors).
+Fishes in estuaries.
+Blackwell Science, London.
+577-579.
+
+EMSE (2021).
+Evaluatiemethodiek Schelde-estuarium: Update 2021.
+Antea, Bureau Waardenburg, Deltares, UAntwerpen, UGent, INBO en NIOZ.
+
+EU Water Framework Directive (2000).
+Directive of the European parliament and of the council 2000/60/EC establishing a framework for community action in the field of water policy.
+Official Journal of the European Communities 22.12.2000 L 327/1.
+
+Freyhof J.
+(2013).
+*Osmerus eperlanus*.
+The IUCN Red List of Threatened Species 2013: e.T15631A4924600.
+<http://dx.doi.org/10.2305/IUCN.UK.2008.RLTS.T15631A4924600.en>
+
+Goudswaard P.C.
+& Breine J.
+(2011).
+Kuilen en schieten in het Schelde-estuarium.
+Vergelijkend vissen op de Zeeschelde in België en Westerschelde in Nederland.
+Rapport C139/11, IMARES & INBO, 35pp.
+
+Maes J., Ercken D., Geysen B.
+& Ollevier F.
+(2003a).
+Opvolging van het visbestand van de Zeeschelde.
+Resultaten voor 2002.
+Studierapport in opdracht van AMINAL, Afdeling Bos en Groen, 28pp.
+
+Maes J., Stevens M.
+& Breine J.
+(2007).
+Modelling the migration opportunities of diadromous fish species along a gradient of dissolved oxygen concentration in a European tidal watershed.
+Estuarine, Coastal and Shelf Science.
+75: 151-162.
+
+Maes J., Stevens M.
+& Breine J.
+(2008).
+Poor water quality constrains the distribution and movements of twaite shad *Alosa fallax fallax* (Lacépède, 1803) in the watershed of river Scheldt.
+Hydrobiologia.
+602: 129-143.
+
+Maris T., Geerts L., & Meire P. (2011).
+Basiswaterkwaliteit In Maris T.
+& P.
+Meire (Eds) Onderzoek naar de gevolgen van het Sigmaplan, baggeractiviteiten en havenuitbreiding in de Zeeschelde op het milieu.
+Geïntegreerd eindverslag van het onderzoek verricht in 2009-2010.
+011-143 Universiteit Antwerpen, 169pp.
+
+Nijssen, H.
+& de Groot S.J.
+(1987).
+De vissen van Nederland.
+Stichting Uitgeverij Koninklijke Nederlandse Natuurhistorische Vereniging, Pirola, Schoorl.
+ISBN 90-5011-006-1.
+
+Picket, G.D.
+& Pawson M.G.(1994) Sea Bass; Biology, exploitation and conservation.
+St. Edmundsbury Press, Suffolk (Great Britain).
+ISBN 0 412 40090 1.
+
+Quigley D.T.G., Igoe F.
+& O'Connor W.
+(2004).
+The European smelt *Osmerus eperlanus* L.
+in Ireland: general biology, ecology, distribution and status with conservation recommendations.
+Biology and Environment: Proceedings of the Royal Irish Academy.
+104B (3): 57-66.
+
+Rochard, E.
+& Elie P. (1994).
+La macrofaune aquatique de l'estuaire de la Gironde.
+Contribution au livre blanc de l'Agence de l'Eau Adour Garonne.
+1-56.
+In J.-L. Mauvais and J.-F.
+Guillaud (eds.) État des connaissances sur l'estuaire de la Gironde.
+Agence de l'Eau Adour-Garonne, Éditions Bergeret, Bordeaux, France.
+115pp.
+
+Schmidt-Luchs C.W.
+(1977).
+Visplatenalbum deel 1; Zeevissen.
+Uitgeverij Beet, Utrecht.
+ISBN 90-70206-01-3.
+
+Stevens M., Van den Neucker T., Mouton A., Buysse D., Martens S., Baeyens R., Jacobs Y., Gelaude E.
+& Coeck J.
+(2009).
+Onderzoek naar de trekvissoorten in het stroomgebied van de Schelde.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek 2009 (INBO.R.2009.9), 188pp.
+
+Van Der Meulen D., Walsh C., Taylor M.
+& Gray C.
+(2013).
+Habitat requirements and spawning strategy of an estuarine-dependent fish, Percalates colonorum.
+Marine and Freshwater Research.
+65 (3): 218-227.
+
+Van Ryckegem G., Van Braeckel A., Elsen R., Vanoverbeke J., Van de Meutter F., Vandevoorde B., Mertens W., Breine J., Speybroeck J., Bezdenjesnji O., Buerms D., De Beukelaer J., De Regge N., Hessel K., Soors J.
+& Van Lierop F.
+(2020).
+MONEOS -- Datarapport INBO: toestand Zeeschelde 2018-2019.
+Monitoringsoverzicht en 1ste lijnsrapport Geomorfologie, diversiteit Habitats en diversiteit Soorten.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek 2020 (38).
+Instituut voor Natuur- en Bosonderzoek, Brussel.
+DOI: doi.org/10.21436/inbor.18656743
+
+Verreycken H., Galle L., Lambeens I., Maes Y., Terrie T., Van den Berrgh E.
+& Breine J.
+(2019).
+First record of the naked goby, *Gobiosoma bosc* (Actinopergygii: Perciformes: Gobidae), from the Zeeschelde, Belgium.
+Acta Ichthyologica Piscatoria, 49(3): 291-294.
+
+\newpage
+
+## Bijlage
+
+```{r 093-tabel-zeeschelde-soorten}
+
+soortenlijst <- 
+  read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"), 
+            sheet = "EMSE") %>% 
+  select(-inEMSE, -exoot, -opmerking) %>% 
+  rename(`Nederlandse naam` = soort, `Wetensch. naam` = wetensch_naam,
+         Saliniteitsgroep = salgroep, Dieet = dieet, 
+         Fuiken = fuiken, Ankerkuil = ankerkuil)
+
+sleutelsoorten_EMSE <-
+  read_xlsx(str_c(pad_data, "sleutelsoorten EMSE.xlsx"))
+
+cap_soortenlijst <-
+  paste0("Overzicht van alle waargenomen vissoorten tijdens de ankerkuilcampagnes en fuikvangsten in de Zeeschelde in de periode 2009-",
+         laatste_jaar,
+         ". Soorten in vet en cursief geven de sleutelsoorten weer uit de EMSE evaluatie.")
+
+soortenlijst %>% 
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
+  mutate(across(c(-`Nederlandse naam`), ~cell_spec(., color = "black"))) %>%
+  # mutate(across(everything(), ~cell_spec(., , bold = TRUE, italic = TRUE, color = "black", background = "lightgreen"))) %>%
+  mutate(`Nederlandse naam` =
+           if_else(`Nederlandse naam` %in% sleutelsoorten_EMSE$soort,
+                   cell_spec(`Nederlandse naam`, bold = TRUE, italic = TRUE, color = "black"),
+                   cell_spec(`Nederlandse naam`, color = "black"))) %>%
+  knitr::kable(escape = FALSE,
+               booktabs = TRUE,
+               longtable = TRUE,
+               caption = cap_soortenlijst,
+               align = c(rep("l", 4), rep("c", 2))) %>%
+  kable_styling(latex_options = c("striped", "scale_down", "repeat_header"),
+                font_size = 9)
+
+```

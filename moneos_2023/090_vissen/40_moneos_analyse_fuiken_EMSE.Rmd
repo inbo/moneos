@@ -557,31 +557,6 @@ sheets_figuren[["aantal_soorten_totaal"]] <-
 ```
 
 
-#### overzicht gevangen soorten
-
-```{r overzicht-gevangen-soorten}
-
-tabel_gevangen_soorten <-
-  data_fuiken %>% 
-  filter(jaar == laatste_jaar,
-         aantal > 0) %>% 
-  mutate(seizoen_locatie = factor(paste(seizoen, locatie, sep = "_"),
-                                  levels = levels_seizoen_locatie)) %>%
-  select(seizoen_locatie, soort) %>% 
-  mutate(aanwezig = "x") %>% 
-  pivot_wider(id_cols = soort,
-              names_from = seizoen_locatie, 
-              values_from = aanwezig,
-              values_fill = "") %>% 
-  select(soort, all_of(levels_seizoen_locatie[str_detect(levels_seizoen_locatie, "Zandvliet", negate = TRUE)]))
-
-knitr::kable(tabel_gevangen_soorten)
-
-sheets[["gevangen_soorten"]] <- tabel_gevangen_soorten
-  
-```
-
-
 ```{r overzicht-aantal-soorten}
 
 tabel_aantal_soorten <-
@@ -619,6 +594,72 @@ sheets[["aantal_soorten"]] <- tabel_aantal_soorten
   
 ```
 
+
+#### overzicht gevangen soorten
+
+```{r overzicht-gevangen-soorten}
+
+tabel_gevangen_soorten <-
+  data_fuiken %>% 
+  filter(jaar == laatste_jaar,
+         aantal > 0) %>% 
+  mutate(seizoen_locatie = factor(paste(seizoen, locatie, sep = "_"),
+                                  levels = levels_seizoen_locatie)) %>%
+  select(seizoen_locatie, soort) %>% 
+  mutate(aanwezig = "x") %>% 
+  pivot_wider(id_cols = soort,
+              names_from = seizoen_locatie, 
+              values_from = aanwezig,
+              values_fill = "") %>% 
+  select(soort, all_of(levels_seizoen_locatie[str_detect(levels_seizoen_locatie, "Zandvliet", negate = TRUE)]))
+
+knitr::kable(tabel_gevangen_soorten)
+
+sheets[["gevangen_soorten"]] <- tabel_gevangen_soorten
+  
+```
+
+#### nieuwe soorten 
+
+```{r nieuwe soorten}
+
+(soorten_historisch <-
+  data_fuiken %>% 
+  filter(jaar != laatste_jaar,
+         aantal > 0) %>% 
+  distinct(soort) %>% 
+  pull() %>% 
+  sort())
+
+(soorten_recent <-
+  data_fuiken %>% 
+  filter(jaar == laatste_jaar,
+         aantal > 0) %>% 
+  distinct(soort) %>% 
+  pull() %>% 
+  sort())
+
+(soorten_nieuw <-
+    setdiff(soorten_recent, soorten_historisch))
+
+data_soorten_nieuw <-
+  data_fuiken %>% 
+  left_join(locatie_scheldezone) %>% 
+  filter(jaar == laatste_jaar,
+         aantal > 0,
+         soort %in% soorten_nieuw)
+
+data_soorten_nieuw %>% 
+  ggplot(aes(seizoen, aantal)) +
+  geom_col(aes(fill = soort)) +
+  facet_wrap(~locatie)
+
+sheets[["nieuwe_soorten"]] <- 
+  data_soorten_nieuw %>% 
+  select(locatie, OMES, EMSE_niveau3, jaar, seizoen, soort, wetensch_naam, salgroep, dieet, 
+         fuikdagen, aantal, gewicht, aantal_per_fuikdag, gewicht_per_fuikdag)
+
+```
 
 #### relatief aantal gevangen individuen
 
@@ -2183,7 +2224,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 14, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 14, height = 8, bg = "white")
 
 
 ggp_all <-
@@ -2215,7 +2256,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 14, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 14, height = 8, bg = "white")
 
 ```
 
@@ -2340,7 +2381,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "alternatief/relatieve_aantallen_tot_aantal_dieet.jpg"), width = 14, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_dieet.jpg"), width = 14, height = 8, bg = "white")
 
 
 ggp_all <-
@@ -2372,7 +2413,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "alternatief/relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 14, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 14, height = 8, bg = "white")
 
 ```
 
@@ -2422,7 +2463,7 @@ gemiddeld_diversiteit_salgroep %>%
   theme(axis.text = element_text(size = 8),
         axis.text.x = element_text(angle = 90, vjust = 0.5))
 
-ggsave(paste0(pad_figuren, "alternatief/diversiteit_S_D_salgroep.jpg"), width = 10, height = 7)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_salgroep.jpg"), width = 10, height = 7)
 
 ```
 
@@ -2471,7 +2512,7 @@ gemiddeld_diversiteit_dieet %>%
   theme(axis.text = element_text(size = 8),
         axis.text.x = element_text(angle = 90, vjust = 0.5))
 
-ggsave(paste0(pad_figuren, "alternatief/diversiteit_S_D_dieet.jpg"), width = 7, height = 6)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_dieet.jpg"), width = 7, height = 6)
 
 ```
 
@@ -2535,7 +2576,7 @@ meta_data <-
           name = "naam", value = "waarde")
 
 meta_data %>% 
-  write_delim(paste0(pad_data, "vissen_meta_data.csv"),
+  write_delim(paste0(pad_data, "fuiken_meta_data.csv"),
               delim = ";")
 
 ```

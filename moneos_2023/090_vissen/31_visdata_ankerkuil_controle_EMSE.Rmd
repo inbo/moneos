@@ -48,6 +48,23 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ```{r data}
 
+filename <- 
+  list.files(path = pad_data,
+             pattern = "fuikdata_Zeeschelde_VLIZ")
+
+fuiken_aantal <- 
+  read_xlsx(str_c(pad_data, filename),
+            sheet = "campagnes") %>% 
+  select(ID_afvissing, locatie, datum, jaar, maand, fuikdagen) %>% 
+  left_join(read_xlsx(str_c(pad_data, filename),
+                      sheet = "locaties") %>% 
+              select(locatie, OMES, EMSE_niveau3)) %>% 
+  left_join(read_xlsx(str_c(pad_data, filename),
+                      sheet = "aantallen")) %>% 
+  select(-ID_afvissing) %>% 
+  select(locatie, OMES, EMSE_niveau3, datum, jaar, maand, everything())
+
+
 ankerkuil_aantal_historisch <- 
   read_delim(str_c(pad_data, "ankerkuil_aantallen_2012_2021.csv"), delim = ";")
 

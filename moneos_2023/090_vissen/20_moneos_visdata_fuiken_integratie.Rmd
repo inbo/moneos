@@ -261,7 +261,7 @@ gewicht_NA <-
   left_join(datum_soort) %>% 
   left_join(regressie_lengte) %>% 
   replace_na(list(aantal = 0, gewicht = 0)) %>% 
-  mutate(prop_aantal = TAXONAANTAL/(TAXONAANTAL + aantal),
+  mutate(prop_aantal = TAXONAANTAL/aantal,
          gewicht_imputed = 
            case_when(
              TAXONAANTAL > 1 ~ gewicht*prop_aantal,

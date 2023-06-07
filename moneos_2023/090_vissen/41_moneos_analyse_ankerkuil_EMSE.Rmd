@@ -2267,7 +2267,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.2,0.05,0.5))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 12, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 12, height = 7, bg = "white")
 
 
 ggp_all <-
@@ -2296,7 +2296,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.2,0.05,0.5))
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 12, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 12, height = 7, bg = "white")
 
 ```
 
@@ -2419,7 +2419,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.2,0.05,0.5))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_dieet.jpg"), width = 10, height = 6, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_dieet.jpg"), width = 10, height = 6, bg = "white")
 
 
 ggp_all <-
@@ -2448,7 +2448,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.2,0.05,0.5))
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 10, height = 6, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 10, height = 6, bg = "white")
 
 ```
 
@@ -2496,7 +2496,7 @@ gemiddeld_diversiteit_salgroep %>%
   labs(y = "S -- D") +
   facet_grid(salgroep ~ scheldezone, scales = "free_y")
 
-ggsave(paste0(pad_figuren, "diversiteit_S_D_salgroep.jpg"), width = 10, height = 7)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_salgroep.jpg"), width = 10, height = 7)
 
 ```
 
@@ -2543,7 +2543,7 @@ gemiddeld_diversiteit_dieet %>%
   labs(y = "S -- D") +
   facet_grid(dieet ~ scheldezone, scales = "free_y")
 
-ggsave(paste0(pad_figuren, "diversiteit_S_D_dieet.jpg"), width = 7, height = 6)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_dieet.jpg"), width = 7, height = 6)
 
 ```
 
@@ -2578,7 +2578,7 @@ meta_data <-
           name = "naam", value = "waarde")
 
 meta_data %>% 
-  write_delim(paste0(pad_data, "vissen_meta_data.csv"),
+  write_delim(paste0(pad_data, "ankerkuil_meta_data.csv"),
               delim = ";")
 
 ```
