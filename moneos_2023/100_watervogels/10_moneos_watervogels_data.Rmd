@@ -50,7 +50,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 ```{r benodigde-seizoenen}
 
 vroegste_seizoen <- "1991/1992"
-laatste_seizoen <- "2021/2022"
+laatste_seizoen <- "2022/2023"
 
 seizoenen <-
   (vroegste_seizoen %>% str_sub(0, 4) %>% as.numeric):(laatste_seizoen %>% str_sub(0, 4) %>% as.numeric) %>% 
@@ -65,7 +65,7 @@ seizoenen_query <-
 
 ```{r gebiedsgroepen en gebiedsindeling T2021}
 gebiedsgroepenall <- 
-  read_delim(paste0(pad_data, "Zeeschelde_gebiedsgroepen.csv"),
+  read_delim(paste0(pad_data, "Zeeschelde_gebiedsgroepen_corrWM.csv"),
              delim = ";") %>% 
    mutate(gebiedscode = as.character(gebiedscode))
 
@@ -96,7 +96,7 @@ knitr::kable(gebiedsindeling_T2021)
 
 gebiedsindeling <- 
   gebiedsgroepenall %>% 
-  left_join(gebiedsindeling_T2021, na.rm = TRUE) %>% 
+  dplyr::left_join(gebiedsindeling_T2021) %>% 
    mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme", "Zoet zijrivier")))   
   # filter(gebiedsgroeptype_code != "SALZS") %>% 
   # filter(gebiedsgroeptype_code != "OMES") %>% 
@@ -110,7 +110,7 @@ gebiedsindeling %>%
 
 
 gebiedsgroepen <- 
-  read_delim(paste0(pad_data, "Zeeschelde_gebiedsgroepen.csv"),
+  read_delim(paste0(pad_data, "Zeeschelde_gebiedsgroepen_corrWM.csv"),
              delim = ";") %>% 
   filter(gebiedsgroeptype_code == "KRWZS") %>% 
   mutate(gebiedscode = as.character(gebiedscode))
@@ -751,7 +751,7 @@ knitr::kable(aantaltellingen)
 
 # volledigheid wintertelseizoen
 overzicht_tellingen %>% 
-  filter (telseizoen == "2021/22") %>% 
+  filter (telseizoen == "2022/23") %>% 
   filter(month(teldatum) %in% c(10, 11, 12, 1, 2, 3)) %>% 
   group_by(gebiedscode, gebied, gebiedsgroep_code) %>% 
   count(telseizoen, sort= TRUE) %>% 
@@ -780,8 +780,8 @@ overzicht_tellingen %>%
 #   arrange(teldatum)
 
 overzicht_tellingen %>%
-   filter (telseizoen == "2021/22") %>% 
-  filter (gebiedscode == "3153801") %>% 
+   filter (telseizoen == "2022/23") %>% 
+  filter (gebiedscode == "2091610") %>% 
   select(gebiedscode, gebied, teldatum) %>% #kijk alleen naar teldatum want telling en tellingsortorder kloppen niet in databank
   arrange(teldatum)
 
