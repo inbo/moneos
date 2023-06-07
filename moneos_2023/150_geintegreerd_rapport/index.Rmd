@@ -7,22 +7,23 @@ author:
       family: Van Ryckegem
     email: gunther.vanryckegem@inbo.be 
     orcid: ""
-    affiliation: ""
+    affiliation: Research Institute for Nature and Forest (INBO)
     corresponding: true
   - name: 
       given: Joost
       family: Vanoverbeke
     orcid: ""
-    affiliation: ""
+    affiliation: Research Institute for Nature and Forest (INBO)
     email: joost.vanoverbeke@inbo.be
+# andere auteurs nog verder aan te vullen bij finalisatie
 reviewer:
   - name:
-      given: Floris
-      family: Vanderhaeghe
-    email: floris.vanderhaeghe@inbo.be
+      given: Erika
+      family: Van den Bergh
+    email: erika.vandenbergh@inbo.be
     affiliation: Research Institute for Nature and Forest (INBO)
-    orcid: 0000-0002-6378-6229
-year: 2022
+    orcid: ""
+year: "`r Sys.getenv('jaar_moneos')`"
 github-repo: inbo/moneos
 funder: Research Institute for Nature and Forest (INBO) 
 rightsholder: Research Institute for Nature and Forest (INBO)
@@ -60,12 +61,8 @@ opts_chunk$set(
   echo = TRUE, eval = TRUE, cache = FALSE, fig.width = 150 / 25.4,
   fig.height = 100 / 25.4, warning = TRUE, error = TRUE, message = TRUE
 )
-# library(lipsum)
-# library(DT)
-# library(ggplot2)
 library(tidyverse)
 library(INBOtheme)
-library(kableExtra)
 if (interactive()) {
   theme_set(
     theme_inbo(
@@ -97,8 +94,5 @@ if (interactive()) {
     }
   )
 }
-set.seed(20190117)
+
 ```
-
-# Dankwoord {-}
-
