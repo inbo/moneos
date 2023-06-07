@@ -145,6 +145,16 @@ data_recent <-
 ```
 
 
+```{r correctie gewicht met verdunningsfactor}
+
+data_recent <-
+  data_recent %>% 
+  mutate(TAXONGEW = TAXONGEW*METI_DILUTION_FACTOR,
+         TAXONTOTGEW = TAXONTOTGEW*METI_DILUTION_FACTOR)
+  
+```
+
+
 ```{r controle dubbel gewicht in ruwe data}
 
 dubbel_gewicht <-
@@ -154,57 +164,29 @@ dubbel_gewicht <-
 ```
 
 
-```{r controle individu en TAXONTOTGEW in ruwe data}
-
-individu_TAXONTOTGEW <-
-  data_recent %>% 
-  filter(TAXONAANTAL == 1 &
-           TAXONTOTGEW > 0) %>% 
-  select("MetingPivotKey", "WaarnemingKey", "WaarnemingID", "GebiedKey", "Gebiedcode", 
-         "LambertX", "LambertY", "Gebiednaam", 
-         "Begindatum", "Month", "Year", "MethodeKey", "Methodenaam", "Methodegroepcode", 
-         "uren", "volume", 
-         "TaxonKey", "Soort", 
-         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
-
-individuen_TAXONGEW <-
-  data_recent %>% 
-  filter(TAXONAANTAL > 1 &
-           TAXONGEW > 0) %>% 
-  select("MetingPivotKey", "WaarnemingKey", "WaarnemingID", "GebiedKey", "Gebiedcode", 
-         "LambertX", "LambertY", "Gebiednaam", 
-         "Begindatum", "Month", "Year", "MethodeKey", "Methodenaam", "Methodegroepcode", 
-         "uren", "volume", 
-         "TaxonKey", "Soort", 
-         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
-
-```
-
-
 ```{r controle uniek aantal of gewicht in ruwe data}
-
 
 aantal_NA_of_0_ruw <-
   data_recent %>% 
   filter(is.na(TAXONAANTAL) |
            near(TAXONAANTAL, 0)) %>% 
-  select("MetingPivotKey", "WaarnemingKey", "WaarnemingID", "GebiedKey", "Gebiedcode", 
+  select("MetingPivotKey", "WaarnemingKey", "MetingID", "WaarnemingID", "GebiedKey", "Gebiedcode", 
          "LambertX", "LambertY", "Gebiednaam", 
          "Begindatum", "Month", "Year", "MethodeKey", "Methodenaam", "Methodegroepcode", 
          "uren", "volume", 
          "TaxonKey", "Soort", 
-         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
+         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN", "METI_DILUTION_FACTOR")
 
 gewicht_NA_of_0_ruw <-
   data_recent %>% 
   filter(if_all(c(TAXONGEW, TAXONTOTGEW), ~is.na(.)) |
            if_all(c(TAXONGEW, TAXONTOTGEW), ~near(., 0))) %>% 
-  select("MetingPivotKey", "WaarnemingKey", "WaarnemingID", "GebiedKey", "Gebiedcode", 
+  select("MetingPivotKey", "WaarnemingKey", "MetingID", "WaarnemingID", "GebiedKey", "Gebiedcode", 
          "LambertX", "LambertY", "Gebiednaam", 
          "Begindatum", "Month", "Year", "MethodeKey", "Methodenaam", "Methodegroepcode", 
          "uren", "volume", 
          "TaxonKey", "Soort", 
-         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
+         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN", "METI_DILUTION_FACTOR")
 
 soort_NA <-
   gewicht_NA_of_0_ruw %>% 
@@ -253,12 +235,17 @@ gewicht_NA <-
   left_join(datum_soort) %>% 
   left_join(regressie_lengte) %>% 
   replace_na(list(aantal = 0, gewicht = 0)) %>% 
-  mutate(prop_aantal = TAXONAANTAL/(TAXONAANTAL + aantal),
+  mutate(prop_aantal = TAXONAANTAL/aantal,
          gewicht_imputed = 
            case_when(
              TAXONAANTAL > 1 ~ gewicht*prop_aantal,
              TRUE ~ exp(int + slope*log(TAXONLEN))
            ))
+
+write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
+                # NA_aantal = aantal_NA_of_0_ruw,
+                NA_gewicht = gewicht_NA),
+           path = str_c(pad_data, "controle/controle_NA_aantal_of_gewicht_ankerkuil.xlsx"))
 }
 
 ```
@@ -312,9 +299,6 @@ data_per_datum <-
             gewicht = sum(if_else(is.na(gewicht_ind), 
                                   gewicht_tot, gewicht_ind),
                           na.rm = FALSE),
-            # gewicht = sum(if_else(is.na(gewicht_ind), 
-            #                       gewicht_tot, gewicht_ind*aantal),
-            #               na.rm = FALSE),
             aantal = sum(aantal, na.rm = FALSE),
             across(c(temperatuur, zuurstof,	zuurstof_perc, ph,	turbiditeit, conductiviteit), 
                    ~mean(., na.rm = TRUE)),
@@ -323,19 +307,21 @@ data_per_datum <-
 ```
 
 
+```{r controle NA in aantal of gewicht in geaggregeerde data}
+
+dat_NA <-
+  data_per_datum %>% 
+  filter(is.na(aantal) | is.na(gewicht))
+
+```
+
+
 ```{r controle ontbrekende campagnes}
 
 campagnes <- 
   data_per_datum %>% 
-  select(locatie, jaar, maand, getijde) %>% 
-  distinct() %>% 
-  mutate(seizoen = 
-           case_when(
-           maand %in% 3:5 ~ "voorjaar",
-           maand %in% 6:7 ~ "zomer",
-           maand %in% 8:10 ~ "najaar",
-           maand %in% 12:2 ~ "winter"))
-
+  select(locatie, jaar, maand, seizoen, getijde) %>% 
+  distinct()
 camp_tot <-
   campagnes %>% 
   expand(locatie, jaar, seizoen, getijde)
@@ -360,7 +346,7 @@ campagnes_NA_or_0 <-
 
 uniek_aantal_of_gewicht <-
   data_per_datum %>% 
-  select(locatiecode, locatie, datum, jaar, maand, getijde, uren, volume, soort, n, aantal, gewicht) %>% 
+  select(locatiecode, locatie, datum, jaar, maand, seizoen, getijde, uren, volume, soort, n, aantal, gewicht) %>% 
   arrange(datum, locatie, getijde) %>% 
   filter(if_any(c(aantal, gewicht), ~is.na(.)) |
            (if_any(c(aantal, gewicht), ~near(., 0)) & !if_all(c(aantal, gewicht), ~near(., 0))))
@@ -432,7 +418,6 @@ write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
 (unieke_soorten_recent <-
   setdiff(soorten_recent_aanwezig, 
           soorten_historisch_aanwezig))
-
 
 haringachtigen <-
   data_per_datum %>% 

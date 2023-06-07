@@ -131,6 +131,10 @@ AbiotischeMeting <-
     tbl(VIS2, "AbiotischeMeting")
 Waarneming <- 
     tbl(VIS2, "Waarneming")
+Methode <- 
+    tbl(VIS2, "Methode")
+Meting <-
+    tbl(VIS2, "Meting")
 
 # informatie ivm met berekening en eenheid voor catch per unit effort zijn te vinden in VIS2 tabel 'Methode' (en 'MethodeCpueParameter')
   
@@ -147,10 +151,6 @@ tbl_campagnes <-
   select(WaarnemingKey, WaarnemingID, GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, Begindatum, Month, Year, MethodeKey, Methodenaam, Methodegroepcode)
 
 
-campagnes <-
-  tbl_campagnes %>% 
-  collect()
-
 tbl_data <-
   FactMeting_Pivot %>% 
   right_join(DimWaarneming %>% 
@@ -162,7 +162,7 @@ tbl_data <-
                left_join(DimVisindexTaxon %>% select(TaxonKey, Exoot)), 
              by = "TaxonKey") %>% 
   inner_join(DimMethode, by = "MethodeKey") %>% 
-  select(MetingPivotKey, WaarnemingKey, WaarnemingID, GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, Begindatum, Month, Year, MethodeKey, Methodenaam, Methodegroepcode, TaxonKey, Soort, Exoot, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN, TEMPERATUUR, ZUURSTOF, TURBIDITEIT, CONDUCTIVITEIT, PH) %>% 
+  select(MetingPivotKey, WaarnemingKey, MetingID, WaarnemingID, GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, Begindatum, Month, Year, MethodeKey, Methodenaam, Methodegroepcode, TaxonKey, Soort, Exoot, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN, TEMPERATUUR, ZUURSTOF, TURBIDITEIT, CONDUCTIVITEIT, PH) %>% 
   filter(Year %in% jaren,
          Gebiedcode %in% locatie_nrs,
          Methodenaam %in% vangstmethode)
@@ -179,6 +179,12 @@ waarneming_IDs <-
   collect() %>% 
   pull()
 
+meting_IDs <- 
+  tbl_data %>% 
+  distinct(MetingID) %>% 
+  collect() %>% 
+  pull()
+
 tbl_abiotiek <- 
   AbiotischeMeting %>% 
   select(ABME_WRNG_ID, ABME_ZUURSTOF, ABME_ZUURSTOFPROCENT, ABME_TEMPERATUUR, ABME_PH, ABME_CONDUCTIVITEIT, ABME_TURBIDITEIT, ABME_SALINITEIT_PRM) %>% 
@@ -188,6 +194,11 @@ tbl_volume <-
   Waarneming %>% 
   select(WRNG_ID, WRNG_WGST_CDE, WRNG_METH_CDE, WRNG_OCR, WRNG_CPUE_PARAMETERS) %>% 
   filter(WRNG_ID %in% waarneming_IDs)
+
+tbl_verdunning <-
+  Meting %>% 
+  select(METI_ID, METI_WRNG_ID, METI_DILUTION_FACTOR) %>% 
+  filter(METI_ID %in% meting_IDs)
 
 volume <-
   tbl_volume %>% 
@@ -201,11 +212,13 @@ volume <-
   mutate(uren = AantalUrenStuurboord + AantalUrenBakboord,
          volume = AfgevistVolumeStuurboord + AfgevistVolumeBakboord)
 
+
 data <-
   tbl_data %>% 
   collect() %>% 
   # left_join(tbl_locatie_gegevens %>% collect(), by = c("Gebiedcode" = "VIP_CDE")) %>% 
   left_join(volume %>% select(WRNG_ID, uren, volume), by = c("WaarnemingID" = "WRNG_ID")) %>% 
+  left_join(tbl_verdunning %>% collect(), by = c("MetingID" = "METI_ID", "WaarnemingID" = "METI_WRNG_ID")) %>% 
   left_join(tbl_abiotiek %>% collect(), by = c("WaarnemingID" = "ABME_WRNG_ID"))
 
 campagnes <-

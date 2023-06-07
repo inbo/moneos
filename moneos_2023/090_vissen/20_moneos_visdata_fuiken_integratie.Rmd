@@ -163,33 +163,6 @@ dubbel_gewicht <-
 ```
 
 
-```{r controle individu en TAXONTOTGEW in ruwe data}
-
-individu_TAXONTOTGEW <-
-  data_recent %>% 
-  filter(TAXONAANTAL == 1 &
-           TAXONTOTGEW > 0) %>% 
-  select("MetingPivotKey", "WaarnemingKey", "WaarnemingID", "GebiedKey", "Gebiedcode", 
-         "LambertX", "LambertY", "Gebiednaam", 
-         "Begindatum", "Month", "Year", "MethodeKey", "Methodenaam", "Methodegroepcode", 
-         "AantalDagen", "AantalFuiken", 
-         "TaxonKey", "Soort", 
-         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
-
-individuen_TAXONGEW <-
-  data_recent %>% 
-  filter(TAXONAANTAL > 1 &
-           TAXONGEW > 0) %>% 
-  select("MetingPivotKey", "WaarnemingKey", "WaarnemingID", "GebiedKey", "Gebiedcode", 
-         "LambertX", "LambertY", "Gebiednaam", 
-         "Begindatum", "Month", "Year", "MethodeKey", "Methodenaam", "Methodegroepcode", 
-         "AantalDagen", "AantalFuiken", 
-         "TaxonKey", "Soort", 
-         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
-
-```
-
-
 ```{r controle uniek aantal of gewicht in ruwe data}
 
 aantal_NA_of_0_ruw <-
@@ -221,78 +194,82 @@ soort_NA <-
   pull(Soort) %>% 
   unique()
 
-data_lengte <-
-  data_recent %>% 
-  filter(Soort %in% soort_NA,
-         !is.na(TAXONLEN)) %>% 
-  select(Soort, TAXONAANTAL, TAXONGEW, TAXONLEN)
+if (length(soort_NA) > 0) {
+  data_lengte <-
+    data_recent %>% 
+    filter(Soort %in% soort_NA,
+           !is.na(TAXONLEN)) %>% 
+    select(Soort, TAXONAANTAL, TAXONGEW, TAXONLEN)
   
-data_lengte %>% 
-  ggplot(aes(TAXONLEN, TAXONGEW)) +
-  geom_point() +
-  geom_smooth(method = "lm") +
-  scale_x_log10() +
-  scale_y_log10() +
-  facet_wrap(~Soort)
-
-regressie_lengte <-
   data_lengte %>% 
-  group_by(Soort) %>% 
-  summarise(int = coef(lm(log(TAXONGEW)~log(TAXONLEN)))[1],
-            slope = coef(lm(log(TAXONGEW)~log(TAXONLEN)))[2]) %>% 
-  ungroup()
-
-datum_soort <-
-  data_recent %>% 
-  mutate(gewicht = if_else(is.na(TAXONGEW), 
-                                  TAXONTOTGEW, TAXONGEW)) %>% 
-  select(Gebiedcode, Gebiednaam, Begindatum, Soort, aantal = TAXONAANTAL, gewicht) %>% 
-  filter(str_c(Gebiedcode, Begindatum, Soort) %in% unique(str_c(gewicht_NA_of_0_ruw$Gebiedcode, gewicht_NA_of_0_ruw$Begindatum, gewicht_NA_of_0_ruw$Soort))) %>% 
-  drop_na() %>% 
-  group_by(Gebiedcode, Gebiednaam, Begindatum, Soort) %>% 
-  summarise(across(everything(), sum)) %>% 
-  ungroup()
-
-
-gewicht_NA <-
-  gewicht_NA_of_0_ruw %>% 
-  select(MetingPivotKey, Gebiedcode, Gebiednaam, Begindatum, Month, Year, Methodenaam, 
-         TaxonKey, Soort, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN) %>% 
-  left_join(datum_soort) %>% 
-  left_join(regressie_lengte) %>% 
-  replace_na(list(aantal = 0, gewicht = 0)) %>% 
-  mutate(prop_aantal = TAXONAANTAL/aantal,
-         gewicht_imputed = 
-           case_when(
-             TAXONAANTAL > 1 ~ gewicht*prop_aantal,
-             TRUE ~ exp(int + slope*log(TAXONLEN))
-           ))
+    ggplot(aes(TAXONLEN, TAXONGEW)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    scale_x_log10() +
+    scale_y_log10() +
+    facet_wrap(~Soort)
   
-
-write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
-                # NA_aantal = aantal_NA_of_0_ruw,
-                NA_gewicht = gewicht_NA),
-           path = str_c(pad_data, "controle/controle_NA_aantal_of_gewicht_fuiken.xlsx"))
+  regressie_lengte <-
+    data_lengte %>% 
+    group_by(Soort) %>% 
+    summarise(int = coef(lm(log(TAXONGEW)~log(TAXONLEN)))[1],
+              slope = coef(lm(log(TAXONGEW)~log(TAXONLEN)))[2]) %>% 
+    ungroup()
+  
+  datum_soort <-
+    data_recent %>% 
+    mutate(gewicht = if_else(is.na(TAXONGEW), 
+                             TAXONTOTGEW, TAXONGEW)) %>% 
+    select(Gebiedcode, Gebiednaam, Begindatum, Soort, aantal = TAXONAANTAL, gewicht) %>% 
+    filter(str_c(Gebiedcode, Begindatum, Soort) %in% unique(str_c(gewicht_NA_of_0_ruw$Gebiedcode, gewicht_NA_of_0_ruw$Begindatum, gewicht_NA_of_0_ruw$Soort))) %>% 
+    drop_na() %>% 
+    group_by(Gebiedcode, Gebiednaam, Begindatum, Soort) %>% 
+    summarise(across(everything(), sum)) %>% 
+    ungroup()
+  
+  
+  gewicht_NA <-
+    gewicht_NA_of_0_ruw %>% 
+    select(MetingPivotKey, Gebiedcode, Gebiednaam, Begindatum, Month, Year, Methodenaam, 
+           TaxonKey, Soort, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN) %>% 
+    left_join(datum_soort) %>% 
+    left_join(regressie_lengte) %>% 
+    replace_na(list(aantal = 0, gewicht = 0)) %>% 
+    mutate(prop_aantal = TAXONAANTAL/aantal,
+           gewicht_imputed = 
+             case_when(
+               TAXONAANTAL > 1 ~ gewicht*prop_aantal,
+               TRUE ~ exp(int + slope*log(TAXONLEN))
+             ))
+  
+  
+  write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
+    # NA_aantal = aantal_NA_of_0_ruw,
+    NA_gewicht = gewicht_NA),
+    path = str_c(pad_data, "controle/controle_NA_aantal_of_gewicht_fuiken.xlsx"))
+}
 
 ```
 
 
 ```{r toevoegen imputation aan ruwe data}
 
-keys <- gewicht_NA$MetingPivotKey
-
-dat_before <-
-  data_recent %>% 
-  filter(MetingPivotKey %in% keys)
-
-for(k in keys) {
-  data_recent$TAXONGEW[data_recent$MetingPivotKey == k] <-
-    gewicht_NA$gewicht_imputed[gewicht_NA$MetingPivotKey == k]
+if (length(soort_NA) > 0) {
+  keys <- gewicht_NA$MetingPivotKey
+  
+  dat_before <-
+    data_recent %>% 
+    filter(MetingPivotKey %in% keys)
+  
+  for(k in keys) {
+    data_recent$TAXONGEW[data_recent$MetingPivotKey == k] <-
+      gewicht_NA$gewicht_imputed[gewicht_NA$MetingPivotKey == k]
+  }
+  
+  dat_after <-
+    data_recent %>% 
+    filter(MetingPivotKey %in% keys)
 }
-
-dat_after <-
-  data_recent %>% 
-  filter(MetingPivotKey %in% keys)
 
 ```
 
