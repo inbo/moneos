@@ -1,57 +1,48 @@
 --- 
-title: "MONEOS - Geïntegreerd datarapport INBO: Toestand Zeeschelde 2021"
+title: "MONEOS - Geïntegreerd datarapport INBO: Toestand Zeeschelde 2022"
 subtitle: "Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten"
 author: 
-  - firstname: Gunther
-    name: Van Ryckegem
+  - name: 
+      given: Gunther
+      family: Van Ryckegem
     email: gunther.vanryckegem@inbo.be 
-  - firstname: Joost
-    name: Vanoverbeke
+    orcid: ""
+    affiliation: ""
+    corresponding: true
+  - name: 
+      given: Joost
+      family: Vanoverbeke
+    orcid: ""
+    affiliation: ""
     email: joost.vanoverbeke@inbo.be
-  - 
-    name: Frank Van de Meutter
-  - 
-    name: Bart Vandevoorde
-  - 
-    name: Wim Mertens
-  - 
-    name: Amber Mertens
-  - 
-    name: Alexander Van Braeckel
-  - 
-    name: Vincent Smeekens
-  - 
-    name: Koen Thibau
-  - 
-    name: Olja Bezdenjesnji
-  - 
-    name: Dimitri Buerms
-  - 
-    name: Nico De Regge
-  - 
-    name: Kenny Hessel
-  - 
-    name: Charles Lefranc
-  - 
-    name: Jan Soors
-  - 
-    name: Frederik Van Lierop
 shortauthor: 
   - Van Ryckegem, G., Vanoverbeke, J., Van de Meutter, F., Vandevoorde, B., Mertens, W., Mertens, A., Van Braeckel, A., Smeekens, V., Thibau, K., Bezdenjesnji, O., Buerms, D., De Regge, N., Hessel, K., Lefranc, C., Soors, J., Van Lierop, F.
-corresponding: gunther.vanryckegem@inbo.be
-reviewer: Erika Van den Bergh
-year: "`r Sys.getenv('jaar_moneos')`"
-cover_photo: "IMG-20220930-WA0010_snede.jpg"
-cover_description: "Benthosstaalname op het Groot Schoor van Hamme (nieuwe ontpoldering) eind september 2022 (foto door Dimitri Buerms)."
-# cover: cover.pdf # link naar pdf met cover
-doi: "10.21436/inbor.85928183"
-reportnr: "Rapporten van het Instituut voor Natuur- en Bosonderzoek 2022 (26)"
-depotnr: "D/2022/3241/290"
-embargo: ""
+reviewer: 
+  - name:
+      given: ""
+      family: ""
+    orcid: ""
+    affiliation: ""
+# year: "`r Sys.getenv('jaar_moneos')`"
+year: 2022
+github-repo: inbo/moneos
+funder: Research Institute for Nature and Forest (INBO) 
+rightsholder: Research Institute for Nature and Forest (INBO)
+community: inbo
+keywords: ""
+publication_type: report
+cover_photo: "
+cover_description: ""
+# cover: media/cover.pdf # link naar pdf met cover
+doi: 10.5281/zenodo.842223
+reportnr: 99999
+depotnr: D/2021/999999/999999
+ordernr: ""
+embargo: 2099-03-01
 
 style: INBO
 lang: nl
-tocdepth: 0
+tocdepth: 2
 lof: FALSE
 lot: FALSE
 floatbarrier: subsection
@@ -59,28 +50,23 @@ floatbarrier: subsection
 site: bookdown::bookdown_site
 
 output:
-  INBOmd::gitbook: default
   INBOmd::pdf_report: default
-  INBOmd::ebook: default
+  INBOmd::gitbook: default
+  INBOmd::epub_book: default
   bookdown::dont_run: default
 ---
 
 ```{r setup, include = FALSE}
 library(knitr)
-opts_knit$set(eval.after = "fig.cap")
 opts_chunk$set(
-  echo = TRUE, 
-  eval = TRUE,
-  cache = FALSE,
-  dpi = 300,
-  fig.width = 150 / 25.4,
-  fig.height = 100 / 25.4,
-  warning = TRUE,
-  error = TRUE,
-  message = TRUE
+  echo = TRUE, eval = TRUE, cache = FALSE, fig.width = 150 / 25.4,
+  fig.height = 100 / 25.4, warning = TRUE, error = TRUE, message = TRUE
 )
+# library(lipsum)
+# library(DT)
+# library(ggplot2)
 library(tidyverse)
-library(INBOtheme) # remotes::install_github("inbo/INBOtheme")
+library(INBOtheme)
 if (interactive()) {
   theme_set(
     theme_inbo(
@@ -94,32 +80,27 @@ if (interactive()) {
     html = {
       opts_chunk$set(dev = "png", dpi = 72)
       theme_set(
-        theme_inbo(
-          base_family = "FlandersArtSans-Regular", 
-          base_size = 12
-        )
+        theme_inbo(base_family = "FlandersArtSans-Regular", base_size = 12)
       )
     },
     latex = {
       opts_chunk$set(dev = "cairo_pdf", dpi = 300)
       theme_set(
-        theme_inbo(
-          base_family = "FlandersArtSans-Regular", 
-          base_size = 9
-        )
+        theme_inbo(base_family = "FlandersArtSans-Regular", base_size = 9)
       )
       update_geom_defaults("point", list(size = 1.5))
     },
     epub3 = {
       opts_chunk$set(dev = "png", dpi = 300)
       theme_set(
-        theme_inbo(
-          base_family = "FlandersArtSans-Regular", 
-          base_size = 12
-        )
+        theme_inbo(base_family = "FlandersArtSans-Regular", base_size = 12)
       )
     }
   )
 }
+set.seed(20190117)
 ```
 
+# Dankwoord {-}
+
+`r paragraph(n = 5)`
