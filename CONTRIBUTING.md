@@ -54,6 +54,13 @@
 -   in a text editor or in Rstudio, open the '.Renviron' file and adjust the folder paths to the paths used on your local pc
 -   if you are already working in Rstudio, close Rstudio and reopen it
 
+## update the 'main' branch from github
+-   select the 'main' branch in Rtudio
+
+<img width="172" alt="image" src="https://github.com/inbo/moneos/assets/45075881/ad601265-9d5c-4bd3-90cf-9e7521b479a5">
+
+-   `pull` ![image](https://user-images.githubusercontent.com/45075881/231096746-42c55df8-61b7-4a54-86c8-9561f2158553.png) the latest version of 'main' from github.
+
 # Moneos chapter branch
 
 -   For each chapter in the moneos report use a separate branch to work in.
@@ -81,6 +88,8 @@
 ## Case 1: the moneos chapter branch you intend to work in already exists
 
 -   Select the branch for the chapter you want to work on.
+-   `pull` ![image](https://user-images.githubusercontent.com/45075881/231096746-42c55df8-61b7-4a54-86c8-9561f2158553.png) the latest version of your branch from github.
+
 
 ## Case 2: the moneos chapter branch you intend to work in does not yet exist
 
