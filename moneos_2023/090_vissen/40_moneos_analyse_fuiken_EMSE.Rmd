@@ -97,7 +97,7 @@ locatie_scheldezone <-
 levels_locatie <- levels(locatie_scheldezone$locatie)
 
 levels_seizoen_locatie <- 
-  sapply(c("voorjaar", "zomer", "najaar"),
+  sapply(c("voorjaar", "zomer", "najaar", "winter"),
          function(x) paste(x, levels_locatie, sep = "_")) %>%
   c()
 
@@ -112,8 +112,6 @@ levels_scheldezone_full <-
 ```
 
 ##### datasets voor aantal en gewicht:
-
--   *G:/Mijn Drive/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/090_vissen/data/fuiken_VLIZ_2012_2021.csv*
 
 ```{r inlezen-data}
 
@@ -368,7 +366,7 @@ indeling_EMSE_missing <-
 
 #### relatie aantal - gewicht
 
-```{r relatie-aantal-gewicht}
+```{r relatie-aantal-gewicht, eval = FALSE}
 
 # data_fuiken %>%
 #   ggplot(aes(aantal, gewicht)) +

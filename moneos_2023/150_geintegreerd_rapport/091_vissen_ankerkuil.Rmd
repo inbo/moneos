@@ -30,8 +30,8 @@ library(rprojroot) ## workaround pad
 source(find_root_file("../pad.R", criterion = is_rstudio_project))
 
 pad_data <- maak_pad(hoofdstuk, "data")
-pad_figuren <- maak_pad(hoofdstuk, "figuren")
-pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+pad_figuren <- maak_pad(hoofdstuk, "figuren/ankerkuil")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen/ankerkuil")
 
 ```
 
@@ -50,7 +50,7 @@ figtab <-
 ```{r 091-meta-data}
 
 meta_data <- 
-  read_delim(paste0(pad_data, "vissen_meta_data.csv"),
+  read_delim(paste0(pad_data, "ankerkuil_meta_data.csv"),
              delim = ";")
   
 for(i in 1:nrow(meta_data)){
@@ -62,13 +62,11 @@ for(i in 1:nrow(meta_data)){
 
 ```
 
-
 ## Resultaten
 
 ### Ankerkuil
 
 #### Soortenrijkdom in `r laatste_jaar`
-
 
 We vingen `r aantal_soorten_laatste_jaar` vissoorten in `r laatste_jaar`.
 Een overzicht van de soorten gevangen in `r laatste_jaar` is weergegeven in Tabel \@ref(tab:091-tabel-overzicht-soorten).
@@ -80,7 +78,7 @@ In de periode 2017-2020 leek het aantal soorten te dalen, maar in `r laatste_jaa
 ```{r 091-tabel-overzicht-soorten}
 
 tabel_gevangen_soorten <-
-  read_excel(paste0(pad_tabellen, "tabellen_vissen.xlsx"),
+  read_excel(paste0(pad_tabellen, "ankerkuil_tabellen_vissen.xlsx"),
              sheet = "gevangen_soorten")
 
 cap_gevangen_soorten <-
@@ -108,7 +106,7 @@ tabel_gevangen_soorten  %>%
 ```{r 091-tabel-aantal-soorten}
 
 tabel_aantal_soorten <-
-  read_excel(paste0(pad_tabellen, "tabellen_vissen.xlsx"),
+  read_excel(paste0(pad_tabellen, "ankerkuil_tabellen_vissen.xlsx"),
              sheet = "aantal_soorten")
 
 cap_aantal_soorten <-
@@ -554,4 +552,3 @@ knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_di
 ```
 
 <br/>
-

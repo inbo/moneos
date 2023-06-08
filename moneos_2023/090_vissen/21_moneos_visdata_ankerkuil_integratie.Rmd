@@ -138,6 +138,7 @@ data_recent <-
   data_recent %>% 
   mutate(Soort = recode(Soort, 
                         blauwband = "blauwbandgrondel",
+                        zandspiering = "kleine zandspiering",
                         `gewone steurgarnaal` = "steurgarnalen",
                         `steurgarnaal` = "steurgarnalen",
                         `grijze garnaal` = "grijze garnalen"))

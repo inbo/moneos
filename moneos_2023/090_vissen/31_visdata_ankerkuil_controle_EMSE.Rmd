@@ -50,30 +50,27 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 filename <- 
   list.files(path = pad_data,
-             pattern = "fuikdata_Zeeschelde_VLIZ")
+             pattern = "ankerkuil_Zeeschelde_VLIZ")
 
-fuiken_aantal <- 
+ankerkuil_aantal <- 
   read_xlsx(str_c(pad_data, filename),
             sheet = "campagnes") %>% 
-  select(ID_afvissing, locatie, datum, jaar, maand, fuikdagen) %>% 
+  select(ID_afvissing, locatie, datum, jaar, seizoen, uren, volume) %>% 
   left_join(read_xlsx(str_c(pad_data, filename),
                       sheet = "locaties") %>% 
               select(locatie, OMES, EMSE_niveau3)) %>% 
   left_join(read_xlsx(str_c(pad_data, filename),
                       sheet = "aantallen")) %>% 
   select(-ID_afvissing) %>% 
-  select(locatie, OMES, EMSE_niveau3, datum, jaar, maand, everything())
+  select(locatie, OMES, EMSE_niveau3, datum, jaar, seizoen, everything())
 
-
-ankerkuil_aantal_historisch <- 
-  read_delim(str_c(pad_data, "ankerkuil_aantallen_2012_2021.csv"), delim = ";")
 
 soorten <- 
   read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"))
 
-aantal_long <-
-  ankerkuil_aantal_historisch %>%
-  pivot_longer(cols = `tiendoornige stekelbaars`:last_col(),
+ankerkuil_aantal_long <-
+  ankerkuil_aantal %>%
+  pivot_longer(cols = -(locatie:volume),
                names_to = "soort",
                values_to = "aantal") %>%
   filter(!str_detect(soort, "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat")) %>%
@@ -90,30 +87,13 @@ aantal_long <-
 
 ```{r EMSE}
 
-
-# gewicht_long <-
-#   ankerkuil_gewicht_historisch %>%
-#   pivot_longer(cols = `tiendoornige stekelbaars`:last_col(),
-#                names_to = "soort",
-#                values_to = "gewicht") %>%
-#   filter(!str_detect(soort, "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat")) %>%
-#   left_join(func_groepen_EMSE, by = c("soort" = "Soort")) %>%
-#   mutate(EMSE = !is.na(Dieet))
-
-# aantal_long %>%
-#   group_by(soort, EMSE) %>%
-#   mutate(N_crit = any(aantal > 1)) %>%
-#   ungroup() %>%
-#   filter(N_crit) %>%
-#   group_by(soort, EMSE) %>%
-#   summarise(aantal = mean(aantal/uren, na.rm = TRUE)) %>%
-#   ungroup() %>%
-#   # filter(aantal >= 0.1) %>%
-#   arrange(aantal, soort) %>%
-#   knitr::kable()
+nieuwe_soorten <-
+  ankerkuil_aantal_long %>% 
+  filter(is.na(ankerkuil)) %>% 
+  distinct(soort, fuiken, ankerkuil)
 
 voorkomen <-
-  aantal_long %>%
+  ankerkuil_aantal_long %>% 
   group_by(jaar, seizoen, locatie, soort, inEMSE) %>%
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
   ungroup() %>%
@@ -127,12 +107,13 @@ soorten <-
   soorten %>% 
   left_join(voorkomen %>% 
               select(soort, `N>0`))
-  
-# soorten %>% 
-#   writexl::write_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"))
+
+```
 
 
-aantal_long %>%
+```{r figuren vergelijking EMSE}
+
+ankerkuil_aantal_long %>%
   group_by(jaar, seizoen, locatie, soort, inEMSE) %>%
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
   ungroup() %>%
