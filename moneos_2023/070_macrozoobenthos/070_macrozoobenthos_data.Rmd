@@ -45,6 +45,31 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ```
 
+```{r data voorbereiden}
+#losse vangsten zijn onvolledige stalen die worden genomen wanneer een regulier staal niet mogelijk is
+#betreft 2 stalen KD21_19 en KD21_20. Deze worden verder weggelaten.
+MZB_losvangst<- 
+  read_excel(paste0(pad_data, "macrobenthos_spatial_2021.xlsx"), sheet = "Benthos") %>% 
+  dplyr::filter(Raai_Random == "random") %>% 
+  dplyr::select(-'...16') %>% 
+  dplyr::filter(str_detect(Opmerking, "Losse"))
+
+MZB_benthos <- 
+  read_excel(paste0(pad_data, "macrobenthos_spatial_2021.xlsx"), sheet = "Benthos") %>% 
+  dplyr::filter(Raai_Random == "random") %>% 
+  dplyr::select(-'...16') %>% 
+  dplyr::filter(is.na(Opmerking) | !str_detect(Opmerking, "geen|Losse")) %>% 
+  dplyr::group_by(staal, datum, soort) %>% 
+  dplyr::summarise(Biomassa_per_m2 = sum(na.omit(AFDW))*628,
+                   N_per_m2 = sum(na.omit(aantal))*628)
+
+MZB_KRW <- 
+  read_excel(paste0(pad_data, "macrobenthos_spatial_2021.xlsx"), sheet = "KRW")
+
+
+
+```
+
 
 ```{r inlezen-recente-data}
 
@@ -53,8 +78,14 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 #   mutate(jaar = year(datum.x))
 
 data_macrobenthos_recent <- 
-  read_excel(paste0(pad_data, "macrobenthos_spatial_2019.xlsx")) %>% 
-  rename(staal = locatie) 
+  MZB_benthos %>% 
+  left_join(MZB_KRW, by = "staal") %>% 
+  dplyr::mutate(jaar = year(datum)) %>% 
+  rename(fysiotoop = BenthosEcotoop) %>%
+  dplyr::mutate(tidaal = if_else(str_detect(fysiotoop, "subtid"), "sub", "inter")) %>%
+  dplyr::filter(!str_detect(staal, "WM"))
+  
+  
 
 jaar_recent <- 
   data_macrobenthos_recent %>% 
@@ -108,10 +139,9 @@ aantal_stalen_waterlichaam_fysiotoop <-
 lege_stalen <-
   data_macrobenthos_recent %>% 
   dplyr::group_by(staal, waterlichaam, tidaal, fysiotoop) %>% 
-  dplyr::summarise(densiteit = max(densiteit)) %>% 
-  ungroup() 
-%>% 
-  dplyr::filter(densiteit == 0)
+  dplyr::summarise(N_per_m2 = max(N_per_m2)) %>% 
+  ungroup() %>% 
+  dplyr::filter(N_per_m2 == 0)
 
 ```
 
@@ -152,50 +182,50 @@ soorten_per_waterlichaam <-
 ```{r biomassa-vs-densiteit, fig.height=4, fig.width=6}
 
 data_macrobenthos_recent %>% 
-  ggplot(aes(densiteit/628.8 + 1, densiteit + 1)) +
+  ggplot(aes(N_per_m2/628.8 + 1, N_per_m2 + 1)) +
   geom_point() +
   scale_x_log10() +
   scale_y_log10()
 
 
 data_macrobenthos_recent %>% 
-  ggplot(aes(biomassa/628.8 + min(biomassa[biomassa > 0]/628.8), biomassa + min(biomassa[biomassa > 0]))) +
+  ggplot(aes(Biomassa_per_m2/628.8 + min(Biomassa_per_m2[Biomassa_per_m2 > 0]/628.8), Biomassa_per_m2 + min(Biomassa_per_m2[Biomassa_per_m2 > 0]))) +
   geom_point() +
   scale_x_log10() +
   scale_y_log10()
 
 
-data_macrobenthos_recent %>% 
-  ggplot(aes(aantal, AFDW)) +
-  geom_point()
+#data_macrobenthos_recent %>% 
+#  ggplot(aes(aantal, AFDW)) +
+#  geom_point()
 
 data_macrobenthos_recent %>% 
-  ggplot(aes(aantal + 1, AFDW + min(AFDW[AFDW > 0]))) +
+  ggplot(aes(N_per_m2 + 1, Biomassa_per_m2 + min(Biomassa_per_m2[Biomassa_per_m2 > 0]))) +
   geom_point() +
   scale_x_log10() +
   scale_y_log10()
 
 zero_aantal_nonzero_biomassa <-
   data_macrobenthos_recent %>% 
-  filter(aantal == 0,
-         AFDW != 0) %>% 
-  select(locatie = staal, waterlichaam, fysiotoop, soort, aantal, AFDW)
+  filter(N_per_m2 == 0,
+         Biomassa_per_m2 != 0) %>% 
+  select(locatie = staal, waterlichaam, fysiotoop, soort, N_per_m2, Biomassa_per_m2)
 
 zero_biomassa_nonzero_aantal <-
   data_macrobenthos_recent %>% 
-  filter(aantal != 0,
-         AFDW == 0) %>% 
-  select(locatie = staal, waterlichaam, fysiotoop, soort, aantal, AFDW)
+  filter(N_per_m2 != 0,
+         Biomassa_per_m2 == 0) %>% 
+  select(locatie = staal, waterlichaam, fysiotoop, soort, N_per_m2, Biomassa_per_m2)
 
 negatieve_biomassa <-
   data_macrobenthos_recent %>% 
-  filter(AFDW < 0) %>%
-  select(locatie = staal, waterlichaam, fysiotoop, soort, aantal, AFDW)
+  filter(Biomassa_per_m2 < 0) %>%
+  select(locatie = staal, waterlichaam, fysiotoop, soort, N_per_m2, Biomassa_per_m2)
   
 extreme_biomassa <-
   data_macrobenthos_recent %>% 
-  filter(biomassa > 0.5) %>% 
-  select(locatie = staal, waterlichaam, fysiotoop, soort, densiteit, biomassa)
+  filter(Biomassa_per_m2 > 0.5) %>% 
+  select(locatie = staal, waterlichaam, fysiotoop, soort, N_per_m2, Biomassa_per_m2)
 
 ```
 
@@ -228,23 +258,20 @@ extreme_biomassa <-
 
 data_macrobenthos_recent <-
   data_macrobenthos_recent %>%
-  mutate(aantal = if_else(aantal == 0 & AFDW != 0, NA_real_, aantal),
-         AFDW = if_else(AFDW == 0 & aantal != 0, NA_real_, AFDW),
-         aantalperm2 = if_else(aantal == 0 & AFDW != 0, NA_real_, aantalperm2),
-         AFDWperm2 = if_else(AFDW == 0 & aantal != 0, NA_real_, AFDWperm2)) %>%
-  mutate(AFDW = if_else(AFDW < 0, NA_real_, AFDW),
-         AFDWperm2 = if_else(AFDW < 0, NA_real_, AFDWperm2))
+  mutate(N_per_m2 = if_else(N_per_m2 == 0 & Biomassa_per_m2 != 0, NA_real_, N_per_m2),
+         Biomassa_per_m2 = if_else(Biomassa_per_m2 == 0 & N_per_m2 != 0, NA_real_, Biomassa_per_m2)) %>%
+  mutate(Biomassa_per_m2 = if_else(Biomassa_per_m2 < 0, NA_real_, Biomassa_per_m2))
 
 
 
 stalen_NA_aantal <-
   data_macrobenthos_recent %>%
-  filter(is.na(aantal)) %>%
+  filter(is.na(N_per_m2)) %>%
   distinct(staal)
 
 stalen_NA_biomassa <-
   data_macrobenthos_recent %>%
-  filter(is.na(AFDW)) %>%
+  filter(is.na(Biomassa_per_m2)) %>%
   distinct(staal)
   
 ```
@@ -262,45 +289,14 @@ stalen_NA_biomassa <-
 
 ```{r inlezen-historische-data}
 
-data_macrobenthos_historisch_densiteit <- 
-  read_excel(paste0(pad_data, "S_DS_V_002_macrobenthos_data2008-2017_rapportage2019_3.xlsx"),
-             sheet = "densiteit")
-
-data_macrobenthos_historisch_biomassa <- 
-  read_excel(paste0(pad_data, "S_DS_V_002_macrobenthos_data2008-2017_rapportage2019_3.xlsx"), 
-             sheet = "biomassa")
+data_macrobenthos_historisch <- 
+  read_excel(paste0(pad_data, "benthos_data2008-2020_rapportage2022.xlsx"),
+             sheet = "macrobenthos")
 
 data_macrobenthos_historisch_locaties <- 
-  read_excel(paste0(pad_data, "S_DS_V_002_macrobenthos_data2008-2017_rapportage2019_3.xlsx"), 
+  read_excel(paste0(pad_data, "benthos_data2008-2020_rapportage2022.xlsx"), 
              sheet = "locaties")
 
-
-data_macrobenthos_historisch <-
-  data_macrobenthos_historisch_densiteit %>% 
-  left_join(data_macrobenthos_historisch_biomassa) %>% 
-  mutate(code = str_sub(locatie, 1, 2))
-
-aantal_stalen_historisch <- 
-  data_macrobenthos_historisch %>% 
-  distinct(locatie) %>% 
-  nrow()
-
-```
-
-
-```{r corrigeren-tidaal-historisch}
-
-data_macrobenthos_historisch %>% 
-  distinct(tidaal, fysiotoop) %>% 
-  arrange(tidaal, fysiotoop)
-
-data_macrobenthos_historisch <-
-  data_macrobenthos_historisch %>% 
-  mutate(tidaal = if_else(str_detect(fysiotoop, "subtidaal|nog te bepalen - sub"), "sub", "inter"))
-
-data_macrobenthos_historisch %>% 
-  distinct(tidaal, fysiotoop) %>% 
-  arrange(tidaal, fysiotoop)
 
 ```
 
@@ -323,23 +319,23 @@ zero_densiteit_nonzero_biomassa <-
   data_macrobenthos_historisch %>% 
   filter(densiteit == 0,
          biomassa != 0) %>% 
-  select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
+  select(locatie, KRWzone, fysiotoop, soort, densiteit, biomassa)
 
 zero_biomassa_nonzero_densiteit <-
   data_macrobenthos_historisch %>% 
   filter(densiteit != 0,
          biomassa == 0) %>% 
-  select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
+  select(locatie, KRWzone, fysiotoop, soort, densiteit, biomassa)
 
 negatieve_biomassa <-
   data_macrobenthos_historisch %>%
   filter(biomassa < 0) %>%
-  select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
+  select(locatie, KRWzone, fysiotoop, soort, densiteit, biomassa)
   
 extreme_biomassa <-
   data_macrobenthos_historisch %>%
-  filter(biomassa > 500) %>%
-  select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
+  filter(biomassa > 200) %>%
+  select(locatie, KRWzone, fysiotoop, soort, densiteit, biomassa)
 
 ```
 
@@ -360,34 +356,6 @@ extreme_biomassa <-
   - Er is één outlier met extreem hoge biomassa
   
     `r knitr::kable(extreme_biomassa)`
-
-
-```{r corrigeren-data-historisch}
-
-data_macrobenthos_historisch <-
-  data_macrobenthos_historisch %>%
-  # mutate(densiteit = if_else(densiteit == 0 & biomassa != 0, NA_real_, densiteit),
-  #        biomassa = if_else(biomassa == 0 & densiteit != 0, NA_real_, biomassa)) %>%
-  mutate(biomassa = if_else(biomassa < 0, NA_real_, biomassa))
-
-
-stalen_NA_densiteit <-
-  data_macrobenthos_historisch %>%
-  filter(is.na(densiteit)) %>%
-  distinct(staal)
-
-stalen_NA_biomassa <-
-  data_macrobenthos_historisch %>%
-  filter(is.na(biomassa)) %>%
-  distinct(staal)
-  
-```
-
-<br/>
-
-  - door missing values kunnen er van de `r aantal_stalen_historisch` stalen
-    + `r nrow(stalen_NA_densiteit)` stalen niet gebruikt worden voor totalen aantallen 
-    + `r nrow(stalen_NA_biomassa)` stalen niet gebruikt worden voor totalen biomassa 
 
 
 
@@ -429,31 +397,35 @@ stalen_NA_biomassa <-
 
 ```{r samenvoegen recent-historisch}
 
-data_macrobenthos <-
-  data_macrobenthos_historisch %>% 
-  select(jaar, waterlichaam, waterloop, tidaal, fysiotoop, locatie, code, soort, densiteit, biomassa) %>% 
-  bind_rows(data_macrobenthos_recent %>% 
-  select(jaar, waterlichaam, waterloop, tidaal, fysiotoop, locatie = staal, code, soort, densiteit = aantalperm2, biomassa = AFDWperm2))
+#Taxagroep toevoegen aan recente data + data tunen
+taxalijst <- read_excel(paste0(pad_data, "Soortenlijst_macrozoobenthos_2008_2022.xlsx"), sheet = "Blad1")
 
+data_macrobenthos_recent1 <- data_macrobenthos_recent %>% 
+  dplyr::ungroup() %>%
+  left_join(taxalijst, by = "soort") %>% 
+    dplyr::select(jaar, fysiotoop, locatie=staal, soort, densiteit = N_per_m2, biomassa = Biomassa_per_m2, Taxa_groep, KRWzone)
+
+data_macrobenthos2008_2022 <-
+  data_macrobenthos_historisch %>% 
+  bind_rows(data_macrobenthos_recent1 
+            
+#Nu voor locaties
+data_macrobenthos_recent_loc <- data_macrobenthos_recent %>% 
+  dplyr::ungroup() %>%
+  dplyr::mutate(campagne = "spatial 2021") %>% 
+  dplyr::select(locatie=staal,campagne, X=POINT_X, Y=POINT_Y)
+            
 data_macrobenthos_locaties <- 
   data_macrobenthos_historisch_locaties %>% 
-  bind_rows(data_macrobenthos_recent %>% 
-  mutate(campagne = paste0("spatial ", jaar_recent)) %>% 
-  # distinct(locatie = staal, campagne, X = x, Y = y)  %>% 
-  distinct(locatie = staal, campagne, X = real_X, Y = real_Y))
+  bind_rows(data_macrobenthos_recent_loc
+
 
 ```
 
 
 ```{r corrigeren-waterlichaam}
 
-code_waterlopen <- read_excel(paste0(pad_data, "code_waterlopen.xlsx"))
-
-data_macrobenthos <-
-  data_macrobenthos %>% 
-  select(-waterlichaam, -waterloop) %>% 
-  left_join(code_waterlopen) %>% 
-  select(jaar, waterlichaam, waterloop, waterloop2, systeem, everything(), -code)
+#code_waterlopen <- read_excel(paste0(pad_data, "code_waterlopen.xlsx"))
 
 ```
 
@@ -461,23 +433,23 @@ data_macrobenthos <-
 
 ```{r hernoemen-fysiotopen}
 
-data_macrobenthos <-
-  data_macrobenthos %>% 
-  mutate(fysiotoop = case_when(
-    fysiotoop %in% c("diep subtidaal") ~ "diep subtidaal",
-    fysiotoop %in% c("matig diep subtidaal") ~ "matig diep subtidaal",
-    fysiotoop %in% c("ondiep subtidaal") ~ "ondiep subtidaal",
-    fysiotoop %in% c("subtidaal", "nog te bepalen - sub", "nog te bepalen - subtidaal") ~ "subtidaal indet.",
-    fysiotoop %in% c("lage slikzone", "laag slik", "laag intertidaal (75-100%)") ~ "laag intertidaal",
-    fysiotoop %in% c("middelhoge slikzone", "hoge slikzone", "hoog intertidaal (0-25%)", "middelhoog slik", "middelhoog/hoog slik", "midden intertidaal (25-75%)") ~ "middelhoog/hoog intertidaal",
-    fysiotoop %in% c("hard substraat", "hard antropogeen") ~ "hard substraat",
-    fysiotoop %in% c("nog te bepalen - inter", "onbepaald", "slik", "slik onbepaald") ~ "intertidaal indet.",
-    TRUE ~ fysiotoop))
+#data_macrobenthos <-
+ # data_macrobenthos %>% 
+  #mutate(fysiotoop = case_when(
+   # fysiotoop %in% c("diep subtidaal") ~ "diep subtidaal",
+    #fysiotoop %in% c("matig diep subtidaal") ~ "matig diep subtidaal",
+    #fysiotoop %in% c("ondiep subtidaal") ~ "ondiep subtidaal",
+    #fysiotoop %in% c("subtidaal", "nog te bepalen - sub", "nog te bepalen - subtidaal") ~ "subtidaal indet.",
+    #fysiotoop %in% c("lage slikzone", "laag slik", "laag intertidaal (75-100%)") ~ "laag intertidaal",
+    #fysiotoop %in% c("middelhoge slikzone", "hoge slikzone", "hoog intertidaal (0-25%)", "middelhoog slik", "middelhoog/hoog slik", "midden intertidaal (25-75%)") ~ "middelhoog/hoog intertidaal",
+    #fysiotoop %in% c("hard substraat", "hard antropogeen") ~ "hard substraat",
+    #fysiotoop %in% c("nog te bepalen - inter", "onbepaald", "slik", "slik onbepaald") ~ "intertidaal indet.",
+    #TRUE ~ fysiotoop))
 
 
-data_macrobenthos %>% 
-  distinct(tidaal, fysiotoop) %>% 
-  arrange(tidaal, fysiotoop)
+#data_macrobenthos %>% 
+ # distinct(tidaal, fysiotoop) %>% 
+  #arrange(tidaal, fysiotoop)
 
 ```
 
@@ -515,7 +487,7 @@ file_name <-
 
 ```{r wegschrijven-data, eval=FALSE}
 
-write_xlsx(list(macrobenthos = data_macrobenthos,
+write_xlsx(list(macrobenthos = data_macrobenthos2008_2022,
                 locaties = data_macrobenthos_locaties),
            path = file_name)
 

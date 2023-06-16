@@ -8,7 +8,7 @@ title: "Macrozoöbenthos analyse"
 output: word_document
 editor_options: 
   chunk_output_type: console
-  ---
+---
 
 
 ```{r setup, include=FALSE}
@@ -52,9 +52,9 @@ source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/VNSC
 ```{r data}
 
 data_macrobenthos <- 
-  read_excel(paste0(pad_data, "macrobenthos_data_2008_2020.xlsx")) %>% 
-  mutate(tidaal = recode(tidaal, "sub" = "subtidaal", "Intertidaal" = "intertidaal", "inter" = "intertidaal"),
-         tidaal = factor(tidaal, 
+  read_excel(paste0(pad_data, "macrobenthos_data_2008_2021NIETAANTELEVEREN.xlsx")) %>% 
+  #mutate(tidaal = recode(tidaal, "sub" = "subtidaal", "Intertidaal" = "intertidaal", "inter" = "intertidaal"),
+         dplyr::mutate(tidaal = factor(tidaal, 
                          levels = c("subtidaal", "intertidaal"))) %>% 
   dplyr::mutate(niveau3_hybr = recode(waterloop2, "Zeeschelde IV"= "Saliniteitsgradient", "Zeeschelde III"= "Oligohalien", "Zeeschelde II"= "Zoet lang verblijf", "Zeeschelde I"= "Zoet kort verblijf")) %>% 
   dplyr::mutate(fysiotoop = case_when(
@@ -133,7 +133,7 @@ tabel_staalnamelocaties <-
   pivot_wider(names_from = fysiotoop, 
               values_from = n,
               values_fill = list(n = 0)) %>% 
-  dplyr::select(waterloop, `laag intertidaal`, `middelhoog/hoog intertidaal`, `diep subtidaal`, `matig diep subtidaal`, `ondiep subtidaal`, `subtidaal indet.`, `hard substraat`)
+  dplyr::select(waterloop, `laag intertidaal`, `middelhoog/hoog intertidaal`, `diep subtidaal`, `matig diep subtidaal`, `ondiep subtidaal`,  `hard substraat`)# `subtidaal indet.`,
 
 aantal_stalen <- tabel_staalnamelocaties %>%
   dplyr::select(-waterloop) %>% 
@@ -201,12 +201,13 @@ bxp_ZR <- data_macrobenthos_totaal %>%
   facet_wrap(~tidaal)
 # bxp_ZR
 
-ggarrange(bxp_ZS + rremove("xlab") + font("xy.text", size = fnt), 
+pl1 <- ggarrange(bxp_ZS + rremove("xlab") + font("xy.text", size = fnt), 
           bxp_ZR + rremove("xlab") + font("xy.text", size = fnt), 
           nrow = 2,
           common.legend = TRUE)
 
-ggsave(paste0(pad_figuren, "070-figuur-densiteit-waterlichaam.jpg"))
+pl1
+ggsave(paste0(pad_figuren, "070-figuur-densiteit-waterlichaam.jpg"), pl1)
 
 ```
 
