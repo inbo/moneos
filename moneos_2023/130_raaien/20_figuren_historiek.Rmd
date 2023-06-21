@@ -104,7 +104,7 @@ fig_raai <-
           geom_point(size = 2) + 
           # geom_line(data = dat_last, size = 1) +
           # geom_point(data = dat_last, size = 2) +
-          scale_y_continuous(breaks = pretty(dat_raai$distance_prof, 10)) +
+          scale_y_continuous(breaks = pretty(dat_raai$HOOGTE__MT, 5)) +
           scale_colour_manual(values = colors$Colour) +
           labs(title = naam,
                x = "Afstand tot de dijk (m)",
@@ -174,7 +174,7 @@ figuren_MONEOS <-
   nest() %>% 
   mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
 
-figuren_MONEOS$fig
+# figuren_MONEOS$fig
 
 walk2(str_c("Vast_", figuren_MONEOS$Naam), figuren_MONEOS$fig, 
       ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, "_", campagne, ".png"), 
@@ -191,7 +191,7 @@ figuren_opt <-
   nest() %>% 
   mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
 
-figuren_opt$fig
+# figuren_opt$fig
 
 walk2(str_c("Optioneel_", figuren_opt$Naam), figuren_opt$fig, 
       ~ggsave(.y, file=str_c(pad_figuren, "optioneel/", .x, "_", campagne, ".png"), 
