@@ -26,6 +26,8 @@ library(writexl)
 library(INBOtheme)
 library(rprojroot)
 
+library(DBI)
+
 conflicted::conflicts_prefer(dplyr::filter)
 
 ```
@@ -56,6 +58,20 @@ data_MONEOS <-
   read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_2023.xlsx"),
             sheet = "TOPOdata_MONEOSRAAIEN_INBO")
 
+```
+
+
+```{r selectie vaste MONEOS raaien met metingen in laatste jaar}
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  group_by(REEKSCODE) %>% 
+  mutate(meting = any(MeetCampagneJaar == campagne)) %>% 
+  ungroup() %>% 
+  filter(Campagne == "MONEOS",
+         meting == TRUE) %>% 
+  select(-meting)
+
 raaicodes <- 
   data_MONEOS %>% 
   distinct(REEKSCODE) %>% 
@@ -74,7 +90,6 @@ raaicodes <-
 #                 path = "Z:/")
  
 
-library(DBI)
 
 conn <- 
   dbConnect(odbc::odbc(),

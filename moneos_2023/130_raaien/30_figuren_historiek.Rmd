@@ -78,6 +78,26 @@ year_colors <-
 ```
 
 
+```{r selectie vaste MONEOS raaien met metingen in laatste jaar}
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  group_by(REEKSCODE) %>% 
+  mutate(meting = any(MeetCampagneJaar == campagne)) %>% 
+  ungroup() %>% 
+  filter(Campagne == "MONEOS",
+         meting == TRUE) %>% 
+  select(-meting)
+
+
+raaicodes <- 
+  data_MONEOS %>% 
+  distinct(REEKSCODE) %>% 
+  pull()
+
+```
+
+
 ```{r ecotoopgrenzen}
 
 tbl_waterstanden <-
@@ -91,27 +111,25 @@ data_MONEOS <-
   data_MONEOS %>%
   mutate(ecotoop = 
            case_when(
+             !is.na(Habitat) ~ Habitat,
              HOOGTE__MT > waterstand_HW85 ~ "schor",
-             HOOGTE__MT <= waterstand_HW85 & HOOGTE__MT > waterstand_DD_60 ~ "hoog slik",
-             Salzone == "Mesohalien" & HOOGTE__MT <= waterstand_DD_60 & HOOGTE__MT > waterstand_DD_25 ~ "middelhoog slik",
-             Salzone != "Mesohalien" & HOOGTE__MT <= waterstand_DD_60 & HOOGTE__MT > waterstand_DD_35 ~ "middelhoog slik",
-             Salzone == "Mesohalien" & HOOGTE__MT <= waterstand_DD_25 & HOOGTE__MT > waterstand_LW30 ~ "laag slik",
-             Salzone != "Mesohalien" & HOOGTE__MT <= waterstand_DD_35 & HOOGTE__MT > waterstand_LW30 ~ "laag slik",
-             HOOGTE__MT <= waterstand_LW30 ~ "subtidaal"))
+             HOOGTE__MT <= waterstand_HW85 ~ "slik")) %>%
+  mutate(ecotoop = 
+           case_when(
+            HOOGTE__MT < waterstand_LW30 ~ "subtidaal",
+            TRUE ~ ecotoop))
 
 ecotoopgrenzen <-
   data_MONEOS %>% 
   group_by(REEKSCODE, afstand_grens, Salzone) %>% 
-  summarise(grens_schor = max(distance_prof[ecotoop == "schor"], na.rm = TRUE),
-            grens_middelhoog_hoog = min(distance_prof[ecotoop == "middelhoog slik"], na.rm = TRUE),
-            grens_laag_middelhoog = min(distance_prof[ecotoop == "laag slik"], na.rm = TRUE),
-            grens_subtidaal = min(distance_prof[ecotoop == "subtidaal"], na.rm = TRUE)) %>% 
+  summarise(bovengrens = min(distance_prof[ecotoop == "schor"], na.rm = TRUE),
+            grens_schor = max(distance_prof[ecotoop == "schor" & MeetCampagneJaar == campagne], na.rm = TRUE),
+            grens_subtidaal = max(distance_prof[ecotoop == "slik" & MeetCampagneJaar == campagne], na.rm = TRUE)) %>% 
   ungroup() %>% 
   select(REEKSCODE, afstand_grens, Salzone, 
-         grens_schor, grens_middelhoog_hoog, grens_laag_middelhoog, grens_subtidaal) %>% 
+         bovengrens, grens_schor, grens_subtidaal) %>% 
   mutate(across(everything(), ~ifelse(is.infinite(.), NA, .)))
   
-
 ```
 
 
