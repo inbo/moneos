@@ -80,15 +80,14 @@ for(i in 1:nrow(meta_data)){
 
 Om de evolutie van de diversiteit van estuariene habitats in de Zeeschelde op te volgen vormt de ecotopenkaart, samen met haar basiskaarten de fysiotopenkaart en een geomorfologische kaart, het belangrijkste instrument.
 Deze kaarten worden voor de Beneden-Zeeschelde jaarlijks gemaakt en 3-jaarlijks voor de Boven-Zeeschelde, Rupel en Durme.
-Naast de ecotopenkaart `r laatste_jaar` van de Beneden-Zeeschelde, zal ook de ecotopenkaart 2019 van de Boven-Zeeschelde, Rupel en Durme besproken worden in dit MONEOSrapport.
-Voor de ecotopenkaart 2019 van de Beneden-Zeeschelde wordt verwezen naar Van Braeckel & Mertens (2021).
+In dit MONEOSrapport wordt de ecotopenkaart van `r laatste_jaar` van de Beneden-Zeeschelde besproken.
 In de ecotopenkaart worden habitatoppervlakten in natuurontwikkelingsprojecten (NOP's) zoals ontpolderingen, GGG's en dijkverleggingen mee opgenomen wanneer deze een open aansluiting hebben met de Zeeschelde.
 
 De essentie van een goed ecotopenstelsel is dat de juiste fysische grenzen bepaald zijn voor het potentieel voorkomen van specifieke levensgemeenschappen.
 In het tot nu toe toegepaste Zeeschelde ecotopenstelsel 1.0 werden subtidale (water) en litorale (slik) ecotopen vooralsnog uitsluitend op basis van diepte en overspoelingsregime onderscheiden, zonder ecologische validatie.
 Van Braeckel *et al* (2018; 2020) onderzochten ondertussen de relatie tussen abiotische omgevingskenmerken en het voorkomen van ongewervelde bodemdiergemeenschappen.
 Op basis van hun bevindingen werd het ecotopenstelsel Zeeschelde 2.0 voorgesteld.
-In deze rapportage wordt de ecotopenkaart voor de Beneden-Zeeschelde 2020 volgens beide ecotopenstelsels voorgesteld en vergeleken.
+In deze rapportage wordt de ecotopenkaart voor de Beneden-Zeeschelde volgens beide ecotopenstelsels voorgesteld en vergeleken. De kaart van het ecotopenstelsel 1.0 gaat terug vanaf `r laatste_jaar` tot `r vroegste_jaar`, terwijl de kaart van het ecotopenstelsel 2.0 maar teruggerekend is tot en met 2019. 
 
 ## Methodologie
 
@@ -144,9 +143,9 @@ De bovengrens van het hoog supralitoraal is ook de bovengrens van het estuarium 
 Pragmatisch werd de ecotopenkaart bovenaan afgeknipt op 7m TAW.
 
 In het verleden werd de categorie hoog supralitoraal ingevuld op basis van gekende hogere zones in combinatie met de vegetatiekaart.
-In 2019 en 2020 is het hoog supralitoraal ingevuld op basis van bovenstaande hoogtewaarden in het DTM (6,4/6,2/5,75 - 7m TAW).
-Dit heeft in alle kaarten een verschuiving veroorzaakt van schor of supralitoraal hard antropogeen naar hoog supralitoraal.
-De grote toename in hoog supralitoraal is dus het resultaat van een wijziging in de afbakeningsmethode en weerspiegelt geen natuurlijke evolutie.
+Vanaf 2019 tot en met `r laatste_jaar` is het hoog supralitoraal ingevuld op basis van bovenstaande hoogtewaarden in het DTM (6,4/6,2/5,75 - 7m TAW).
+Dit heeft in alle kaarten een verschuiving veroorzaakt van schor of supralitoraal hard antropogeen naar hoog supralitoraal van 2019 naar het daaropvolgend jaar.
+De grote toename in hoog supralitoraal is dus het resultaat van een wijziging in de afbakeningsmethode en weerspiegelt geen natuurlijke evolutie. Vanaf 2019 weerspiegelen de wijzigenen in het hoog supralitoraal opnieuw de natuurlijke evoluties.
 
 <br/>
 
@@ -288,7 +287,7 @@ Het grotendeel hiervan is het gevolg van kleine uitbreidingen in de GGG's, met n
 
 caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde tussen ", vroegste_jaar, " en ", laatste_jaar, ".")
 
-img_file <- paste0(pad_tabellen, "030_tabel_2_Oppervlakte_BEZ_2010_2020_E1.PNG")
+img_file <- paste0(pad_tabellen, "030_tabel_2_Oppervlakte_BEZ_2010_2021_E1.PNG")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
@@ -408,7 +407,7 @@ De overige 66.9% litoraal hard antropogeen heeft dus nog steeds een hellingsgraa
 
 caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde in ", laatste_jaar, " volgens de Zeeschelde ecotopen 2.0, in vergelijking met versie 1.0.")
 
-img_file <- paste0(pad_tabellen, "030_tabel_2_Oppervlakte_BEZ_2010_2020_E2.PNG")
+img_file <- paste0(pad_tabellen, "030_tabel_2_Oppervlakte_BEZ_2019_2021_E2.PNG")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
@@ -454,262 +453,6 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2020_vgl_2.png"))
 
 ```
 
-\newpage
-
-### Ecotopen van de Boven-Zeeschelde in 2019 (versie 1.0) {#BOZ}
-
-De ecotopenkaart van 2019 voor de Boven-Zeeschelde wordt weergegeven in (Figuur \@ref(fig:030-figuur-kaart-boz)).
-
-Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-BOZ) toont de oppervlaktes per ecotoop in de Boven-Zeeschelde voor de gekarteerde jaren vanaf `r vroegste_jaar`.
-Deze kaarten zijn steeds gemaakt om de drie jaar.
-De middellange en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-tabel-3-tabel-evolutie-BOZ) via de absolute verandering (ha) en de procentuele verandering (%) tussen de 2 jaren.
-Voor de middellange termijn evolutie wordt het huidige jaar vergeleken met het laatst gekarteerde jaar (`r 2019 - 3`), terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (`r vroegste_jaar`).
-
-In 2019 is het **sublitoraal** in de Boven-Zeeschelde voor elke diepteklasse afgenomen ten opzichte van 2016, wat leidt tot een totale afname van bijna 21 ha.
-Voor het ondiep en matig diep subtidaal zijn de oppervlaktes in 2019 lager dan in alle voorgaande jaren, terwijl het diep subtidaal enkel lager is dan in 2016, maar groter dan in de jaren daarvoor.
-Langsheen de gehele riviergeul is het laag slik uitgebreid ten koste van het sublitoraal.
-Deze afname in het sublitoraal is het gevolg van lagere laag waterniveaus door droogte.s
-
-In het **litoraal** is het slik zacht substraat toegenomen ten opzichte van 2016, ten koste van het sublitoraal (zie hierboven).
-Zowel het natuurlijk en antropogeen hard substraat slik zijn echter licht afgenomen.
-
-In het **supralitoraal** is een grote toename waargenomen van de oppervlakte hoog supralitoraal (21 ha).
-Dit heeft opnieuw te maken met de veranderde methodologie, waarbij grote delen schor nu als hoog supralitoraal geclassificeerd worden.
-Het ecotoop antropogeen is licht toegenomen, maar een daling in het supralitoraal hard antropogeen zorgt voor een totale daling van 7 ha in antropogeen hard substraat.
-
-<br/>
-
-```{r 030-tabel-2-tabel-oppervlakte-BOZ, results="asis", fig.show='hide', out.width="100%"}
-
-caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Boven-Zeeschelde tussen ", vroegste_jaar, " en 2019.")
-
-img_file <- paste0(pad_tabellen, "030_tabel_2_Oppervlakte_BOZ_2010_2019.PNG")
-
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
-```
-
-```{r 030-tabel-3-tabel-evolutie-BOZ, results="asis", fig.show='hide', out.width="100%"}
-
-caption_tab <- str_c("Lange termijn evolutie (tussen ", vroegste_jaar, " en 2019) en middellange termijn evolutie (tussen 2016 en 2019) in de Boven-Zeeschelde.")
-
-img_file <- paste0(pad_tabellen, "030_tabel_3_evolutie_BOZ.PNG")
-
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
-```
-
-Ook bij de Boven-Zeeschelde is het relevant om naar de 'enge' planimetrie van het estuarium te kijken, zonder de laterale uitbreidingen van de natuurontwikkelingsprojecten (zie [Ecotopen van de Beneden-Zeeschelde in `r laatste_jaar`](#BEZ)).
-Op deze manier wordt de evolutie van de ecotopen in de Boven-Zeeschelde onder rechtstreekse invloed van verandingen in de vaargeul en van het hydraulisch regime beter beschreven.
-De oppervlaktes van de ecotopen binnen de 'enge' planimetrie zijn weergegeven in Tabel \@ref(tab:030-tabel-4-tabel-eng-boz) en het verschil in evolutie binnen het gehele estuarien gebied en enkel de 'enge' planimetrie is te zien in Figuur \@ref(fig:030-figuur-evolutie-boz).
-
-Wat de korte termijn evolutie betreft (= verschil tussen 2019 en `r 2019 - 3`), is er binnen de 'enge' planimetrie een afname van sublitoraal die overeenkomt met de veranderingen in de volledige planimetrie.
-Dit wil zeggen dat de daling van het sublitoraal voornamelijk in de vaargeul plaatsvond.
-Hetzelfde geldt voor de toename in laag en middelhoog slik zacht substraat.
-De toename in het hoog slik zacht substraat uit de volledige planimetrie is echter niet zichtbaar in de evolutie van de 'enge' planimetrie, wat wil zeggen dat deze toename vooral in de NOP's plaatsvond.
-
-Het schor is binnen de 'enge' planimetrie wat gedaald, terwijl in het volledige gebied een stijging plaatsvond.
-Schortoename in de NOP's heeft dus de schorafname binnen de 'enge' planimetrie wat gecompenseerd.
-De evolutie van het hoog supralitoraal en antropogeen hard substraat is binnen de 'enge' planimetrie gelijkaardig aan de evolutie in het volledige gebied.
-
-<br/>
-
-```{r 030-tabel-4-tabel-eng-boz, results="asis", fig.show='hide', out.width="100%"}
-
-caption_tab <- str_c("Ecotooparealen in de ‘enge planimetrie’ van de  Boven‐Zeeschelde zonder de NOP’s of ontpolderingen, dijkverleggingen en aantakkingen tussen ", vroegste_jaar, " en 2019.")
-
-img_file <- paste0(pad_tabellen, "030_tabel4_Oppervlakte_EngePlanimetrie_BOZ_2019.PNG")
-
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
-```
-
-```{r 030-figuur-evolutie-boz, fig.cap=figuur_evolutie_boz, out.width="100%"}
-
-figuur_evolutie_boz <- "Temporele evolutie van de oppervlakte van de ecologisch belangrijke ecotopen in de Boven-Zeeschelde met en zonder NOP's (natuurontwikkelingsprojecten zoals ontpolderingen, GGG’s en dijkverleggingen)"
-
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_BOZ_1_Evolutie_NOPs.png"))
-
-```
-
-\newpage
-
-```{r 030-figuur-kaart-boz, fig.cap=figuur_ecotopenkaart_boz, out.width="100%"}
-
-figuur_ecotopenkaart_boz <- "Ecotopenkaart 2019 Boven-Zeeschelde versie 1.0"
-
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_BOZ_2019.png"))
-
-```
-
-\newpage
-
-### Ecotopen van Rupel en Durme in 2019 (versie 1.0)
-
-De Rupel en de Durme worden samen met de Boven-Zeeschelde elke drie jaar gekarteerd.
-De resultaten worden hier apart besproken.
-
-#### Rupel
-
-De ecotopenkaart van 2019 voor de Rupel wordt weergegeven in (Figuur \@ref(fig:030-figuur-kaart-rupel)).
-
-In de Rupel is het **sublitoraal** licht afgenomen in 2019 ten opzichte van 2016 (Tabel \@ref(tab:030-tabel-3-tabel-evolutie-Rupel)).
-
-In het **litoraal** is het slik zacht substraat geheel licht toegenomen ten opzichte van 2016.
-Zowel het natuurlijk en antropogeen hard substraat slik is licht afgenomen, waarbij het laag en hoog slik hard natuurlijk beide niet meer aanwezig zijn (Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-Rupel)).
-Het laag slik hard antropogeen is met meer dan de helft verminderd.
-
-In het **supralitoraal** zijn de oppervlaktes vrij stabiel gebleven in absolute waarden.
-Het oppervlak aan potentiële pionierzone is relatief veel gestegen in Tabel \@ref(tab:030-tabel-3-tabel-evolutie-Rupel), dit komt omdat het van 0.003 naar 0.03 ha is gegaan.
-
-<br/>
-
-```{r 030-tabel-2-tabel-oppervlakte-Rupel, results="asis", fig.show='hide', out.width="100%"}
-
-caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Rupel tussen ", vroegste_jaar, " en 2019.")
-
-img_file <- paste0(pad_tabellen, "030_tabel_2_Oppervlakte_Rupel_2010_2019.PNG")
-
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
-```
-
-```{r 030-tabel-3-tabel-evolutie-Rupel, results="asis", fig.show='hide', out.width="100%"}
-
-caption_tab <- str_c("Lange termijn evolutie (tussen ", vroegste_jaar, " en 2019) en middellange termijn evolutie (tussen 2016 en 2019) in de Rupel.")
-
-img_file <- paste0(pad_tabellen, "030_tabel_3_evolutie_Rupel.PNG")
-
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
-```
-
-\newpage
-
-```{r 030-figuur-kaart-rupel, fig.cap=figuur_ecotopenkaart_rupel, out.width="100%"}
-
-figuur_ecotopenkaart_rupel <- "Ecotopenkaart 2019 Rupel"
-
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_Rupel_2019.png"))
-
-```
-
-\newpage
-
-#### Durme
-
-De ecotopenkaart van 2019 voor de Durme wordt weergegeven in (Figuur \@ref(fig:030-figuur-kaart-durme)).
-
-In de Durme is het **sublitoraal** licht afgenomen in 2019 ten opzichte van 2016, voornamelijk door een afname in het ondiep subtidaal (Tabel \@ref(tab:030-tabel-3-tabel-evolutie-Durme)).
-Deze afname is grotendeels te zien stroomopwaarts, waar het ondiep subtidaal vervangen is door potentiële pionierzone.
-
-In het **litoraal** is het laag slik zacht substraat afgenomen ten opzichte van 2016, terwijl het middelhoog slik zacht substraat is toegenomen.
-Daardoor is het totaal slik zacht substraat licht toegenomen.
-Het slik antropogeen hard substraat is vrij stabiel gebleven en het natuurlijk hard substraat is afwezig zoals in voorgaande jaren (Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-Durme)).
-
-In het **supralitoraal** is het schor licht afgenomen, terwijl het hoog supralitoraal en de potentiële pionierzone zijn toegenomen.
-De toename in potentiële pionierzone is, zoals eerder vermeld, voornamelijk stroomwaarts ten koste van het ondiep subtidaal.
-Het hoog supralitoraal is ten koste van het schor toegenomen, opnieuw door een verandering van de methodologie ter bepaling van het hoog supralitoraal.
-
-<br/>
-
-```{r 030-tabel-2-tabel-oppervlakte-Durme, results="asis", fig.show='hide', out.width="100%"}
-
-caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Durme tussen ", vroegste_jaar, " en 2019.")
-
-img_file <- paste0(pad_tabellen, "030_tabel_2_Oppervlakte_Durme_2010_2019.PNG")
-
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
-```
-
-```{r 030-tabel-3-tabel-evolutie-Durme, results="asis", fig.show='hide', out.width="100%"}
-
-caption_tab <- str_c("Lange termijn evolutie (tussen ", vroegste_jaar, " en 2019) en midellange termijn evolutie (tussen 2016 en 2019) in de Durme.")
-
-img_file <- paste0(pad_tabellen, "030_tabel_3_evolutie_Durme.PNG")
-
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
-```
-
-\newpage
-
-```{r 030-figuur-kaart-durme, fig.cap=figuur_ecotopenkaart_durme, out.width="100%"}
-
-figuur_ecotopenkaart_durme <- "Ecotopenkaart 2019 Durme"
-
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_Durme_2019.png"))
-
-```
-
-\newpage
-
-### Ecotopen van de Ringvaart en tijarm Zwijnaarde (versie 1.0)
-
-Ook de Ringvaart en de tijarm Zwijnaarde worden gekarteerd samen met de Boven-Zeeschelde, dus elke drie jaar.
-De kartering hiervan is echter pas begonnen in 2016, nu is ook 2019 aangemaakt.
-De ecotopenkaart van 2019 wordt weergegeven in (Figuur \@ref(fig:030-figuur-kaart-tijarm)).
-
-Het **sublitoraal** is van 2016 naar 2019 licht afgenomen, doordat de daling in het matig diep subtidaal groter is dan de stijging in het ondiep subtidaal (Tabel \@ref(tab:030-tabel-3-tabel-evolutie-RingvaartTijarmZw)).
-
-In het **litoraal** is het slik zacht substraat licht toegenomen door een stijging in het laag slik zacht substraat die wat groter is dan de daling van het middelhoog slik zacht substraat.
-Het slik hard antropogeen is in totaal licht afgenomen in 2019.
-In 2016 was er nog geen onderverdeling in laag, middelhoog en hoog slik hard antropogeen, maar in 2019 zijn deze afzonderlijke oppervlaktes wel berekend (Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-RingvaartTijarmZw)).
-
-In het **supralitoraal** is het schor licht afgenomen.
-Het hoog supralitoraal is relatief erg veel gestegen, opnieuw door een verschil in berekeningswijze tussen 2016 en 2019.
-In totaal bedraagt het hoog supralitoraal in 2019 iets meer dan 1.7 ha, terwijl dit in 2016 bijna volledig afwezig was.
-
-<br/>
-
-```{r 030-tabel-2-tabel-oppervlakte-RingvaartTijarmZw, results="asis", fig.show='hide', out.width="100%"}
-
-caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Ringvaart en tijarm Zwijnaarde tussen ", vroegste_jaar, " en 2019.")
-
-img_file <- paste0(pad_tabellen, "030_tabel_2_Oppervlakte_RingvaartTijarmZw_2010_2019.PNG")
-
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
-```
-
-```{r 030-tabel-3-tabel-evolutie-RingvaartTijarmZw, results="asis", fig.show='hide', out.width="100%"}
-
-caption_tab <- str_c("Middellange termijn evolutie (tussen 2016 en 2019) in de Ringvaart en tijarm Zwijnaarde.")
-
-img_file <- paste0(pad_tabellen, "030_tabel_3_evolutie_RingvaartTijarmZw.PNG")
-
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
-```
-
-\newpage
-
-```{r 030-figuur-kaart-tijarm, fig.cap=figuur_ecotopenkaart_tijarm, out.width="100%"}
-
-figuur_ecotopenkaart_tijarm <- "Ecotopenkaart 2019 Ringvaart Tijarm Zwijnaarde"
-
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_TijarmZw_2019.png"))
-
-```
 
 \newpage
 
