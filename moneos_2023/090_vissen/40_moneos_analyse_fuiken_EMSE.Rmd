@@ -97,7 +97,7 @@ locatie_scheldezone <-
 levels_locatie <- levels(locatie_scheldezone$locatie)
 
 levels_seizoen_locatie <- 
-  sapply(c("voorjaar", "zomer", "najaar", "winter"),
+  sapply(c("voorjaar", "zomer", "najaar"),
          function(x) paste(x, levels_locatie, sep = "_")) %>%
   c()
 
@@ -117,7 +117,8 @@ levels_scheldezone_full <-
 
 filename <- 
   list.files(path = pad_data,
-             pattern = "fuikdata_Zeeschelde_VLIZ")
+             pattern = "fuikdata_Zeeschelde_VLIZ") %>% 
+  .[str_detect(., "~\\$", negate = TRUE)]
 
 fuiken_aantal <- 
   read_xlsx(str_c(pad_data, filename),
@@ -240,7 +241,7 @@ get_lab_aantal <-
     if (mult_fuik > 1)
       lab <- expr(paste("gem. aantal ind. / ", !!mult_fuik, "fuikdagen"))
     else
-      lab <- expr(paste("gem. aantal ind. / fuikdagen"))
+      lab <- expr(paste("gem. aantal ind. / fuikdag"))
     lab
   }
 

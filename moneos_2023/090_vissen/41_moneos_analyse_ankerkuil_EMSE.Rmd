@@ -115,7 +115,8 @@ levels_scheldezone_full <-
 
 (filename <- 
   list.files(path = pad_data,
-             pattern = "ankerkuil_Zeeschelde_VLIZ"))
+             pattern = "ankerkuil_Zeeschelde_VLIZ")) %>% 
+  .[str_detect(., "~\\$", negate = TRUE)]
 
 ankerkuil_aantal <- 
   read_xlsx(str_c(pad_data, filename),
