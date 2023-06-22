@@ -78,6 +78,43 @@ year_colors <-
 ```
 
 
+```{r ecotoopgrenzen}
+
+tbl_waterstanden <-
+  read_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  left_join(tbl_waterstanden)
+
+data_MONEOS <-
+  data_MONEOS %>%
+  mutate(ecotoop = 
+           case_when(
+             HOOGTE__MT > waterstand_HW85 ~ "schor",
+             HOOGTE__MT <= waterstand_HW85 & HOOGTE__MT > waterstand_DD_60 ~ "hoog slik",
+             Salzone == "Mesohalien" & HOOGTE__MT <= waterstand_DD_60 & HOOGTE__MT > waterstand_DD_25 ~ "middelhoog slik",
+             Salzone != "Mesohalien" & HOOGTE__MT <= waterstand_DD_60 & HOOGTE__MT > waterstand_DD_35 ~ "middelhoog slik",
+             Salzone == "Mesohalien" & HOOGTE__MT <= waterstand_DD_25 & HOOGTE__MT > waterstand_LW30 ~ "laag slik",
+             Salzone != "Mesohalien" & HOOGTE__MT <= waterstand_DD_35 & HOOGTE__MT > waterstand_LW30 ~ "laag slik",
+             HOOGTE__MT <= waterstand_LW30 ~ "subtidaal"))
+
+ecotoopgrenzen <-
+  data_MONEOS %>% 
+  group_by(REEKSCODE, afstand_grens, Salzone) %>% 
+  summarise(grens_schor = max(distance_prof[ecotoop == "schor"], na.rm = TRUE),
+            grens_middelhoog_hoog = min(distance_prof[ecotoop == "middelhoog slik"], na.rm = TRUE),
+            grens_laag_middelhoog = min(distance_prof[ecotoop == "laag slik"], na.rm = TRUE),
+            grens_subtidaal = min(distance_prof[ecotoop == "subtidaal"], na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  select(REEKSCODE, afstand_grens, Salzone, 
+         grens_schor, grens_middelhoog_hoog, grens_laag_middelhoog, grens_subtidaal) %>% 
+  mutate(across(everything(), ~ifelse(is.infinite(.), NA, .)))
+  
+
+```
+
+
 ```{r functie figuren}
 
 fig_raai <- 
@@ -89,6 +126,8 @@ fig_raai <-
              Month = month(DATUM),
              Datum = factor(DATUM)) %>% 
       arrange(Datum, distance_prof)
+    RKSC <-
+      unique(dat_raai$REEKSCODE)
     
         # dat_last <-
         #   dat %>%
@@ -100,6 +139,18 @@ fig_raai <-
           left_join(year_colors)
         p <- 
           ggplot(dat_raai, aes(distance_prof, HOOGTE__MT, group = Datum, colour = Datum)) +  
+          geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+                     aes(xintercept = grens_schor),
+                     linetype = 2, color = "grey50", linewidth = 2) +
+          geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+                     aes(xintercept = grens_laag_middelhoog),
+                     linetype = 3, color = "grey50", linewidth = 1.5) +
+          geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+                     aes(xintercept = grens_middelhoog_hoog),
+                     linetype = 3, color = "grey50", linewidth = 1.5) +
+          geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+                     aes(xintercept = grens_subtidaal),
+                     linetype = 2, color = "grey50", linewidth = 2) +
           geom_line(linewidth = 1) + 
           geom_point(size = 2) + 
           # geom_line(data = dat_last, size = 1) +
@@ -174,7 +225,7 @@ figuren_MONEOS <-
   nest() %>% 
   mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
 
-# figuren_MONEOS$fig
+figuren_MONEOS$fig[[1]]
 
 walk2(str_c("Vast_", figuren_MONEOS$Naam), figuren_MONEOS$fig, 
       ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, "_", campagne, ".png"), 
