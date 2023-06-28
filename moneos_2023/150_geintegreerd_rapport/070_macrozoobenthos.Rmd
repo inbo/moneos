@@ -64,7 +64,7 @@ __Frank Van de Meutter__, Jan Soors, Dimitri Buerms, Charles Lefranc, Olja Bezde
 
 
 ## Inleiding
-Een beschrijving van de historische benthosgegevens (1999, 2002, 2005) is te vinden in Speybroeck et al. (2014). Sinds 2008 wordt jaarlijks op basis van een random stratified design benthos bemonsterd. 
+Een beschrijving van de historische benthosgegevens in de Zeeschelde (1999, 2002, 2005) die verzameld zijn met het oog op een systeemmonitoring, is te vinden in Speybroeck et al. (2014). Sinds 2008 wordt jaarlijks op basis van een random stratified design benthos bemonsterd. 
 De gegevens van 2008 tot en met 2021 worden geleverd in een Excel-bestand (benthos_data2008-2021_rapportage2023.xlsx) met volgende werkbladen.
 
   * macrobenthos – densiteit en biomassa per staalnamelocatie
@@ -76,12 +76,12 @@ De gegevens van 2008 tot en met 2021 worden geleverd in een Excel-bestand (benth
 ## Materiaal en methode
 
 ### Strategie
-Sinds 2008 wordt een stratified random sampling design toegepast. Als hoogste hiërarchisch niveau binnen de stratificatie worden de 7 waterlichamen genomen, zoals deze voor monitoring en beoordeling in de context van de Kaderrichtlijn Water (KRW) worden onderscheiden. De benaming verschilt echter van de vorige rapporatages en refereert nu aan de saliniteit en verblijftijd in de verschillende zones. In de Oligohaliene zone wordt de Rupel echter apart beschouwd en ook de Dijle en Zenne worden als aparte eenheden behandeld. Per waterlichaam wordt vervolgens een opdeling gemaakt per fysiotoop, met de uitzondering dat hoog slik en slik in het supralitoraal (potentiële pionierzone) samen genomen worden. Dit resulteert in een gelijkmatige spreiding van de staalnamelocaties. Als basis bij de randomisatie werd de fysiotopenkaart van 2019 gebruikt.
-De fysiotoop per waterlichaam fungeert als kleinste eenheid van informatie. De stalen van verschillende locaties binnen een zelfde fysiotoop x  waterlichaam worden als replica’s voor dat fysiotoop beschouwd.
+Sinds 2008 wordt een stratified random sampling design toegepast. Als hoogste hiërarchisch niveau binnen de stratificatie worden de 7 waterlichamen genomen, zoals deze voor monitoring en beoordeling in de context van de Kaderrichtlijn Water (KRW) worden onderscheiden. De benaming verschilt echter van de vorige rapportages en refereert nu aan de saliniteit en verblijftijd in de verschillende zones. In de Oligohaliene zone wordt de Rupel echter apart beschouwd en ook de Dijle en Zenne worden als aparte eenheden behandeld. Per waterlichaam wordt vervolgens een opdeling gemaakt per fysiotoop, met de uitzondering dat hoog slik en slik in het supralitoraal (potentiële pionierzone) samen genomen worden. Dit resulteert in een gelijkmatige spreiding van de staalnamelocaties. Als basis bij de randomisatie werd de fysiotopenkaart van 2019 gebruikt.
+De fysiotoop per waterlichaam fungeert als kleinste eenheid van informatie. De stalen van verschillende locaties binnen een zelfde fysiotoop x waterlichaam worden als replica’s voor dat fysiotoop beschouwd.
 In de Zeeschelde en de Rupel werden de antropogene harde zones (steenbestortingen) afzonderlijk onderscheiden. Ook werden twee delen van waterlichamen afgescheiden omwille van de enigszins afwijkende aard van hun habitats en fauna. De zone Zoet kort verblijf werd opgedeeld in het traject Melle-Gentbrugge en traject Zwijnaarde tot ringvaart ("tijarmen") versus de rest van het KRW-waterlichaam, terwijl de Dijle stroomaf van de Zennemonding (Zennegat) werd onderscheiden van de rest van de Dijle. In de grafieken in de data-exploratie worden deze echter samengevoegd.
-Tot en met 2017 werd het volledige estuarium jaarlijks bemonsterd. Vanaf 2018 worden de zijrivieren Dijle, Nete en Zenne slechts 3-jaarlijks bemonsterd. Het jaar 2020 was zo een jaar met volledige staalname (volgende volledige staalname in 2023).
+Tot en met 2017 werd het volledige estuarium jaarlijks bemonsterd. Vanaf 2018 worden de zijrivieren Dijle, Nete en Zenne slechts 3-jaarlijks bemonsterd. Een nolledige staalname gebeurde in 2020; de volgende volledige staalname zal gebeuren in 2023.
 Jaarlijks worden nieuwe random vastgelegde staalnamelocaties gekozen binnen elk van de strata. 
-In principe worden 5 locaties per stratum (combinatie van fysiotoop en waterlichaam) bemonsterd. Dit aantal wordt aangepast in sommige gevallen in functie van de relatieve en absolute areaalgrootte van de fysiotopen binnen de waterlichamen. Hoewel tijdens het nemen van de stalen veel aandacht gaat naar het zo volledig mogelijk uitvoeren van de vooropgezette design, kan doorgaans een klein aantal stalen niet genomen worden door technische problemen of onverwachet omstandigheden (bijvoorbeeld grote ongekende velden breuksteen subtidaal die de staalname onmogelijk maken). In `r laatstejaar` werden uiteindelijk `r aantal_stalen` stalen genomen. Een overzicht van de stalen per stratum is weergegeven in Tabel \@ref(tab:070-staalnamelocaties).
+In principe worden 5 locaties per stratum (combinatie van fysiotoop en waterlichaam) bemonsterd. Dit aantal wordt aangepast in sommige gevallen in functie van de relatieve en absolute areaalgrootte van de fysiotopen binnen de waterlichamen. Hoewel tijdens het nemen van de stalen veel aandacht gaat naar het zo volledig mogelijk uitvoeren van de vooropgezette design, kan doorgaans een klein aantal stalen niet genomen worden door technische problemen of onvoorziene omstandigheden (bijvoorbeeld grote ongekende velden breuksteen subtidaal die de staalname onmogelijk maken). In `r laatstejaar` werden uiteindelijk `r aantal_stalen` stalen genomen. Een overzicht van de stalen per stratum is weergegeven in Tabel \@ref(tab:070-staalnamelocaties).
 
 
 
@@ -97,7 +97,7 @@ tabel_x_waarden <-
 naam_tabel <-"tabel_staalnamelocaties"
 
 # hoofding tabel
-caption_staalnamelocaties <- "Aantal stalen per stratum in 2020."
+caption_staalnamelocaties <- "Aantal stalen per stratum in 2021."
 
 # lege tabel om de hoofding weer te geven (trukje om hoofding en kruisverwijzingen correct weer te geven in Word)
 #knitr::kable(NULL, caption = caption_staalnamelocaties)
@@ -125,7 +125,7 @@ We onderscheiden twee soorten benthosstalen.
 *	intertidaal: 1 steekbuisstaal (diameter: 4,5cm) tot op een diepte van 15cm
 *	subtidaal: 1 steekbuisstaal uit een Reineck box-corer staal (diameter: 4,5cm) tot op een diepte van 15cm (in het box-corer staal).
 
-**Oligochaetenidentificatiestaal (OID)**: elke drie jaar (2014, 2017, 2020 …) wordt aanvullend een tweede benthosstaal genomen. Dit staal wordt genomen in functie van de identificatie van oligochaeten (OID). Het staal wordt op dezelfde manier genomen als het basisstaal. De OID gegevens voor staalnamejaar 2020 zullen besproken worden in de rapportage 2023.
+**Oligochaetenidentificatiestaal (OID)**: elke drie jaar (2014, 2017, 2020 …) werd tot en met 2017 een aanvullend een tweede benthosstaal genomen. Dit staal wordt genomen in functie van de identificatie van oligochaeten (OID). Vanad 2020 gebeurt de determinatie echter op de oligochaeten die verzameld werden in het basisstaal. Wanneer de Oligochaeten apart getrieerd zijn voor determinatie noemen we deze oligochaetenfractie wel opnieuw het OID staal. Het staal werd op dezelfde manier genomen als het basisstaal. De OID gegevens voor staalnamejaar 2020 waren te laat beschikbaar en worden daarom besproken in deze rapportage.
 
 Beide benthosstalen (BS, OID) worden gefixeerd (F-Solv 50%). 
 Bij elk benthosstaal wordt jaarlijks ook een **sedimentstaal** genomen met een sedimentcorer (diameter 2 cm zie ook hoofdstuk 6.2) tot 10 cm diepte in het substraat (intertidaal) of in het box-corer sample (subtidaal). Dit wordt vervolgens ter bewaring ingevroren.
@@ -150,18 +150,18 @@ Hieronder geven we de chronologie van handelingen bij de verwerking van elk type
 *	uitselecteren van fauna 
 *	determineren van 25 individuen Oligochaeta per zeeffractie tot op het laagst mogelijke taxonomische niveau + tellen totaal aantal wormen in het staal
 *	geen biomassabepaling per soort; totale oligochaetenbiomassa wordt bepaald in BS
-! Dit staal dient dus enkel voor het determineren van oligochaeten!
+! Dit staal dient dus enkel voor het determineren van oligochaeten! Het bepalen van de soortspecfieke biomassa en densiteit gebeurt door de totale biomassa Oligochaeta in het BS staal te alloceren aan de verschillende taxa volgens hun relatieve aantallen in het OID staal. Deze methode houdt geen rekening met soortspecifieke biomassa's en is dus benaderend. 
 
 
 ## Resultaten
-We bespreken hieronder de verkennende analyses van de jaarlijkse standaard montoringsinspanning (BS stalen) die jaarlijks gerapporteerd wordt.
+We bespreken hieronder de verkennende analyses van de jaarlijkse standaard monitoringsinspanning (BS stalen) die jaarlijks gerapporteerd wordt.
 
-### Resultaten macrozoöbenthos 2020
+### Resultaten macrozoöbenthos 2021
 #### Densiteit en biomassa
 
-De densiteit van het macrozoöbenthos in het Zeeschelde estuarium is in de recente periode relatief stabiel (Figuur \@ref(fig:070-figuur10-soorten), \@ref(fig:070-figuur11-soorten)). De meeste veranderingen in 2020 vallen binnen de langjarige variatie. Na recordjaar 2019 in de zone Zoet kort verblijf daalden de waarden weer iets, maar ze blijven wel de hoogste in het Zeeschelde estuarium. Die hoge waarden komen volledig op het conto van de kreekvormige aantakkingen (tijarmen) van Gentbrugge-Melle en in mindere mate van de tijarm Zwijnaarde. De zijrivieren vertoonden matig hoge densiteiten binnen de variatie van het laatste decennium.
-De biomassa van het macrozoöbenthos in 2020 was zowel in de Zeeschelde als in de zijrivieren eerder hoog in vergelijking met de voorbije jaren. De opvallende stijging in de zone Saliniteitsgradiënt (Zeeschelde IV, ongeveer Antwerpen tot de Nederlandse grens) in 2019 zette zich door in 2020.
-Het aandeel lege stalen bleef vrij stabiel behalve in de Oligohaliene zone, de zone Saliniteitsgradiënt, de Rupel en de Durme waar een vrij sterke (>10%) toename van het aandeel lage stalen werd vastgesteld (Figuur \@ref(fig:070-figuur12-soorten)). 
+De densiteit van het macrozoöbenthos in het Zeeschelde estuarium is in de recente periode relatief stabiel (Figuur \@ref(fig:070-figuur10-soorten), \@ref(fig:070-figuur11-soorten)). Omdat deze parameter inherent grote fluctuaties ondergaat, wordt deze beoordeeld op zijn logaritmisch verloop. De veranderingen in 2021 vallen binnen de langjarige variatie. Na recordjaar 2019 in de zone Zoet kort verblijf daalden de waarden twee jaar op rij, maar ze blijven wel de hoogste in het Zeeschelde estuarium. Die hoge waarden komen volledig op het conto van de kreekvormige aantakkingen (tijarmen) van Gentbrugge-Melle en in mindere mate van de tijarm Zwijnaarde. De zijrivieren vertoonden matig hoge densiteiten binnen de variatie van het laatste decennium.
+De biomassa dichtheid (g per m²) van het macrozoöbenthos in 2021 was vrij hoog in de zijrivieren, maar eerder laag in de Zeeschelde, met de belangrijke uitzondering van de zone Saliniteitsgradiënt. De opvallende stijging in de zone Saliniteitsgradiënt (Zeeschelde IV, ongeveer Antwerpen tot de Nederlandse grens) die startte in 2019 zette zich voor het derde opeenvolgende jaar door. In de zone Zoet kort verblijf lijkt een einde gekomen aan een periode van zeer hoge biomassa dichtheid sinds 2015. De biomassa dichtheid viel terug tot waarden die we hier vóór 2015 noteerden. Het wordt interessant om op te volgen of dit om een tijdelijke dip gaat of om een structurele trend.
+Het aandeel lege stalen was opvallend laag voor de meeste zones, behalve in de oligohaliene zone waar voor het tweede jaar op rij bijna 40% lage stalen werden vastgesteld (Figuur \@ref(fig:070-figuur12-soorten)). 
 ```{r 070-figuur10-soorten, fig.cap=caption_regressie10, out.width="100%"}
 caption_regressie10 <- "Gemiddelde densiteit (lijn) aan macrozoöbenthos per waterlichaam opgedeeld in subtidaal en intertidaal. De spreiding rond de lijn wordt begrensd door het 1ste quartiel en 3de quartiel. "
 
@@ -183,12 +183,8 @@ knitr::include_graphics(paste0(pad_figuren, "070-figuur-aandeel-lege-stalen.jpg"
 ```
 <br/>
 
-Door de vastgestelde biomassawaarden (in g per m²) te vermenigvuldigen met de aanwezige oppervlakte aan verschillende fysiotopen, kunnen we de totale, in het systeem beschikbare, biomassa berekenen. Voor de berekening werden de ecotoopoppervlaktes gebruikt van de jaargangen waarvoor gebiedsdekkende ecotoopkaarten voorhanden waren (2010, 2013, 2016,2019). De oppervlaktes uit kaartjaar 2010 werden gelinkt aan de benthosjaren voor 2012. De oppervlaktes uit kaartjaar 2013 werden gelinkt aan de benthosjaren 2012-2014, de oppervlaktes uit kaartjaar 2016 werden gelinkt aan de benthosjaren 2015-2017 en de oppervlaktes uit kaartjaar 2019 werden gelinkt aan de benthosjaren 2018-2020.  
-De systeembiomassa (Figuur \@ref(fig:070-figuur13)) kende een dip in 2017 voor het stroomafwaartse deel van het estuarium vanaf Durme, Rupel en de zone Saliniteitsgradiënt waarna deze sterk opveerden in 2018 wat zich daarna doorzette tot en met 2020. De aanhoudende hoge systeembiomassa van de Zeeschelde sinds 2017 was in 2020 volledig toe te schrijven aan de zone Saliniteitsgradiënt. Aangezien er geen noemenswaardige fysiotoop oppervlakteveranderingen gebeurden is de toename volledig toe te schrijven aan een effectieve toename van benthosbiomassa in dit deel van de Zeeschelde.
-Deze toename komt vrijwel helemaal op het conto van een exotische nieuwkomer, de brakwaterkorfschelp (*Potamocorbula amurensis*) die in 2018 voor het eerst is vastgesteld in de Zeeschelde (meteen de ook eerste vondst in Europa, Dumoulin & Langeraert, 2020). De soort breidt sindsdien sterk uit. Daarnaast werden ook van de veelkleurige zeeduizendpoot (*Hediste diversicolor*) en het nonnetje (*Macoma balthica*) in 2020 hoge biomassawaardes vastgesteld. Doordat de zone Saliniteitsgradiënt (veruit) de grootste fysiotoopoppervlaktes heeft in de Zeeschelde heeft dit alles een grote impact op de totale systeembiomassa. Deze steeg ook in 2020 verder tot een totaal van 42.88 ton droge stof, waarmee de evaluatiegrenswaarde ruim gehaald werd. De verdeling van de biomassa over de verschillende zones van het estuarium wijkt wel af van de doelstellingen (zie Figuur \@ref(fig:070-figuur13)).
-
-De consequentie van de dip in 2017 was dat de doelstelling van 30 ton droge stof systeembiomassa voor intertidaal macrozoöbenthos in de Zeeschelde niet gehaald werd. In 2018 werd de doelstelling opnieuw gehaald, en in 2019 steeg deze verder door tot een niveau van bijna 38 ton droge stof.
-Zeeschelde II, III en Rupel scoren zeer laag en halen nauwelijks of niet de vooropgestelde minimumgrens van 2 ton per waterlichaam.
+Door de vastgestelde biomassa dichtheidswaarden (in g per m²) te vermenigvuldigen met de aanwezige oppervlakte aan verschillende fysiotopen, kunnen we de totale, in het systeem aanwezige, biomassa macrozoöbenthos berekenen. Voor de berekening werden de ecotoopoppervlaktes gebruikt van de jaargangen waarvoor gebiedsdekkende ecotoopkaarten voorhanden waren (2010, 2013, 2016,2019). De oppervlaktes uit kaartjaar 2010 werden gelinkt aan de benthosjaren vóór 2012. De oppervlaktes uit kaartjaar 2013 werden gelinkt aan de benthosjaren 2012-2014, de oppervlaktes uit kaartjaar 2016 werden gelinkt aan de benthosjaren 2015-2017 en de oppervlaktes uit kaartjaar 2019 werden gelinkt aan de benthosjaren 2018-2020. Voor 2021 werden de fysiotoopoppervlaktes voor 2021 gebruikt. 
+De systeembiomassa (Figuur \@ref(fig:070-figuur13)) kende een dip in 2017 voor het stroomafwaartse deel van het estuarium vanaf Durme, Rupel en de zone Saliniteitsgradiënt waarna deze sterk opveerden in 2018 wat zich daarna doorzette tot en met 2021 en culimineerde in een nieuw maximum voor de Zeeschelde sinds de start van de monitoring in 2008. 
 
 ```{r 070-figuur13, fig.cap=caption_regressie13, out.width="70%"}
 caption_regressie13 <- "Gesommeerd totaal van de gemiddelden per stratum van de systeembiomassa per waterlichaam en voor de totale Zeeschelde, uitgedrukt in ton asvrij drooggewicht.
@@ -199,16 +195,45 @@ knitr::include_graphics(paste0(pad_figuren, "070-figuur-intertidalesysteembiomas
 
 <br/>
 
+De aanhoudende hoge systeembiomassa van de Zeeschelde sinds 2017 was met name in de periode 2019 tot en met 2021 volledig toe te schrijven aan de zone Saliniteitsgradiënt. Aangezien er geen noemenswaardige fysiotoopoppervlakteveranderingen gebeurden is de toename volledig toe te schrijven aan een effectieve toename van macrozoöbenthosbiomassa in dit deel van de Zeeschelde.
+Deze toename komt helemaal op het conto van de Bivalvia (zie Figuur \@ref(fig:070-figuur13b)). In de eerste plaats is er de vestiging van een exotische nieuwkomer, de brakwaterkorfschelp (*Potamocorbula amurensis*) die in 2018 voor het eerst is vastgesteld in de Zeeschelde (meteen de ook eerste vondst in Europa, Dumoulin & Langeraert, 2020). De soort breidt sindsdien sterk uit en was vorig jaar (2020) al verantwoordelijk voor ongeveer 17% van de intertidale systeembiomassa macrozoöbenthos in de Zeeschelde. Maar ook andere bivalven doen het goed, met hoge aantallen van het Nonnetje (*Limecola balthica*) in 2020, en vooral een hoge biomassa dichtheid van de Platte slijkgaper in 2021 (*Scrobicularia plana*) (zie Figuur \@ref(fig:070-figuur13c)). Het is de eerste keer dat we deze tweekleppige vaststellen tijdens de monitoring, maar we zien de aantallen van deze in hoofdzaak mariene soort, die normaalgezien in zeer lage aantallen gezien wordt, al enkele jaren fors toenemen in de Zeeschelde. 
+Een belangrijke opmerking bij de trends van de bivalven is dat de gebruikte staalnamemethode met een erg smalle steekbuis niet geschikt is om organismen van de grootte en de ruimtelijke distributie van bivalven te bemonsteren. Toevalseffecten spelen dan een grote rol waardoor trends minder stabiele zijn tussen jaren. Zo is de brakwaterkorfschelp nog steeds in grote aantallen aanwezig, maar is ze in 2021 nauwelijks vastgesteld in het intertidaal, maar wel nog in grote aantallen in het subtidaal (zie Figuur \@ref(fig:070-figuur13d)). Bovendien vinden we de bivalven (uitgezonderd *Dreissena sp*, maar die zitten subtidaal op hard substraat en worden niet of enkel toevallig bemonsterd) voornamelijk terug in de zone Saliniteitsgradiënt met (veruit) de grootste fysiotoopoppervlaktes in de Zeeschelde, zodat de toevalseffecten sterk uitvergroot worden. 
+
+De evaluatiegrenswaarde werd inn 2021 ook ruimschoots gehaald, doordat de systeembiomassa verder steeg tot een totaal van 45.68 ton droge stof. De verdeling van de biomassa over de verschillende zones van het estuarium wijkt wel af van de doelstellingen (zie Figuur \@ref(fig:070-figuur13)). De zones Oligohalien en Zoet lang verblijf zitten nog steeds onder de vooropgestelde zone-specifieke minimumgrens (Figuur \@ref(fig:070-figuur13)).
+Hoewel een erg hoge systeembiomassa behaald werd in 2021, stelden we tegelijk een opvallend afname vast van de systeembiomassa Oligochaeta. Omdat Oligochaeta klein zijn en vrij heterogeen verspreid zitten is deze afname weinig aan toevalseffecten onderhevig. De afname van Oligochaeta gebeurde in de zones zoet kort verblijf en Oligohalien.
+
+
+
+```{r 070-figuur13b, fig.cap=caption_regressie13b, out.width="70%"}
+caption_regressie13b <- "Jaarlijkse systeembiommassa (ton droge stof) voor de 7 belangrijkste Taxon groepen in de Zeeschelde. Deze groepen bevatten jaarlijks samen meer dan 95% van de systeembiomassa in de Zeeschelde. De toename van de Bivalvia is vrijwel volledig te wijten aan de de brakwaterkorfschelp "
+
+knitr::include_graphics(paste0(pad_figuren, "PopTaxgroep_ZS.jpg"))
+```
+<br/>
+
+```{r 070-figuur13c, fig.cap=caption_regressie13c, out.width="70%"}
+caption_regressie13c <- "Jaarlijkse systeembiommassa (ton droge stof) voor de belangrijkste tweekleppigen (Bivalvia) in het intertidaal van de Zeeschelde. Deze soorten bevatten jaarlijks samen meer dan 95% van de systeembiomassa in de Zeeschelde. "
+
+knitr::include_graphics(paste0(pad_figuren, "BIVsoortenINTER_ZS.jpg"))
+```
+<br/>
+```{r 070-figuur13d, fig.cap=caption_regressie13d, out.width="70%"}
+caption_regressie13d <- "Jaarlijkse systeembiommassa (ton droge stof) voor de belangrijkste tweekleppigen (Bivalvia) in het subtidaal van de Zeeschelde. Deze soorten bevatten jaarlijks samen meer dan 95% van de systeembiomassa in de Zeeschelde."
+
+knitr::include_graphics(paste0(pad_figuren, "BIVsoortenSUB_ZS.jpg"))
+```
+<br/>
+
 #### Soortenrijkdom
 Volledige determinatie aan de hand van BS- en OID-stalen gebeurt elke drie jaar. Ook 2020 was een jaar met volledige determinatie inclusief Oligochaeta, maar de resultaten zullen pas in de volgende rapportage verschijnen. 
 Een overzicht van de soortenrijkdom voor de verschillende waterlichamen en de verschillende jaren per tidale zone (inter-, sub-) staat in figuren \@ref(fig:070-figuur15) en \@ref(fig:070-figuur15b). In deze figuren zijn alle beschikbare determinaties opgenomen, waardoor de weergegeven soortenrijkdom in de jaren met OID identificatie (zie hoger) groter is. Vergelijken moet dus gebeuren tussen jaren met dezelfde telmethode, maar omdat voor 2020 de Oligochaeta gegevens nog niet inbegrepen zijn, moet deze (in deze rapportage) met de jaren met onvolledige determinatie vergeleken worden. In vrij veel zones ligt de soortenrijkdom de laatste 2 onderzoeksjaren iets hoger dan in de voorbije periode. Mogelijke oorzaken zijn het steeds toenemend aantal exotische soorten en de uitzonderlijke droogteperioden die mogelijks marinisatie van de Zeeschelde veroorzaakten. Dit moet verder uitgeklaard worden. Opvallend is dat enkel in het Oligohalien de taxa rijkdom hoger is in het subtidaal dan in het intertidaal (Oligochaeta niet meegeteld). Dit patroon is stabiel in de tijd maar een reden ervoor is niet gekend. 
 ```{r 070-figuur15, fig.cap=caption_regressie15, out.width="100%"}
-caption_regressie15 <- "Staalgemiddelde soortenrijkdom (boxplots; mediaan, IQrange) per waterlichaam doorheen de tijd. De Oligochaeta worden niet steeds gedetermineerd en werden als 1 taxon beschouwd, behalve in de jaren 2008, 2011, 2014 en 2017. De jaren onderling vergelijken kan dus enkel tussen deze opgesomde jaren, en tussen de tussenliggende jaren."
+caption_regressie15 <- "Staalgemiddelde soortenrijkdom (boxplots; mediaan, IQrange) per waterlichaam doorheen de tijd. De Oligochaeta worden niet steeds gedetermineerd en werden als 1 taxon beschouwd, behalve in de jaren 2008, 2011, 2014, 2017 en 2020. De jaren onderling vergelijken kan dus enkel tussen deze opgesomde jaren, en tussen de tussenliggende jaren."
 
 knitr::include_graphics(paste0(pad_figuren, "070-figuur-soortenrijkdom-Zeeschelde.jpg"))
 ```
 ```{r 070-figuur15b, fig.cap=caption_regressie15b, out.width="100%"}
-caption_regressie15b <- "Soortenrijkdom per waterlichaam doorheen de tijd. De Oligochaeta worden niet steeds gedetermineerd en werden als 1 taxon beschouwd, behalve in de jaren 2008, 2011, 2014 en 2017. De jaren onderling vergelijken kan dus enkel voor deze opgesomde jaren, en de tussenliggende jaren."
+caption_regressie15b <- "Soortenrijkdom per waterlichaam doorheen de tijd. De Oligochaeta worden niet steeds gedetermineerd en werden als 1 taxon beschouwd, behalve in de jaren 2008, 2011, 2014, 2017 en 2020. De jaren onderling vergelijken kan dus enkel voor deze opgesomde jaren, en de tussenliggende jaren. In de zijrivieren wordt sinds 2017 niet meer jaarlijks maar driejaarlijks bemonsterd tijdens de OID jaren, waardoor de diversiteit hoger lijkt."
 
 knitr::include_graphics(paste0(pad_figuren, "070-figuur-soortenrijkdom-lijn-Zeeschelde.jpg"))
 ```
@@ -216,7 +241,7 @@ knitr::include_graphics(paste0(pad_figuren, "070-figuur-soortenrijkdom-lijn-Zees
 <br/>
 
 #### Soortendiversiteit Shannon-index
-De Shannon diversiteit is een nieuwe evaluatieparameter die voor het eerst gerapporteerd wordt. Ze wordt berekend op zowel biomassa (g droge stof/m²) als aantallen van het macrozoöbenthos. De Oligochaeta werden over alle jaren als één taxon beschouwd. We berekenen ze voor de vier onderdelen van de Zeeschelde (niveau 3) en voor de totale Zeeschelde. De evolutie van deze parameter overheen de jaren per tidale zone (inter-, sub-) staat in de figuren \@ref(fig:070-figuur16) en \@ref(fig:070-figuur17). De Shannon index voor het intertidaal in de gehele Zeeschelde is vrij stabiel doorheen de tijd. De Zeeschelde als geheel en de zone sterke Saliniteitsgradiënt hebben een duidelijk hogere Shannon diversiteit dan de overige zones, die vrij laag scoren. Opmerkelijk is dat we voor de deelzones wel een algemene toenemende trend zien, met name sinds het jaar 2015. Dit is vooral uitgesproken voor densiteiten, maar minder voor biomassa. Enkel voor de zone Zoet lang verblijf is er in de laatste 2 jaren weer een terugval. Voor het subtidaal zijn de patronen behoorlijk erratisch, wat waarschijnlijk te wijten is aan de veel lagere aantallen macrobenthos die we hier vinden waardoor de invloed van toeval op de parameter relatief groter is. Met wat goede wil is ook hier een opvering van de Shannon index in de deelgebieden merkbaar sinds 2015, maar variatie tussen de jaren is groot. Een opmerkelijk patroon is te zien in de zone sterke Saliniteitsgradiënt: bij densiteiten is er een toename, terwijl er voor biomassa een sterke afname van de Shannon diversiteit is in de laatste 2 jaren. Waarschijnlijk is dit te wijten aan de opkomst van de brakwaterkorfschelp (Dumoulin & Langeraert, 2020).  
+De Shannon diversiteit is een relatief nieuwe evaluatieparameter. Ze wordt berekend op zowel biomassa (g droge stof/m²) als aantallen van het macrozoöbenthos. De Oligochaeta werden over alle jaren als één taxon beschouwd. We berekenen de Shannon diversiteit voor de vier KRW onderdelen van de Zeeschelde (niveau 3) en voor de totale Zeeschelde. De evolutie van deze parameter overheen de jaren per tidale zone (inter-, sub-) staat in de figuren \@ref(fig:070-figuur16) en \@ref(fig:070-figuur17). De Shannon index voor het intertidaal in de gehele Zeeschelde is vrij stabiel doorheen de tijd. De Zeeschelde als geheel en de zone sterke Saliniteitsgradiënt hebben een duidelijk hogere Shannon diversiteit dan de overige zones, die vrij laag scoren. Opmerkelijk is dat we voor de deelzones wel een algemene toenemende trend zien, met name sinds het jaar 2015. Dit is vooral uitgesproken voor densiteiten, maar minder voor biomassa, maar in 2021 is er wel een terugval. Enkel voor de zone Zoet lang verblijf is er in de laatste 2 jaren weer een terugval. Voor het subtidaal zijn de patronen behoorlijk erratisch, wat waarschijnlijk te wijten is aan de veel lagere aantallen macrobenthos die we hier vinden waardoor de invloed van toeval op de parameter relatief groter is. Met wat goede wil is ook hier een opvering van de Shannon index in de deelgebieden merkbaar sinds 2015, maar variatie tussen de jaren is groot. Een opmerkelijk patroon is te zien in de zone sterke Saliniteitsgradiënt: bij densiteiten is er een toename, terwijl er voor biomassa een sterke afname van de Shannon diversiteit is in de laatste 2 jaren. Waarschijnlijk is dit te wijten aan de opkomst van de brakwaterkorfschelp (Dumoulin & Langeraert, 2020).  
 
 ```{r 070-figuur16, fig.cap=caption_regressie16, out.width="100%"}
 caption_regressie16 <- "Shannon diversiteit per waterlichaam en voor de volledige Zeeschelde voor het intertidaal doorheen de tijd. De shannon diversiteit werd zowel berekend op densiteiten (aantallen/m²) als voor biomassa (g/m²). De Oligochaeta worden niet steeds gedetermineerd en werden als 1 taxon beschouwd."
@@ -232,16 +257,52 @@ knitr::include_graphics(paste0(pad_figuren, "070-figuur-Shannondiv-subt-Zeeschel
 
 <br/>
 
+### Resultaten diversiteit Oligochaeta
+#### Methode
+Veruit de belangrijkste groep macrozoöbenthos in het intertidaal van de zoete zones en het Oligochalien van de Zeeschelde is de subklasse van de Oligochaeta. De determinatie vergt veel tijd en epxertise en is niet jaarlijks haalbaar. Om toch voeling te houden met de diversiteit en trends wordt om de 3 jaar een inspanning gedaan om deze groep te determineren. Daarbij wordt tegenwoordig van een staal een subsample van 50 individuen op naam gebracht. Vaak bevat een staal echter minder dan 50 wormen en worden de x (<50) aanwezige wormen gedetermineerd. Aangezien densiteit en soortenrijkdom doorgaans sterk gerelateerd zijn, is bij de vorige rapportage van diversiteit Oligochaeta (Van Rijckegem et al. 2021) gekozen voor een beschrijving en vergelijking van de gegevens aan de hand van rarefactie. Daarbij worden uit alle verzamelde individuen random exemplaren getrokken en bij toenemend aantal de soortenrijkdom berekend. Deze procedure wordt een groot aantal keer herhaald zodat een vloeiende curve ontstaat. Bij het vergelijken van verschillende bemonsteringen (jaren, zones van de Zeeschelde,…) kan slechts vergeleken worden tot het minimum aantal dieren dat in een van de onderzochte groepen behaald werd. In tegenstelling tot de rapportage van 2021 werd voor deze rapportage de volledige set van data sinds 2008 omgerekend zodat we een bespreking kunnen doen van de laatste 15 jaar (5 driejaarlijkse monitoringsjaren: 2008-2011-2014-2017-2020). De gegevens van 2020 waren vorig jaar nog niet beschikbaar en worden daarom dit jaar gerapporteerd.
+
+#### Soortenrijkdom
+Een vergelijking van de soortenrijkdomcurves voor de 5 driejaarlijkse opnames in de KRWzones van de Zeeschelde staat in de Figuur \@ref(fig:070-figuur18). Opvallend is dat voor alle jaren de soortenrijkdom het hoogst is in Zeeschelde I, de zone Zoet kort verblijf. Dit is eveneens de zone waar we de hoogste densiteiten oligochaeten vinden (de curve loopt het langst door). Een andere opvallende vaststelling is dat in het eerste onderzochte jaar 2008 in de zone Zoet lag verblijf en de zone Oligohalien (Zeeschelde II en III) de soortenrijkdom hoger lag dan in de daarna volgende jaren. De soortenrijkdom in de zone Saliniteitsgradiënt (Zeeschelde IV) die aanvankelijk veel lager ligt dan in de andere zones, is in latere jaren meer gelijk met deze van zone Zoet lang en Oligochalien, door een kleine toename van de soortenrijkdom in Saliniteitsgradiënt en een daling in de andere twee zones. De situatie in 2020 was in lijn met de eerdere jaren, behalve dat in de zone Zoet lang er een opvallend lage soortenrijkdom was; zelfs lager dan in Saliniteitsgradiënt.
+
+
+```{r 070-figuur18, fig.cap=caption_regressie18, out.width="100%"}
+caption_regressie18 <- "De relatie tussen intertidale soortenrijkdom en aantal onderzochte Oligochaeta na rarefactie voor de verschillende KRW zones in de Zeeschelde voor verschillende onderzochte jaren: 2008-2011-2014-2017-2020. De curve per KRWzone loopt door tot het totaal aantal gedetermineerde wormen voor die opname."
+
+knitr::include_graphics(paste0(pad_figuren, "ZS1234_rarefy1.jpg"))
+```
+<br/>
+
+Een vergelijking doorheen de tijd per KRW zone is eenvoudiger te beoordelen in de Figuur \@ref(fig:070-figuur18b). Uit deze figuur blijkt nog duidelijker dat de trend in de diversiteit van Oligochaeta omgekeerd verloopt in Saliniteitsgradiënt (toename) versus de andere zones (afname sinds 2008). Vooral in de zones Zoet lang en Oligohalien is de afname na 2008 opvallend. Dit zijn de zones waarin de biologisch te lage zuurstofconcentratie, als gevolg van organische vervuiling, het sterkst zijn tol had op het ecologisch functioneren, en er pas na 2007 vissen en andere grote ongewervelden verschenen. Wel waren er toen enorme densiteiten Oligochaeta, en blijkbaar ook een grote diversiteit aan Oligochaeta.
+
+
+```{r 070-figuur18b, fig.cap=caption_regressie18b, out.width="100%"}
+caption_regressie18b <- "De relatie tussen intertidale soortenrijkdom en aantal onderzochte Oligochaeta na rarefactie voor de verschillende KRW zones in de Zeeschelde voor verschillende onderzochte jaren: 2008-2011-2014-2017-2020. De curve per jaar loopt door tot het totaal aantal gedetermineerde wormen voor die opname."
+
+knitr::include_graphics(paste0(pad_figuren, "JaarperZS.jpg"))
+```
+<br/>
+
+Een gelijkaardige analyse werd gemaakt voor de zijrivieren (Figuur \@ref(fig:070-figuur19)). Voor alle jaren zien we een typisch onderscheid tussen de iets soortenarmere Durme en Rupel, die een grotere invloed van de Zeeschelde ondergaan en in overeenstemming daarmee een vergelijkbare soortenrijkdom hebben, en de meer typische getijrivieren Dijle, Nete en Zenne die doorgaans een hogere soortenrijkdom hebben. Relatief gezien is de soortenrijkdom van Rupel en Durme in het laatste monitoringsjaar 2020 lager dan in de voorgaande monitoringsjaren (2008-2011-2014-2017). 
+
+```{r 070-figuur19, fig.cap=caption_regressie19, out.width="100%"}
+caption_regressie19 <- "De relatie tussen intertidale soortenrijkdom en aantal onderzochte Oligochaeta na rarefactie voor de verschillende KRW zones in de Zeeschelde voor verschillende onderzochte jaren: 2008-2011-2014-2017-2020. De curve per KRWzone loopt door tot het totaal aantal gedetermineerde wormen voor die opname."
+
+knitr::include_graphics(paste0(pad_figuren, "Zijrivier_rarefy.jpg"))
+```
+
+<br/>
+
 ## Algemene conclusie
 
 **De soortenrijkdom**
 
-Om de drie jaar wordt de volledige soortenrijkdom (inclusief determinatie van de Oligochaeta) van het macrozoöbenthos in de Zeeschelde bepaald, zo ook in 2020. De resultaten van de Oligochaeta determinaties zullen in de volgende rapportage worden besproken. Voor deze rapportage werden ze nog als één groep beschouwd. 
-De soortenrijkdom (exclusief Oligochaeta) lijkt de laatste paar jaren licht te stijgen in de meeste delen van de Zeeschelde. Om mogelijke oorzaken te kunnen duiden is verder onderzoek nodig naar de identiteit van de soorten die de toename verzoorzaken, hun ecologische kenmerken en met welke omgevingsomstandigheden deze veranderingen gepaard gingen.
+Om de drie jaar wordt de volledige soortenrijkdom (inclusief determinatie van de Oligochaeta) van het macrozoöbenthos in de Zeeschelde bepaald, zo ook in 2020. Deze data waren vorig jaar nog niet beschikbaar, maar worden in dit rapport, samen met de resultaten voor 2021 (zonder determinaties van Oligochaeta), gepresenteerd.
+De soortenrijkdom (exclusief Oligochaeta) lijkt de laatste paar jaren licht te stijgen in verschillende waterlichamen van de Zeeschelde met name de zone Zoet kort en Saliniteitsgradiënt. In de laatste zone zijn de laatste jaren een aantal soorten tweekleppigen toegenomen. 
+Voor de Oligochaeten analyseerden we in deze rapportage voor het eerst de volledige dataset sinds 2008 aan de hand van rarefactiecurves. Daaruit blijkt dat er twee types evoluties zijn: in de zoete zones en het Oligohalien is er sinds 2008 een afname van de soortenrijkdom, in de zone Saliniteitsgradiënt is er een omgekeerde evolutie naar een toenemende soortenrijkdom. De zone Zoet kort verblijf bleef de hele monitoringsperiode wel afgetekend het soortenrijkste waterlichaam. De resultaten in 2020 waren in lijn met deze van de laatste monitoringsjaren, met uitzondering van een eerder historisch lage soortenrijkdom in zone Zoet lang.
 
 **De Shannon diversiteit**
 
-De Shannon diversiteit is een nieuwe evaluatieparameter die hier voor het eerst getoond wordt. Een eerste beoordeling geeft aan dat deze parameter mogelijk minder goed bruikbaar is in de subtidale zone, door het erratisch verloop overheen de jaren, mogelijk gelinkt aan lagere densiteiten macrozoöbenthos in deze zone. De Shannon diversiteit in het intertidaal is in de meeste zones (behalve sterke saliniteitsgradiënt) heel laag. Dit wijst op de dominantie van 1 taxon (Oligochaeta). Het verloop vertoont een opvallende toenemende trend in vrijwel alle zones sinds 2015. De diversiteitmaat voor de Zeeschelde als geheel neemt niet toe. Dit komt omdat andere soorten per zone verantwoordelijk zijn voor de stijgende trend maar de dominantie van Oligochaeta (als 1 taxon beschouwd) voor de gehele Zeeschelde blijft zeer hoog. In de zone met sterke Saliniteitsgradiënt is er recent een duidelijke toename in diversiteit gebaseerd op aantallen, maar een gelijktijdige afname in diversiteit gebaseerd op biomassa. Dat laatste fenomeen is wellicht te wijten aan de opkomst van de brakwaterkorfschelp (zie verder).
+De Shannon diversiteit is een nieuwe evaluatieparameter die in 2022 voor het eerst gerapporteerd werd (Van Rijckegem et al. 2022). Het gedrag van deze parameter en hoe deze best te interpreteren is nog onderhevig aan voortschrijdend inzicht. Een eerste beoordeling gaf aan dat deze parameter vrij sterke fluctuaties vertoont en mogelijk minder goed bruikbaar is in de subtidale zone, door het erratisch verloop overheen de jaren, mogelijk gelinkt aan lagere densiteiten macrozoöbenthos in deze zone. De Shannon diversiteit in het intertidaal is in de meeste zones (behalve sterke saliniteitsgradiënt) heel laag. Dit is te wijten aan de dominantie van 1 taxon (Oligochaeta). Het verloop vertoont een toename in vrijwel alle zones sinds 2015. In de zone met sterke Saliniteitsgradiënt is er recent een duidelijke toename in diversiteit gebaseerd op aantallen, maar een gelijktijdige afname in diversiteit gebaseerd op biomassa. Dat laatste fenomeen is wellicht te wijten aan de opkomst van enkele tweekleppigen (zie verder).
 
 **De systeembiomassa**
 
@@ -256,5 +317,7 @@ Dumoulin, E., & Langeraert W. (2020). De brakwaterkorfschelp *Potamocorbula amur
 Nichols F., Thompson J. & Schemel L. (1990). Remarkable invasion of San Francisco Bay (California, USA), by the Asian clam *Potamocorbula amurensis*. II, Displacement of a former community. Marine Ecology Progress Series 66: 95–101. 
 
 Van Hoey G., Drent J. & Ysebaert T. (2007). The Benthic Ecosystem Quality Index (BEQI), intercalibration and assessment of Dutch coastal and transitional waters for the Water Framework Directive - Final Report. NIOO report 2007-02.
+
+Van Ryckegem G., Vanoverbeke J., Van Braeckel A., Van de Meutter F., Mertens W. Mertens A. & Breine J. (2021). MONEOS-Datarapport INBO: toestand Zeeschelde 2020. Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten. Rapporten van het Instituut voor Natuur- en Bosonderzoek 2021 (47). Instituut voor Natuur- en Bosonderzoek, Brussel. DOI: doi.org/10.21436/inbor.52484672.
 
 Van Ryckegem G., Vanoverbeke J., Van Braeckel A., Van de Meutter F., Mertens W. Mertens A. & Breine J. (2021). MONEOS-Datarapport INBO: toestand Zeeschelde 2020. Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten. Rapporten van het Instituut voor Natuur- en Bosonderzoek 2021 (47). Instituut voor Natuur- en Bosonderzoek, Brussel. DOI: doi.org/10.21436/inbor.52484672.
