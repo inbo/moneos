@@ -1,0 +1,140 @@
+---
+params:
+  hoofdstuk: "080_hyperbenthos"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0(
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
+                          )})
+title: "080_hyperbenthos"
+output:
+  bookdown::word_document2
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(rprojroot)
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(writexl)
+library(RODBC)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r data}
+#eerst recente kopie van op Amazon op G gezet
+MDB <- odbcConnectAccess2007("G:/Mijn Drive/PRJ_SCHELDE/Benthos/HyperEpibenthos/DATA/HYPERBENTHOS_SCHELDE.accdb")
+
+# querry met mulitply (substaal nr) al gebruikt voor aantal, WW en AFDW, daardoor is AFDW niet meer DW-AW in uiteindelijke tabel!
+sqlCode <- "
+SELECT tblSample.campagne, tblStaalnameGebied.Naam AS gebied, tblSample.event_name, tblSample.datum, tblHyperBiot.fractie, tblTaxaList.hoger_taxon, tblHyperBiot.soort, tblTaxaList.vis_NL, tblTaxaList.exoot, Sum([aantal]*[multiply]) AS n, Sum([WW]*[multiply]) AS WWs, tblHyperBiot.DW, tblHyperBiot.AW, Sum([tblHyperBiot].[multiply]*([tblHyperBiot].[DW]-[tblHyperBiot].[AW])) AS AFDW, tblSample.materiaal, tblHyperBiot.Invoerder, tblHyperBiot.Aanmaakdatum, tblHyperBiot.[Laatst gewijzigd]
+FROM tblStaalnameGebied INNER JOIN (tblCampagne INNER JOIN (tblTaxaList INNER JOIN (tblSample INNER JOIN tblHyperBiot ON (tblSample.Id = tblHyperBiot.IdSample) AND (tblSample.repeat = tblHyperBiot.repeat)) ON tblTaxaList.soortnaam = tblHyperBiot.soort) ON tblCampagne.campagnecode = tblSample.campagne) ON tblStaalnameGebied.Id = tblSample.IdStaalnameGebied
+GROUP BY tblSample.campagne, tblStaalnameGebied.Naam, tblSample.event_name, tblSample.datum, tblHyperBiot.fractie, tblTaxaList.hoger_taxon, tblHyperBiot.soort, tblTaxaList.vis_NL, tblTaxaList.exoot, tblHyperBiot.WW, tblHyperBiot.DW, tblHyperBiot.AW, tblSample.materiaal, tblHyperBiot.Invoerder, tblHyperBiot.Aanmaakdatum, tblHyperBiot.[Laatst gewijzigd], tblTaxaList.taxonredux, tblSample.repeat, tblHyperBiot.contaminatie
+HAVING (((tblTaxaList.taxonredux)='in') AND ((tblSample.repeat)=1) AND ((tblHyperBiot.contaminatie) Is Null));
+"
+#, tblTaxaList.exoot tblTaxaList.exoot
+
+tel.0 <- sqlQuery(channel = MDB, sqlCode, stringsAsFactors=FALSE)
+moniloc <- c("Paardenschor","St-Anna","Ballooi","Dendermonde","Brede Schoren","Rupel")
+
+#data van BoVO campagnes, van 6 stations, dubbelcampagne van 2014 wegdoen
+tel <- tel.0 %>%
+  dplyr::mutate(Jaar = year(datum),
+                Maand= month(datum)) %>% 
+  dplyr::mutate(gebied = if_else(gebied == "Konkelschoor - KS" & Jaar == 2013, "Brede Schoren", gebied),
+                gebied = if_else(gebied == "Vlassenbroek" & Jaar == 2013, "Dendermonde", gebied)) %>% 
+  dplyr::filter(gebied %in% moniloc, str_detect(campagne, "BoVo")) %>%
+  dplyr::filter(!str_detect(campagne,"_1")) %>% 
+  
+  dplyr::filter(Jaar!=2021) %>% 
+  rename(WW = WWs)
+
+
+jaarorder <- c("2013", "2014", "2015", "2016","2017","2018","2019", "2020")
+
+
+tel %>%
+  distinct(datum, gebied, Maand, Jaar) %>% 
+  count(gebied, Maand, Jaar) %>%
+  dplyr::mutate(Jaar = ordered(Jaar, levels=jaarorder)) %>% 
+  pivot_wider(names_from = Maand, values_from= n) %>% 
+  knitr::kable()
+
+
+```
+
+```{r}
+# paar ontbrekende AFDW aanvullen op basis van geschatte regressie WW-AFDW, vooral relaties gebruiken met hogere aantallen, want vaak afwijkingen bij zr lage gewichten. OOk enkele neg AFDW vervangen op zelfde manier
+# Pomatoschistus soms als sp. (kleintjes en soms als microps, maar wrsch bijna altijd microps. Omdat dit voor taxonrijkdom en procentuele bijdrage lastig is, hier samen gevoegd)
+
+telc <- tel %>% 
+  dplyr::mutate(AFDW = if_else(DW==0 & soort=="Gasterosteus aculeatus", WW/6, AFDW),
+                AFDW = if_else(DW==0 & soort == "Gammarus tigrinus", WW/5.5, AFDW),
+                AFDW = if_else(DW==0 & soort == "Pomatoschistus microps", WW/5.8, AFDW),
+                AFDW = if_else(DW==0 & soort == "Limnomysis benedeni", WW/4.7, AFDW),
+                AFDW = if_else(DW==0 & soort =="Bathyporeia pilosa", WW/6, AFDW),
+                AFDW = if_else(AFDW<0 & soort == "Abramis brama", WW/7.7, AFDW),
+                AFDW = if_else(AFDW<0 & soort=="Synidotea laticauda", WW/7, AFDW),
+                soort = if_else(soort == "Pomatoschistus microps", "Pomatoschistus sp", soort),
+                soort = if_else(soort == "Pomatoschistus sp.", "Pomatoschistus sp", soort))
+
+verkeerd <- telc %>% 
+  dplyr::filter(WW<AFDW)
+
+```
+
+data gecreëerd op `r Sys.time()`
+
+data weggeschreven naar `r paste0(pad_data, "template_data.csv")`
+
+```{r jaren}
+
+jaren <-
+  telc %>% 
+  distinct(Jaar) %>% 
+  pull(Jaar)
+
+jaar_range <-
+  range(jaren)
+
+```
+
+```{r wegschrijven-data}
+file_name <-
+  paste0(pad_data, "hyperbenthos_data_", paste(jaar_range, collapse = "_"), ".xlsx")
+
+write_xlsx(telc,
+           path = file_name)
+```
+
+
+
+

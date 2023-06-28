@@ -1,0 +1,147 @@
+---
+params:
+  hoofdstuk: "110_broedvogels"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "MONEOS broedvogel data"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(rprojroot)
+library(readxl)
+library(lubridate)
+library(sf)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+# Omzetting broedvogeldata bestand in longfile.
+
+Dit jaar maken we een start met de omzetting van het excelbestand in één long file. De data voor 2021 zijn zowel toegevoegd aan het oude excel-bestand als in een nieuw bestand in dit long formaat. De bedoeling is om de volledige excel om te zetten, maar dit is werk voor later. Dit alles brengt nu wel een beetje hocuspocus met zich mee.
+
+```{r read data bijzonderesoorten}
+# bijzondere soorten (oud format)
+Terr_Sigma <- read_csv(str_c(pad_data, "dataSigma_sel2_2022.csv"), na = c("na")) %>% 
+  gather(key = Jaar, value = Aantal, -Soort, -Doel, -Biotoop, -Voedsel) %>% 
+  mutate(Jaar = as.numeric(Jaar))
+Terr_Sigma_BB <- 
+  Terr_Sigma %>% 
+  filter(Soort %in% c("Baardman", "Bruine kiekendief","Grote karekiet","Grutto", "Kluut", 
+                      "Kwak", "Kwartelkoning", "Lepelaar", "Paapje", "Porseleinhoen", 
+                      "Purperreiger", "Roerdomp", "Snor", "Tureluur", "Woudaap", "Zomertaling"))
+
+```
+
+
+```{r read data algemenesoorten}
+# algemene soorten tot 2020 (oud format)
+Terr_Sigma_AB_2021 <- 
+  read_csv(str_c(pad_data, "dataSigma_sel_algemenesoorten2021.csv"))
+
+Doel <- 
+  Terr_Sigma_AB_2021 %>% 
+  group_by(SOORT) %>% 
+  summarise(Doel = first(Doel))
+
+Terr_Sigma_AB2021 <- 
+  Terr_Sigma_AB_2021 %>% 
+  dplyr::select(-TypeGebied, -Doel) %>% 
+  gather(key = Jaar, value = Aantal, -SOORT, -Gebied) %>% 
+  mutate(Jaar = as.numeric(Jaar))
+
+# algemene soorten vanaf 2021 (nieuw format)
+Terr_sigma_AB2022 <- 
+  read_csv(str_c(pad_data, "dataSigma_sel_algemenesoorten2022.csv")) 
+
+# in oud format is er een kolom Typegebied. In het nieuwe format niet, er zijn bovendien meer gebieden. De bijkomende gebieden hebben geen TypeGebied. We maken die aan (Vallei buiten Sigma)
+type_gebied <-
+  read_csv(str_c(pad_data, "Gebieden.csv"))
+# In vorige tabel komen enkele Gebieden 2x voor, we maken een tabel aan waarin elk gebied uniek is.
+type_gebied2 <- 
+  type_gebied %>% 
+  group_by(Gebied, TypeGebied) %>% 
+  summarise()
+
+# test of alle gebieden uit oude dataset in type_gebied zitten
+Terr_Sigma_AB2021 %>% 
+  anti_join(type_gebied, by = c("Gebied" = "Gebied"))
+
+
+Terr_sigma_AB2022a <- 
+  Terr_sigma_AB2022 %>% 
+  left_join(type_gebied, by = c("Gebied" = "Naam")) %>% 
+  filter(TypeGebied != "Vallei buiten Sigma") %>% # van deze gebieden hebben we geen lange datasets
+  group_by(Gebied = Gebied.y, SOORT = Soort, Jaar) %>% 
+  summarise(Aantal = sum(maximum), .groups = "drop")
+
+# Add data 2021
+Terr_Sigma_AB <- 
+  Terr_Sigma_AB2021 %>% 
+  bind_rows(Terr_sigma_AB2022a) %>% 
+  left_join(type_gebied2, by = c("Gebied")) %>% 
+  left_join(Doel, by = c("SOORT"))
+```
+
+```{r check data}
+table(Terr_Sigma_AB$Gebied, Terr_Sigma_AB$SOORT)
+```
+<br/>
+
+De meeste soorten zijn in de meeste gebieden in 16 of 17 jaren waargenomen. Tot en met 2020 staan ook nulwaarnemingen in de tabel, vanaf 2021 (voorlopig) niet meer. Voor de gebieden die grondig geteld zijn zou dit best wel gebeuren.
+
+```{r check data2}
+table(Terr_Sigma_AB$Gebied, Terr_Sigma_AB$Jaar)
+```
+<br/>
+
+Voor de onderzochte gebieden zijn er tot en met 2020 telkens aantallen van 6 soorten (nulwaarnemingen), in 2021 is dit voor 1-5 soorten (geen nulwaarnemingen).
+
+
+```{r check data3}
+table(Terr_Sigma_AB$SOORT, Terr_Sigma_AB$Jaar)
+```
+
+Voor alle soorten zijn er gegevens van 11 gebieden tot en met 2020. In 2021 is dit minder dan 11 (geen nulwaarnemingen)
+
+```{r save data}
+Terr_Sigma_BB %>% 
+  write_csv(str_c(pad_tabellen, "Terr_Sigma_BB.csv"))
+Terr_Sigma_AB %>% 
+  write_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
+```
+
+
+
+
+
