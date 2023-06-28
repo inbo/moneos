@@ -1,5 +1,5 @@
 --- 
-  params:
+params:
   hoofdstuk: "080_hyperbenthos"
 knit: (function(inputFile, ...) {
         rmarkdown::render(inputFile,
@@ -10,14 +10,14 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r setup, include=FALSE}
+```{r 080-setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 
 ```
 
 
-```{r libraries}
+```{r 080-libraries}
 
 library(tidyverse)
 library(readxl)
@@ -33,7 +33,7 @@ library(forcats)
 ```
 
 
-```{r pad}
+```{r 080-pad}
 
 # inlezen van variabelen
 # pad naar data : pad_data
@@ -50,7 +50,7 @@ source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/VNSC
 ```
 
 
-```{r data}
+```{r 080-data}
 
 data_hyperbenthos <- 
   read_excel(paste0(pad_data, "hyperbenthos_data_2013_2022.xlsx")) 
@@ -77,7 +77,7 @@ gebied_order <-
 ```
 
 
-```{r totaal-over-soorten}
+```{r 080-totaal-over-soorten}
 # som alle soorten, geen exoten
 data_hyperbenthos_totaal <-
   data_hpb.gnexoot %>% 
@@ -169,7 +169,7 @@ hpb.sel.8sp.compl <- hpb.sel.8sp.biom %>%
 ```
 
 
-```{r per-waterloop-en-tidaal}
+```{r 080-per-waterloop-en-tidaal}
 
 data_hyperbenthos_ZSmaand <-
   data_hyperbenthos_totaal %>% 
@@ -199,7 +199,7 @@ data_hyperbenthos_ZS <-
 ```
 
 
-```{r 080-figuur-densiteit-totaal-gebied-maandverloop-jaren}
+```{r 080-080-figuur-densiteit-totaal-gebied-maandverloop-jaren}
 
 
 ylb <- expression(paste("densiteit ", "(ind/", '40', m^3, ")"))
@@ -234,7 +234,7 @@ ggsave(paste0(pad_figuren, "080-figuur-densiteit_totaal-gebied-maandverloop_jare
 
 ```
 
-```{r 080-figuur-densiteit-totaal-ZS-maandverloop-jaren}
+```{r 080-080-figuur-densiteit-totaal-ZS-maandverloop-jaren}
 ylb <- expression(paste("densiteit ", "(ind/", '40', m^3, ")"))
 
 fnt <- 8
@@ -352,7 +352,7 @@ bxp_hpbZSb
 
 ```
 
-```{r 080-figuur-biomassa-totaal-ZS-maandverloop-jaren}
+```{r 080-080-figuur-biomassa-totaal-ZS-maandverloop-jaren}
 ylbb <- expression(paste("biomassa ", "(g droge stof/", '40', m^3, ")"))
 
 fnt <- 8
@@ -450,7 +450,7 @@ ggsave(paste0(pad_figuren, "080-figuur-biomassa_ZS_jaarverloop_zones.jpg"), heig
 ```
 
 
-```{r 080-figuur-biomassa-gebied-maandverloop-jaar}
+```{r 080-080-figuur-biomassa-gebied-maandverloop-jaar}
 
 
 ylbb <- expression(paste("biomassa ", "(mg droge stof/", '40', m^3, ")"))
@@ -487,7 +487,7 @@ ggsave(paste0(pad_figuren, "080_figuur_biomassa_gebied_maandverloop_jaar.jpg"), 
 ```
 
 
-```{r 080-figuur-biomassa-biomassa-perc-soorten-perjaar}
+```{r 080-080-figuur-biomassa-biomassa-perc-soorten-perjaar}
 
 pie_up <- hpb.sel.8sp.compl %>% 
   ggplot(aes(x="", y=biom_perc, fill=soort)) +
@@ -516,7 +516,7 @@ ggsave(paste0(pad_figuren, "080_figuur_biomassa_biomassa_perc_soorten_perjaar.jp
 
 ```
 
-```{r 080-figuur-soortenrijkdomZS-perjaar}
+```{r 080-080-figuur-soortenrijkdomZS-perjaar}
 #In jaar 2013 niet volledig gesampled wat taxa rijkdom beinvloedt, dus die niet
 #met exoten
 hpb_specrich <- data_hyperbenthos %>%
@@ -551,7 +551,7 @@ ggsave(paste0(pad_figuren, "080_figuur_soortenrijkdomZS_perjaar.jpg"), height=4,
 
 ```
 
-```{r 080-figuur-soortenrijkdomZS-perjaargebied}
+```{r 080-080-figuur-soortenrijkdomZS-perjaargebied}
 #In jaar 2013 niet volledig gesampled wat taxa rijkdom beinvloedt, dus die niet
 #met exoten
 hpb_specrichzon <- data_hyperbenthos %>%
@@ -575,7 +575,7 @@ ggsave(paste0(pad_figuren, "080_figuur_soortenrijkdomZS_perjaarzon.jpg"), height
 ```
 
 
-```{r 080-figuur-Shannon-diversiteit}
+```{r 080-080-figuur-Shannon-diversiteit}
 shannon_hpbZS <- data_hyperbenthos %>%
   dplyr::group_by(soort, Jaar) %>% 
   dplyr::summarise(nZS = sum(na.omit(n)),
@@ -621,7 +621,7 @@ ggsave(paste0(pad_figuren, "080_figuur_shannon.jpg"), height=5, width=10)
 ```
 
 
-```{r 070-figuur-soortenrijkdom-ZeescheldeIV}
+```{r 080-070-figuur-soortenrijkdom-ZeescheldeIV}
 
 data_macrobenthos %>% 
   filter(#waterloop2 == "Zeeschelde I",
@@ -645,7 +645,7 @@ ggsave(paste0(pad_figuren, "070-figuur-soortenrijkdom-ZeescheldeI.jpg"), height=
 ```
 
 
-```{r 070-oppervlakte koppelen}
+```{r 080-070-oppervlakte koppelen}
 
 oppsruw <- read_excel(paste0(pad_data, "SpatialEcotopenOPP_ApplEcotoop_INBO_v2019small.xlsx"))
   # oppsruw <- read.csv2("data/SpatialEcotopenOPP_ApplEcotoop_INBO_v2018small.csv", stringsAsFactors = FALSE)
@@ -784,7 +784,7 @@ ggsave(paste0(pad_figuren, "070-figuur-intertidalesysteembiomassa.jpg"), height=
 
 ```
 
-```{r meta-data}
+```{r 080-meta-data}
 
 meta_data <- 
   enframe(c(laatstejaar = laatste_jaar, 
