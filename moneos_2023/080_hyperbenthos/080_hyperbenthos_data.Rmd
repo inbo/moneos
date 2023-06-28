@@ -70,7 +70,7 @@ tel <- tel.0 %>%
                 gebied = if_else(gebied == "Vlassenbroek" & Jaar == 2013, "Dendermonde", gebied)) %>% 
   dplyr::filter(gebied %in% moniloc, str_detect(campagne, "BoVo")) %>%
   dplyr::filter(!str_detect(campagne,"_1")) %>% 
-  #dplyr::filter(Jaar!=2021) %>% 
+  dplyr::filter(Jaar!=2023) %>% 
   rename(WW = WWs)
 
 
