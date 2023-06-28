@@ -56,243 +56,103 @@ campagne <- "C2022"
 campagne_jaren_EW <- 2018:2023
 campagnes_EW <- str_c("C", campagne_jaren_EW-1)
 
+year_colors <-
+  tibble(Year = campagne_jaren_EW) %>% 
+  mutate(Colour = c(rev(terrain.colors(length(campagne_jaren_EW)+1))[c(-1,-2)], 'red'))
+
+
+
 data_MONEOS <- 
   read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_2023.xlsx"),
             sheet = "TOPOdata_MONEOSRAAIEN_INBO")
-
-# data_NA <-
-#   read_xlsx(path = str_c(pad_data, "toevoeging_NA_grafieken_2023.xlsx"))
 
 raai_campagne <- 
   data_MONEOS %>% 
   distinct(MeetCampagneJaar, Salzone, Omes, DATUM, REEKSCODE, Campagne)
 
-# data_NA <-
-#   data_NA %>% 
-#   left_join(raai_campagne) %>% 
-#   drop_na()
+```
 
-# data_MONEOS <-
-#   data_MONEOS %>% 
-#   bind_rows(data_NA)
- 
+
+```{r selectie vaste MONEOS raaien met metingen in laatste jaar en voldoende jaren voor EW}
+
 data_EW <-
   data_MONEOS %>% 
-  filter(MeetCampagneJaar %in% campagnes_EW) %>% 
-  mutate(Year = year(DATUM))
-  
+  mutate(Year = year(DATUM)) %>% 
+  group_by(REEKSCODE) %>% 
+  mutate(meting = any(MeetCampagneJaar == campagne)) %>% 
+  ungroup() %>% 
+  filter(Campagne == "MONEOS",
+         meting == TRUE,
+         MeetCampagneJaar %in% campagnes_EW) %>% 
+  select(-meting)
+
 raaicodes <- 
   data_EW %>% 
   distinct(REEKSCODE) %>% 
   pull()
 
-year_colors <-
-  tibble(Year = unique(year(data_MONEOS$DATUM))) %>% 
-  arrange(Year) %>% 
-  mutate(Colour = c(rev(terrain.colors(n()+1))[c(-1,-2)], 'red'))
-
 ```
 
 
-```{r grens schor en subtidaal}
+```{r ecotoopgrenzen}
 
-# source("Z:/R_functies/databanken/db_topodata.R")
-# 
-# raaien_EW <-
-#   read_topodata(jaren = campagne_jaren_EW,
-#                 raaien = raaicodes,
-#                 path = "Z:/")
- 
-
-library(DBI)
-
-conn <- 
-  dbConnect(odbc::odbc(),
-            Driver = "Microsoft Access Driver (*.mdb, *.accdb)",
-            DBQ = str_c("Z:/", "Topografie/slikschorprofiel/Databank/SlikSchorProfiel_data"))
-
-# tblData_Dwarsprofiel <- 
-#   tbl(conn, "tblData_Dwarsprofiel")
-cdeRaai <- 
-  tbl(conn, "cdeRaai")
-
-tbl_afstand <-
-  cdeRaai %>% 
-  filter(REEKSCODE %in% raaicodes) %>% 
-  select(REEKSCODE, Rivier, afstand_grens = `Afstand tot de BNLgrens`) %>% 
-  collect()
-
-dbDisconnect(conn)
-
-
-conn <- 
-  dbConnect(odbc::odbc(),
-            Driver = "Microsoft Access Driver (*.mdb, *.accdb)",
-            DBQ = str_c("Z:/", "Ecotoop/Getij/verwerking/ApplModeltijdata.mdb"))
-
-HW85_Schelde <-
-  tbl(conn, "OFHWmod_Schelde_2018_2021_85proc") %>% 
-  collect()
-  
-HW85_Durme <-
-  tbl(conn, "OFHWmod_SCALDIS_Durme_2019_85proc") %>% 
-  collect()
-  
-HW85_Rupel <-
-  tbl(conn, "OFHWmod_SCALDIS_Rupel_2019_85proc") %>% 
-  collect()
-  
-HW85_Gentbrugge <-
-  tbl(conn, "OFHWmod_SCALDIS_Gentbrugge_2019_85proc") %>% 
-  collect()
-
-LW30_Schelde <-
-  tbl(conn, "OFLWmod_Schelde_2018_2021_30proc") %>% 
-  collect()
-  
-LW30_Durme <-
-  tbl(conn, "OFLWmod_SCALDIS_Durme_2019_30proc") %>% 
-  collect()
-  
-LW30_Rupel <-
-  tbl(conn, "OFLWmod_SCALDIS_Rupel_2019_30proc") %>% 
-  collect()
-  
-LW30_Gentbrugge <-
-  tbl(conn, "OFLWmod_SCALDIS_Gentbrugge_2019_30proc") %>% 
-  collect()
-
-dbDisconnect(conn)
-
-tbl_hoogte_HW85 <-
-  tbl_afstand %>% 
-  filter(Rivier == "Zeeschelde",
-         afstand_grens <= 100) %>% 
-  left_join(HW85_Schelde) %>% 
-  bind_rows(tbl_afstand %>% 
-              filter(Rivier == "Zeeschelde",
-                     afstand_grens > 100) %>% 
-              left_join(HW85_Gentbrugge)) %>% 
-  bind_rows(tbl_afstand %>% 
-              filter(Rivier == "Durme") %>% 
-              mutate(afstand_grens = afstand_grens + 50.75) %>% 
-              left_join(HW85_Durme)) %>% 
-  bind_rows(tbl_afstand %>% 
-              filter(Rivier == "Rupel") %>% 
-              mutate(afstand_grens = afstand_grens + 39.9) %>% 
-              left_join(HW85_Rupel)) %>% 
-  select(REEKSCODE, afstand_grens, waterstand_HW85 = waterstand)
-
-tbl_hoogte_LW30 <-
-  tbl_afstand %>% 
-  filter(Rivier == "Zeeschelde",
-         afstand_grens <= 100) %>% 
-  left_join(LW30_Schelde) %>% 
-  bind_rows(tbl_afstand %>% 
-              filter(Rivier == "Zeeschelde",
-                     afstand_grens > 100) %>% 
-              left_join(LW30_Gentbrugge)) %>% 
-  bind_rows(tbl_afstand %>% 
-              filter(Rivier == "Durme") %>% 
-              mutate(afstand_grens = afstand_grens + 50.75) %>% 
-              left_join(LW30_Durme)) %>% 
-  bind_rows(tbl_afstand %>% 
-              filter(Rivier == "Rupel") %>% 
-              mutate(afstand_grens = afstand_grens + 39.9) %>% 
-              left_join(LW30_Rupel)) %>% 
-  select(REEKSCODE, afstand_grens, waterstand_LW30 = waterstand)
-
-```
-
-
-```{r droogvalduur grens laag - middelhoog slik}
-
-conn <- 
-  dbConnect(odbc::odbc(),
-            Driver = "Microsoft Access Driver (*.mdb, *.accdb)",
-            DBQ = str_c("Z:/", "Ecotoop/Getij/verwerking/ApplModeltijdata.mdb"))
-
-DD_Schelde <-
-  tbl(conn, "DDmod_Schelde_2018_2021") %>% 
-  filter(DD %in% c(25, 35, 60, 75)) %>% 
-  collect()
-  
-DD_Durme <-
-  tbl(conn, "DDmod_SCALDIS_Durme_2019") %>% 
-  filter(DD %in% c(25, 35, 60, 75)) %>% 
-  collect()
-  
-DD_Rupel <-
-  tbl(conn, "DDmod_SCALDIS_Rupel_2019") %>% 
-  filter(DD %in% c(25, 35, 60, 75)) %>% 
-  collect()
-  
-DD_Gentbrugge <-
-  tbl(conn, "DDmod_SCALDIS_Gentbrugge_2019") %>% 
-  filter(DD %in% c(25, 35, 60, 75)) %>% 
-  collect()
-
-dbDisconnect(conn)
-
-tbl_hoogte_DD <-
-  tbl_afstand %>% 
-  filter(Rivier == "Zeeschelde",
-         afstand_grens <= 100) %>% 
-  left_join(DD_Schelde) %>% 
-  bind_rows(tbl_afstand %>% 
-              filter(Rivier == "Zeeschelde",
-                     afstand_grens > 100) %>% 
-              left_join(DD_Gentbrugge)) %>% 
-  bind_rows(tbl_afstand %>% 
-              filter(Rivier == "Durme") %>% 
-              mutate(afstand_grens = afstand_grens + 50.75) %>% 
-              left_join(DD_Durme)) %>% 
-  bind_rows(tbl_afstand %>% 
-              filter(Rivier == "Rupel") %>% 
-              mutate(afstand_grens = afstand_grens + 39.9) %>% 
-              left_join(DD_Rupel)) %>% 
-  select(REEKSCODE, afstand_grens, DD, waterstand) %>% 
-  pivot_wider(names_from = DD, 
-              values_from = waterstand,
-              names_prefix = "DD_")
-
-```
-
-
-```{r enkel slik}
+tbl_waterstanden <-
+  read_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
 
 data_EW <-
   data_EW %>% 
-  left_join(tbl_hoogte_HW85) %>% 
-  left_join(tbl_hoogte_LW30)
-
-slikgrens <-
-  data_EW %>%
-  group_by(REEKSCODE) %>%
-  nest() %>%
-  summarise(schorgrens =
-              map(data,
-                  ~ifelse(any(!is.na(.$waterstand_HW85)),
-                          max(.$distance_prof[.$HOOGTE__MT > .$waterstand_HW85], na.rm = TRUE),
-                          NA)),
-            watergrens =
-              map(data,
-                  ~ifelse(any(!is.na(.$waterstand_LW30)),
-                          max(.$distance_prof[.$HOOGTE__MT > .$waterstand_LW30], na.rm = TRUE),
-                          NA))) %>%
-  unnest(cols = c(schorgrens, watergrens)) %>%
-  ungroup()
+  left_join(tbl_waterstanden)
 
 data_EW <-
   data_EW %>%
-  left_join(slikgrens) %>%
-  filter(distance_prof >= schorgrens,
-         distance_prof <= watergrens)
+  group_by(REEKSCODE, DATUM) %>% 
+  mutate(habpres = any(!is.na(Habitat))) %>% 
+  ungroup() %>% 
+  mutate(ecotoop = 
+           case_when(
+             habpres ~ Habitat,
+             HOOGTE__MT > waterstand_HW85 ~ "schor",
+             HOOGTE__MT <= waterstand_HW85 ~ "slik")) %>%
+  mutate(ecotoop = 
+           case_when(
+            HOOGTE__MT < waterstand_LW30 ~ "subtidaal",
+            TRUE ~ ecotoop)) %>% 
+  select(-habpres)
+
+
+ecotoopgrenzen <-
+  data_EW %>% 
+  group_by(REEKSCODE, afstand_grens, Salzone) %>% 
+  summarise(bovengrens = unique(afstand_begin),
+            bovengrens_meting = min(distance_prof[MeetCampagneJaar == campagne & distance_prof >= (bovengrens + 5)]) - 5,
+            bovengrens_schor = min(distance_prof[ecotoop == "schor"], na.rm = TRUE),
+            grens_schor = max(distance_prof[ecotoop == "schor" & MeetCampagneJaar == campagne], na.rm = TRUE),
+            grens_subtidaal = max(distance_prof[ecotoop == "slik" & MeetCampagneJaar == campagne], na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  select(REEKSCODE, afstand_grens, Salzone, 
+         bovengrens, bovengrens_meting, bovengrens_schor, grens_schor, grens_subtidaal) %>% 
+  mutate(across(everything(), ~ifelse(is.infinite(.), NA, .)))
+  
+```
+
+
+```{r selectie enkel slik}
+
+buffer_boven <- 0.5
+buffer_onder <- 5
+
+data_EW <-
+  data_EW %>% 
+  left_join(ecotoopgrenzen) %>% 
+  filter(distance_prof >= grens_schor - buffer_boven
+         # ,
+         # distance_prof <= grens_subtidaal + buffer_onder
+         )
 
 ```
 
 
-```{r raaien met voldoende jaren}
+```{r raaien met voldoende meetpunten en jaren}
 
 raaien_sel <-
   data_EW %>% 
@@ -304,7 +164,7 @@ raaien_sel <-
   distinct(REEKSCODE, Year) %>% 
   group_by(REEKSCODE) %>% 
   filter(n() > 4,
-         2023 %in% Year) %>% 
+         jaar %in% Year) %>% 
   ungroup()
 
 unique(raaien_sel$REEKSCODE)
@@ -350,19 +210,20 @@ data_EW_interp <-
 ```
 
 
-```{r ecotoopgrenzen}
+```{r ecotoopgrenzen binnen slik}
 
 data_EW_interp <-
   data_EW_interp %>% 
-  left_join(tbl_hoogte_DD) %>% 
+  left_join(tbl_waterstanden %>% 
+              select(REEKSCODE, waterstand_DD_25, waterstand_DD_35, waterstand_DD_60)) %>% 
   mutate(ecotoop = 
            case_when(
-             Salzone == "Mesohalien" & HOOGTE__MT <= DD_25 ~ "laag slik",
-             Salzone != "Mesohalien" & HOOGTE__MT <= DD_35 ~ "laag slik",
-             HOOGTE__MT >= DD_60 ~ "hoog slik",
+             Salzone == "Mesohalien" & HOOGTE__MT <= waterstand_DD_25 ~ "laag slik",
+             Salzone != "Mesohalien" & HOOGTE__MT <= waterstand_DD_35 ~ "laag slik",
+             HOOGTE__MT >= waterstand_DD_60 ~ "hoog slik",
              TRUE ~ "middelhoog slik"))
 
-ecotoopgrenzen <-
+ecotoopgrenzen_slik <-
   data_EW_interp %>% 
   group_by(REEKSCODE, Salzone) %>% 
   summarise(grens_laag_middelhoog = min(distance_prof[ecotoop == "laag slik"]),
@@ -378,53 +239,48 @@ ecotoopgrenzen <-
 fig_raai <- 
   function(naam, dat_raai) {
     
+    cat(str_c("raai: ", naam, "\n"))
+    
     dat_raai <-
       dat_raai %>% 
       arrange(Year, distance_prof)
+    RKSC <-
+      naam
     
-        # dat_last <-
-        #   dat %>%
-        #   filter(!is.na(Campagne) & Campagne == campagne)
-        colors <- 
-          dat_raai %>% 
-          distinct(Year) %>% 
-          arrange(Year) %>% 
-          left_join(year_colors)
-        p <- 
-          dat_raai %>% 
-          mutate(Year = factor(Year)) %>% 
-          ggplot(aes(distance_prof, HOOGTE__MT, group = Year, colour = Year)) +  
-          geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == naam),
-                     aes(xintercept = grens_laag_middelhoog),
-                     linetype = 2, color = "grey50", linewidth = 2) +
-          geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == naam),
-                     aes(xintercept = grens_middelhoog_hoog),
-                     linetype = 2, color = "grey50", linewidth = 2) +
-          geom_line(linewidth = 1) + 
-          # geom_point(size = 2) + 
-          # geom_line(data = dat_last, size = 1) +
-          # geom_point(data = dat_last, size = 2) +
-          scale_y_continuous(breaks = pretty(dat_raai$HOOGTE__MT, 5)) +
-          scale_colour_manual(values = colors$Colour) +
-          labs(title = naam,
-               x = "Afstand tot de dijk (m)",
-               y = " m T.A.W.") + 
-          theme_bw() + 
-          theme(plot.title = element_text(size = 20, hjust = 0.5),
-                axis.title = element_text(size = 18),
-                axis.text = element_text(size = 15),
-                legend.title = element_text(size = 20), 
-                legend.text = element_text(size = 14),
-                panel.border = element_blank(),
-                panel.grid.minor = element_blank(), 
-                panel.grid.major = element_line(colour = "grey")) 
-        
-        # if(Afst[i,"Oever"]) {
-        #   p <- p + scale_x_reverse(breaks = pretty(dat$Afstand,10))
-        # } else {
-        #   p <- p + scale_x_continuous(breaks = pretty(dat$Afstand,10))
-        # }
-        p
+    colors <- 
+      dat_raai %>% 
+      distinct(Year) %>% 
+      arrange(Year) %>% 
+      left_join(year_colors)
+    
+    p <- 
+      dat_raai %>% 
+      mutate(Year = factor(Year)) %>% 
+      ggplot(aes(distance_prof, HOOGTE__MT, group = Year, colour = Year)) +  
+      geom_vline(data = ecotoopgrenzen_slik %>% filter(REEKSCODE == RKSC),
+                 aes(xintercept = grens_laag_middelhoog),
+                 linetype = 2, color = "grey50", linewidth = 2) +
+      geom_vline(data = ecotoopgrenzen_slik %>% filter(REEKSCODE == RKSC),
+                 aes(xintercept = grens_middelhoog_hoog),
+                 linetype = 2, color = "grey50", linewidth = 2) +
+      geom_line(linewidth = 1) + 
+      scale_x_continuous(breaks = pretty(dat_raai$distance_prof, 20)) +
+      scale_y_continuous(breaks = pretty(dat_raai$HOOGTE__MT, 5)) +
+      scale_colour_manual(values = colors$Colour) +
+      labs(title = naam,
+           x = "Afstand tot de dijk (m)",
+           y = "Hoogte (m T.A.W.)") + 
+      theme_bw() + 
+      theme(plot.title = element_text(size = 20, hjust = 0.5),
+            axis.title = element_text(size = 18),
+            axis.text = element_text(size = 15),
+            legend.title = element_text(size = 20), 
+            legend.text = element_text(size = 14),
+            panel.border = element_blank(),
+            panel.grid.minor = element_blank(), 
+            panel.grid.major = element_line(colour = "grey")) 
+
+    p
   }
 
 ```
@@ -434,7 +290,6 @@ fig_raai <-
 
 figuren_EW <-
   data_EW_interp %>% 
-  # filter(REEKSCODE == "APa") %>% 
   group_by(REEKSCODE) %>% 
   nest() %>% 
   mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y)))
@@ -442,7 +297,7 @@ figuren_EW <-
 # figuren_EW$fig
 
 walk2(str_c("slik_interp_", figuren_EW$REEKSCODE), figuren_EW$fig, 
-      ~ggsave(.y, file=str_c(pad_figuren, "slik_interp/", .x, "_", campagne, ".png"), 
+      ~ggsave(.y, file=str_c(pad_figuren, "early_warning/slik_interp/", .x, ".png"), 
               width=16, height=8, dpi= 350))
 
 ```
@@ -577,7 +432,7 @@ delta_hoogte_predict <-
 ```
 
 
-```{r figuren early warning, fig.height=10, fig.width=8}
+```{r figuren early warning}
 
 dat_delta <-
   delta_hoogte_predict %>%
@@ -597,7 +452,7 @@ dat_delta <-
 
 dat_delta %>% 
   {ggplot(., aes(Year, delta_hoogte, color = ecotoop)) +
-      labs(x = "campagne",
+      labs(x = "jaar",
            y = expression(paste(Delta, "hoogte", " (m)"))) +
       geom_point(data = filter(., MeetCampagneJaar != campagne)) +
       geom_segment(data = hoogte_evolutie_slope,
@@ -630,7 +485,7 @@ dat_delta %>%
                     width = 0.25) +
       scale_shape_manual(name = "flagged", values = c("FALSE" = 1, "TRUE" = 15)) +
       # scale_y_continuous(breaks = pretty(.$delta_hoogte, 10)) +
-      scale_x_continuous(breaks = seq(2019,2023, by = 2), labels = seq(2019,2023, by = 2) - 1) +
+      scale_x_continuous(breaks = seq(2019,2023, by = 2)) +
       facet_wrap(~REEKSCODE, scales = "free_y") +
       theme_bw() +
       theme(plot.title = element_text(size = 20, hjust = 0.5),
@@ -644,6 +499,6 @@ dat_delta %>%
             strip.text = element_text(size = 16))}
 
 ggsave(file=str_c(pad_figuren, "early_warning/early_warning_", campagne, ".png"), 
-              width=16, height=10, dpi= 350)
+              width=18, height=10, dpi= 350)
 ```
 

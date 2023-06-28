@@ -109,34 +109,69 @@ data_MONEOS <-
 
 data_MONEOS <-
   data_MONEOS %>%
+  group_by(REEKSCODE, DATUM) %>% 
+  mutate(habpres = any(!is.na(Habitat))) %>% 
+  ungroup() %>% 
   mutate(ecotoop = 
            case_when(
-             !is.na(Habitat) ~ Habitat,
+             habpres ~ Habitat,
              HOOGTE__MT > waterstand_HW85 ~ "schor",
              HOOGTE__MT <= waterstand_HW85 ~ "slik")) %>%
   mutate(ecotoop = 
            case_when(
             HOOGTE__MT < waterstand_LW30 ~ "subtidaal",
-            TRUE ~ ecotoop))
+            TRUE ~ ecotoop)) %>% 
+  select(-habpres)
+
 
 ecotoopgrenzen <-
   data_MONEOS %>% 
   group_by(REEKSCODE, afstand_grens, Salzone) %>% 
-  summarise(bovengrens = min(distance_prof[ecotoop == "schor"], na.rm = TRUE),
+  summarise(bovengrens = unique(afstand_begin),
+            bovengrens_meting = min(distance_prof[MeetCampagneJaar == campagne & distance_prof >= (bovengrens + 5)]) - 5,
+            bovengrens_schor = min(distance_prof[ecotoop == "schor"], na.rm = TRUE),
             grens_schor = max(distance_prof[ecotoop == "schor" & MeetCampagneJaar == campagne], na.rm = TRUE),
             grens_subtidaal = max(distance_prof[ecotoop == "slik" & MeetCampagneJaar == campagne], na.rm = TRUE)) %>% 
   ungroup() %>% 
   select(REEKSCODE, afstand_grens, Salzone, 
-         bovengrens, grens_schor, grens_subtidaal) %>% 
+         bovengrens, bovengrens_meting, bovengrens_schor, grens_schor, grens_subtidaal) %>% 
   mutate(across(everything(), ~ifelse(is.infinite(.), NA, .)))
   
 ```
 
 
+```{r}
+
+raaien <- 
+  data_MONEOS %>% 
+  distinct(REEKSCODE, afstand_grens, Salzone, Omes)
+
+```
+
+
+```{r selectie tot bovengrens}
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  filter(distance_prof >= afstand_begin)
+
+data_MONEOS %>% 
+  distinct(ecotoop)
+
+```
+
+
 ```{r functie figuren}
 
+# naam <- "APa"
+# dat_raai <-
+#   data_MONEOS %>% 
+#   filter(REEKSCODE == naam)
+
 fig_raai <- 
-  function(naam, dat_raai) {
+  function(naam, dat_raai, ecotoop = "", subtidaal_grens = TRUE) {
+    
+    cat(str_c("raai: ", naam, "\n"))
     
     dat_raai <-
       dat_raai %>% 
@@ -144,56 +179,67 @@ fig_raai <-
              Month = month(DATUM),
              Datum = factor(DATUM)) %>% 
       arrange(Datum, distance_prof)
+    # RKSC <-
+    #   unique(dat_raai$REEKSCODE)
     RKSC <-
-      unique(dat_raai$REEKSCODE)
+      naam
     
-        # dat_last <-
-        #   dat %>%
-        #   filter(!is.na(Campagne) & Campagne == campagne)
-        colors <- 
-          dat_raai %>% 
-          distinct(Year, Datum) %>% 
-          arrange(Datum) %>% 
-          left_join(year_colors)
-        p <- 
-          ggplot(dat_raai, aes(distance_prof, HOOGTE__MT, group = Datum, colour = Datum)) +  
-          geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
-                     aes(xintercept = grens_schor),
-                     linetype = 2, color = "grey50", linewidth = 2) +
-          geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
-                     aes(xintercept = grens_laag_middelhoog),
-                     linetype = 3, color = "grey50", linewidth = 1.5) +
-          geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
-                     aes(xintercept = grens_middelhoog_hoog),
-                     linetype = 3, color = "grey50", linewidth = 1.5) +
-          geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
-                     aes(xintercept = grens_subtidaal),
-                     linetype = 2, color = "grey50", linewidth = 2) +
-          geom_line(linewidth = 1) + 
-          geom_point(size = 2) + 
-          # geom_line(data = dat_last, size = 1) +
-          # geom_point(data = dat_last, size = 2) +
-          scale_y_continuous(breaks = pretty(dat_raai$HOOGTE__MT, 5)) +
-          scale_colour_manual(values = colors$Colour) +
-          labs(title = naam,
-               x = "Afstand tot de dijk (m)",
-               y = " m T.A.W.") + 
-          theme_bw() + 
-          theme(plot.title = element_text(size = 20, hjust = 0.5),
-                axis.title = element_text(size = 18),
-                axis.text = element_text(size = 15),
-                legend.title = element_text(size = 20), 
-                legend.text = element_text(size = 14),
-                panel.border = element_blank(),
-                panel.grid.minor = element_blank(), 
-                panel.grid.major = element_line(colour = "grey")) 
-        
-        # if(Afst[i,"Oever"]) {
-        #   p <- p + scale_x_reverse(breaks = pretty(dat$Afstand,10))
-        # } else {
-        #   p <- p + scale_x_continuous(breaks = pretty(dat$Afstand,10))
-        # }
-        p
+    # dat_last <-
+    #   dat %>%
+    #   filter(!is.na(Campagne) & Campagne == campagne)
+    colors <- 
+      dat_raai %>% 
+      distinct(Year, Datum) %>% 
+      arrange(Datum) %>% 
+      left_join(year_colors)
+    p <- 
+      ggplot(dat_raai, aes(distance_prof, HOOGTE__MT, group = Datum, colour = Datum))
+    if(subtidaal_grens) {
+      p <-
+        p +  
+        geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+                   aes(xintercept = grens_subtidaal),
+                   linetype = 2, color = "lightblue", linewidth = 2)
+    }
+    
+    p <-
+      p +  
+      # geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+      #            aes(xintercept = bovengrens),
+      #            linetype = 1, color = "grey50", linewidth = 2) +
+      # geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+      #            aes(xintercept = bovengrens_schor),
+      #            linetype = 2, color = "darkgreen", linewidth = 2) +
+      geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+                 aes(xintercept = grens_schor),
+                 linetype = 2, color = "darkgreen", linewidth = 2) +
+      # geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+      #            aes(xintercept = grens_laag_middelhoog),
+      #            linetype = 3, color = "grey50", linewidth = 1.5) +
+      # geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+      #            aes(xintercept = grens_middelhoog_hoog),
+      #            linetype = 3, color = "grey50", linewidth = 1.5) +
+      geom_line(linewidth = 1) + 
+      geom_point(size = 2) + 
+      # geom_line(data = dat_last, size = 1) +
+      # geom_point(data = dat_last, size = 2) +
+      scale_x_continuous(breaks = pretty(dat_raai$distance_prof, 20)) +
+      scale_y_continuous(breaks = pretty(dat_raai$HOOGTE__MT, 5)) +
+      scale_colour_manual(values = colors$Colour) +
+      labs(title = ifelse(str_length(ecotoop) == 0, naam, str_c(naam, "  -  ", ecotoop)),
+           x = "Afstand tot de dijk (m)",
+           y = "Hoogte (m T.A.W.)") + 
+      theme_bw() + 
+      theme(plot.title = element_text(size = 20, hjust = 0.5),
+            axis.title = element_text(size = 18),
+            axis.text = element_text(size = 15),
+            legend.title = element_text(size = 20), 
+            legend.text = element_text(size = 14),
+            panel.border = element_blank(),
+            panel.grid.minor = element_blank(), 
+            panel.grid.major = element_line(colour = "grey")) 
+    
+    p
   }
 
 ```
@@ -201,70 +247,82 @@ fig_raai <-
 
 ```{r figuren historiek}
 
-Afst <- 
-  data.frame(REEKSCODE=c("GBSa","ODa","ODa","DO","GSb","GSc","LH","LP","LP","KPb","KPe","KPe","GW",
-                         "HO","KV","NOTb","NOTc","BAL","TB",
-                         "WE","WE","BR","BR","PD","MK","KRb",
-                         "APa","APc","BM"), 
-             Naam=c("GBSa","ODa","ODaslik","DO","GSb","GSc","LH","LP","LPslik","KPb","KPe","KPeslik","GW",
-                    "HO","KV","NOTb","NOTc","BAL","TB",
-                    "WE","WEslik","BR","BRslik","PD","MK","KRb",
-                    "APa","APc","BM"), 
-             Afstand_begin=c(25,15,250,15,150,205,5,20,218,10,20,205,50,
-                             5,60,130,10,102,40,
-                             0,130,5,70,70,5,5,
-                             30,0,540))
-
-
-# Afst <- 
-#   data.frame(REEKSCODE=c("GBSa","APa","APc","BAL","BM","BOE","BR","BR","DO","ODa","ODa",
-#                          "GBa","GBSb","GBSd","GSb","GSc","GSHb","GSHb","GW","HO","KPe","KPe",
-#                          "KRb","KS","KS","KV","NOTb","PA","TB","LH","MK","PD","VL","LP","LP",
-#                          "DM","DU","KPb","WE","WE","NOTc","HEUc","HEUf"), 
-#              Naam=c("GBSa","APa","APc","BAL","BM","BOE","BR","BRslik","ODa","ODa","DO",
-#                     "GBa","GBSb","GBSd","GSb","GSc","GSHb","GSHbslik","GW","HO","KPe","KPeslik",
-#                     "KRb","KS","KSslik","KV","NOTb","PA","TB","LH","MK","PD","VL","LP","LPslik",
-#                     "DM","DU","KPb","WE","WEslik","NOTc","HEUc","HEUf"), 
-#              Afstand_begin=c(25,30,0,102,540,10,5,70,15,15,250,
-#                              45,25,25,150,205,0,120,50,5,20,205,
-#                              5,5,37,60,130,5,40,5,5,70,25,20,218,
-#                              180,0,0,0,130,10,10,10))
-
-data_fig <-
-  Afst %>% 
-  left_join(data_MONEOS,
-            relationship = "many-to-many") %>% 
-      filter(distance_prof >= Afstand_begin)
+# data_fig <-
+#   Afst %>% 
+#   left_join(data_MONEOS,
+#             relationship = "many-to-many") %>% 
+#       filter(distance_prof >= Afstand_begin)
+# 
+# figuren_MONEOS <-
+#   data_fig %>% 
+#   # filter(REEKSCODE == "KPb") %>% 
+#   group_by(Naam) %>% 
+#   nest() %>% 
+#   mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
+# 
+# walk2(str_c("Vast_", figuren_MONEOS$Naam), figuren_MONEOS$fig, 
+#       ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, "_", campagne, ".png"), 
+#               width=16, height=8, dpi= 350))
 
 figuren_MONEOS <-
-  data_fig %>% 
-  # filter(REEKSCODE == "KPb") %>% 
-  group_by(Naam) %>% 
+  data_MONEOS %>% 
+  group_by(REEKSCODE) %>% 
   nest() %>% 
-  mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
+  mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y)))
 
 figuren_MONEOS$fig[[1]]
 
-walk2(str_c("Vast_", figuren_MONEOS$Naam), figuren_MONEOS$fig, 
-      ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, "_", campagne, ".png"), 
+walk2(figuren_MONEOS$REEKSCODE, figuren_MONEOS$fig, 
+      ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, ".png"), 
               width=16, height=8, dpi= 350))
 
-data_opt <-
+
+figuren_MONEOS_slik <-
   data_MONEOS %>% 
-  anti_join(Afst) %>% 
-  mutate(Naam = REEKSCODE)
-
-figuren_opt <-
-  data_opt %>% 
-  group_by(Naam) %>% 
+  filter(distance_prof >= afstand_slik) %>% 
+  group_by(REEKSCODE) %>% 
   nest() %>% 
-  mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
+  mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y, ecotoop = "slik")))
 
-# figuren_opt$fig
+figuren_MONEOS_slik$fig[[1]]
 
-walk2(str_c("Optioneel_", figuren_opt$Naam), figuren_opt$fig, 
-      ~ggsave(.y, file=str_c(pad_figuren, "optioneel/", .x, "_", campagne, ".png"), 
-              width=16, height=8, dpi= 350))
+figuren_MONEOS_slik %>% 
+  {.; walk2(str_c(.$REEKSCODE, "_slik"), .$fig, 
+        ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, ".png"), 
+                width=16, height=8, dpi= 350))}
+
+
+figuren_MONEOS_schor <-
+  data_MONEOS %>% 
+  filter(distance_prof <= afstand_schor) %>% 
+  group_by(REEKSCODE) %>% 
+  nest() %>% 
+  mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y, ecotoop = "schor", subtidaal_grens = FALSE)))
+
+figuren_MONEOS_schor$fig[[1]]
+
+figuren_MONEOS_schor %>% 
+  {.; walk2(str_c(.$REEKSCODE, "_schor"), .$fig, 
+        ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, ".png"), 
+                width=16, height=8, dpi= 350))}
+
+
+# data_opt <-
+#   data_MONEOS %>% 
+#   anti_join(Afst) %>% 
+#   mutate(Naam = REEKSCODE)
+# 
+# figuren_opt <-
+#   data_opt %>% 
+#   group_by(Naam) %>% 
+#   nest() %>% 
+#   mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
+# 
+# # figuren_opt$fig
+# 
+# walk2(str_c("Optioneel_", figuren_opt$Naam), figuren_opt$fig, 
+#       ~ggsave(.y, file=str_c(pad_figuren, "optioneel/", .x, "_", campagne, ".png"), 
+#               width=16, height=8, dpi= 350))
 
 ```
 

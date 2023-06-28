@@ -244,14 +244,50 @@ tbl_hoogte_DD <-
 ```
 
 
+```{r grens rapportage raai}
+
+start_raai <- 
+  data.frame(REEKSCODE = c("GBSa","GBSb","ODa","DO","GSb","GSc","LH","LP","KPb","KPe","GW",
+                           "HO","KV","NOTb","NOTc","BAL","TB",
+                           "WE","BR","DU","PD","MK","GSHb","KRb","GBa","ZLa",
+                           "APa","APc","PA","BM","HEUc","HEUf"), 
+             afstand_begin = c(25,25,40,15,10,10,5,10,10,18,1,
+                               5,5,5,0,5,4,
+                               5,5,2,5,2,6,5,2,5,
+                               2,0,5,10,10,5), 
+             afstand_slik = c(125,80,270,250,140,210,45,215,10,100,50,
+                              17,70,135,20,120,45,
+                              150,75,15,60,130,122,30,45,130,
+                              38,10,45,550,105,120), 
+             afstand_schor = c(190,130,300,300,175,235,65,240,20,140,70,
+                               25,85,160,35,150,60,
+                               170,110,25,85,145,135,40,55,135,
+                               50,23,55,570,107,135))
+
+```
+
+
 ```{r wegschrijven gegevens}
 
-ecotoopgrenzen <-
+tbl_ecotoopgrenzen <-
   tbl_hoogte_HW85 %>% 
   left_join(tbl_hoogte_LW30) %>% 
   left_join(tbl_hoogte_DD)
 
-ecotoopgrenzen %>% 
+# tbl_ecotoopgrenzen <-
+#   tbl_waterstanden %>%
+#   select(-afstand_begin)
+
+tbl_ecotoopgrenzen$REEKSCODE %>% 
+  setdiff(start_raai$REEKSCODE)
+start_raai$REEKSCODE %>% 
+  setdiff(tbl_ecotoopgrenzen$REEKSCODE)
+
+tbl_ecotoopgrenzen <-
+  tbl_ecotoopgrenzen %>% 
+  left_join(start_raai)
+
+tbl_ecotoopgrenzen %>% 
   write_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
 
 ```
