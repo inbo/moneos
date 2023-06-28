@@ -1,5 +1,6 @@
----
-params:
+--- 
+
+  params:
   hoofdstuk: "080_hyperbenthos"
 knit: (function(inputFile, ...) {
         rmarkdown::render(inputFile,
@@ -8,6 +9,7 @@ title: "Hyperbenthos data"
 output: word_document
 editor_options: 
   chunk_output_type: console
+
 ---
 
 
@@ -40,7 +42,6 @@ library(forcats)
 # pad naar data : pad_data
 # pad naar tabellen : pad_tabellen
 # pad naar figuren : pad_figuren
-
 
 source(find_root_file("../pad.R", criterion = is_rstudio_project))
 
