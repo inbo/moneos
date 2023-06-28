@@ -11,14 +11,14 @@ editor_options:
 ---
 
 
-```{r setup, include=FALSE}
+```{r 070-setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 
 ```
 
 
-```{r libraries}
+```{r 070-libraries}
 
 library(tidyverse)
 library(readxl)
@@ -34,7 +34,7 @@ library(ggpubr)
 ```
 
 
-```{r pad}
+```{r 070-pad}
 
 # inlezen van variabelen
 # pad naar data : pad_data
@@ -51,7 +51,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/Function_CalculateShannonIndex.R")
 ```
 # Wormendeterminatiejaar - alleen uit te voeren als er OID zijn verwerkt
-```{r Wormendeterminatiejaar - alleen uit te voeren als er OID zijn verwerkt}
+```{r 070-Wormendeterminatiejaar - alleen uit te voeren als er OID zijn verwerkt}
 # determinaties omzetten naar densiteit en biomassa door ze te verdelen over de Oligochaeta sp (waarvoor deze wel bekend zijn, voor de determinaties w geen biomassa of densiteit bepaald)
 
 #staalcodes waarvoor een determinatie is gebeurd
@@ -116,7 +116,7 @@ write_xlsx(list(macrobenthos = data_mzboidvervang),
 ```
 
 # Basis data file import
-```{r data}
+```{r 070-data}
 
 krwdatMZB <- 
   read_excel(paste0(pad_data, "macrobenthos_data_2008_2021NIETAANTELEVEREN.xlsx"), sheet = "macrobenthos") %>% 
@@ -178,7 +178,7 @@ fysiotoop_order <-
 ```
 
 # Totaal-files
-```{r totaal-over-soorten}
+```{r 070-totaal-over-soorten}
 
 data_macrobenthos_totaal <-
   data_macrobenthos %>% 
@@ -233,7 +233,7 @@ data_macrobenthos_totaal %>%
 
 ```
 
-```{r 070-tabel-staalnamelocaties}
+```{r 070-070-tabel-staalnamelocaties}
 
 tabel_staalnamelocaties <-
   data_macrobenthos_totaal %>% 
@@ -255,7 +255,7 @@ write_xlsx(list(staalnamelocaties = tabel_staalnamelocaties),
 ```
 
 
-```{r per-waterloop-en-tidaal}
+```{r 070-per-waterloop-en-tidaal}
 
 data_macrobenthos_tidaal <- # als group_by met waterlichaam en systeem, dan 2 waarden op niveau3_hybr, dus versie met en zonder maken
   data_macrobenthos_totaal %>% 
@@ -284,7 +284,7 @@ data_macrobenthos_tidaalWL <- # als group_by met waterlichaam, dan 2 waarden op 
 ```
 
 
-```{r 070-figuur-densiteit-waterlichaam, fig.height=8, fig.width=8}
+```{r 070-070-figuur-densiteit-waterlichaam, fig.height=8, fig.width=8}
 
 xlb <- "waterloop"
 ylb <- expression(paste("densiteit ", (ind/m^2)))
@@ -333,7 +333,7 @@ ggsave(paste0(pad_figuren, "070-figuur-densiteit-waterlichaam.jpg"), pl1)
 ```
 
 
-```{r 070-figuur-densiteit-Zeeschelde}
+```{r 070-070-figuur-densiteit-Zeeschelde}
 
 xlb <- "waterloop"
 ylb <- expression(paste("densiteit ", (g/m^2)))
@@ -360,7 +360,7 @@ ggsave(paste0(pad_figuren, "070-figuur-densiteit-Zeeschelde.jpg"), height=6, wid
 ```
 
 
-```{r 070-figuur-densiteit-mediaan-waterlichaam-alternatief}
+```{r 070-070-figuur-densiteit-mediaan-waterlichaam-alternatief}
 
 xlb <- "jaar"
 ylb <- expression(paste("densiteit ", (ind/m^2)))
@@ -425,7 +425,7 @@ ggsave(paste0(pad_figuren, "070-figuur-densiteit-waterlichaam-mediaan_alternatie
 ```
 
 
-```{r 070-figuur-densiteit-gemiddelde-waterlichaam-alternatief}
+```{r 070-070-figuur-densiteit-gemiddelde-waterlichaam-alternatief}
 
 xlb <- "jaar"
 ylb <- expression(paste("densiteit ", (ind/m^2)))
@@ -491,7 +491,7 @@ ggsave(paste0(pad_figuren, "070-figuur-densiteitgemiddelde.png"), height=8, widt
 ```
 
 
-```{r 070-figuur-densiteit-Zeeschelde-alternatief}
+```{r 070-070-figuur-densiteit-Zeeschelde-alternatief}
 
 xlb <- "jaar"
 ylb <- expression(paste("densiteit ", (ind/m^2)))
@@ -523,7 +523,7 @@ ggsave(paste0(pad_figuren, "070-figuur-densiteit-Zeeschelde-alternatief.jpg"), h
 ```
 
 
-```{r 070-figuur-biomassa-waterlichaam, fig.height=8, fig.width=8}
+```{r 070-070-figuur-biomassa-waterlichaam, fig.height=8, fig.width=8}
 
 xlb <- "waterloop"
 ylb <- expression(paste("biomassa ", (g/m^2)))
@@ -571,7 +571,7 @@ ggsave(paste0(pad_figuren, "070-figuur-biomassa-waterlichaam.jpg"))
 ```
 
 
-```{r 070-figuur-biomassa-Zeeschelde}
+```{r 070-070-figuur-biomassa-Zeeschelde}
 
 xlb <- "waterloop"
 ylb <- expression(paste("biomassa ", (g/m^2)))
@@ -597,7 +597,7 @@ ggsave(paste0(pad_figuren, "070-figuur-biomassa-Zeeschelde.jpg"), height=6, widt
 ```
 
 
-```{r 070-figuur-biomassa-waterlichaam-alternatief}
+```{r 070-070-figuur-biomassa-waterlichaam-alternatief}
 
 xlb <- "jaar"
 ylb <- expression(paste("biomassa ", (g/m^2)))
@@ -661,7 +661,7 @@ ggsave(paste0(pad_figuren, "070-figuur-biomassa-waterlichaammediaan-alternatief.
 
 ```
 
-```{r 070-figuur-biomassagemiddelde-waterlichaam-alternatief}
+```{r 070-070-figuur-biomassagemiddelde-waterlichaam-alternatief}
 
 xlb <- "jaar"
 ylb <- expression(paste("biomassa ", (g/m^2)))
@@ -727,7 +727,7 @@ ggsave(paste0(pad_figuren, "070-figuur-biomassagemiddelde-waterlichaam-alternati
 
 ```
 
-```{r 070-figuur-biomassa-Zeeschelde-alternatief}
+```{r 070-070-figuur-biomassa-Zeeschelde-alternatief}
 
 xlb <- "jaar"
 ylb <- expression(paste("biomassa ", (g/m^2)))
@@ -758,7 +758,7 @@ ggsave(paste0(pad_figuren, "070-figuur-biomassa-Zeeschelde-alternatief.jpg"), he
 ```
 
 
-```{r 070-figuur-aandeel-legel-stalen}
+```{r 070-070-figuur-aandeel-legel-stalen}
 
 data_macrobenthos_totaal %>% 
   dplyr::filter(!is.na(waterloop)) %>% 
@@ -782,7 +782,7 @@ unique(data_macrobenthos_totaal$niveau3_hybr)
 ```
 
 
-```{r 070-figuur-soortenrijkdom-Zeeschelde}
+```{r 070-070-figuur-soortenrijkdom-Zeeschelde}
 
 data_macrobenthos %>% 
   dplyr::filter(#waterloop2 == "Zeeschelde I",
@@ -828,7 +828,7 @@ ggsave(paste0(pad_figuren, "070-figuur-soortenrijkdom-lijn-Zeeschelde.jpg"), hei
 ```
 
 
-```{r 070-Shannon}
+```{r 070-070-Shannon}
 
 ZStotshbiom <- data_macrobenthos %>%
   dplyr::filter(!is.na(waterloop)) %>%
@@ -931,7 +931,7 @@ ggsave(paste0(pad_figuren, "070-figuur-Shannondiv-subt-Zeeschelde.jpg"), height=
 ```
 
 
-```{r 070-oppervlakte koppelen}
+```{r 070-070-oppervlakte koppelen}
 #Volledige jaren: 2001,2010, 2016, 2019, andere jaren niet voor OMES 14-19 dus niet gebruiken
 
 oppsruw <- read_delim(paste0(pad_data, "SpatialEcotopenOpp_INBO_2021.csv")) %>%  #, sheet = "SpatialEcotopenOpp_INBO_2021") 
@@ -1078,7 +1078,7 @@ data_macrobenthos %>%
 
 ```
 
-```{r bijdrage taxa groepen Zeeschelde}
+```{r 070-bijdrage taxa groepen Zeeschelde}
 data_macrobenthos_intertidaalfysTAX <-
   data_macrobenthos_totaalTAX %>%
   dplyr::filter(tidaal == "intertidaal") %>%
@@ -1176,7 +1176,7 @@ ggsave(filename = paste0(pad_figuren, "PopTaxgroep_Salgradient", ".jpg"), height
   
 ```
 
-```{r bijdrage van bivalv soorten aan Bivalvia doorheen de tijd}
+```{r 070-bijdrage van bivalv soorten aan Bivalvia doorheen de tijd}
 data_macrobenthos_intertidaalfysBIV <-
   data_macrobenthos_totaalBIV %>%
   dplyr::filter(tidaal == "intertidaal") %>% # hier kan ook subtidaal ingevuld worden; dan moet data_macrobenthos_OPPBIV wel een join krijgen met opps_SUBfys  (zie hieronder)
@@ -1282,7 +1282,7 @@ ggsave(filename = paste0(pad_figuren, "PopTaxgroep_Salgradient", ".jpg"), height
 ```
 
 # voorbereiding OID dataset
-```{r VOOR OID jaren, OID verwerking}
+```{r 070-VOOR OID jaren, OID verwerking}
 
 OID <- data_macrobenthos %>% 
   dplyr::filter(Staaltype == "OID") %>%
@@ -1343,7 +1343,7 @@ Figzijriviersub
 ```
 
 #Species accumulation OID: vgl tussen de 5 jaren per ZS segment
-```{r Species accumulation OID: vgl tussen de 5 jaren per ZS segment}
+```{r 070-Species accumulation OID: vgl tussen de 5 jaren per ZS segment}
 #for loop om df te maken bruikbaar voor vegan
 var_list = unique(OIDsp$jaar)
 df_list = list()
@@ -1429,7 +1429,7 @@ ggsave(filename = paste0(pad_figuren, "ZS1234_rarefy1", ".jpg"), height=6, width
 
 ```
 #Species accumulation OID: vgl tussen de 5 jaren per zijrivier
-```{r Species accumulation OID: vgl tussen de 5 jaren per zijrivier}
+```{r 070-Species accumulation OID: vgl tussen de 5 jaren per zijrivier}
 #for loop om df te maken bruikbaar voor vegan
 var_list = unique(OIDsp$jaar)
 
@@ -1518,7 +1518,7 @@ ggsave(filename = paste0(pad_figuren, "Zijrivier_rarefy", ".jpg"), height=6, wid
 ```
 
 # Species accumulation OID: vgl tussen de 5 jaren hele ZS
-```{r Species accumulation OID: vgl tussen de 5 jaren hele ZS}
+```{r 070-Species accumulation OID: vgl tussen de 5 jaren hele ZS}
 #for loop om df te maken bruikbaar voor vegan
 var_list1 <- OIDsp %>% 
   dplyr::ungroup() %>% 
@@ -1658,7 +1658,7 @@ OIDspN %>%
 ```
 
 
-```{r meta-data}
+```{r 070-meta-data}
 
 meta_data <- 
   enframe(c(laatstejaar = laatste_jaar, 
