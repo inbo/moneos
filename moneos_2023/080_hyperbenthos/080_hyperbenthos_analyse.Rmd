@@ -591,6 +591,8 @@ ggsave(paste0(pad_figuren, "080_figuur_soortenrijkdomZS_perjaar.jpg"), height=4,
 #met exoten
 hpb_specrichzon <- data_hyperbenthos %>%
   dplyr::mutate(zone = if_else(gebied == "Brede Schoren" | gebied == "Dendermonde", "Zoet", if_else(gebied == "Ballooi" | gebied == "Rupel", "Oligohalien", "Sterke Saliniteitsgradiënt"))) %>% 
+  mutate(zone = factor(zone,
+                             levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet"))) %>%
   dplyr::filter(Maand %in% c(4:10)) %>%
   dplyr::filter(Jaar != 2013) %>% 
   dplyr::group_by(Jaar, zone) %>% 
