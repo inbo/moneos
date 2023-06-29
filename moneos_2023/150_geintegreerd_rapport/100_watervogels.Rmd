@@ -1,3 +1,7 @@
+---
+---
+---
+
 ```{r 100-hoofdstuk, include=FALSE}
 
 hoofdstuk <- "100_watervogels"
@@ -117,7 +121,8 @@ Meeuwen, sternen, wulp, kievit en waterhoen worden langs de zijrivieren maar mee
 
 *Estuariene natuurontwikkelingsgebieden*
 
-De estuariene natuurontwikkelingsgebieden worden geteld door vrijwilligers of door INBO medewerkers.Alle watervogels worden geteld.
+De estuariene natuurontwikkelingsgebieden worden geteld door vrijwilligers of door INBO medewerkers.
+Alle watervogels worden geteld.
 
 #### **Ruimtelijke en temporele afbakening data**
 
@@ -143,26 +148,33 @@ De geselecteerde natuurontwikkelingsgebieden (GGG's en ontpolderingen) zijn weer
 Het betreft alle recent ingerichte sigmagebieden opgenomen in het Meest Wenselijke Alternatief.
 Zie hoofdstuk 2.
 De overige gebieden worden in de mate van het mogelijke meegeteld met de boottellingen.
+Sinds oktober 2022 werd Hedwige-Prosperpolder ontpolderd.
+Deze gegevens zijn momenteel nog niet in de databank opgenomen.
 
 *Ontbrekende data*:
 
-**2021/22**
+**2022/23**
 
 **INBO** Zeeschelde boottellingen zijn volledig uitgevoerd zoals gepland.
 
-**MIDMA** Durme brug Waasmunster - Mirabrug : geen telling in januari 2022.
-Durme monding - Mira-brug TIELRODE : geen telling in maart 2022.
-Zenne ZEMST(brug Brusselse Steenweg) - HOMBEEK (Eglegemvijver) : geen telling in februari 2022.
-Tijgebonden Oude Schelde Gent - monding Ringvaart- ontbrekende telling november 2021 en maart 2022.
+**MIDMA** Durme monding - Mira-brug TIELRODE : geen telling in oktober 2022 en februari 2023.
+Zenne Zennegat - Hombeekbrug MECHELEN : geen telling in december 2022 en februari 2023.
+Tijgebonden Oude Schelde Gent - monding Ringvaart- ontbrekende telling november 2022.
+Dijle Netemonding - Mechelen: geen telling in maart 2023.
 
-*Winterkarakteristiek telseizoen 2021/22*:
+*Winterkarakteristiek telseizoen 2022/23*:
 
-De winter van 2021/22 [^watervogels-1] was klimatologisch gemiddeld warmer en natter.
-Vooral de relatief warme periode rond de jaarwisseling viel op.
-Begin december (buiten de telperiode) waren er 3 sneeuwdagen met een maximale sneeuwdikte van 1 cm.
-Er waren afgelopen winter 16 vorstdagen [min\<0°C] (normaal: 29,7 dagen) en geen winterse dagen [max\<0°C] (normaal: 5,6 dagen).
+De winter van 2022/23 [^100_watervogels-1] was klimatologisch zacht met wisselend koude en (zeer) warme periodes.
+Er was een koude periode de eerste 20 dagen van december.
+Daarna volgde gedurende drie weken een zeer warm jaareinde met record termperaturen tot 16.3°C op de jaarwisseling.
+Eind januari volgde nog een koude prikje.
+Februari was ook relatief warm.
+December en januari kenden meer neerslag dan gemiddeld maar door de recorddroge maand februari (geen neerslag) was de winter gemiddeld droger.
+Net als tijdens de vorige winter werd geen enkele winterse dag (max \< 0°C) genoteerd.
+In totaal telde de winter 3 sneeuwdagen in december en januari en in totaal 12 vriesdagen.
+(min \< 0°C).
 
-[^watervogels-1]: KMI winter `r laatste_jaar` (dec `r as.numeric(laatste_jaar) - 1` - feb `r laatste_jaar`) \~= wintervogeljaar (telseizoen `r laatste_telseizoen`).
+[^100_watervogels-1]: KMI winter `r laatste_jaar` (dec `r as.numeric(laatste_jaar) - 1` - feb `r laatste_jaar`) \~= wintervogeljaar (telseizoen `r laatste_telseizoen`).
 
 <!--  | -->
 
@@ -217,7 +229,7 @@ tabel_sigma_estuarien <-
               delim = ";")
 
 tabel_sigma_estuarien <- tabel_sigma_estuarien %>% 
-  filter(gebiedsgroep == "GGG" | gebiedsgroep == "Ontpoldering") %>% 
+  dplyr::filter(gebiedsgroep == "GGG" | gebiedsgroep == "Ontpoldering") %>% 
   select(-c(gebiedsgroeptype_code, gebiedsgroeptype, gebiedsgroep_code)) %>% 
   mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf"))) %>% 
   arrange(niveau3)
@@ -254,7 +266,7 @@ tabel_sigma_estuarien %>%
 De exploratieve data-analyse van de overwinterende watervogels van de Zeeschelde en getijgebonden zijrivieren volgt de vernieuwde evaluatiemethodiek (EMSE, 2021) mits een aantal doorgevoerde aanpassingen:
 
 *voedselgroepen*: de weerhouden vogelsoorten (met meer dan 30 waarnemingen cf. EMSE, 2021) werden ingedeeld in 4 categoriën (Tabel \@ref(tab:100-tabel-trofischegroepsoorten)): benthoseters (omvatten: schelpdiereters, wormeneters, hyperbenthoseters en epibenthoseters), viseters, herbivoren en omnivoren (omvatten bijna alle eendensoorten in de Zeeschelde - deze voeden zich doorgaans opportunisistisch maar in belangrijke mate met Oligochaeta).
-De vleeseters (roofvogels) worden niet systematiesch geteld bij de watervogeltellingen.
+De vleeseters (roofvogels) worden niet systematisch geteld bij de watervogeltellingen.
 Deze categorie werd niet meegenomen.
 
 *Areaal foerageergebied*: voor deze oefening werd de dichtheid van de vogelaantallen berekend op basis van het areaal slik zacht substraat aanwezig langs de deelzones van de Zeeschelde en zijrivieren.
@@ -276,14 +288,14 @@ Zo kan de trend in de verschillende deelzones in detail geëvalueerd worden voor
 De Shannon-index toont de algemene patronen in de diversiteit.
 
 De globale patronen in de maandelijkse wintervogelaantallen langsheen de Zeeschelde zijn de laatste jaren stabiel (Figuur \@ref(fig:100-figuur-maandelijkse-totalen-winter-Zeeschelde)).
-Na een dal in de winter van 2019 en uitzonderlijke winterpiek tijdens de winter van 2020 is het wintermaximum[^watervogels-2] van 2021 vergelijkbaar aan de winters van 2017-2018 (Figuur \@ref(fig:100-figuur-wintermaxima-Zeeschelde)).
+Na een dal in de winter van 2019 en uitzonderlijke winterpiek tijdens de winter van 2020 is het wintermaximum[^100_watervogels-2] van 2021 vergelijkbaar aan de winters van 2017-2018 (Figuur \@ref(fig:100-figuur-wintermaxima-Zeeschelde)).
 De laagste aantallen in de winterperiode worden doorgaans geteld in maart.
 De vogelaantallen namen sterk af tussen 2002 en 2007.
 Tussen 2008 en 2010 was er een klein herstel maar sinds 2012 zijn de vogelaantallen verder afnemend tot stabiel (Figuur \@ref(fig:100-figuur-index-niveau2), Figuur \@ref(fig:100-figuur-index-niveau3)).
 De proportionele verdeling van de watervogels in de verschillende zones van de Zeeschelde (zie in Figuur 1.1) toont na de sterke afname van de watervogels in winter 2006/07, vooral in de oligohaliene zone, een geleidelijke toename van het aandeel vogels dat verblijft in de sterke saliniteitsgradiënt (Beneden-Zeeschelde), Zeeschelde I en de zijrivieren.
 Sinds 2010/11 is het proportioneel aandeel van elke zone relatief stabiel (Figuur \@ref(fig:100-figuur-verhouding-aantallen)).
 
-[^watervogels-2]: Maximum van de som van alle vogels per wintermaand (oktober tot en met maart).
+[^100_watervogels-2]: Maximum van de som van alle vogels per wintermaand (oktober tot en met maart).
 
 Bespreking per deelgebied (Figuur \@ref(fig:100-figuur-index-niveau3)):
 
@@ -584,53 +596,53 @@ De figuren tonen dat voor geen enkele soort tot nu toe de doelstellingen binnen 
 
 <br/>
 
-```{r 100-figuur-IHD-pijlstaart, fig.cap=cap_IHD_pijlstaart,out.width="50%"}
+<!-- ```{r 100-figuur-IHD-pijlstaart, fig.cap=cap_IHD_pijlstaart,out.width="50%"} -->
 
-cap_IHD_pijlstaart <- "Het glijdend gemiddelde van de maximale winteraantallen langsheen de Zeeschelde, zijrivieren en de estuariene sigmagebieden. Horizontale lijn = IHD-doel"
-                                            
-knitr::include_graphics(paste0(pad_figuren, "100-figuur_S-IHD_Pijlstaart.jpg"))
+<!-- cap_IHD_pijlstaart <- "Het glijdend gemiddelde van de maximale winteraantallen langsheen de Zeeschelde, zijrivieren en de estuariene sigmagebieden. Horizontale lijn = IHD-doel" -->
 
-```
+<!-- knitr::include_graphics(paste0(pad_figuren, "100-figuur_S-IHD_Pijlstaart.jpg")) -->
 
-<br/>
+<!-- ``` -->
 
-```{r 100-figuur-IHD-krakeend, fig.cap=cap_IHD_krakeend,out.width="50%"}
+<!-- <br/> -->
 
-cap_IHD_krakeend <- "Het glijdend gemiddelde van de maximale winteraantallen langsheen de Zeeschelde, zijrivieren en de estuariene sigmagebieden. Horizontale lijn = IHD-doel"
-                                            
-knitr::include_graphics(paste0(pad_figuren, "100-figuur_S-IHD_Krakeend.jpg"))
+<!-- ```{r 100-figuur-IHD-krakeend, fig.cap=cap_IHD_krakeend,out.width="50%"} -->
 
-```
+<!-- cap_IHD_krakeend <- "Het glijdend gemiddelde van de maximale winteraantallen langsheen de Zeeschelde, zijrivieren en de estuariene sigmagebieden. Horizontale lijn = IHD-doel" -->
 
-<br/>
+<!-- knitr::include_graphics(paste0(pad_figuren, "100-figuur_S-IHD_Krakeend.jpg")) -->
 
-```{r 100-figuur-IHD-wintertaling, fig.cap=cap_IHD_wintertaling,out.width="50%"}
+<!-- ``` -->
 
-cap_IHD_wintertaling <- "Het glijdend gemiddelde van de maximale winteraantallen langsheen de Zeeschelde, zijrivieren en de estuariene sigmagebieden. Horizontale lijn = IHD-doel"
-                                            
-knitr::include_graphics(paste0(pad_figuren, "100-figuur_S-IHD_Wintertaling.jpg"))
+<!-- <br/> -->
 
-```
+<!-- ```{r 100-figuur-IHD-wintertaling, fig.cap=cap_IHD_wintertaling,out.width="50%"} -->
 
-<br/>
+<!-- cap_IHD_wintertaling <- "Het glijdend gemiddelde van de maximale winteraantallen langsheen de Zeeschelde, zijrivieren en de estuariene sigmagebieden. Horizontale lijn = IHD-doel" -->
 
-```{r 100-figuur-IHD-bergeend, fig.cap=cap_IHD_bergeend,out.width="50%"}
+<!-- knitr::include_graphics(paste0(pad_figuren, "100-figuur_S-IHD_Wintertaling.jpg")) -->
 
-cap_IHD_bergeend <- "Het glijdend gemiddelde van de maximale winteraantallen langsheen de Zeeschelde, zijrivieren en de estuariene sigmagebieden. Horizontale lijn = IHD-doel"
-                                            
-knitr::include_graphics(paste0(pad_figuren, "100-figuur_S-IHD_Bergeend.jpg"))
+<!-- ``` -->
 
-```
+<!-- <br/> -->
 
-<br/>
+<!-- ```{r 100-figuur-IHD-bergeend, fig.cap=cap_IHD_bergeend,out.width="50%"} -->
 
-```{r 100-figuur-IHD-tafeleend, fig.cap=cap_IHD_tafeleend,out.width="50%"}
+<!-- cap_IHD_bergeend <- "Het glijdend gemiddelde van de maximale winteraantallen langsheen de Zeeschelde, zijrivieren en de estuariene sigmagebieden. Horizontale lijn = IHD-doel" -->
 
-cap_IHD_tafeleend <- "Het glijdend gemiddelde van de maximale winteraantallen langsheen de Zeeschelde, zijrivieren en de estuariene sigmagebieden. Horizontale lijn = IHD-doel"
-                                            
-knitr::include_graphics(paste0(pad_figuren, "100-figuur_S-IHD_Tafeleend.jpg"))
+<!-- knitr::include_graphics(paste0(pad_figuren, "100-figuur_S-IHD_Bergeend.jpg")) -->
 
-```
+<!-- ``` -->
+
+<!-- <br/> -->
+
+<!-- ```{r 100-figuur-IHD-tafeleend, fig.cap=cap_IHD_tafeleend,out.width="50%"} -->
+
+<!-- cap_IHD_tafeleend <- "Het glijdend gemiddelde van de maximale winteraantallen langsheen de Zeeschelde, zijrivieren en de estuariene sigmagebieden. Horizontale lijn = IHD-doel" -->
+
+<!-- knitr::include_graphics(paste0(pad_figuren, "100-figuur_S-IHD_Tafeleend.jpg")) -->
+
+<!-- ``` -->
 
 <br/> **Algemene conclusie**
 
