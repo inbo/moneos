@@ -1,0 +1,399 @@
+```{r 120-hoofdstuk, include=FALSE}
+
+hoofdstuk <- "120_zoogdieren"
+
+```
+
+```{r 120-setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.pos = "H", tab.pos = "H" )
+knitr::opts_knit$set(eval.after = "fig.cap")
+
+```
+
+```{r 120-libraries}
+
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(kableExtra)
+library(INBOtheme)
+library(rprojroot) ## workaround pad
+
+```
+
+```{r 120-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+
+```
+
+```{r 120-meta_data, include=FALSE}
+
+meta_data <-
+  read_delim(paste0(pad_data, "meta_data.csv"),
+             delim = ";")
+
+for(i in 1:nrow(meta_data)){
+  ##first extract the object value
+  tempobj=meta_data$waarde[i]
+  ##now create a new variable with the original name of the list item
+  eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+}
+
+```
+
+```{r basisdata, include=FALSE}
+zoogdier_data <- read_csv(paste0(pad_data, "zoogdier_data.csv"))
+```
+
+# Zoogdieren
+
+**Wim Mertens**
+
+## Inleiding
+
+Er is in Vlaanderen of in het Schelde-estuarium voorlopig geen systematische monitoring van de vijf behandelde zoogdiersoorten (gewone zeehond, grijze zeehond, bruinvis, bever en otter).
+Voor otter wordt momenteel via het meetnettenproject een systematische monitoring opgestart (Gouwy et al. 2021, [webref1](https://meetnetten.be/projects/66/), [webref2](https://meetnetten.be/)).
+Van Den Berge *et al.* (2019) geeft een uitgebreid overzicht van recente waarnemingen van otter in Vlaanderen.\
+
+Alle aangeleverde data zijn afkomstig van [waarnemingen.be](http://www.waarnemingen.be/), de website voor natuurinformatie van Natuurpunt en Stichting Natuurinformatie, ter beschikking gesteld door Natuurpunt Studie vzw.\
+
+De bever heeft zich na 2007 gevestigd in de valleien van de Schelde- en haar zijrivieren.
+Tot 2010 was Dendermonde de enige gekende locatie.
+Sindsdien duiken er steeds meer waarnemingslocaties op en plant de soort zich over het volledig estuarien valleigebied voort.\
+
+Grijze zeehond en bruinvis worden min of meer regelmatig werden waargenomen.
+Daarom worden de waarnemingen van deze soorten ook opgenomen in de rapportage.
+
+## Materiaal en methode
+
+Alle vrijgegeven waarnemingen van [waarnemingen.be](http://www.waarnemingen.be/) van otter, bruinvis, gewone zeehond, grijze zeehond en bever tussen 2010 en 2021 werden opgevraagd.
+Deze gegevens mogen enkel gebruikt worden voor de geïntegreerde systeemmonitoring van het Schelde-estuarium -- MONEOS.
+Deze gegevens mogen niet worden overgenomen zonder toestemming van de eigenaar (Natuurpunt Studie vzw).\
+
+De waarnemingen betreffen uitsluitend losse waarnemingen.
+Het wetenschappelijk gebruik van dergelijke waarnemingen kent zijn beperkingen (Herremans et al. 2018).
+De losse waarnemingen kunnen worden gebruikt om veranderingen in verspreiding van de soorten te evalueren (Herremans et al. 2018, Maes et al. 2018).
+De data kunnen niet worden gebruikt voor nauwkeurige trendbepaling o.a.
+omdat de zoekinspanning niet gekend is en het meldingsgedrag variabel is.
+De hier behandelde soorten zijn echter meldenswaardige soorten.
+Ruwe trendinschatting zijn met het nodige voorbehoud eventueel wel zinvol (Herremans et al. 2018).\
+
+Data van 2020 en vroeger kunnen verschillen van vorige dataleveringen als gevolg van retroactieve ingave van waarnemingen.
+
+## Resultaten
+
+### Overzicht van de waarnemingn sinds 2010
+
+Tabel \@ref(tab:120-tabel1) geeft een overzicht van het totaal aantal waarnemingen van bever, otter, bruinvis, gewone zeehond en grijze zeehond.
+Tabel \@ref(tab:120-tabel2) en figuur \@ref(fig:120-figuur1) geven een overzicht van het totaal aantal ingevoerde exemplaren van de soorten.
+
+```{r 120-tabel1}
+# inlezen tabel
+aantal_waarnemingen <-
+  read_csv(paste0(pad_tabellen, "aantal_waarnemingen2.csv"))
+
+# hoofding tabel
+caption_x_waarden <- "Totaal aantal waarnemingen in de vallei van de Zeeschelde en haar bijrivieren (inclusief niet gevalideerde waarnemingen). "
+
+# voetnoten bij tabel
+footnote_text <-
+  c("Bij bever wordt het aantal waarschijnlijke zichtwaarnemingen (geen sporen) tussen haakjes aangegeven.")
+
+# opmaak tabel
+aantal_waarnemingen %>%
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
+  mutate(across(everything(), ~cell_spec(., color = "black", align = "c"))) %>%
+  knitr::kable(escape = FALSE,
+               booktabs = TRUE,
+               caption = caption_x_waarden) %>%
+  footnote(number = footnote_text,
+           escape = FALSE,
+           threeparttable = FALSE) %>% 
+  kable_styling(latex_options = c("scale_down"))
+```
+
+<br/>
+
+```{r 120-tabel2}
+
+# inlezen tabel
+aantal_ind <-
+  read_csv(paste0(pad_tabellen, "aantal_ind.csv"))
+
+# hoofding tabel
+caption_x_waarden <- "Totaal aantal ingegeven waargenomen exemplaren per jaar in de vallei van de Zeeschelde en haar bijrivieren (exclusief waarnemingen van sporen)."
+
+# voetnoten bij tabel
+footnote_text <-
+  c("Tussen haakjes wordt het aantal dood teruggevonden exemplaren gegeven.",
+    "Het totaal aantal waargenomen dieren betreft vaak dubbele waarnemingen.")
+# opmaak tabel
+aantal_ind %>%
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
+  mutate(across(everything(), ~cell_spec(., color = "black", align = "c"))) %>%
+  knitr::kable(escape = FALSE,
+               booktabs = TRUE,
+               caption = caption_x_waarden) %>%
+  footnote(number = footnote_text,
+           escape = FALSE,
+           threeparttable = FALSE) %>% 
+  kable_styling(latex_options = c("scale_down"))
+
+```
+
+<br/>
+
+```{r 120-figuur1, fig.cap=caption_figuur1, out.width="95%"}
+
+caption_figuur1 <- "Evolutie van het aantal waargenomen exemplaren van bever, otter, bruinvis, gewone zeehond en grijze zeehond."
+
+knitr::include_graphics(paste0(pad_figuren, "120_fig1_aantal_ind.jpg"))
+```
+
+<br/>
+
+### Overzicht waarnemingen 2021
+
+#### Bever
+
+De gestage uitbreiding van de bever in de Scheldevallei (Mertens, 2016) zet zich 2021 voort.
+Het aantal ingevoerde waarnemingen lag hoger dan in 2020, het totaal aantal ingevoerde individuen iets lager.
+Het aantal km-hokken met waarnemingen steeg van 128 in 2020 naar 143 in 2021.\
+
+In stroomgebied van de Grote Nete blijft de soort beperkt tot de vallei van de de Grote Laak.
+Opmerkelijk zijn nieuwe waarnemingslocaties in de buurt van Antwerpen en de Antwerpse haven.
+
+```{r figuur2, fig.cap=caption_figuur2, out.width="80%"}
+caption_figuur2 <- "Evolutie van het aantal km-hokken (UTM1-hokken) met beverwaarnemingen in vallei van de Schelde en haar tijgebonden zijrivieren."
+
+knitr::include_graphics(paste0(pad_figuren, "bever_utm.png"))
+```
+
+```{r figuur3, fig.cap=caption_figuur3, out.width="90%"}
+caption_figuur3 <- "Geografische spreiding van gevalideerde beverwaarnemingen in 2019."
+
+knitr::include_graphics(paste0(pad_figuren, "bever2019.png"))
+```
+
+```{r figuur4, fig.cap=caption_figuur4, out.width="90%"}
+caption_figuur4 <- "Geografische spreiding van gevalideerde beverwaarnemingen in 2020."
+
+knitr::include_graphics(paste0(pad_figuren, "bever2020.png"))
+```
+
+```{r figuur5, fig.cap=caption_figuur5, out.width="90%"}
+caption_figuur5 <- "Geografische spreiding van gevalideerde beverwaarnemingen in 2021."
+
+knitr::include_graphics(paste0(pad_figuren, "bever2021.png"))
+```
+
+<br/>
+
+#### Otter
+
+De otter werd in 2012 voor het eerst sinds lang opnieuw waargenomen in Vlaanderen, onder meer in de Rupelvallei.
+Tot 2019 werden slechts sporadisch sporen of dieren waargenomen in de omgeving van de Rupelmonding.
+Gerichte opvolging (spraints, cameravallen) in deze omgeving toonde aan dat de soort sinds 2014 constant aanwezig is en zich vermoedelijk voortplant (Gouwy et al., 2017).
+Na de vondst van uitwerpselen in Waasmunster in 2019 leidde gericht onderzoek o.a.
+met cameravallen, in de Durmevallei en verder stroomopwaarts langs de Schelde tot veel bijkomende waarnemingen.
+In 2020 waren er (`r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2020 & str_detect(zoogdier_data$status, "Goed")),])` gevalideerde waarnemingen en 2021 `r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2021 & str_detect(zoogdier_data$status, "Goed")),])`.
+De meeste waarneming vonden plaats langs de Durme in de buurt van het Molsbroek, maar ook in Berlare langs de Schelde en in Willebroek langs de Rupel werd otter waargenomen.
+Er waren geen meldingen uit de Polders van Kruibeke, waar de otter voorgaande jaren werd waargenomen.
+Toch was de soort hier wel aanwezig (mond. mededelingen Koen Van Den Berge, Bram Vereecken).
+
+```{r figuur6, fig.cap=caption_figuur6, out.width="90%"}
+caption_figuur6 <- "Geografische spreiding van gevalideerde otterwaarnemingen in 2019."
+
+knitr::include_graphics(paste0(pad_figuren, "otter2019.png"))
+```
+
+```{r figuur7, fig.cap=caption_figuur7, out.width="90%"}
+caption_figuur7 <- "Geografische spreiding van gevalideerde otterwaarnemingen in 2020."
+
+knitr::include_graphics(paste0(pad_figuren, "otter2020.png"))
+```
+
+```{r figuur8, fig.cap=caption_figuur8, out.width="90%"}
+caption_figuur8 <- "Geografische spreiding van gevalideerde otterwaarnemingen in 2021."
+
+knitr::include_graphics(paste0(pad_figuren, "otter2021.png"))
+```
+
+<br/>
+
+#### Gewone zeehond
+
+Jaarlijks zwemmen zeehonden in kleine aantallen de Zeeschelde op en verblijven er min of meer lange tijd.
+De soort plant zich niet voort in het Belgisch deel van het Schelde-estuarium.\
+
+<br/>
+
+Gewone zeehonden hielden zich in 2021 net als voorgaande jaren voornamelijk op nabij de grens met Nederland ter hoogte van het Groot Buitenschoor en het Schor Ouden Doel.
+Het aantal ingevoerde individuen lijkt hoger dan voorgaande jaren (zie figuur \@ref(fig:120-figuur1)), maar de zeehond die op 2 september op de Nete in Lier verbleef, werd elf maal ingegeven.
+Andere waarnemingen stroomopwaarts Antwerpen:
+
+-   23 april, een exemplaar op het zeekanaal in Hingene; wellicht betreft dit een foute determinatie van de grijze zeehond die daar op dezelfde dag werd waargenomen
+-   24 april, een exemplaar op de Zeeschelde in Baasrode
+-   18 september, een exemplaar in Temse op de Zeeschelde
+-   5 oktober, een exemplaar op de Zeeschelde in Sint-Amands
+
+```{r tabel3}
+# inlezen tabel
+zeehond2021 <-
+  read_csv(paste0(pad_tabellen, "/zeehond2021.csv"))
+
+# hoofding tabel
+caption_x_waarden <- "Waarnemingen van gewone zeehond in 2021. "
+
+
+# opmaak tabel
+zeehond2021 %>%
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
+  mutate(across(everything(), ~cell_spec(., color = "black", font_size = 8))) %>%
+    knitr::kable(escape = FALSE,
+               booktabs = TRUE, 
+               longtable = TRUE,
+               caption = caption_x_waarden) %>% 
+  kable_styling(latex_options = c("scale_down", "repeat_header"))
+```
+
+<br/>
+
+#### Grijze zeehond
+
+Naast gewone zeehonden duiken de laatste jaren ook grijze zeehonden regelmatig op in de Zeeschelde.
+Daarom worden de waarnemingen van deze soort ook opgenomen in de rapportage.
+
+In april (1 waarneming) en juni (2 waarnemingen) werd de grijze zeehond waargenomen nabij de grens met Nederland.
+Op 23 april zwom in de late namiddag een exemplaar in de Schelde ter hoogte van de sluis in Hingene, wat later dezelfde dag moet het dier door de sluis gesukkeld zijn want 's avonds waren er waarnemingen in het zeekanaal.
+Op 30 april zwom een grijze zeehond ter hoogte van het veer Weert - Driegoten.
+De opmerkelijkste waarneming betreft zes exemplaren op 11 oktober, opnieuw op de Schelde in Hingene.
+
+```{r tabel4}
+# inlezen tabel
+grijzezeehond2021 <-
+  read_csv(paste0(pad_tabellen, "/grijzezeehond2021.csv"))
+
+# hoofding tabel
+caption_x_waarden <- "Waarnemingen van grijze zeehond in 2021."
+
+
+# opmaak tabel
+grijzezeehond2021 %>%
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
+  mutate(across(everything(), ~cell_spec(., color = "black", font_size = 8))) %>%
+  knitr::kable(escape = FALSE,
+               booktabs = TRUE,
+               caption = caption_x_waarden) %>% 
+  kable_styling(latex_options = c("scale_down"))
+
+```
+
+<br/>
+
+#### Bruinvis
+
+In 2021 werden slechts vier waarnemingen van bruinvis ingevoerd in waarnemingen.be.
+Eén waarneming vond plaats in Zandvliet in maart.
+De drie overige waarnemingen stemmen uit september, een keer twee en een keer één exemplaar in Zandvliet en op 25 september één exemplaar stroomopwaarts Antwerpen in Baasrode.
+
+```{r tabel5}
+# inlezen tabel
+bruinvis2021 <-
+  read_csv(paste0(pad_tabellen, "/bruinvis2021.csv"))
+
+# hoofding tabel
+caption_x_waarden <- "Waarnemingen van bruinvis in 2021."
+
+
+# opmaak tabel
+bruinvis2021 %>%
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% 
+  mutate(across(everything(), ~cell_spec(., color = "black", font_size = 8))) %>%
+  knitr::kable(escape = FALSE,
+               booktabs = TRUE,
+               caption = caption_x_waarden) %>% 
+  kable_styling(latex_options = c("scale_down"))
+```
+
+<br/>
+
+## Discussie
+
+Noch voor gewone zeehond, noch voor grijze zeehond zijn er instandhoudingsdoelstelling voor de Zeeschelde.
+Veel waarnemingen van de zeehondensoorten zijn niet gevalideerd en dus onzeker, zoals blijkt uit de dubbele determinatie op 23 april in Hingene.
+Gewone zeehond werd in 2021 regelmatig waargenomen ter hoogte van de grens.
+Slechts vier exemplaren werden stroomopwaarts Anwterpen gespot.
+Met zes waarnemingen blijft de grijze zeehond een weinig frequente verschijning.
+Dit kan ook gezegd worden van de bruinsvis met 4 waarneminen in 2021.
+
+Voor bever en otter zijn wel instandhoudingsdoelen geformuleerd.
+Adriaensen *et al.* (2005) stellen dat voldoende ruimte en geschikt habitat aanwezig moeten zijn binnen strikt beschermde natuurgebieden voor een potentiële populatie bevers van ca.
+40 families (ca. 160 individuen), verspreid over verschillende deelgebieden.
+Voor otter moet er voldoende potentieel leefgebied zijn om een leefbare kernpopulatie van 20-25 individuen te onderhouden, verspreid over 3 - 4 deelgebieden.\
+
+Bij een doorgedreven inventarisatie van beverterritoria in Vlaanderen vonden Huysentruyt *et al.* (2019) in 2017 29 beverterritoria in de vallei van de Zeeschelde en tijgebonden zijrivieren.
+In dat zelfde jaar werden beverwaarnemingen verricht in 64 km-hokken, m.a.w. een verhouding van `r round(64/29, 2)` km-hokken per territoria.
+Indien deze verhouding een constante is, zouden er in 2021 ca.
+`r round(143/(64/29),0)` territoria zijn.
+Volgens de methode in Huysentruyt *et al.* (2019) stemt dit overeen met `r round(143/(64/29)*0.6,0)` reproductieve eenheden (families) en `r round(143/(64/29)*2.8,0)` individuen.
+De doelstelling voor bever zou in 2021 dus gerealiseerd zijn.\
+
+Voor de otter is dit niet het geval.
+Dat er meerdere exemplaren in twee deelgebieden (ruime omgeving van de Rupelmonding en Durmevallei - Berlare Broek) voorkomen is duidelijk, maar zeker nog geen 20-25 individuen.
+
+<br/>
+
+## Referenties
+
+Everaert J.
+2021.
+Otter "Meneer Eenoog" heeft leefgebied van Wachtebeke tot Berlare in Oost-Vlaanderen.
+Roofdiernieuws 29.
+INBO.
+
+Gouwy J., Mergeay J., Neyrinck S., Van Breusegem A., Berlengee F., Van Den Berge K., Everaert J.
+2021.
+2022 : Otters troef!
+INBO Roofdiernieuws 29, december 2021.
+
+Gouwy J., Van Den Berge K., Berlengee F.
+& Vansevenant D.
+2017.
+Dode otter ingezameld in Kalmthout en bevestiging van de meerjarige aanwezigheid in de vallei van de Zeeschelde -- INBO Marternieuws 23, december 2017.
+
+Herremans M., Swinnen K.
+& Vanormelingen P. 2018.
+Www.waarnemingen.be, wat kunnen we daarmee?
+Natuur.focus 17(4) online: [www.natuurpunt.be/focus](www.natuurpunt.be/focus)
+
+Huysentruyt F, Van Daele T, Verschelde P, Boone N, Devisscher S, Vernaillen J (2019).
+Evaluatie van de monitoring van bever (Castor fiber) in Vlaanderen.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek 2019 (28).
+Instituut voor Natuur- en Bosonderzoek, Brussel.
+
+Mertens W.
+(2016).
+Hoofdstuk 8 Zoogdieren in Van Ryckegem, G., Van Braeckel, A., Elsen, R., Speybroeck, J., Vandevoorde, B., Mertens, W., Breine, J., De Beukelaer, J., De Regge, N., Hessel, K., Soors, J., Terrie, T., Van Lierop, F.
+& Van den Bergh, E.
+(2016).
+MONEOS -- Geïntegreerd datarapport INBO: Toestand Zeeschelde 2015: monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek 2016 (INBO.R.2016.12078839).
+Instituut voor Natuur- en Bosonderzoek, Brussel.
+
+Van Den Berge K., Gouwy J.
+& Berlengee F.(2019). De otter (Lutra lutra) in Vlaanderen.
+State of the art anno 2019.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek 2019 (60).
+Instituut voor Natuur- en Bosonderzoek, Brussel.
