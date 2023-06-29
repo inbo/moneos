@@ -91,7 +91,7 @@ In deze rapportage wordt de ecotopenkaart voor de Beneden-Zeeschelde volgens bei
 
 ## Methodologie
 
-De ecotopenkaart versie 1.0 wordt samengesteld uit enerzijds een geomorfologische kaart en anderzijds een fysiotopenkaart (Tabel \@ref(tab:030-chapter-1-tabel-1-klassen-E1)).
+De ecotopenkaart versie 1.0 wordt samengesteld uit enerzijds een geomorfologische kaart en anderzijds een fysiotopenkaart (Tabel \@ref(tab:030-tabel-klassen-E1)).
 Voor een uitgebreide bespreking van materiaal en methode wordt verwezen naar Van Braeckel & Elsen (2018).
 Hier worden kort de verschillende ecotopen beschreven.
 Voor de ecotopenkaart versie 2.0 zijn ook gegevens nodig over de plaatselijke maximale stroomsnelheid bij vloed voor het afbakenen van de subtidale ecotopen.
@@ -106,7 +106,7 @@ De referentie is het 30e percentiel van het laagwater (LW30):
 -   Matig diep subtidaal: 2-5m onder LW30
 -   Ondiep subtidaal: 0-2m onder LW30
 
-In Tabel \@ref(tab:030-chapter-1-tabel-1-klassen-E1) wordt ook een categorie zeer diep subtidaal onderscheiden (\>10m onder LW30).
+In Tabel \@ref(tab:030-tabel-klassen-E1) wordt ook een categorie zeer diep subtidaal onderscheiden (\>10m onder LW30).
 In de ecotopenkaart wordt dit samengenomen met het diep subtidaal.
 
 In de **litorale zone** worden ecotopen onderscheiden op basis van droogvalpercentage en geomorfologie.
@@ -126,7 +126,7 @@ In de geomorfologische kaart wordt vervolgens een onderscheid gemaakt tussen:
 
 Zacht substraat in de geomorfologische kaart is steeds onbegroeid.
 Wanneer de zone begroeid is wordt dit aangeduid als 'schor' of wanneer het een opgehoogde zone betreft als 'antropogene verhoging dijk' (zie hieronder ecotopen in het supralitoraal).
-De combinatie van deze geomorfologische klassen en de fysiotopen geeft dan de ecotopen zoals weergegeven in Tabel \@ref(tab:030-chapter-1-tabel-1-klassen-E1).
+De combinatie van deze geomorfologische klassen en de fysiotopen geeft dan de ecotopen zoals weergegeven in Tabel \@ref(tab:030-tabel-klassen-E1).
 
 Ten slotte onderscheiden we volgende ecotopen in het **supralitoraal**:
 
@@ -153,25 +153,25 @@ De grote toename in hoog supralitoraal is dus het resultaat van een wijziging in
 
 <!-- \arrayrulecolor{white} -->
 
-<!-- Table: (\#tab:030-tabel-1-tabel-klassen-oud) Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen. -->
+<!-- Table: (\#tab:030-tabel-klassen-oud) Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen. -->
 
-<!-- | ![](`r paste0(pad_tabellen, "030_tabel_1_tabel_klassen_E1.png")`){out.width="100%"} | -->
+<!-- | ![](`r paste0(pad_tabellen, "030_tabel_klassen_E1.png")`){out.width="100%"} | -->
 
 <!-- | -- | -->
 
-<!-- | `r magick::image_read(paste0(pad_tabellen, "030_tabel_1_tabel_klassen_E1.png")) %>% magick::image_scale("1800")` | -->
+<!-- | `r magick::image_read(paste0(pad_tabellen, "030_tabel_klassen_E1.png")) %>% magick::image_scale("1800")` | -->
 
 <!-- |------------------------------------------------------------------------| -->
 
-<!-- : (#tab:030-tabel-1-tabel-klassen-oud) Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen. -->
+<!-- : (#tab:030-tabel-klassen-oud) Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen. -->
 
 <!--  \arrayrulecolor{black} -->
 
-```{r 030-chapter-1-tabel-1-klassen-E1, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-klassen-E1, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- "Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen."
 
-img_file <- paste0(pad_tabellen, "030_chapter_1_tabel_1_klassen_E1.png")
+img_file <- paste0(pad_tabellen, "030_tabel_klassen_E1.png")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
@@ -190,18 +190,18 @@ De nieuwe indeling van de ecotopen weerspiegelt beter de leefgebieden van versch
 
 In de **sublitorale zone** blijven de dieptegrenzen gehandhaafd maar daarbovenop worden hoog- en laagdynamische habitats onderscheiden.
 De hydrodynamische indeling is gebaseerd op maximale stroomsnelheid bij vloed, berekend volgens het Scaldis 3D-model van het Waterbouwkundig Laboratorium.
-De grenswaarden verschillen per diepteklasse (Tabel \@ref(tab:030-chapter-1-tabel-2-dynamiek-ecotopen)).
+De grenswaarden verschillen per diepteklasse (Tabel \@ref(tab:030-tabel-dynamiek-ecotopen)).
 In het ondiep subtidaal is de maximale stroomsnelheid voor laagdynamisch habitat 1.01 m/s.
 In het matig diep subtidaal is dit 0.92 m/s en in het diep subtidaal wordt 0.83 m/s gehanteerd.
 Het zeer diep subtidaal (\> 10 m onder LW30) wordt volledig als hoogdynamisch geklasseerd.
 
 <br/>
 
-```{r 030-chapter-1-tabel-2-dynamiek-ecotopen, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-dynamiek-ecotopen, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- "Afbakening van hoogdynamisch habitat op basis van maximale stroomsnelheid bij vloed, per diepteklasse (waterdiepte onder het gemiddeld laagwater bij springtij volgens de 30\\% laagwaterfrequentie)."
 
-img_file <- paste0(pad_tabellen, "030_chapter_1_tabel_2_dynamiek_ecotopen.png")
+img_file <- paste0(pad_tabellen, "030_tabel_dynamiek_ecotopen.png")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
@@ -212,17 +212,17 @@ figtab(knitr::opts_current$get()$label,
 <br/>
 
 In de **litorale zone** werden de grenswaarden van de droogliggingsduurklassen aangepast.
-Deze grenswaarden zijn bovendien anders in de brakke zone dan in de rest van de Zeeschelde (oligohalien en zoet) (Tabel \@ref(tab:030-chapter-1-tabel-3-slik-ecotopen)).
+Deze grenswaarden zijn bovendien anders in de brakke zone dan in de rest van de Zeeschelde (oligohalien en zoet) (Tabel \@ref(tab:030-tabel-slik-ecotopen)).
 De grens tussen laag en middelhoog slik blijft 25%DD in de brakke zone maar verschuift naar 35%DD in de rest van de Zeeschelde.
 De overgang van middelhoog naar hoog slik wordt 60%DD ipv 75%DD in de volledige Zeeschelde.
 
 <br/> <!--# Gelieve ook in de tabel de termen Zeeschelde 1.0 en Zeeschelde 2.0 te gebruiken, 'oud', 'nieuw' en 'aangepast' zijn te vage begrippen -->
 
-```{r 030-chapter-1-tabel-3-slik-ecotopen, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-slik-ecotopen, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- "Grenzen voor slik fysiotopen Zeeschelde 1.0 en Zeeschelde 2.0 op basis van verschillende percentielen van laagwater (LW), hoogwater (HW), en droogvalduur (DD)."
 
-img_file <- paste0(pad_tabellen, "030_chapter_1_tabel_3_slik_ecotopen.png")
+img_file <- paste0(pad_tabellen, "030_tabel_slik_ecotopen.png")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
@@ -245,11 +245,11 @@ Deze worden niet als apart ecotoophabitat opgenomen, maar de oppervlaktes worden
 
 De ecotopenkaart van de Beneden-Zeeschelde in `r laatste_jaar` is te zien in Figuur \@ref(fig:030-figuur-kaart-bez).
 
-Tabel \@ref(tab:030-chapter-2-tabel-1-oppervlakte-BEZ) toont de oppervlaktes per ecotoop in de Beneden-Zeeschelde voor elk jaar vanaf `r vroegste_jaar` in hectare (ha) en als percentage (%) van de totale oppervlakte.
-De korte en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-chapter-2-tabel-2-evolutie-BEZ) via de absolute verandering (ha) en de procentuele verandering (%) tussen de 2 jaren.
+Tabel \@ref(tab:030-tabel-oppervlakte-BEZ) toont de oppervlaktes per ecotoop in de Beneden-Zeeschelde voor elk jaar vanaf `r vroegste_jaar` in hectare (ha) en als percentage (%) van de totale oppervlakte.
+De korte en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-tabel-evolutie-BEZ) via de absolute verandering (ha) en de procentuele verandering (%) tussen de 2 jaren.
 Voor de korte termijn evolutie wordt het huidige jaar vergeleken met het jaar ervoor, terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (`r vroegste_jaar`).
 
-In `r laatste_jaar` is het **sublitoraal** licht afgenomen ten opzichte van `r laatste_jaar - 1` (Tabel \@ref(tab:030-tabel-3-tabel-evolutie-BEZ)), maar de oppervlaktes blijven groter dan deze in `r laatste_jaar - 2` (Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-BEZ)).
+In `r laatste_jaar` is het **sublitoraal** licht afgenomen ten opzichte van `r laatste_jaar - 1` (Tabel \@ref(tab:030-tabel-evolutie-BEZ)), maar de oppervlaktes blijven groter dan deze in `r laatste_jaar - 2` (Tabel \@ref(tab:030-tabel-oppervlakte-BEZ)).
 Over de gehele rapportage periode (lange termijn evolutie) is het sublitoraasl in totaal met bijna 15 ha toegenomen.
 
 In het **litoraal** leidt een toename van het laag slik zacht substraat en een iets grotere afname van het middelhoog slik zacht substraat tot een totale kleine afname zacht slik.
@@ -283,11 +283,11 @@ Het grotendeel hiervan is het gevolg van kleine uitbreidingen in de GGG's, met n
 
 <br/>
 
-```{r 030-chapter-2-tabel-1-oppervlakte-BEZ, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-oppervlakte-BEZ, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde tussen ", vroegste_jaar, " en ", laatste_jaar, ".")
 
-img_file <- paste0(pad_tabellen, "030_chapter_2_tabel_1_Oppervlakte_BEZ_2010_2021_E1.PNG")
+img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_BEZ_", vroegste_jaar, "_", laatste_jaar, "_E1.PNG")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
@@ -295,11 +295,12 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-```{r 030-chapter-2-tabel-2-evolutie-BEZ, results="asis", fig.show='hide', out.width="100%"}
+
+```{r 030-tabel-evolutie-BEZ, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Absolute verandering en procentuele verandering van de lange termijn evolutie (tussen ", vroegste_jaar, " en ", laatste_jaar, ") en de korte termijn evolutie (tussen ", laatste_jaar - 1, " en ", laatste_jaar, ") in de Beneden-Zeeschelde.")
 
-img_file <- paste0(pad_tabellen, "030_chapter_2_tabel_2_evolutie_BEZ_2021_E1.PNG")
+img_file <- paste0(pad_tabellen, "030_tabel_evolutie_BEZ_", laatste_jaar, "_E1.PNG")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
@@ -317,10 +318,10 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_verschil_2020_2019_Verle
 
 <br/>
 
-Om de veranderingen beschreven in Tabel \@ref(tab:030-chapter-2-tabel-1-oppervlakte-BEZ) en Tabel \@ref(tab:030-chapter-2-tabel-2-evolutie-BEZ) goed te begrijpen is het relevant om naast het bespreken van het geheel estuarien gebied met laterale uitbreidingen ook naar de 'enge' planimetrie van het estuarium te kijken (zie bijvoorbeeld Van Braeckel & Elsen, 2020), met name het estuariene deel van de Beneden-Zeeschelde zonder de laterale uitbreidingen van de natuurontwikkelingsprojecten.
+Om de veranderingen beschreven in Tabel \@ref(tab:030-tabel-oppervlakte-BEZ) en Tabel \@ref(tab:030-tabel-evolutie-BEZ) goed te begrijpen is het relevant om naast het bespreken van het geheel estuarien gebied met laterale uitbreidingen ook naar de 'enge' planimetrie van het estuarium te kijken (zie bijvoorbeeld Van Braeckel & Elsen, 2020), met name het estuariene deel van de Beneden-Zeeschelde zonder de laterale uitbreidingen van de natuurontwikkelingsprojecten.
 Deze aanpak beschrijft beter de evolutie van de ecotopen in de Beneden-Zeeschelde onder rechtstreekse invloed van veranderingen in de vaargeul en van de het hydraulisch regime.
 De gebieden die dus niet in rekening worden gebracht onder de 'enge' planimetrie van de Beneden-Zeeschelde zijn nieuwe Sigmagebieden of natuurontwikkelingsprojecten in KRWzone IV en III tot aan de Rupelmonding.
-De oppervlaktes van de ecotopen binnen de 'enge' planimetrie zijn weergegeven in Tabel \@ref(tab:030-tabel-4-tabel-eng-BEZ) en het verschil in evolutie binnen het gehele estuarien gebied en enkel de 'enge' planimetrie is te zien in Figuur \@ref(fig:030-figuur-evolutie-bez).
+De oppervlaktes van de ecotopen binnen de 'enge' planimetrie zijn weergegeven in Tabel \@ref(tab:030-tabel-eng-BEZ) en het verschil in evolutie binnen het gehele estuarien gebied en enkel de 'enge' planimetrie is te zien in Figuur \@ref(fig:030-figuur-evolutie-bez).
 
 Wat de korte termijn evolutie betreft (= verschil tussen `r laatste_jaar` en `r laatste_jaar -1`), is er binnen de 'enge' planimetrie een toename in laag slik zacht substraat die ongeveer overeenkomt met de veranderingen in de volledige planimetrie.
 Hetzelfde geldt voor de afname in middelhoog slik zacht substraat.
@@ -334,11 +335,11 @@ Het hoog supralitoraal is ook binnen de 'enge' planimetrie veel gestegen ten opz
 
 <br/>
 
-```{r 030-tabel-4-tabel-eng-BEZ, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-eng-BEZ, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Ecotooparealen in de ‘enge planimetrie’ van de  Beneden‐Zeeschelde zonder de NOP’s of ontpolderingen, dijkverleggingen en aantakkingen tussen ", vroegste_jaar, " en ", laatste_jaar, ".")
 
-img_file <- paste0(pad_tabellen, "030_tabel4_Oppervlakte_EngePlanimetrie_BEZ_2020.PNG")
+img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_EngePlanimetrie_BEZ_", laatste_jaar, ".PNG")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
@@ -350,7 +351,7 @@ figtab(knitr::opts_current$get()$label,
 
 figuur_evolutie_bez <- "Temporele evolutie van de oppervlakte van de ecologisch belangrijke ecotopen in de Beneden-Zeeschelde met en zonder NOP's (natuurontwikkelingsprojecten zoals ontpolderingen, GGG’s en dijkverleggingen)"
 
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_1_Evolutie_NOPs.png"))
+knitr::include_graphics(paste0(pad_figuren, "030_figuur_Evolutie_NOPs_BEZ_", laatste_jaar, "_10.png"))
 
 ```
 
@@ -358,9 +359,12 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_1_Evolutie_NOPs.png"
 
 ```{r 030-figuur-kaart-bez, fig.cap=figuur_ecotopenkaart_bez, out.width="100%"}
 
-figuur_ecotopenkaart_bez <- "Ecotopenkaart 2020 Beneden-Zeeschelde 1.0"
+# kaart wordt gemaakt in sjabloon_bez.mxd
+# met schaal 1 : 97 000
 
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_1_2020.png"))
+figuur_ecotopenkaart_bez <- str_c("Ecotopenkaart ", laatste_jaar, " Beneden-Zeeschelde 1.0")
+
+knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_BEZ_", laatste_jaar, "_10.png"))
 
 ```
 
@@ -371,7 +375,7 @@ knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_1_2020.png"))
 #### Zeeschelde ecotopen 2.0
 
 De ecotopenkaart van de Beneden-Zeeschelde in `r laatste_jaar` is te zien in Figuur \@ref(fig:030-figuur-kaart-bez-2).
-Tabel \@ref(tab:030-tabel-2-tabel-oppervlakte-BEZ-2) toont voor `r laatste_jaar` de oppervlaktes per ecotoop in de Beneden-Zeeschelde `r laatste_jaar` volgens ecotoopindeling 2.0 en een vergelijking met de berekening volgens ecotopen 1.0.
+Tabel \@ref(tab:030-tabel-oppervlakte-BEZ-2) toont voor `r laatste_jaar` de oppervlaktes per ecotoop in de Beneden-Zeeschelde `r laatste_jaar` volgens ecotoopindeling 2.0 en een vergelijking met de berekening volgens ecotopen 1.0.
 
 In het **sublitoraal** is een onderverdeling gemaakt tussen hoog- en laagdynamisch subtidaal, op basis van de maximale stroomsnelheid bij vloed.
 De tabel toont dat de diepere delen (diep en matig diep subtidaal) grotendeels hoogdynamisch zijn.
@@ -382,32 +386,22 @@ Doordat de grens tussen middelhoog en hoog slik in de aangepaste methode lager l
 De slikken zijn nu gelijkmatiger verdeeld.
 Ook in het hard antropogeen slik is het hoog slik verdrievoudigd ten koste van het middelhoog slik, in vergelijking met de oude methode.
 
-Figuur \@ref(fig:030-figuur-kaart-vgl) toont hoe de verdeling van het hoog/middelhoog slik zich uit ter hoogte van het Paardenschor/Schor Ouden Doel.
-Dit is gelegen in het brak gebied waar de oorspronkelijk grens van DD25 gebruikt wordt als bovengrens van het laag slik.
-Voor de overgang van middelhoog naar hoog slik wordt de nieuwe grens van DD60 gebruikt (t.o.v de oude grens van DD75).
-
-Figuur \@ref(fig:030-figuur-kaart-vgl-2) toont hoe de verdeling van het hoog/middelhoog slik zich uit ter hoogte van Burchtse Weel.
-Dit is gelegen in de oligohaliene zone waar de nieuwe grens van DD35 gebruikt wordt als bovengrens van het laag slik.
-Voor de overgang van middelhoog naar hoog slik wordt ook de nieuwe grens van DD60 gebruikt (t.o.v de oude grens van DD75).
-In de kaart volgens de oude methode is er vrijwel geen hoog slik aanwezig, terwijl er in de nieuwe kaart wel een dunne laag hoog slik aanwezig is.
-In de nieuwe kaart is het middelhoog slik ook smaller langs de ondergrens, waar het laag slik verder doorloopt.
-
 In de andere ecotopen zijn minimale verschillen op te merken in vergelijking met de oude methode, vaak van \<0.1 ha.
 Deze kleine verschillen zijn voornamelijk te wijten aan het modelleringsproces waarbij soms geïnterpoleerd wordt en datarasters vereenvoudigd worden.
 
 In de aangepaste methode wordt ook de helling van de slikken in rekening gebracht.
-De oppervlaktes per slikecotoop met een steile (\>25%) en zwakke (\<=25%) helling zijn beschreven in Tabel (\@ref(tab:030-tabel-2a-tabel-oppervlakte-helling-BEZ-2)).
+De oppervlaktes per slikecotoop met een steile (\>25%) en zwakke (\<=25%) helling zijn beschreven in Tabel (\@ref(tab:030-tabel-oppervlakte-helling-BEZ-2)).
 Zowel het litoraal zacht substraat als het litoraal hard natuurlijk hebben voornamelijk geen steile hellingen (\> 98% van het natuurlijk substraat).
 In het litoraal antropogeen hard substraat is wel een redelijk aandeel steil, namelijk 33.1% van het totaal oppervlak litoraal hard antropogeen.
 De overige 66.9% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad van kleiner dan of gelijk aan 25%.
 
 <br/>
 
-```{r 030-tabel-2-tabel-oppervlakte-BEZ-2, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-oppervlakte-BEZ-2, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde in ", laatste_jaar, " volgens de Zeeschelde ecotopen 2.0, in vergelijking met versie 1.0.")
 
-img_file <- paste0(pad_tabellen, "030_tabel_2_Oppervlakte_BEZ_2019_2021_E2.PNG")
+img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_BEZ_2019_", laatste_jaar, "_E2.PNG")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
@@ -415,11 +409,11 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-```{r 030-tabel-2a-tabel-oppervlakte-helling-BEZ-2, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-oppervlakte-helling-BEZ-2, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Oppervlaktes en percentages van steile en vlakke slikken in de Beneden-Zeeschelde in ", laatste_jaar, ", volgens de Zeeschelde ecotopen 2.0.")
 
-img_file <- paste0(pad_tabellen, "030_tabel_2a_Oppervlakte_HellingSlik_BEZ_2020_E2.PNG")
+img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_HellingSlik_BEZ_", laatste_jaar, "_E2.PNG")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
@@ -433,26 +427,9 @@ figtab(knitr::opts_current$get()$label,
 
 figuur_ecotopenkaart_bez_2 <- "Ecotopenkaart 2020 Beneden-Zeeschelde 2.0"
 
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2_2020.png"))
+knitr::include_graphics(paste0(pad_figuren, "003_figuur_Ecotoop_BEZ_", laatste_jaar, "_20.png"))
 
 ```
-
-```{r 030-figuur-kaart-vgl, fig.cap=figuur_ecotopenkaart_vgl, out.width="100%"}
-
-figuur_ecotopenkaart_vgl <- "Ecotopenkaart 2020 ter hoogte van Paardenschor in de Beneden-Zeeschelde 1.0 (boven) en 2.0 (onder)."
-
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2020_vgl.png"))
-
-```
-
-```{r 030-figuur-kaart-vgl-2, fig.cap=figuur_ecotopenkaart_vgl_2, out.width="100%"}
-
-figuur_ecotopenkaart_vgl_2 <- "Ecotopenkaart 2020 ter hoogte van Burchtse Weel in de Beneden-Zeeschelde 1.0 (boven) en 2.0 (onder)."
-
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_BEZ_2020_vgl_2.png"))
-
-```
-
 
 \newpage
 
