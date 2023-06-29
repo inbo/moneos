@@ -1301,6 +1301,24 @@ WaterbirdsBT_sigma_estuarien %>%
    dplyr::select(-c(gebiedsgroep_code, taxongroepcode, wetnaam, teldatum, analyseset, gebiedscode, gebied)) %>% 
    write_delim(paste0(pad_data, "Watervogels_Sigma_estuarienVLIZ.csv"),
               delim = ";")
+
+
+
+# WaterbirdsBT_sigma_wetland <- 
+#   Waterbirds_all %>%
+#   dplyr::filter(gebiedsgroep == "Wetland") %>%
+#   group_by(gebiedsgroep_code,
+#            gebiedsgroep,
+#            rivier,
+#            telseizoen,
+#            teldatum,
+#            nednaam,
+#            wetnaam,
+#            taxongroepcode) %>%
+#   summarise(aantal = sum(aantal)) %>%
+#   ungroup() %>%
+#   mutate(analyseset = "Sigma_wetland")
+
 # WaterbirdsBT_ZSCH %>% 
 #   write_delim(paste0(pad_data, "Watervogels_Zeeschelde_SS.csv"),
 #               delim = ";")
