@@ -480,6 +480,21 @@ dat_delta <-
 levels(dat_delta$REEKSCODE)
 levels(dat_delta$raai_sal)
 
+hoogte_evolutie_slope <-
+  left_join(tabel_raaien_vast %>% 
+              select(REEKSCODE = reekscode, sal_kort, raai_sal)) %>% 
+  mutate(REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode),
+         raai_sal = factor(raai_sal,
+                           levels = tabel_raaien_vast$raai_sal))
+
+hoogte_evolutie_predict <-
+  left_join(tabel_raaien_vast %>% 
+              select(REEKSCODE = reekscode, sal_kort, raai_sal)) %>% 
+  mutate(REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode),
+         raai_sal = factor(raai_sal,
+                           levels = tabel_raaien_vast$raai_sal))
+
+
 # dat_delta %>% 
 #   distinct(Salzone, sal_kort)
 
