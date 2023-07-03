@@ -2,6 +2,7 @@
 editor_options: 
   markdown: 
     wrap: sentence
+  chunk_output_type: inline
 ---
 
 ```{r 030-hoofdstuk, include=FALSE}
@@ -73,8 +74,7 @@ for(i in 1:nrow(meta_data)){
 
 # Ecotopen
 
-**Fichenummer: S-DH-V-004 - Ecotopen**
-**Amber Mertens & Alexander Van Braeckel**
+**Fichenummer: S-DH-V-004 - Ecotopen** **Amber Mertens & Alexander Van Braeckel**
 
 ## Inleiding
 
@@ -87,7 +87,8 @@ De essentie van een goed ecotopenstelsel is dat de juiste fysische grenzen bepaa
 In het tot nu toe toegepaste Zeeschelde ecotopenstelsel 1.0 werden subtidale (water) en litorale (slik) ecotopen vooralsnog uitsluitend op basis van diepte en overspoelingsregime onderscheiden, zonder ecologische validatie.
 Van Braeckel *et al* (2018; 2020) onderzochten ondertussen de relatie tussen abiotische omgevingskenmerken en het voorkomen van ongewervelde bodemdiergemeenschappen.
 Op basis van hun bevindingen werd het ecotopenstelsel Zeeschelde 2.0 voorgesteld.
-In deze rapportage wordt de ecotopenkaart voor de Beneden-Zeeschelde volgens beide ecotopenstelsels voorgesteld en vergeleken. De kaart van het ecotopenstelsel 1.0 gaat terug vanaf `r laatste_jaar` tot `r vroegste_jaar`, terwijl de kaart van het ecotopenstelsel 2.0 maar teruggerekend is tot en met 2019. 
+In deze rapportage wordt de ecotopenkaart voor de Beneden-Zeeschelde volgens beide ecotopenstelsels voorgesteld en vergeleken.
+De kaart van het ecotopenstelsel 1.0 bestaat van `r laatste_jaar` tot `r vroegste_jaar`, terwijl de kaart van het ecotopenstelsel 2.0 maar teruggerekend is tot en met 2019.
 
 ## Methodologie
 
@@ -125,27 +126,27 @@ In de geomorfologische kaart wordt vervolgens een onderscheid gemaakt tussen:
 -   Breuksteen of hard antropogeen
 
 Zacht substraat in de geomorfologische kaart is steeds onbegroeid.
-Wanneer de zone begroeid is wordt dit aangeduid als 'schor' of wanneer het een opgehoogde zone betreft als 'antropogene verhoging dijk' (zie hieronder ecotopen in het supralitoraal).
+Wanneer de zone begroeid is wordt dit aangeduid als 'schor- en dijkvegetatie' (zie hieronder ecotopen in het supralitoraal).
 De combinatie van deze geomorfologische klassen en de fysiotopen geeft dan de ecotopen zoals weergegeven in Tabel \@ref(tab:030-tabel-klassen-E1).
 
 Ten slotte onderscheiden we volgende ecotopen in het **supralitoraal**:
 
 -   Potentiële pionierzone: de onbegroeide zone op zacht substraat boven HW85. In deze zone zou, op basis van de hoogteligging in het getijvenster, schoruitbreiding met kenmerkende schorvegetatie mogelijk zijn. Aangezien deze zone onbegroeid blijft zijn de hydrodynamische omstandigheden en/of de waterverzadiging er niet geschikt voor vegetatievestiging;
--   Schor: zone boven HW85 begroeid met vegetatie kenmerkend voor estuariene of fluviatiele omstandigheden.;
+-   Schor: zone boven HW85, maar lager dan de grens voor het hoog supralitoraal (zie hieronder) begroeid met vegetatie kenmerkend voor estuariene of fluviatiele omstandigheden;
 -   Getijdeplas: grote waterplas binnen de schorzone;
 -   Supralitoraal hard natuurlijk: een zone bestaande uit klei of veen (vaak door erosie vrijgekomen) hoger gelegen dan HW85;
 -   Supralitoraal hard antropogeen: zones boven HW85 en bedekt met door de mens aangelegd hard substraat (meestal breuksteen) waar vegetatieontwikkeling beperkt mogelijk is en dus ook een beperkt ecologisch potentieel aanwezig is;
--   Hoog supralitoraal: Met hogere planten begroeide zone boven de functionele schorren. De vegetatie overspoelt niet bij elk springtij maar enkel bij extreme hoogwaters zoals bij stormtij of hoge bovenafvoer. Dat is onvoldoende om estuariene schorvegetaties te ontwikkelen. Dit zijn begroeide overgangszones tussen het schor en de dijkvegetatie en opgehoogde delen midden in het schor. De ondergrens van het hoogsupralitoraal, tevens de bovengrens van het schor, ligt op 6,4m TAW van de Belgisch-Nederlandse grens tot de Roggeman en Vlassenbroek. Stroomopwaarts Roggeman/Vlassenbroek en in de Durme en Rupel wordt 6,2m TAW aangehouden als ondergrens. In de Ringvaart en Tijarm Zwijnaarde ligt de ondergrens op 5.75m TAW. De geomorfologie van dit ecotoop is 'antropogene verhoging dijk'.
--   Hoog supralitoraal hard antropogeen: deze zone kent hetzelfde overspoelingsregime als het hoog supralitoraal maar is bestort met breuksteen. Beperkte (niet estuariene) vegetatieontwikkeling is mogelijk.
+-   Hoog supralitoraal: Met hogere planten begroeide zone boven de functionele schorren. De vegetatie overspoelt niet bij elk springtij maar enkel bij extreme hoogwaters zoals bij stormtij of hoge bovenafvoer. Dat is onvoldoende om estuariene schorvegetaties te ontwikkelen. Dit zijn begroeide overgangszones tussen het schor en de dijkvegetatie en opgehoogde delen midden in het schor. De ondergrens van het hoog supralitoraal, tevens de bovengrens van het schor, ligt op 6,4m TAW van de Belgisch-Nederlandse grens tot de Roggeman en Vlassenbroek. Stroomopwaarts Roggeman/Vlassenbroek en in de Durme en Rupel wordt 6,2m TAW aangehouden als ondergrens. In de Ringvaart en Tijarm Zwijnaarde ligt de ondergrens op 5.75m TAW. De geomorfologie van dit ecotoop is 'schor- en dijkvegetatie'. De hoogte bepaalt hier dus of de zone tot schor behoort of tot hoog supralitoraal;
+-   Hoog supralitoraal hard antropogeen: deze zone kent hetzelfde overspoelingsregime als het hoog supralitoraal maar is bestort met breuksteen. Beperkte (niet estuariene) vegetatieontwikkeling is mogelijk;
 -   Daarnaast bestaat ook nog het ecotoop antropogeen voor verharde zones zonder enige ecologische waarde (geen algen noch plantengroei).
 
 De bovengrens van het hoog supralitoraal is ook de bovengrens van het estuarium en werd theoretisch vastgelegd als de hoogte die op basis van tijdata gemiddeld vier maal per jaar overspoelt.
-Pragmatisch werd de ecotopenkaart bovenaan afgeknipt op 7m TAW.
 
 In het verleden werd de categorie hoog supralitoraal ingevuld op basis van gekende hogere zones in combinatie met de vegetatiekaart.
 Vanaf 2019 tot en met `r laatste_jaar` is het hoog supralitoraal ingevuld op basis van bovenstaande hoogtewaarden in het DTM (6,4/6,2/5,75 - 7m TAW).
 Dit heeft in alle kaarten een verschuiving veroorzaakt van schor of supralitoraal hard antropogeen naar hoog supralitoraal van 2019 naar het daaropvolgend jaar.
-De grote toename in hoog supralitoraal is dus het resultaat van een wijziging in de afbakeningsmethode en weerspiegelt geen natuurlijke evolutie. Vanaf 2019 weerspiegelen de wijzigenen in het hoog supralitoraal opnieuw de natuurlijke evoluties.
+De grote toename in hoog supralitoraal is dus het resultaat van een wijziging in de afbakeningsmethode en weerspiegelt geen natuurlijke evolutie.
+Vanaf 2019 weerspiegelen de wijzigenen in het hoog supralitoraal opnieuw de natuurlijke evoluties.
 
 <br/>
 
@@ -169,13 +170,38 @@ De grote toename in hoog supralitoraal is dus het resultaat van een wijziging in
 
 ```{r 030-tabel-klassen-E1, results="asis", fig.show='hide', out.width="100%"}
 
-caption_tab <- "Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen."
+# caption_tab <- "Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen."
+# 
+# img_file <- paste0(pad_tabellen, "030_tabel_klassen_E1.png")
+# 
+# figtab(knitr::opts_current$get()$label, 
+#        img_file,
+#        caption_tab)
 
-img_file <- paste0(pad_tabellen, "030_tabel_klassen_E1.png")
+# Tabel ecotoopklassen obv fysiotoop en geomorf
+ecotopen_df <- read_xlsx(path = str_c(pad_tabellen, "Klassen_Fysio_Geo_Eco.xlsx"))
 
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
+cap_ecotopen <- "Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen"
+
+ecotopen_df  %>% 
+  knitr::kable(booktabs = TRUE) %>% 
+  kable_styling() %>% 
+  collapse_rows(columns = c(1, 2)) %>% 
+  row_spec(0, background = "lightgray") %>% 
+  row_spec(c(5:7, 11:13, 20:21), background = "#F6F6F6")
+  
+  # knitr::kable(booktabs = TRUE,
+  #              caption = cap_ecotopen,
+  #              align = c("l", rep("c", 12)),
+  #              col.names = c("", rep(c("Doel", "Antw.", "Steend.", "Branst"), 3)),
+  #              escape = FALSE) %>%
+  # add_header_above(c(" " = 1, "voorjaar" = 4, "zomer" = 4, "najaar" = 4)) %>%
+  # kable_styling("striped",
+  #               latex_options = c("striped", "scale_down"),
+  #               font_size = 15)
+
+```
+
 
 ```
 
@@ -213,8 +239,8 @@ figtab(knitr::opts_current$get()$label,
 
 In de **litorale zone** werden de grenswaarden van de droogliggingsduurklassen aangepast.
 Deze grenswaarden zijn bovendien anders in de brakke zone dan in de rest van de Zeeschelde (oligohalien en zoet) (Tabel \@ref(tab:030-tabel-slik-ecotopen)).
-De grens tussen laag en middelhoog slik blijft 25%DD in de brakke zone maar verschuift naar 35%DD in de rest van de Zeeschelde.
-De overgang van middelhoog naar hoog slik wordt 60%DD ipv 75%DD in de volledige Zeeschelde.
+De grens tussen laag en middelhoog slik blijft 25%DD in saliniteitszones "Mesohalien" en "Zone met sterke saliniteitsgradiënt" (brak), maar verschuift naar 35%DD in de rest van de Zeeschelde (Figuur @ref(fig:030-figuur-salzones)).
+De overgang van middelhoog naar hoog slik wordt 60%DD in plaats van 75%DD in de volledige Zeeschelde.
 
 <br/> <!--# Gelieve ook in de tabel de termen Zeeschelde 1.0 en Zeeschelde 2.0 te gebruiken, 'oud', 'nieuw' en 'aangepast' zijn te vage begrippen -->
 
@@ -227,6 +253,16 @@ img_file <- paste0(pad_tabellen, "030_tabel_slik_ecotopen.png")
 figtab(knitr::opts_current$get()$label, 
        img_file,
        caption_tab)
+
+```
+
+<br/>
+
+```{r 030-figuur-salzones, fig.cap=figuur_kaart_salzone, out.width="100%"}
+
+figuur_kaart_salzone <- "Saliniteitszones in de Zeeschelde met overgang brak - zoet."
+
+knitr::include_graphics(paste0(pad_figuren, "030_figuur_saliniteitszones_grens.png"))
 
 ```
 
@@ -294,7 +330,6 @@ figtab(knitr::opts_current$get()$label,
        caption_tab)
 
 ```
-
 
 ```{r 030-tabel-evolutie-BEZ, results="asis", fig.show='hide', out.width="100%"}
 
@@ -427,7 +462,7 @@ figtab(knitr::opts_current$get()$label,
 
 figuur_ecotopenkaart_bez_2 <- "Ecotopenkaart 2020 Beneden-Zeeschelde 2.0"
 
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_Ecotoop_BEZ_", laatste_jaar, "_20.png"))
+knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_BEZ_", laatste_jaar, "_20.png"))
 
 ```
 

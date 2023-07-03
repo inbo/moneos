@@ -1,0 +1,128 @@
+---
+params:
+  hoofdstuk: "030_ecotopen"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "Rmarkdown template MONEOS analyse"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(INBOtheme)
+library(rprojroot)
+library(readxl)
+library(writexl)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+# Tabel ecotoopklassen obv fysiotoop en geomorf
+
+```{r 030-tabel-overzicht-soorten}
+
+fysiotopen <- 
+  c("Zeer diep subtidaal",
+    "Diep subtidaal",
+    "Matig diep subtidaal",
+    "Ondiep subtidaal",
+    "Laag slik",
+    "Middelhoog slik",
+    "Hoog slik",
+    "Supralitoraal",
+    "Hoog supralitoraal"
+    )
+
+geomorftype <- 
+  c("Onbepaald",
+    "Zacht substraat",
+    "Hard natuurlijk",
+    "Breuksteen",
+    "Schor- en dijkvegetatie",
+    "Getijdeplas"
+    )
+
+ecotopen <- 
+  c("Diep subtidaal",
+    "Matig diep subtidaal",
+    "Ondiep subtidaal",
+    "Laag slik zacht substraat",
+    "Laag slik hard natuurlijk",
+    "Laag slik hard antropogeen",
+    "Middelhoog slik zacht substraat",
+    "Middelhoog slik hard natuurlijk",
+    "Middelhoog slik hard antropogeen",
+    "Hoog slik zacht substraat",
+    "Hoog slik hard natuurlijk",
+    "Hoog slik hard antropogeen",
+    "Potentiële pionierzone",
+    "Supralitoraal hard natuurlijk",
+    "Supralitoraal hard antropogeen",
+    "Schor",
+    "Getijdeplas",
+    "Antropogeen",
+    "Hoog supralitoraal",
+    "Hoog supralitoraal hard antropogeen"
+    )
+
+ecotopen_df <- data.frame(ecotopen) %>% 
+  rename(Ecotoop = ecotopen) %>% 
+  mutate(
+    Geomorftype = case_when(
+      str_detect(Ecotoop, "Hoog supralitoraal hard antropogeen")              ~ "Breuksteen",
+      str_detect(Ecotoop, "Schor|Hoog supralitoraal")                         ~ "Schor- en dijkvegetatie",
+      str_detect(Ecotoop, "subtidaal")                                        ~ "Onbepaald",
+      str_detect(Ecotoop, "zacht substraat|Potentiële pionierzone")           ~ "Zacht substraat",
+      str_detect(Ecotoop, "hard natuurlijk")                                  ~ "Hard natuurlijk",
+      str_detect(Ecotoop, "hard antropogeen")                                 ~ "Breuksteen",
+      str_detect(Ecotoop, "Getijdeplas")                                      ~ "Getijdeplas",
+      str_detect(Ecotoop, "Antropogeen")                                      ~ "Verhard"
+           ),
+    Fysiotoop = case_when(
+      str_detect(Ecotoop, "subtidaal")                                               ~ Ecotoop,
+      str_detect(Ecotoop, "Laag slik")                                               ~ "Laag slik",
+      str_detect(Ecotoop, "Middelhoog slik")                                         ~ "Middelhoog slik",
+      str_detect(Ecotoop, "Hoog slik")                                               ~ "Hoog slik",
+      str_detect(Ecotoop, "Hoog supralitoraal")                                      ~ "Hoog supralitoraal",
+      str_detect(Ecotoop, "pionierzone|Supralitoraal|Schor|Getijdeplas|Antropogeen") ~ "Supralitoraal"
+      )
+    ) %>% 
+  bind_rows(data.frame(Ecotoop = "Diep subtidaal", 
+                       Geomorftype = "Onbepaald", 
+                       Fysiotoop = "Zeer diep subtidaal")) %>% 
+  mutate(Ecotoop = factor(Ecotoop, levels = ecotopen)) %>% 
+  arrange(Ecotoop) %>% 
+  relocate(Fysiotoop, Geomorftype, Ecotoop)
+
+write_xlsx(ecotopen_df,
+           path = str_c(pad_tabellen, "Klassen_Fysio_Geo_Eco.xlsx"))
+
+```
+
