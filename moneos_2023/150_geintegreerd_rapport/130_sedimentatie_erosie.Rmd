@@ -19,6 +19,8 @@ library(kableExtra)
 library(INBOtheme)
 library(rprojroot) ## workaround pad
 
+conflicted::conflicts_prefer(dplyr::filter)
+
 ```
 
 ```{r 130-pad}
@@ -57,6 +59,61 @@ dumtab = function(label, caption=NULL) {
 laatste_jaar <- 2023
 laatste_campagne <- "C2022"
 
+tabel_raaien_vast <- 
+  read_excel(paste0(pad_tabellen, "tbl_vaste_raaien_MONEOS.xlsx")) %>% 
+  mutate_all(~replace_na(., ""))
+
+tabel_raaien_vast <-  
+  tabel_raaien_vast %>%  
+  mutate(OMES = factor(OMES, levels = c(9:19, "19  trGM", "Durme", "Rupel", ""))) %>% 
+  mutate(rivier = 
+           case_when(
+             rivier == "Zijrivieren" ~ gebied,
+             TRUE ~ rivier
+           ),
+         sal_kort = 
+           case_when(
+             salzone == "Mesohalien" ~ "MH",
+             salzone == "Zone grote saliniteitsgradiënt" ~ "SG",
+             salzone == "Oligohalien" ~ "OH",
+             salzone == "Zoet lange verblijftijd" ~ "ZL",
+             salzone == "Zoet korte verblijftijd" ~ "ZK",
+             TRUE ~ ""
+           ),
+         rivier_kort = 
+           case_when(
+             rivier == "Zeeschelde" ~ "ZS",
+             rivier == "Durme" ~ "DU",
+             rivier == "Rupel" ~ "RU",
+             rivier == "Dijle" ~ "DL",
+             rivier == "Nete" ~ "NE",
+             rivier == "Zenne" ~ "ZN",
+             TRUE ~ ""
+           )) %>%
+  arrange(OMES, rivier, `afstand grens`)
+
+raaien_BEZ <-
+  tabel_raaien_vast %>% 
+  {.; filter(., OMES %in% 9:13) %>% 
+      mutate(reekscode = factor(reekscode, levels = .$reekscode)) %>% 
+      arrange(reekscode)} %>% 
+  pull(reekscode)
+
+raaien_BOZ <-
+  tabel_raaien_vast %>% 
+  {.; filter(., rivier == "Zeeschelde" & !(OMES %in% 9:13)) %>% 
+      mutate(reekscode = factor(reekscode, levels = .$reekscode)) %>% 
+      arrange(reekscode)} %>% 
+  pull(reekscode)
+
+raaien_ZIJ <-
+  tabel_raaien_vast %>% 
+  {.; filter(., rivier != "Zeeschelde") %>% 
+      mutate(reekscode = factor(reekscode, levels = .$reekscode)) %>% 
+      arrange(reekscode)} %>% 
+  pull(reekscode)
+
+
 ```
 
 # Sedimentatie en erosie op punten en raaien
@@ -73,19 +130,22 @@ De MONEOS-raaien zijn gesitueerd op bredere sliklocaties met overwegend zacht su
 Met de raaien wordt gefocust op grotere, ecologisch waardevollere slik- en schorgebieden.
 We maken een onderscheid tussen 3 klassen van raaien afhankelijk van de prioriteit van opmeten:
 
--   MONEOS - Vaste: de slik en schorrand worden jaarlijks ingemeten langs de Zeeschelde (n:24; Figuur \@ref(fig:130-figuur-overzicht-raaien)), Durme (n:3) en Rupel (n:2) en 6-jaarlijks voor de tijgebonden zijrivieren (Nete-n:1, Zenne-n:1, Dijle-n:1); deze raaien zijn leidend voor de veldwerkcampagne; de hoge schorplateaus worden 6-jaarlijks gemeten.
+-   MONEOS - Vaste: de slik en schorrand worden jaarlijks ingemeten langs de Zeeschelde (n:24; Figuur \@ref(fig:130-figuur-overzicht-raaien)) en Durme (n:1), 3-jaarlijks voor de Rupel (n:2) en 6-jaarlijks voor de tijgebonden zijrivieren (Nete-n:1, Zenne-n:1, Dijle-n:1); deze raaien zijn leidend voor de veldwerkcampagne.
+    De schorplateaus van deze raaien worden minder vaak gemeten maar er wordt gepoogd om ze met een maximale frekwentie van 6-jaar te meten.
+    De keuze van de ingemeten schorplateaus is variabel en jaarafhankelijk.
 
--   MONEOS - Aanvullend: bij deze klasse van raaien wordt getracht om een minimale frequentie (2 -- 5 jaar) aan te houden; ze vertonen ontwikkelingen die aanvullende informatie geven over het (deel)gebied die niet altijd door de MONEOS-raaien gecoverd zijn.
+-   Aanvullend: bij deze klasse van raaien wordt getracht om een minimale frequentie (2 -- 5 jaar) aan te houden; ze vertonen ontwikkelingen die aanvullende informatie geven over het (deel)gebied die niet altijd door de MONEOS-raaien gecoverd zijn.
 
 -   Optioneel: raaien die occasioneel worden ingemeten of waar specifieke vraag naar is.
 
 In de huidige rapportage worden de recente trends in de vaste MONEOS raaien van de Zeeschelde bekeken.
+Alsook de trends in aanvullende en optionele raaien die in `r laatste_jaar` werden ingemeten.
 
 ```{r 130-figuur-overzicht-raaien, fig.cap=caption_overzicht, out.width="100%"}
 
 caption_overzicht <- "Situering van de 24 vaste MONEOS-raaien binnen de Zeeschelde. Zie tabel in bijlage voor naamgeving."
 
-knitr::include_graphics(paste0(pad_figuren, "0_OverzichtskaartMoneosraaien_Zeeschelde.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "OverzichtskaartMoneosraaien_Zeeschelde.jpg"))
 
 ```
 
@@ -93,29 +153,78 @@ knitr::include_graphics(paste0(pad_figuren, "0_OverzichtskaartMoneosraaien_Zeesc
 
 ## Methode
 
-Een overzicht van de ingemeten vaste MONEOS raaien wordt gegeven in Tabel \@ref(tab:130-tabel-overzicht-raaien) in Bijlage \@ref(BL1).
+Een overzicht van de vaste MONEOS raaien wordt gegeven in Tabel \@ref(tab:130-tabel-overzicht-raaien) in Bijlage \@ref(BL1).
+Hier wordt ook aangegeven voor welke van deze raaien in `r laatste_jaar` het slik (+schorrand) en/of het schorplateau werd ingemeten.
 De meetcampagnes van de raaien gebeuren meestal op het einde van de winterperiode en zijn dus een weerslag van wat in het voorbije jaar is veranderd.
 Een raai in februari `r laatste_jaar` ingemeten wordt vergeleken met de hoogtes van het jaar ervoor, waarbij de veranderingen een gevolg zijn van wat gebeurde in `r laatste_jaar - 1`.
 De metingen gebeuren steeds tijdens een springtijperiode vanaf het schor of de dijk tot bij het plaatselijk laagwater.
 's Morgens wordt gestart in het stroomafwaartse deel van de Zeeschelde, daarna wordt met het opkomend tij stroomopwaarts telkens een raai opzocht bij opnieuw het plaatselijk laagwater.\
 Alle slik- en schorraaien werden tot begin 2012 ingemeten met een RTK-DGPS_Trimble 5800.
-Vanaf eind 2012 is een RTK-DGPS_Trimble R8 gebruikt, waarbij zowel GPS- en GLONASS-satellietsignalen ontvangen kunnen worden.
-<!--# nu nog een nieuwe TRIMBLE? --> De ingestelde maximale foutenmarge om een meting te kunnen uitvoeren is 2 cm op de z-waarde maar ligt gemiddeld rond ±1 cm.
+Vanaf eind 2012 tot eind 2022 is een RTK-DGPS_Trimble R8 gebruikt, waarbij zowel GPS- en GLONASS-satellietsignalen ontvangen kunnen worden.
+Vanaf 2023 wordt in hoofdzaak een RTK-DGPS_Trimble R780 GNSS gebruikt met GPS- , GLONAS- , Galileo- en BeiDou-signaal.
+De ingestelde maximale foutenmarge om een meting te kunnen uitvoeren is 2 cm op de z-waarde maar ligt gemiddeld rond ±1 cm.
 Bij de meetcampagne wordt een eerdere meetreeks in de RTK-GPS ingelezen.
 In het veld wordt vervolgens naar elk gemeten punt van de raai teruggaan.
 Zodoende kunnen de raaien op een efficiënte manier opnieuw ingemeten worden met een minimale horizontale afwijking.
-Door schoruitbreiding of -erosie kan het startpunt van de raai alsook het lokale laagwater verschillen tussen de jaren.\
+Door schoruitbreiding of -erosie kan het startpunt van de raai verschillen tussen de jaren.
+Ook de lokale laagwater grens kan verschuiven door sedimentatie/erosie.\
 Tijdens de meetcampagne is gebruik gemaakt van het standaard veldwerkprotocol (cfr. 2e lijnsrapportage, Van Braeckel et al., 2014) met beschrijvingen van de schorrand en de verschillende slikzones.
 De ingemeten data van de raaien worden vervolgens in GIS 'gesnapt' naar een rechte referentieraailijn met de INBO-GIS-tool.
-Na controle van de GIS-data worden de gegevens vervolgens in R (R Core Team 2013) geïmporteerd voor verdere verwerking.\
-Op de meeste MONEOS-raaien en sommige NOP's is per ecotoop een vast punt vastgelegd waar 3 RTK-GPSmetingen worden uitgevoerd alsook een foto en sedimentstaal (10cm diep) wordt genomen.
-Voor de berekening van de hoogteverandering op deze vaste punten wordt het gemiddelde genomen van de 3 metingen, wat direct gerelateerd kan worden aan de sedimentverandering.
+Na controle van de GIS-data worden de gegevens vervolgens in R (R Core Team 2013) geïmporteerd voor verdere verwerking.
 
-## trends in recente jaren
+Van elke MONEOS raai worden bij opmeten ook foto's gemaakt, en op de meeste MONEOS-raaien is per ecotoop een vast punt vastgelegd waar 3 RTK-GPSmetingen worden uitgevoerd en een sedimentstaal (10cm diep) wordt genomen.
 
-### Beneden Zeeschelde
+<!-- Op de meeste MONEOS-raaien en sommige NOP's is per ecotoop een vast punt vastgelegd waar 3 RTK-GPSmetingen worden uitgevoerd alsook een foto en sedimentstaal (10cm diep) wordt genomen. -->
 
-Een overzicht van de raaien in de Beneden Zeeschelde wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BEZ).
+<!-- Voor de berekening van de hoogteverandering op deze vaste punten wordt het gemiddelde genomen van de 3 metingen, wat direct gerelateerd kan worden aan de sedimentverandering. -->
+
+## Beneden Zeeschelde
+
+Een overzicht van de in `r laatste_jaar` opgemeten vaste MONEOS raaien in de Beneden Zeeschelde wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BEZ).
+Voor alle raaien werd het slik ingemeten.
+Voor raaien GBSa, GBSb, DO, GSb, GSc, LP, KPe en GW werd aanvullend het schorplateau ingemeten.
+
+### trends in recente jaren
+
+De trends in de meest recente jaren (`r laatste_jaar - 6` - `r laatste_jaar - 1`) evenals de trendbreuken in `r laatste_jaar` zijn weergegeven in tabel XXX.
+
+<br/>
+
+```{r 130-tabel-trends-BEZ}
+
+tabel_trends_BEZ <- 
+  read_excel(paste0(pad_tabellen, "tabel_EW_slik.xlsx"),
+             sheet = "tabel_EW_slik") %>% 
+  filter(reekscode %in% raaien_BEZ) %>% 
+  full_join(read_excel(paste0(pad_tabellen, "tabel_EW_schor.xlsx"),
+             sheet = "tabel_EW_schor") %>% 
+              filter(reekscode %in% raaien_BEZ)) %>% 
+  mutate_all(~replace_na(., ""))
+
+cap_trends_BEZ <- str_c("Trends in sedimentatie/erosie op de slikken en schorren in de Beneden Zeeschelde, voor de periode ", laatste_jaar - 5, " - ", laatste_jaar - 1, " en (indien aanwezig) [x] trendbreuk in ", laatste_jaar, ". 0 = sedimentatie/erosie < 1cm/jaar; + = sedimentatie \u2265 1 cm/jaar; ++ = sedimentatie \u2265 5 cm/jaar; +++ = sedimentatie \u2265 10 cm/jaar; - = erosie \u2265 1 cm/jaar; -- = erosie \u2265 5 cm/jaar; --- = erosie \u2265 10 cm/jaar.")
+
+tabel_trends_BEZ %>%
+  mutate_all(~cell_spec(., color = "black")) %>% 
+  knitr::kable(# "latex",
+    escape = FALSE,
+    booktabs = T,
+    caption = cap_trends_BEZ) %>%
+  kable_styling()
+
+```
+
+<br/>
+
+```{r 130-figuur-trends-slik-BEZ, fig.cap=caption_trend_slik_BEZ, out.width="100%"}
+
+caption_trend_slik_BEZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de slikken in de Beneden Zeeschelde.")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_slik_BEZ.png"))
+
+```
+
+<br/>
+
 In `r laatste_jaar` werden voor de meeste raaien geen trendbreuken vastgesteld en evolueren de raaien in de zin van de voorgaande jaren zonder sterke sedimentatie of erosie.\
 Volgende trends zijn het vermelden waard:
 
@@ -123,27 +232,56 @@ Volgende trends zijn het vermelden waard:
 
 -   Het slik aan het Galgenweel (GW) vertoont de laatste jaren een vrij sterke erosie die in `r laatste_jaar` wordt verdergezet, met een verlaging tot 25-50cm ten opzichte van `r laatste_jaar - 1` (Figuur \@ref(fig:130-figuur-GW)).
 
-```{r 130-figuur-KPe, fig.cap=caption_raai, out.width="100%"}
+Voor raaien GSb, GSc konden geen trends berekend worden voor het schorplateau wegens te weinig metingen in de laatste jaren
 
-caption_raai <- "Raai KPe (Ketenisse)"
+<br/>
 
-knitr::include_graphics(paste0(pad_figuren, "KPe.png"))
+## Beneden Zeeschelde
+
+Een overzicht van de in `r laatste_jaar` opgemeten vaste MONEOS raaien in de Beneden Zeeschelde wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BEZ).
+Voor alle raaien werd het slik ingemeten.
+Voor raaien GBSa, GBSb, DO, GSb, GSc, LP, KPe en GW werd aanvullend het schorplateau ingemeten.
+
+### trends in recente jaren
+
+De trends in de meest recente jaren (`r laatste_jaar - 6` - `r laatste_jaar - 1`) evenals de trendbreuken in `r laatste_jaar` zijn weergegeven in tabel XXX.
+
+<br/>
+
+```{r 130-tabel-trends-BOZ}
+
+tabel_trends_BOZ <- 
+  read_excel(paste0(pad_tabellen, "tabel_EW_slik.xlsx"),
+             sheet = "tabel_EW_slik") %>% 
+  filter(reekscode %in% raaien_BOZ) %>% 
+  full_join(read_excel(paste0(pad_tabellen, "tabel_EW_schor.xlsx"),
+             sheet = "tabel_EW_schor") %>% 
+              filter(reekscode %in% raaien_BOZ)) %>% 
+  mutate_all(~replace_na(., ""))
+
+cap_trends_BOZ <- str_c("Trends in sedimentatie/erosie op de slikken en schorren in de Boven Zeeschelde, voor de periode ", laatste_jaar - 5, " - ", laatste_jaar - 1, " en (indien aanwezig) [x] trendbreuk in ", laatste_jaar, ". 0 = sedimentatie/erosie < 1cm/jaar; + = sedimentatie \u2265 1 cm/jaar; ++ = sedimentatie \u2265 5 cm/jaar; +++ = sedimentatie \u2265 10 cm/jaar; - = erosie \u2265 1 cm/jaar; -- = erosie \u2265 5 cm/jaar; --- = erosie \u2265 10 cm/jaar.")
+
+tabel_trends_BOZ %>%
+  mutate_all(~cell_spec(., color = "black")) %>% 
+  knitr::kable(# "latex",
+    escape = FALSE,
+    booktabs = T,
+    caption = cap_trends_BOZ) %>%
+  kable_styling()
 
 ```
 
 <br/>
 
-```{r 130-figuur-GW, fig.cap=caption_raai, out.width="100%"}
+```{r 130-figuur-trends-slik-BOZ, fig.cap=caption_trend_slik_BOZ, out.width="100%"}
 
-caption_raai <- "Raai GW (Galgenweel)"
+caption_trend_slik_BOZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de slikken in de Beneden Zeeschelde.")
 
-knitr::include_graphics(paste0(pad_figuren, "GW.png"))
+knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_slik_BOZ.png"))
 
 ```
 
 <br/>
-
-### Boven Zeeschelde
 
 Een overzicht van de raaien in de Boven Zeeschelde wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BOZ).\
 De meest opvallende trends zijn de volgende:
@@ -159,64 +297,6 @@ De meest opvallende trends zijn de volgende:
 -   Op raai MK (Mariekerke) wordt de trend van de laatste jaren tot sterke sedimentatie/opbolling in de onderste helft van het slik verdergezet.
 
 -   Raai BM (Plaat van Bergenmeersen/Taverniers) vertoont in `r laatste_jaar` sterke sedimentatie/opbolling op het middelste deel van het slik.
-
-```{r 130-figuur-TB, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai TB (Slik van het Buitenland)"
-
-knitr::include_graphics(paste0(pad_figuren, "TB.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-WE, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai WE (Slik van Weert)"
-
-knitr::include_graphics(paste0(pad_figuren, "WE.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-BR, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai BR (Slik bij Branst)"
-
-knitr::include_graphics(paste0(pad_figuren, "BR.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-PD, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai PD (Slik aan Driegoten/De Plaat)"
-
-knitr::include_graphics(paste0(pad_figuren, "PD.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-MK, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai MK (Mariekerke)"
-
-knitr::include_graphics(paste0(pad_figuren, "MK.png"))
-
-```
-
-<br/>
-
-```{r 130-figuur-BM, fig.cap=caption_raai, out.width="100%"}
-
-caption_raai <- "Raai BM (Plaat van Bergenmeersen/Taverniers)"
-
-knitr::include_graphics(paste0(pad_figuren, "BM.png"))
-
-```
 
 <br/>
 
@@ -249,20 +329,42 @@ URL <http://www.R-project.org/>.
 
 <!-- \arrayrulecolor{black} -->
 
-```{r 130-tabel-overzicht-raaien, results="asis", out.width="100%"}
+```{r 130-tabel-overzicht-raaien}
 
-tabel_raaien_vast <- 
-  read_excel(paste0(pad_tabellen, "tbl_vaste_raaien_MONEOS.xlsx")) %>% 
-  mutate_all(~replace_na(., ""))
+raaien_slik <- 
+  list.files(str_c(pad_figuren, "vast/slik/")) %>% 
+  str_remove("_slik.png")
+raaien_schor <- 
+  list.files(str_c(pad_figuren, "vast/schor/")) %>% 
+  str_remove("_schor.png")
 
 tabel_raaien_vast <-
   tabel_raaien_vast %>% 
-  mutate(OMES = factor(OMES, levels = c(9:19, "19  trGM", "Durme", "Rupel", ""))) %>%
-  arrange(OMES, rivier, `afstand grens`)
+  mutate(slik = 
+           case_when(
+             reekscode %in% raaien_slik ~ "x",
+             TRUE ~ ""
+           ),
+         schor = 
+           case_when(
+             reekscode %in% raaien_schor ~ "x",
+             TRUE ~ ""
+           ))
 
-cap_raaien_vast <- "Overzicht vaste MONEOS raaien langs de Zeeschelde en zijrivieren. Raaicode, X,Y coördinaat (Lambert 72), naam,  saliniteitszone, OMES zone, afstand tot de Belgisch-Nederlandse grens en rivier."
+
+cap_raaien_vast <- str_c("Overzicht vaste MONEOS raaien langs de Zeeschelde en zijrivieren. Raaicode, X,Y coördinaat (Lambert 72), naam,  saliniteitszone, OMES zone, afstand tot de Belgisch-Nederlandse grens, rivier en opmeting van slik (+ schorrand) en schorplateau in ", laatste_jaar, ".")
 
 tabel_raaien_vast %>%
+  mutate(sal_kort = if_else(str_length(sal_kort) == 0,
+                               "",
+                               str_c("(", sal_kort, ")")),
+         rivier_kort = if_else(str_length(rivier_kort) == 0,
+                               "",
+                               str_c("(", rivier_kort, ")"))) %>%
+  unite(salzone, sal_kort, col = "salzone", sep = " ") %>% 
+  unite(rivier, rivier_kort, col = "rivier", sep = " ") %>% 
+  mutate(salzone = str_squish(salzone),
+         rivier = str_squish(rivier)) %>% 
   mutate_all(~cell_spec(., color = "black")) %>% 
   knitr::kable(# "latex",
     escape = FALSE,
@@ -281,9 +383,13 @@ tabel_raaien_vast %>%
 
 ```{r 130-figuur-raaien-BEZ, fig.cap=caption_BEZ, out.width="47%", fig.show="hold"}
 
+figs_BEZ <- 
+  intersect(str_c(raaien_BEZ, ".png"),
+            list.files(str_c(pad_figuren, "vast/")))
+
 caption_BEZ <- "Raaien in de Beneden Zeeschelde"
 
-knitr::include_graphics(str_c(pad_figuren, c("GBSa.png", "ODa.png", "DO.png", "GSb.png", "GSc.png", "LH.png", "LP.png", "KPb.png", "KPe.png", "GW.png", "HO.png")))
+knitr::include_graphics(str_c(pad_figuren, "vast/", figs_BEZ))
 
 ```
 
@@ -291,8 +397,26 @@ knitr::include_graphics(str_c(pad_figuren, c("GBSa.png", "ODa.png", "DO.png", "G
 
 ```{r 130-figuur-raaien-BOZ, fig.cap=caption_BOZ, out.width="46%", fig.show="hold"}
 
+figs_BOZ <- 
+  intersect(str_c(raaien_BOZ, ".png"),
+            list.files(str_c(pad_figuren, "vast/")))
+
 caption_BOZ <- "Raaien in de Boven Zeeschelde"
 
-knitr::include_graphics(str_c(pad_figuren, c("KV.png", "NOTb.png", "NOTc.png", "BAL.png", "TB.png", "WE.png", "BR.png", "PD.png", "MK.png", "KRb.png", "APa.png", "APc.png", "BM.png")))
+knitr::include_graphics(str_c(pad_figuren, "vast/", figs_BOZ))
+
+```
+
+<br/>
+
+```{r 130-figuur-raaien-zijrivieren, fig.cap=caption_ZIJ, out.width="46%", fig.show="hold"}
+
+figs_ZIJ <- 
+  intersect(str_c(raaien_ZIJ, ".png"),
+            list.files(str_c(pad_figuren, "vast/")))
+
+caption_ZIJ <- "Raaien in de zijrivieren"
+
+knitr::include_graphics(str_c(pad_figuren, "vast/", figs_ZIJ))
 
 ```

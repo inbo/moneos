@@ -22,6 +22,7 @@ knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, c
 
 library(tidyverse)
 library(readxl)
+library(writexl)
 library(INBOtheme)
 library(rprojroot)
 
@@ -95,10 +96,22 @@ raai_campagne <-
   data_MONEOS %>% 
   distinct(MeetCampagneJaar, Salzone, Omes, DATUM, REEKSCODE, Campagne)
 
+data_NA <-
+  read_xlsx(path = str_c(pad_data, "toevoeging_NA_grafieken_2023.xlsx"))
+
+data_NA <-
+  data_NA %>% 
+  left_join(raai_campagne) %>% 
+  drop_na()
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  bind_rows(data_NA)
+
 ```
 
 
-```{r selectie vaste MONEOS raaien met metingen in laatste jaar en voldoende jaren voor EW}
+```{r selectie vaste MONEOS raaien met metingen in laatste jaar}
 
 data_EW <-
   data_MONEOS %>% 
@@ -120,7 +133,20 @@ raaicodes <-
 ```
 
 
-```{r ecotoopgrenzen}
+```{r afronden en samenvoegen indien overlappende meetpunten/meetdatums in een jaar}
+
+data_EW <-
+  data_EW %>% 
+  mutate(distance_prof = round(distance_prof)) %>% 
+  group_by(MeetCampagneJaar, Salzone, Omes, Year, REEKSCODE, distance_prof, Habitat) %>%
+  summarise(HOOGTE__MT = mean(HOOGTE__MT, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode))
+
+```
+
+
+```{r ecotoopgrenzen, eval=FALSE}
 
 tbl_waterstanden <-
   read_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
@@ -131,7 +157,7 @@ data_EW <-
 
 data_EW <-
   data_EW %>%
-  group_by(REEKSCODE, DATUM) %>% 
+  group_by(REEKSCODE, Year) %>% 
   mutate(habpres = any(!is.na(Habitat))) %>% 
   ungroup() %>% 
   mutate(ecotoop = 
@@ -162,38 +188,50 @@ ecotoopgrenzen <-
 ```
 
 
-```{r selectie enkel slik}
+```{r selectie enkel slik en schorrand}
 
-buffer_boven <- 0.5
-buffer_onder <- 5
+tbl_waterstanden <-
+  read_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
 
 data_EW <-
   data_EW %>% 
-  left_join(ecotoopgrenzen) %>% 
-  filter(distance_prof >= grens_schor - buffer_boven
-         # ,
-         # distance_prof <= grens_subtidaal + buffer_onder
-         )
+  # left_join(ecotoopgrenzen) %>% 
+  left_join(tbl_waterstanden) %>% 
+  filter(distance_prof >= afstand_slik)
 
 ```
 
 
-```{r raaien met voldoende meetpunten en jaren}
+```{r selectie raaien met voldoende meetpunten en jaren}
 
 raaien_sel <-
   data_EW %>% 
-  mutate(dist_round = round(distance_prof)) %>% 
   group_by(REEKSCODE, Year) %>% 
-  mutate(aantal = length(unique(dist_round)) >= 2) %>% 
+  mutate(aantal_year = length(unique(distance_prof[!is.na(HOOGTE__MT)])),
+         range_year = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
+         min_year = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
+         max_year = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
   ungroup() %>% 
-  filter(aantal == TRUE) %>% 
-  distinct(REEKSCODE, Year) %>% 
   group_by(REEKSCODE) %>% 
-  filter(n() > 4,
-         jaar %in% Year) %>% 
+  mutate(aantal_dist = max(aantal_year, na.rm = TRUE),
+         range_dist = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
+         min_dist = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
+         max_dist = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  mutate(prop_aantal = aantal_year/aantal_dist,
+         prop_range = range_year/range_dist) %>% 
+  filter(aantal_dist >= 4) %>%
+  filter(prop_aantal >= 0.5,
+         prop_range >= 0.5) %>%
+  distinct(REEKSCODE, Year, aantal_dist, aantal_year, prop_aantal, range_dist, min_dist, max_dist, range_year, prop_range, min_year, max_year) %>% 
+  group_by(REEKSCODE) %>% 
+  filter(n() >= 4) %>%
+  filter(jaar %in% Year) %>% 
   ungroup()
 
-unique(raaien_sel$REEKSCODE)
+unique(raaien_sel$REEKSCODE) %>% 
+  sort()
+
 
 # data_EW_sel <-
 #   data_EW %>% 
@@ -203,35 +241,49 @@ data_EW_sel <-
   raaien_sel %>% 
   left_join(data_EW)
 
-
 ```
 
 
-```{r interpolatie}
+```{r afronden afstand naar vast interval (en interpolatie)}
+
+# data_EW_interp_full <-
+#   data_EW_sel
 
 data_EW_interp_full <-
-  data_EW_sel %>% 
-  filter(!is.na(afstand_grens)) %>% 
-  mutate(distance_prof = round(distance_prof),
-         Year = year(DATUM)) %>% 
-  group_by(MeetCampagneJaar, Salzone, Omes, Year, REEKSCODE, Campagne, afstand_grens, distance_prof) %>% 
-  summarise(HOOGTE__MT = mean(HOOGTE__MT)) %>% 
-  ungroup() %>% 
-  group_by(MeetCampagneJaar, Salzone, Omes, Year, REEKSCODE, Campagne, afstand_grens) %>% 
-  nest() %>% 
-  transmute(intrp = map(data, 
-                        ~approx(.$distance_prof, 
-                                .$HOOGTE__MT, 
-                                xout = seq(min(.$distance_prof), max(.$distance_prof), by = 1), 
-                                rule = 2))) %>% 
-  transmute(distance_prof = map(intrp, ~.$x),
-            HOOGTE__MT = map(intrp, ~.$y)) %>% 
-  unnest(cols = c(distance_prof, HOOGTE__MT)) %>% 
+  data_EW_sel %>%
+  group_by(REEKSCODE) %>% 
+  mutate(steps = range_dist/aantal_dist,
+         steps2 = mean(range_year/aantal_year),
+         steps3 = min(range_year/aantal_year),
+         distance_prof = round(distance_prof/steps2)*steps2) %>% 
   ungroup()
+
+
+# data_EW_interp_full <-
+#   data_EW_sel %>% 
+#   filter(!is.na(afstand_grens)) %>% 
+#   mutate(distance_prof = round(distance_prof),
+#          Year = year(DATUM)) %>% 
+#   group_by(MeetCampagneJaar, Salzone, Omes, Year, REEKSCODE, Campagne, afstand_grens, distance_prof) %>% 
+#   summarise(HOOGTE__MT = mean(HOOGTE__MT)) %>% 
+#   ungroup() %>% 
+#   group_by(MeetCampagneJaar, Salzone, Omes, Year, REEKSCODE, Campagne, afstand_grens) %>% 
+#   nest() %>% 
+#   transmute(intrp = map(data, 
+#                         ~approx(.$distance_prof, 
+#                                 .$HOOGTE__MT, 
+#                                 xout = seq(min(.$distance_prof), max(.$distance_prof), by = 1), 
+#                                 rule = 2))) %>% 
+#   transmute(distance_prof = map(intrp, ~.$x),
+#             HOOGTE__MT = map(intrp, ~.$y)) %>% 
+#   unnest(cols = c(distance_prof, HOOGTE__MT)) %>% 
+#   ungroup()
 
 data_EW_interp <-
   data_EW_interp_full %>% 
-  drop_na(HOOGTE__MT)
+  group_by(REEKSCODE, afstand_grens, Salzone, Omes, Year, MeetCampagneJaar, distance_prof, waterstand_DD_25, waterstand_DD_35) %>% 
+  summarise(HOOGTE__MT = mean(HOOGTE__MT, na.rm = TRUE)) %>% 
+  ungroup()
 
 ```
 
@@ -290,6 +342,7 @@ fig_raai <-
                  aes(xintercept = grens_middelhoog_hoog),
                  linetype = 2, color = "grey50", linewidth = 2) +
       geom_line(linewidth = 1) + 
+      geom_point() +
       scale_x_continuous(breaks = pretty(dat_raai$distance_prof, 20)) +
       scale_y_continuous(breaks = pretty(dat_raai$HOOGTE__MT, 5)) +
       scale_colour_manual(values = colors$Colour) +
@@ -312,7 +365,7 @@ fig_raai <-
 ```
 
 
-```{r figuren slikraai, eval = FALSE}
+```{r figuren slik (interpolatie)}
 
 figuren_EW <-
   data_EW_interp %>% 
@@ -322,8 +375,8 @@ figuren_EW <-
 
 # figuren_EW$fig
 
-walk2(str_c("slik_interp_", figuren_EW$REEKSCODE), figuren_EW$fig, 
-      ~ggsave(.y, file=str_c(pad_figuren, "early_warning/slik_interp/", .x, ".png"), 
+walk2(str_c("slik_profiel_EW_", figuren_EW$REEKSCODE), figuren_EW$fig, 
+      ~ggsave(.y, file=str_c(pad_figuren, "early_warning/slik_profiel/", .x, ".png"), 
               width=16, height=8, dpi= 350))
 
 ```
@@ -331,9 +384,9 @@ walk2(str_c("slik_interp_", figuren_EW$REEKSCODE), figuren_EW$fig,
 
 ```{r selectie raaien}
 
-data_EW_interp <-
-  data_EW_interp %>% 
-  filter(str_detect(REEKSCODE, "HEU", negate = TRUE))
+# data_EW_interp <-
+#   data_EW_interp %>% 
+#   filter(str_detect(REEKSCODE, "HEU", negate = TRUE))
 
 ```
 
@@ -373,10 +426,10 @@ for(r in unique(data_EW_interp$REEKSCODE)) {
 
 delta_hoogte_gem <-
   delta_hoogte_full %>% 
-  group_by(REEKSCODE, afstand_grens, Salzone, Omes, Campagne, MeetCampagneJaar, ecotoop) %>% 
+  group_by(REEKSCODE, afstand_grens, Salzone, Omes, Year, MeetCampagneJaar, ecotoop) %>% 
   filter(Year_ref == min(Year_ref)) %>% 
   ungroup() %>% 
-  group_by(REEKSCODE, afstand_grens, Salzone, Omes, Campagne, MeetCampagneJaar, Year, Year_ref, delta_Year, ecotoop) %>% 
+  group_by(REEKSCODE, afstand_grens, Salzone, Omes, MeetCampagneJaar, Year, Year_ref, delta_Year, ecotoop) %>% 
   summarise(delta_hoogte = mean(delta_hoogte, na.rm = TRUE)) %>% 
   ungroup()
 
@@ -387,7 +440,7 @@ delta_hoogte_gem <-
 
 delta_hoogte_gem %>% 
   ggplot(aes(Year, delta_hoogte, color = ecotoop)) +  
-  geom_line(size = 1) + 
+  geom_line(linewidth = 1) + 
   geom_point(size = 2) +
   scale_x_continuous(breaks = 2018:2023) +
   labs(x = "jaar",
@@ -419,7 +472,7 @@ hoogte_evolutie_predict <-
          Year = map(data, ~pull(., Year)),
          delta_Year = map(data, ~pull(., delta_Year)),
          delta_hoogte = map(data, ~pull(., delta_hoogte))) %>%
-  dplyr::filter(map_lgl(delta_Year, ~length(.) > 0)) %>%
+  filter(map_lgl(delta_Year, ~length(.) > 0)) %>%
   transmute(slope_hoogte = map(mod, ~coef(.)[1]),
             MeetCampagneJaar = MeetCampagneJaar,
             Year = Year,
@@ -431,8 +484,22 @@ hoogte_evolutie_predict <-
   unnest(cols = everything()) %>%
   ungroup()
 
+
+hoogte_evolutie_slope <-
+  hoogte_evolutie_predict %>%
+  filter(MeetCampagneJaar != campagne) %>%
+  group_by(REEKSCODE, ecotoop) %>%
+  mutate(Year_end = max(Year)) %>%
+  ungroup() %>%
+  distinct(REEKSCODE, ecotoop, Year_ref, Year_end, slope_hoogte) %>%
+  mutate(REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode))
+
 hoogte_evolutie_predict <-
   hoogte_evolutie_predict %>%
+  group_by(REEKSCODE, ecotoop) %>% 
+  filter(MeetCampagneJaar == campagne |
+           Year == max(Year[Year != jaar])) %>% 
+  ungroup() %>% 
   mutate(flag_hoogte = delta_hoogte < lwr | delta_hoogte > upr,
          Year_shift = 
            case_when(
@@ -441,22 +508,135 @@ hoogte_evolutie_predict <-
              TRUE ~ Year),
          REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode))
 
-hoogte_evolutie_slope <-
+
+tabel_EW <-
   hoogte_evolutie_predict %>% 
-  filter(MeetCampagneJaar != campagne) %>% 
-  group_by(REEKSCODE, ecotoop) %>% 
-  mutate(Year_end = max(Year)) %>% 
-  ungroup() %>% 
-  distinct(REEKSCODE, ecotoop, Year_ref, Year_end, slope_hoogte) %>% 
-  mutate(REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode))
+  select(REEKSCODE, ecotoop, slope_hoogte, Year, delta_Year, delta_hoogte, flag_hoogte) %>% 
+  mutate(Year = if_else(Year == jaar, as.character(jaar), "prev")) %>% 
+  pivot_wider(id_cols = c(REEKSCODE, ecotoop, slope_hoogte),
+              names_from = Year,
+              values_from = c(delta_Year, delta_hoogte, flag_hoogte)) %>% 
+  mutate(delta_hoogte = (.data[[str_c("delta_hoogte_", jaar)]] - delta_hoogte_prev)/(.data[[str_c("delta_Year_", jaar)]] - delta_Year_prev)) %>% 
+  mutate(slope_hoogte = 
+           case_when(
+             slope_hoogte <= -0.1 ~ "---",
+             slope_hoogte > -0.1 & slope_hoogte <= -0.05 ~ "--",
+             slope_hoogte > -0.05 & slope_hoogte <= -0.01 ~ "-",
+             slope_hoogte > -0.01 & slope_hoogte < 0.01 ~ "0",
+             slope_hoogte >= 0.01 & slope_hoogte < 0.05 ~ "+",
+             slope_hoogte >= 0.05 & slope_hoogte < 0.1 ~ "++",
+             slope_hoogte >= 0.1 ~ "+++"),
+         delta_hoogte = 
+           case_when(
+             delta_hoogte <= -0.1 ~ "---",
+             delta_hoogte > -0.1 & delta_hoogte <= -0.05 ~ "--",
+             delta_hoogte > -0.05 & delta_hoogte <= -0.01 ~ "-",
+             delta_hoogte > -0.01 & delta_hoogte < 0.01 ~ "0",
+             delta_hoogte >= 0.01 & delta_hoogte < 0.05 ~ "+",
+             delta_hoogte >= 0.05 & delta_hoogte < 0.1 ~ "++",
+             delta_hoogte >= 0.1 ~ "+++"),
+         delta_hoogte = if_else(.data[[str_c("flag_hoogte_", jaar)]], 
+                                str_c("[", delta_hoogte, "]"),
+                                ""),
+         slope_hoogte = 
+           str_c(slope_hoogte, delta_hoogte, sep = "  ") %>% 
+           str_trim()) %>% 
+  pivot_wider(id_cols = REEKSCODE, 
+              names_from = ecotoop,
+              values_from = slope_hoogte) %>% 
+  select(reekscode = REEKSCODE, `laag slik`, `middelhoog slik`, `hoog slik`) %>% 
+  arrange(reekscode)
+
+tabel_EW %>%   
+  list("tabel_EW_slik" = .) %>% 
+  write_xlsx(path = str_c(pad_tabellen, "tabel_EW_slik.xlsx"))
 
 
-delta_hoogte_predict <-
-  delta_hoogte_gem %>%
-  left_join(hoogte_evolutie_predict %>%
-              distinct(REEKSCODE, ecotoop, Year_ref, slope_hoogte)) %>%
-  mutate(delta_hoogte_pred = slope_hoogte*delta_Year,
-         REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode))
+hoogte_evolutie_predict <-
+  hoogte_evolutie_predict %>%
+  filter(MeetCampagneJaar == campagne)
+
+```
+
+
+```{r functie figuur delta}
+
+fig_delta <- 
+  function(dat, sectie) {
+    
+    if (sectie == "BEZ") {
+      tbl_raaien <- 
+        tabel_raaien_vast %>% 
+        filter(OMES %in% 9:13)
+    } else if ((sectie == "BOZ")) {
+      tbl_raaien <- 
+        tabel_raaien_vast %>% 
+        filter(rivier == "Zeeschelde" & !(OMES %in% 9:13))
+    } else {
+      tbl_raaien <- 
+        tabel_raaien_vast %>% 
+        filter(rivier != "Zeeschelde")
+    }
+
+    raaien <- 
+      tbl_raaien %>% 
+      mutate(reekscode = factor(reekscode, levels = tabel_raaien_vast$reekscode)) %>% 
+      arrange(reekscode) %>% 
+      pull(reekscode)
+    
+    dat_fig <- 
+      dat %>% 
+      filter(REEKSCODE %in% raaien)
+    
+    dat_slope <-
+      hoogte_evolutie_slope %>%
+      filter(REEKSCODE %in% raaien)
+    
+    dat_predict <-
+      hoogte_evolutie_predict %>% 
+      filter(REEKSCODE %in% raaien)
+
+    p <-
+      dat_fig %>% 
+      {ggplot(., aes(Year, delta_hoogte, color = ecotoop)) +
+          labs(x = "jaar",
+               y = expression(paste(Delta, "hoogte", " (m)"))) +
+          geom_point(data = filter(., MeetCampagneJaar != campagne)) +
+          geom_segment(data = dat_slope,
+                       aes(x = Year_ref, y = 0, xend = Year_end, yend = -Year_ref*slope_hoogte + Year_end*slope_hoogte,
+                           color = ecotoop),
+                       linewidth = 1) +
+          geom_hline(aes(yintercept = 0), linetype = 2) +
+          geom_point(data = 
+                       dat_predict %>% 
+                       filter(MeetCampagneJaar == campagne),
+                     aes(x = Year_shift, color = ecotoop, group = ecotoop, shape = flag_hoogte),
+                     stroke = 1,
+                     size = 2) +
+          geom_errorbar(data = 
+                          dat_predict %>% 
+                          filter(MeetCampagneJaar == campagne),
+                        aes(x = Year_shift, ymin = lwr, ymax = upr, color = ecotoop, group = ecotoop),
+                        linewidth = 1,
+                        width = 0.25) +
+          scale_shape_manual(name = "trendbreuk", values = c("FALSE" = 1, "TRUE" = 15)) +
+          # scale_y_continuous(breaks = pretty(.$delta_hoogte, 10)) +
+          scale_x_continuous(breaks = seq(2019,2023, by = 2)) +
+          # facet_wrap(~ REEKSCODE, scales = "free_y", labeller = as_labeller(.$raai_sal)) +
+          facet_wrap(~ raai_sal, scales = "free_y") +
+          theme_bw() +
+          theme(plot.title = element_text(size = 20, hjust = 0.5),
+                axis.title = element_text(size = 18),
+                axis.text = element_text(size = 15),
+                legend.title = element_text(size = 16),
+                legend.text = element_text(size = 14),
+                panel.grid.minor = element_blank(),
+                panel.grid.major.x = element_blank(),
+                panel.grid.major.y = element_line(colour = "grey"),
+                strip.text = element_text(size = 16))}
+    
+    p
+  }
 
 ```
 
@@ -464,7 +644,7 @@ delta_hoogte_predict <-
 ```{r figuren early warning}
 
 dat_delta <-
-  delta_hoogte_predict %>%
+  delta_hoogte_gem %>%
   group_by(REEKSCODE, ecotoop, Year_ref) %>%
   mutate(any_high = any(MeetCampagneJaar == campagne)) %>%
   filter(any_high) %>%
@@ -481,6 +661,7 @@ levels(dat_delta$REEKSCODE)
 levels(dat_delta$raai_sal)
 
 hoogte_evolutie_slope <-
+  hoogte_evolutie_slope %>% 
   left_join(tabel_raaien_vast %>% 
               select(REEKSCODE = reekscode, sal_kort, raai_sal)) %>% 
   mutate(REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode),
@@ -488,6 +669,7 @@ hoogte_evolutie_slope <-
                            levels = tabel_raaien_vast$raai_sal))
 
 hoogte_evolutie_predict <-
+  hoogte_evolutie_predict %>% 
   left_join(tabel_raaien_vast %>% 
               select(REEKSCODE = reekscode, sal_kort, raai_sal)) %>% 
   mutate(REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode),
@@ -504,45 +686,31 @@ hoogte_evolutie_predict <-
 #   arrange(REEKSCODE)
 
 
-dat_delta %>% 
-  {ggplot(., aes(Year, delta_hoogte, color = ecotoop)) +
-      labs(x = "jaar",
-           y = expression(paste(Delta, "hoogte", " (m)"))) +
-      geom_point(data = filter(., MeetCampagneJaar != campagne)) +
-      geom_segment(data = hoogte_evolutie_slope,
-                  aes(x = Year_ref, y = 0, xend = Year_end, yend = -Year_ref*slope_hoogte + Year_end*slope_hoogte, 
-                      color = ecotoop),
-                  linewidth = 1) +
-      geom_hline(aes(yintercept = 0), linetype = 2) +
-      geom_point(data = 
-                   hoogte_evolutie_predict %>% 
-                   filter(MeetCampagneJaar == campagne),
-                 aes(x = Year_shift, color = ecotoop, group = ecotoop, shape = flag_hoogte),
-                     stroke = 1,
-                     size = 2) +
-      geom_errorbar(data = 
-                      hoogte_evolutie_predict %>% 
-                      filter(MeetCampagneJaar == campagne),
-                    aes(x = Year_shift, ymin = lwr, ymax = upr, color = ecotoop, group = ecotoop),
-                    linewidth = 1,
-                    width = 0.25) +
-      scale_shape_manual(name = "flagged", values = c("FALSE" = 1, "TRUE" = 15)) +
-      # scale_y_continuous(breaks = pretty(.$delta_hoogte, 10)) +
-      scale_x_continuous(breaks = seq(2019,2023, by = 2)) +
-      # facet_wrap(~ REEKSCODE, scales = "free_y", labeller = as_labeller(.$raai_sal)) +
-      facet_wrap(~ raai_sal, scales = "free_y") +
-      theme_bw() +
-      theme(plot.title = element_text(size = 20, hjust = 0.5),
-            axis.title = element_text(size = 18),
-            axis.text = element_text(size = 15),
-            legend.title = element_text(size = 16),
-            legend.text = element_text(size = 14),
-            panel.grid.minor = element_blank(),
-            panel.grid.major.x = element_blank(),
-            panel.grid.major.y = element_line(colour = "grey"),
-            strip.text = element_text(size = 16))}
+p <-
+  dat_delta %>% 
+  fig_delta(sectie = "BEZ")
+p
 
-ggsave(file=str_c(pad_figuren, "early_warning/early_warning_", campagne, ".png"), 
+ggsave(file=str_c(pad_figuren, "early_warning/early_warning_slik_BEZ.png"), 
               width=18, height=10, dpi= 350)
+
+
+p <-
+  dat_delta %>% 
+  fig_delta(sectie = "BOZ")
+p
+
+ggsave(file=str_c(pad_figuren, "early_warning/early_warning_slik_BOZ.png"), 
+              width=18, height=10, dpi= 350)
+
+
+p <-
+  dat_delta %>% 
+  fig_delta(sectie = "ZIJ")
+p
+
+ggsave(file=str_c(pad_figuren, "early_warning/early_warning_slik_ZIJ.png"), 
+              width=18, height=10, dpi= 350)
+
 ```
 

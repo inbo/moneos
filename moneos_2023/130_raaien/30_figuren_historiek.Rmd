@@ -51,6 +51,31 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 jaar <- 2023
 campagne <- "C2022"
 
+tabel_raaien_vast <- 
+  read_excel(paste0(pad_tabellen, "tbl_vaste_raaien_MONEOS.xlsx")) %>% 
+  mutate_all(~replace_na(., "")) %>% 
+  mutate(OMES = factor(OMES, levels = c(9:19, "19  trGM", "Durme", "Rupel", ""))) %>% 
+  mutate(rivier = 
+           case_when(
+             rivier == "Zijrivieren" ~ gebied,
+             TRUE ~ rivier
+           ),
+         sal_kort = 
+           case_when(
+             salzone == "Mesohalien" ~ "MH",
+             salzone == "Zone grote saliniteitsgradiënt" ~ "SG",
+             salzone == "Oligohalien" ~ "OH",
+             salzone == "Zoet lange verblijftijd" ~ "ZL",
+             salzone == "Zoet korte verblijftijd" ~ "ZK",
+             salzone == "Durme" ~ "DU",
+             salzone == "Rupel" ~ "RU",
+             rivier == "Dijle" ~ "DL",
+             rivier == "Nete" ~ "NE",
+             rivier == "Zenne" ~ "ZN"
+           ),
+         raai_sal = str_c(reekscode, " (", sal_kort, ")")) %>%
+  arrange(OMES, rivier, `afstand grens`)
+
 data_MONEOS <- 
   read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_2023.xlsx"),
             sheet = "TOPOdata_MONEOSRAAIEN_INBO")
@@ -161,6 +186,74 @@ data_MONEOS %>%
 ```
 
 
+```{r toevoegen combinatie raai - salzone}
+
+data_MONEOS <- 
+  data_MONEOS %>% 
+  left_join(tabel_raaien_vast %>% 
+              select(REEKSCODE = reekscode, sal_kort, raai_sal))
+
+```
+
+
+```{r selectie raaien voor slik figuur en schor figuur}
+
+raaien_sel_slik <-
+  data_MONEOS %>% 
+  filter(distance_prof >= afstand_slik) %>% 
+  group_by(REEKSCODE, MeetCampagneJaar) %>% 
+  mutate(aantal_year = length(unique(distance_prof[!is.na(HOOGTE__MT)])),
+         range_year = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
+         min_year = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
+         max_year = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  group_by(REEKSCODE) %>% 
+  mutate(aantal_dist = max(aantal_year, na.rm = TRUE),
+         range_dist = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
+         min_dist = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
+         max_dist = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
+  ungroup() %>%
+  filter(MeetCampagneJaar == campagne) %>% 
+  mutate(prop_aantal = aantal_year/aantal_dist,
+         prop_range = range_year/range_dist) %>% 
+  filter(aantal_dist >= 5,
+         aantal_year >= 3,
+         #prop_aantal >= 0.5,
+         prop_range >= 0.5) %>%
+  distinct(REEKSCODE) %>% 
+  pull()
+
+raaien_sel_schor <-
+  data_MONEOS %>% 
+  filter(distance_prof <= afstand_schor) %>% 
+  group_by(REEKSCODE, MeetCampagneJaar) %>% 
+  mutate(aantal_year = length(unique(distance_prof[!is.na(HOOGTE__MT)])),
+         range_year = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
+         min_year = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
+         max_year = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  group_by(REEKSCODE) %>% 
+  mutate(aantal_dist = max(aantal_year, na.rm = TRUE),
+         range_dist = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
+         min_dist = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
+         max_dist = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
+  ungroup() %>%
+  filter(MeetCampagneJaar == campagne) %>%
+  mutate(prop_aantal = aantal_year/aantal_dist,
+         prop_range = range_year/range_dist) %>% 
+  filter(aantal_dist >= 5,
+         aantal_year >= 3,
+         #prop_aantal >= 0.5,
+         prop_range >= 0.5) %>%
+  distinct(REEKSCODE) %>% 
+  pull()
+
+raaien_sel_slik
+raaien_sel_schor
+
+```
+
+
 ```{r functie figuren}
 
 # naam <- "APa"
@@ -169,9 +262,9 @@ data_MONEOS %>%
 #   filter(REEKSCODE == naam)
 
 fig_raai <- 
-  function(naam, dat_raai, ecotoop = "", subtidaal_grens = TRUE) {
+  function(RKSC, dat_raai, ecotoop = "", subtidaal_grens = TRUE) {
     
-    cat(str_c("raai: ", naam, "\n"))
+    cat(str_c("raai: ", RKSC, "\n"))
     
     dat_raai <-
       dat_raai %>% 
@@ -181,8 +274,8 @@ fig_raai <-
       arrange(Datum, distance_prof)
     # RKSC <-
     #   unique(dat_raai$REEKSCODE)
-    RKSC <-
-      naam
+    naam <-
+      unique(dat_raai$raai_sal)
     
     # dat_last <-
     #   dat %>%
@@ -279,7 +372,8 @@ walk2(figuren_MONEOS$REEKSCODE, figuren_MONEOS$fig,
 
 figuren_MONEOS_slik <-
   data_MONEOS %>% 
-  filter(distance_prof >= afstand_slik) %>% 
+  filter(REEKSCODE %in% raaien_sel_slik,
+         distance_prof >= afstand_slik) %>% 
   group_by(REEKSCODE) %>% 
   nest() %>% 
   mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y, ecotoop = "slik")))
@@ -288,13 +382,14 @@ figuren_MONEOS_slik$fig[[1]]
 
 figuren_MONEOS_slik %>% 
   {.; walk2(str_c(.$REEKSCODE, "_slik"), .$fig, 
-        ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, ".png"), 
+        ~ggsave(.y, file=str_c(pad_figuren, "vast/slik/", .x, ".png"), 
                 width=16, height=8, dpi= 350))}
 
 
 figuren_MONEOS_schor <-
   data_MONEOS %>% 
-  filter(distance_prof <= afstand_schor) %>% 
+  filter(REEKSCODE %in% raaien_sel_schor,
+         distance_prof <= afstand_schor) %>% 
   group_by(REEKSCODE) %>% 
   nest() %>% 
   mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y, ecotoop = "schor", subtidaal_grens = FALSE)))
@@ -303,26 +398,8 @@ figuren_MONEOS_schor$fig[[1]]
 
 figuren_MONEOS_schor %>% 
   {.; walk2(str_c(.$REEKSCODE, "_schor"), .$fig, 
-        ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, ".png"), 
+        ~ggsave(.y, file=str_c(pad_figuren, "vast/schor/", .x, ".png"), 
                 width=16, height=8, dpi= 350))}
-
-
-# data_opt <-
-#   data_MONEOS %>% 
-#   anti_join(Afst) %>% 
-#   mutate(Naam = REEKSCODE)
-# 
-# figuren_opt <-
-#   data_opt %>% 
-#   group_by(Naam) %>% 
-#   nest() %>% 
-#   mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
-# 
-# # figuren_opt$fig
-# 
-# walk2(str_c("Optioneel_", figuren_opt$Naam), figuren_opt$fig, 
-#       ~ggsave(.y, file=str_c(pad_figuren, "optioneel/", .x, "_", campagne, ".png"), 
-#               width=16, height=8, dpi= 350))
 
 ```
 
