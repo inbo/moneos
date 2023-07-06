@@ -186,7 +186,9 @@ Voor raaien GBSa, GBSb, DO, GSb, GSc, LP, KPe en GW werd aanvullend het schorpla
 
 ### trends in recente jaren
 
-De trends in de meest recente jaren (`r laatste_jaar - 6` - `r laatste_jaar - 1`) evenals de trendbreuken in `r laatste_jaar` zijn weergegeven in tabel XXX.
+De trends in de meest recente jaren (`r laatste_jaar - 6` - `r laatste_jaar - 1`) evenals de trendbreuken in `r laatste_jaar` zijn weergegeven in Tabel \@ref(tab:130-tabel-trends-BEZ) en in Figuur \@ref(fig:130-figuur-trends-slik-BEZ) voor de slikken en Figuur \@ref(fig:130-figuur-trends-schor-BEZ) voor de schorplateaus.
+
+Voor raaien GSb, GSc konden geen trends berekend worden voor het schorplateau wegens te weinig metingen in de laatste jaren. Op basis van inspectie van de profielen werden hier echter geen opvallende trends of trendbreuken vastgesteld.
 
 <br/>
 
@@ -217,7 +219,7 @@ tabel_trends_BEZ %>%
 
 ```{r 130-figuur-trends-slik-BEZ, fig.cap=caption_trend_slik_BEZ, out.width="100%"}
 
-caption_trend_slik_BEZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de slikken in de Beneden Zeeschelde.")
+caption_trend_slik_BEZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de slikken en schorrand in de Beneden Zeeschelde.")
 
 knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_slik_BEZ.png"))
 
@@ -225,16 +227,152 @@ knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_slik_BE
 
 <br/>
 
-In `r laatste_jaar` werden voor de meeste raaien geen trendbreuken vastgesteld en evolueren de raaien in de zin van de voorgaande jaren zonder sterke sedimentatie of erosie.\
-Volgende trends zijn het vermelden waard:
+```{r 130-figuur-trends-schor-BEZ, fig.cap=caption_trend_schor_BEZ, out.width="100%"}
 
--   Aan Ketenisse (KPe) is er de laatste jaren wel een sterke sedimentatie/opbolling in het onderste deel slik van het slik (Figuur \@ref(fig:130-figuur-KPe)).
+caption_trend_schor_BEZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de schorplateaus in de Beneden Zeeschelde.")
 
--   Het slik aan het Galgenweel (GW) vertoont de laatste jaren een vrij sterke erosie die in `r laatste_jaar` wordt verdergezet, met een verlaging tot 25-50cm ten opzichte van `r laatste_jaar - 1` (Figuur \@ref(fig:130-figuur-GW)).
+knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_schor_BEZ.png"))
 
-Voor raaien GSb, GSc konden geen trends berekend worden voor het schorplateau wegens te weinig metingen in de laatste jaren
+```
 
 <br/>
+
+Volgende trends en trendbreuken zijn het vermelden waard:
+
+Raai GBSa (Groot Buitenschoor) is relatief stabiel, behalve in het middelhoog slik (Figuur \@ref(fig:130-figuur-GBSa-slik)).
+Daar treedt een trendbreuk op met een vrij sterke sedimentatie (> 5cm/jaar) in `r laatste_jaar`, terwijl er voorheen een lichte erosie plaatsvond.In het laag slik lijkt de evolutie van erosie in de hogere zones en sedimentatie in de lager zones uit voorgaande jaren nog steeds aan de gang (wat niet zichtbaar is in de trend figuur). 
+
+
+```{r 130-figuur-GBSa-slik, fig.cap=caption_GBSa_slik, out.width="100%"}
+
+caption_GBSa_slik <- str_c("Slikprofile op raai GBSa voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_GBSa.png"))
+
+```
+
+<br/>
+
+Raai ODa vertoont een opvallende trendbreuk in het laag slik met een plotse sterke verdieping (Figuur \@ref(fig:130-figuur-ODa-slik)). Dit heeft te maken met het aanleggen van de in- en uitwateringsgeul van de ontpoldering in Hedwige/Prosper.De trends van lichte sedimentatie in het hoog slik en lichte erosie in het middelhoog slik blijven onveranderd.   
+
+```{r 130-figuur-ODa-slik, fig.cap=caption_ODa_slik, out.width="100%"}
+
+caption_ODa_slik <- str_c("Slikprofile op raai ODa voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_ODa.png"))
+
+```
+
+<br/>
+
+Raai DO vertoont algemeen een trend van (lichte) sedimentatie, zowel op het slik als het schorplateau (Figuur \@ref(fig:130-figuur-DO-slik)). In het laag slik is er een trendbreuk met een vermindering van de sedimentatie trend ten opzichte van voorgaande jaren.  
+
+```{r 130-figuur-DO-slik, fig.cap=caption_DO_slik, out.width="100%"}
+
+caption_DO_slik <- str_c("Slikprofile op raai DO voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_DO.png"))
+
+```
+
+<br/>
+
+Op raai GSb (Figuur \@ref(fig:130-figuur-GSb-slik)) zien we trendbreuken in het laag en hoog slik, waar de licht sedimenterende trend uit de vorgaande jaren is gewijzigd naar lichte (hoog slik) tot matige (laag slik) sedimentatie.  
+
+```{r 130-figuur-GSb-slik, fig.cap=caption_GSb_slik, out.width="100%"}
+
+caption_GSb_slik <- str_c("Slikprofile op raai GSb voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_GSb.png"))
+
+```
+
+<br/>
+
+Zoals de vorige jaren vertoont raai GSc een vrij sterke sedimentatie op het laag slik, terwijl het middelhoog slik eerder erodeert, wat aanleiding geeft tot een uitholling van het slikprofiel (Figuur \@ref(fig:130-figuur-GSc-slik)).
+
+```{r 130-figuur-GSc-slik, fig.cap=caption_GSc_slik, out.width="100%"}
+
+caption_GSc_slik <- str_c("Slikprofile op raai GSc voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_GSc.png"))
+
+```
+
+<br/>
+
+Op Raai LH lijkt de trend van lichte sedimentatie van het laag slik in de vorige jaren te veranderen naar lichte sedimentatie (Figuur \@ref(fig:130-figuur-LH-slik)). Dit lijkt vooral het geval in de hogere delen van het laag slik. Ook op het middelhoog slik lijkt er een vrij sterke sedimentatie op te treden ten opzichte van `r laatste_jaar - 1`. Op dit deel van het slik zijn de sedimentatie/erosie patronen de laatste jaren vrij variabel.
+
+```{r 130-figuur-LH-slik, fig.cap=caption_LH_slik, out.width="100%"}
+
+caption_LH_slik <- str_c("Slikprofile op raai LH voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_LH.png"))
+
+```
+
+<br/>
+
+Het laag slik op Raai LP vertoont in `r laatste_jaar` een relatief sterke erosie in vergelijking met de voorgaande jaren, waar het laag slik stabiel was (Figuur \@ref(fig:130-figuur-LP-slik)). De licht erosieve trends in middelhoog en hoog slik blijven behouden, evenals de lichte sedimentatie op het schorplateau.
+
+```{r 130-figuur-LP-slik, fig.cap=caption_LP_slik, out.width="100%"}
+
+caption_LP_slik <- str_c("Slikprofile op raai LP voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_LP.png"))
+
+```
+
+<br/>
+
+Trends op Raai KPb blijven behouden in `r laatste_jaar` met duidelijke sedimentatie op het laag slik en erosie van het middelhoog slik met een uitholling van het slikprofiel tot gevolg (Figuur \@ref(fig:130-figuur-KPb-slik)).
+
+```{r 130-figuur-KPb-slik, fig.cap=caption_KPb_slik, out.width="100%"}
+
+caption_KPb_slik <- str_c("Slikprofile op raai KPb voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_KPb.png"))
+
+```
+
+<br/>
+
+Op raai KPe zet de trend van sterke sedimentatie op het laag slik zich verder in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-KPe-slik)). De hogere delen van het slik blijven stabiel.
+
+```{r 130-figuur-KPe-slik, fig.cap=caption_KPe_slik, out.width="100%"}
+
+caption_KPe_slik <- str_c("Slikprofile op raai KPe voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_KPe.png"))
+
+```
+
+<br/>
+
+Op het laag slik van Raai GW is er in `r laatste_jaar` een relatief sterke sedimentatie (Figuur \@ref(fig:130-figuur-GW-slik)). Door de grote variabiliteit in sedimentatie/erosie tussen jaren, uit dit zich echter niet als een trendbreuk op de eroderende trend uit de vorige jaren. Om dezelfde reden is ook de stabilisatie op het middelhoog slik geen significante trendbreuk met de erosieve trend uit vorige jaren.
+
+```{r 130-figuur-GW-slik, fig.cap=caption_GW_slik, out.width="100%"}
+
+caption_GW_slik <- str_c("Slikprofile op raai GW voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_GW.png"))
+
+```
+
+<br/>
+
+Raai HO vertoont algemeen een eroderende trend (Figuur \@ref(fig:130-figuur-HO-slik)). in `r laatste_jaar` is deze trend op het laag slik echter afwezig en blijft het slik daar stabiel. 
+
+```{r 130-figuur-HO-slik, fig.cap=caption_HO_slik, out.width="100%"}
+
+caption_HO_slik <- str_c("Slikprofile op raai HO voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_HO.png"))
+
+```
+
+<br/>
+
 
 ## Beneden Zeeschelde
 
@@ -278,6 +416,16 @@ tabel_trends_BOZ %>%
 caption_trend_slik_BOZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de slikken in de Beneden Zeeschelde.")
 
 knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_slik_BOZ.png"))
+
+```
+
+<br/>
+
+```{r 130-figuur-trends-schor-BOZ, fig.cap=caption_trend_schor_BOZ, out.width="100%"}
+
+caption_trend_schor_BOZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de schorplateaus in de Boven Zeeschelde.")
+
+knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_schor_BOZ.png"))
 
 ```
 
