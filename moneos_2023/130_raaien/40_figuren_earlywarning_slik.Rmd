@@ -133,27 +133,21 @@ raaicodes <-
 ```
 
 
-```{r afronden en samenvoegen indien overlappende meetpunten/meetdatums in een jaar}
-
-data_EW <-
-  data_EW %>% 
-  mutate(distance_prof = round(distance_prof)) %>% 
-  group_by(MeetCampagneJaar, Salzone, Omes, Year, REEKSCODE, distance_prof, Habitat) %>%
-  summarise(HOOGTE__MT = mean(HOOGTE__MT, na.rm = TRUE)) %>%
-  ungroup() %>%
-  mutate(REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode))
-
-```
-
-
-```{r ecotoopgrenzen, eval=FALSE}
+```{r selectie enkel slik en schorrand}
 
 tbl_waterstanden <-
   read_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
 
 data_EW <-
   data_EW %>% 
-  left_join(tbl_waterstanden)
+  # left_join(ecotoopgrenzen) %>% 
+  left_join(tbl_waterstanden) %>% 
+  filter(distance_prof >= afstand_slik)
+
+```
+
+
+```{r ecotoopgrenzen}
 
 data_EW <-
   data_EW %>%
@@ -169,6 +163,12 @@ data_EW <-
            case_when(
             HOOGTE__MT < waterstand_LW30 ~ "subtidaal",
             TRUE ~ ecotoop)) %>% 
+  mutate(ecotoop_slik = 
+           case_when(
+             Salzone == "Mesohalien" & HOOGTE__MT <= waterstand_DD_25 ~ "laag slik",
+             Salzone != "Mesohalien" & HOOGTE__MT <= waterstand_DD_35 ~ "laag slik",
+             HOOGTE__MT >= waterstand_DD_60 ~ "hoog slik",
+             TRUE ~ "middelhoog slik")) %>% 
   select(-habpres)
 
 
@@ -179,25 +179,61 @@ ecotoopgrenzen <-
             bovengrens_meting = min(distance_prof[MeetCampagneJaar == campagne & distance_prof >= (bovengrens + 5)]) - 5,
             bovengrens_schor = min(distance_prof[ecotoop == "schor"], na.rm = TRUE),
             grens_schor = max(distance_prof[ecotoop == "schor" & MeetCampagneJaar == campagne], na.rm = TRUE),
-            grens_subtidaal = max(distance_prof[ecotoop == "slik" & MeetCampagneJaar == campagne], na.rm = TRUE)) %>% 
+            grens_subtidaal = max(distance_prof[ecotoop == "slik" & MeetCampagneJaar == campagne], na.rm = TRUE),
+            grens_laag_middelhoog = min(distance_prof[ecotoop_slik == "laag slik" & MeetCampagneJaar == campagne]),
+            grens_middelhoog_hoog = min(distance_prof[ecotoop_slik == "middelhoog slik" & MeetCampagneJaar == campagne])) %>% 
   ungroup() %>% 
   select(REEKSCODE, afstand_grens, Salzone, 
-         bovengrens, bovengrens_meting, bovengrens_schor, grens_schor, grens_subtidaal) %>% 
-  mutate(across(everything(), ~ifelse(is.infinite(.), NA, .)))
+         bovengrens, bovengrens_meting, bovengrens_schor, grens_schor, grens_subtidaal,
+         grens_laag_middelhoog, grens_middelhoog_hoog) %>% 
+  mutate(across(everything(), ~ifelse(is.infinite(.), NA, .))) %>% 
+  mutate(grens_middelhoog_hoog =
+           if_else(grens_middelhoog_hoog <= grens_schor, grens_schor + 0.2, grens_middelhoog_hoog),
+         grens_laag_middelhoog =
+           if_else(!is.na(grens_subtidaal) & grens_laag_middelhoog >= grens_subtidaal, grens_subtidaal - 0.2, grens_laag_middelhoog))
   
 ```
 
 
-```{r selectie enkel slik en schorrand}
+```{r ecotoopgrenzen binnen slik, eval=FALSE}
 
-tbl_waterstanden <-
-  read_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
+data_EW_interp <-
+  data_EW_interp %>% 
+  left_join(tbl_waterstanden %>% 
+              select(REEKSCODE, waterstand_DD_25, waterstand_DD_35, waterstand_DD_60)) %>% 
+  mutate(ecotoop = 
+           case_when(
+             Salzone == "Mesohalien" & HOOGTE__MT <= waterstand_DD_25 ~ "laag slik",
+             Salzone != "Mesohalien" & HOOGTE__MT <= waterstand_DD_35 ~ "laag slik",
+             HOOGTE__MT >= waterstand_DD_60 ~ "hoog slik",
+             TRUE ~ "middelhoog slik"))
+
+ecotoopgrenzen_slik <-
+  data_EW_interp %>% 
+  group_by(REEKSCODE, Salzone) %>% 
+  summarise(grens_laag_middelhoog = min(distance_prof[ecotoop == "laag slik"]),
+            grens_middelhoog_hoog = min(distance_prof[ecotoop == "middelhoog slik"])) %>% 
+  ungroup() %>% 
+  select(REEKSCODE, Salzone, grens_laag_middelhoog, grens_middelhoog_hoog)
+
+ecotoopgrenzen <-
+  ecotoopgrenzen_slik %>% 
+  left_join(ecotoopgrenzen) %>% 
+  mutate(grens_laag_middelhoog =
+           if_else(grens_middelhoog_hoog <= grens_schor, grens_schor + 0.5, grens_laag_middelhoog))
+
+```
+
+
+```{r afronden en samenvoegen indien overlappende meetpunten/meetdatums in een jaar}
 
 data_EW <-
   data_EW %>% 
-  # left_join(ecotoopgrenzen) %>% 
-  left_join(tbl_waterstanden) %>% 
-  filter(distance_prof >= afstand_slik)
+  mutate(distance_prof = round(distance_prof)) %>% 
+  group_by(MeetCampagneJaar, Salzone, Omes, Year, REEKSCODE, distance_prof, Habitat) %>%
+  summarise(HOOGTE__MT = mean(HOOGTE__MT, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode))
 
 ```
 
@@ -206,24 +242,29 @@ data_EW <-
 
 raaien_sel <-
   data_EW %>% 
+  left_join(ecotoopgrenzen %>% 
+              select(REEKSCODE, afstand_grens, grens_subtidaal)) %>% 
+  mutate(grens_subtidaal = if_else(is.na(grens_subtidaal),
+                                         max(distance_prof, na.rm = TRUE),
+                                         grens_subtidaal)) %>% 
   group_by(REEKSCODE, Year) %>% 
-  mutate(aantal_year = length(unique(distance_prof[!is.na(HOOGTE__MT)])),
-         range_year = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
-         min_year = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
-         max_year = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
+  mutate(aantal_year = length(unique(distance_prof[!is.na(HOOGTE__MT) & distance_prof <= grens_subtidaal])),
+         range_year = diff(range(distance_prof[!is.na(HOOGTE__MT) & distance_prof <= grens_subtidaal], na.rm = TRUE)),
+         min_year = min(distance_prof[!is.na(HOOGTE__MT) & distance_prof <= grens_subtidaal], na.rm = TRUE),
+         max_year = max(distance_prof[!is.na(HOOGTE__MT) & distance_prof <= grens_subtidaal], na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(REEKSCODE) %>% 
   mutate(aantal_dist = max(aantal_year, na.rm = TRUE),
-         range_dist = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
-         min_dist = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
-         max_dist = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
+         range_dist = diff(range(distance_prof[!is.na(HOOGTE__MT) & distance_prof <= grens_subtidaal], na.rm = TRUE)),
+         min_dist = min(distance_prof[!is.na(HOOGTE__MT) & distance_prof <= grens_subtidaal], na.rm = TRUE),
+         max_dist = max(distance_prof[!is.na(HOOGTE__MT) & distance_prof <= grens_subtidaal], na.rm = TRUE)) %>% 
   ungroup() %>% 
   mutate(prop_aantal = aantal_year/aantal_dist,
          prop_range = range_year/range_dist) %>% 
   filter(aantal_dist >= 4) %>%
   filter(prop_aantal >= 0.5,
          prop_range >= 0.5) %>%
-  distinct(REEKSCODE, Year, aantal_dist, aantal_year, prop_aantal, range_dist, min_dist, max_dist, range_year, prop_range, min_year, max_year) %>% 
+  distinct(REEKSCODE, afstand_grens, Year, aantal_dist, aantal_year, prop_aantal, range_dist, min_dist, max_dist, range_year, prop_range, min_year, max_year) %>% 
   group_by(REEKSCODE) %>% 
   filter(n() >= 4) %>%
   filter(jaar %in% Year) %>% 
@@ -252,10 +293,8 @@ data_EW_sel <-
 data_EW_interp_full <-
   data_EW_sel %>%
   group_by(REEKSCODE) %>% 
-  mutate(steps = range_dist/aantal_dist,
-         steps2 = mean(range_year/aantal_year),
-         steps3 = min(range_year/aantal_year),
-         distance_prof = round(distance_prof/steps2)*steps2) %>% 
+  mutate(steps = mean(range_year/aantal_year),
+         distance_prof = round(distance_prof/steps)*steps) %>% 
   ungroup()
 
 
@@ -281,33 +320,9 @@ data_EW_interp_full <-
 
 data_EW_interp <-
   data_EW_interp_full %>% 
-  group_by(REEKSCODE, afstand_grens, Salzone, Omes, Year, MeetCampagneJaar, distance_prof, waterstand_DD_25, waterstand_DD_35) %>% 
+  group_by(REEKSCODE, afstand_grens, Salzone, Omes, Year, MeetCampagneJaar, distance_prof) %>% 
   summarise(HOOGTE__MT = mean(HOOGTE__MT, na.rm = TRUE)) %>% 
   ungroup()
-
-```
-
-
-```{r ecotoopgrenzen binnen slik}
-
-data_EW_interp <-
-  data_EW_interp %>% 
-  left_join(tbl_waterstanden %>% 
-              select(REEKSCODE, waterstand_DD_25, waterstand_DD_35, waterstand_DD_60)) %>% 
-  mutate(ecotoop = 
-           case_when(
-             Salzone == "Mesohalien" & HOOGTE__MT <= waterstand_DD_25 ~ "laag slik",
-             Salzone != "Mesohalien" & HOOGTE__MT <= waterstand_DD_35 ~ "laag slik",
-             HOOGTE__MT >= waterstand_DD_60 ~ "hoog slik",
-             TRUE ~ "middelhoog slik"))
-
-ecotoopgrenzen_slik <-
-  data_EW_interp %>% 
-  group_by(REEKSCODE, Salzone) %>% 
-  summarise(grens_laag_middelhoog = min(distance_prof[ecotoop == "laag slik"]),
-            grens_middelhoog_hoog = min(distance_prof[ecotoop == "middelhoog slik"])) %>% 
-  ungroup() %>% 
-  select(REEKSCODE, Salzone, grens_laag_middelhoog, grens_middelhoog_hoog)
 
 ```
 
@@ -315,15 +330,15 @@ ecotoopgrenzen_slik <-
 ```{r functie figuren}
 
 fig_raai <- 
-  function(naam, dat_raai) {
+  function(RKSC, dat_raai) {
     
-    cat(str_c("raai: ", naam, "\n"))
+    cat(str_c("raai: ", RKSC, "\n"))
     
     dat_raai <-
       dat_raai %>% 
       arrange(Year, distance_prof)
-    RKSC <-
-      naam
+    naam <-
+      unique(dat_raai$raai_sal)
     
     colors <- 
       dat_raai %>% 
@@ -334,13 +349,19 @@ fig_raai <-
     p <- 
       dat_raai %>% 
       mutate(Year = factor(Year)) %>% 
-      ggplot(aes(distance_prof, HOOGTE__MT, group = Year, colour = Year)) +  
-      geom_vline(data = ecotoopgrenzen_slik %>% filter(REEKSCODE == RKSC),
+      ggplot(aes(distance_prof, HOOGTE__MT, group = Year, colour = Year)) +
+      geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+                 aes(xintercept = grens_subtidaal),
+                 linetype = 2, color = "lightblue", linewidth = 1.5) + 
+      geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+                 aes(xintercept = grens_schor),
+                 linetype = 2, color = "darkgreen", linewidth = 1.5) +
+      geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
                  aes(xintercept = grens_laag_middelhoog),
-                 linetype = 2, color = "grey50", linewidth = 2) +
-      geom_vline(data = ecotoopgrenzen_slik %>% filter(REEKSCODE == RKSC),
+                 linetype = 2, color = "darkorange3", linewidth = 1.5) +
+      geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
                  aes(xintercept = grens_middelhoog_hoog),
-                 linetype = 2, color = "grey50", linewidth = 2) +
+                 linetype = 2, color = "darkorange3", linewidth = 1.5) +
       geom_line(linewidth = 1) + 
       geom_point() +
       scale_x_continuous(breaks = pretty(dat_raai$distance_prof, 20)) +
@@ -369,11 +390,13 @@ fig_raai <-
 
 figuren_EW <-
   data_EW_interp %>% 
+  left_join(tabel_raaien_vast %>% 
+              select(REEKSCODE = reekscode, sal_kort, raai_sal)) %>% 
   group_by(REEKSCODE) %>% 
   nest() %>% 
   mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y)))
 
-# figuren_EW$fig
+figuren_EW$fig[[1]]
 
 walk2(str_c("slik_profiel_EW_", figuren_EW$REEKSCODE), figuren_EW$fig, 
       ~ggsave(.y, file=str_c(pad_figuren, "early_warning/slik_profiel/", .x, ".png"), 
@@ -426,6 +449,13 @@ for(r in unique(data_EW_interp$REEKSCODE)) {
 
 delta_hoogte_gem <-
   delta_hoogte_full %>% 
+  left_join(ecotoopgrenzen %>% 
+              select(REEKSCODE, grens_laag_middelhoog, grens_middelhoog_hoog)) %>% 
+  mutate(ecotoop = 
+           case_when(
+             distance_prof < grens_middelhoog_hoog ~ "hoog slik",
+             distance_prof > grens_laag_middelhoog ~ "laag slik",
+             TRUE ~ "middelhoog slik")) %>% 
   group_by(REEKSCODE, afstand_grens, Salzone, Omes, Year, MeetCampagneJaar, ecotoop) %>% 
   filter(Year_ref == min(Year_ref)) %>% 
   ungroup() %>% 
@@ -439,6 +469,7 @@ delta_hoogte_gem <-
 ```{r figuren delta hoogte, fig.height=10, fig.width=8}
 
 delta_hoogte_gem %>% 
+  mutate(ecotoop = factor(ecotoop, levels = c("laag slik", "middelhoog slik", "hoog slik"))) %>% 
   ggplot(aes(Year, delta_hoogte, color = ecotoop)) +  
   geom_line(linewidth = 1) + 
   geom_point(size = 2) +

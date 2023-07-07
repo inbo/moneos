@@ -141,23 +141,22 @@ raaicodes <-
 ```
 
 
-```{r afronden en samenvoegen indien overlappende meetpunten/meetdatums in een jaar}
+```{r selectie enkel schor}
+
+tbl_waterstanden <-
+  read_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
 
 data_EW <-
   data_EW %>% 
-  mutate(distance_prof = round(distance_prof)) %>% 
-  group_by(MeetCampagneJaar, Salzone, Omes, Year, REEKSCODE, distance_prof, Habitat) %>%
-  summarise(HOOGTE__MT = mean(HOOGTE__MT, na.rm = TRUE)) %>%
-  ungroup() %>%
-  mutate(REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode))
+  # left_join(ecotoopgrenzen) %>% 
+  left_join(tbl_waterstanden) %>% 
+  filter(distance_prof >= afstand_begin,
+         distance_prof <= afstand_slik)
 
 ```
 
 
 ```{r ecotoopgrenzen, eval=FALSE}
-
-tbl_waterstanden <-
-  read_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
 
 data_EW <-
   data_EW %>% 
@@ -196,17 +195,15 @@ ecotoopgrenzen <-
 ```
 
 
-```{r selectie enkel schor}
-
-tbl_waterstanden <-
-  read_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
+```{r afronden en samenvoegen indien overlappende meetpunten/meetdatums in een jaar}
 
 data_EW <-
   data_EW %>% 
-  # left_join(ecotoopgrenzen) %>% 
-  left_join(tbl_waterstanden) %>% 
-  filter(distance_prof >= afstand_begin,
-         distance_prof <= afstand_slik)
+  mutate(distance_prof = round(distance_prof)) %>% 
+  group_by(MeetCampagneJaar, Salzone, Omes, Year, REEKSCODE, afstand_grens, distance_prof, Habitat) %>%
+  summarise(HOOGTE__MT = mean(HOOGTE__MT, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(REEKSCODE = factor(REEKSCODE, levels = tabel_raaien_vast$reekscode))
 
 ```
 
@@ -247,7 +244,7 @@ data_EW_sel <-
 ```
 
 
-```{r interpolatie}
+```{r afronden afstand naar vast interval (en interpolatie)}
 
 # data_EW_interp_full <-
 #   data_EW_sel
@@ -276,7 +273,7 @@ data_EW_interp_full <-
 
 data_EW_interp <-
   data_EW_interp_full %>% 
-  group_by(REEKSCODE, afstand_grens, Salzone, Omes, Year, MeetCampagneJaar, distance_prof, waterstand_DD_25, waterstand_DD_35) %>% 
+  group_by(REEKSCODE, afstand_grens, Salzone, Omes, Year, MeetCampagneJaar, distance_prof) %>% 
   summarise(HOOGTE__MT = mean(HOOGTE__MT, na.rm = TRUE)) %>% 
   ungroup() %>% 
     group_by(REEKSCODE, Year) %>% 
@@ -293,15 +290,15 @@ data_EW_interp <-
 ```{r functie figuren}
 
 fig_raai <- 
-  function(naam, dat_raai) {
+  function(RKSC, dat_raai) {
     
-    cat(str_c("raai: ", naam, "\n"))
+    cat(str_c("raai: ", RKSC, "\n"))
     
     dat_raai <-
       dat_raai %>% 
       arrange(Year, distance_prof)
-    RKSC <-
-      naam
+    naam <-
+      unique(dat_raai$raai_sal)
     
     colors <- 
       dat_raai %>% 
@@ -341,6 +338,8 @@ fig_raai <-
 
 figuren_EW <-
   data_EW_interp %>%
+  left_join(tabel_raaien_vast %>% 
+              select(REEKSCODE = reekscode, sal_kort, raai_sal)) %>% 
   group_by(REEKSCODE) %>% 
   nest() %>% 
   mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y)))
