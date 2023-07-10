@@ -550,8 +550,8 @@ tabel_EW <-
   mutate(delta_hoogte = (.data[[str_c("delta_hoogte_", jaar)]] - delta_hoogte_prev)/(.data[[str_c("delta_Year_", jaar)]] - delta_Year_prev)) %>% 
   mutate(slope_hoogte = 
            case_when(
-             slope_hoogte <= -0.1 ~ "---",
-             slope_hoogte > -0.1 & slope_hoogte <= -0.05 ~ "--",
+             slope_hoogte <= -0.1 ~ "- - -",
+             slope_hoogte > -0.1 & slope_hoogte <= -0.05 ~ "- -",
              slope_hoogte > -0.05 & slope_hoogte <= -0.01 ~ "-",
              slope_hoogte > -0.01 & slope_hoogte < 0.01 ~ "0",
              slope_hoogte >= 0.01 & slope_hoogte < 0.05 ~ "+",
@@ -559,8 +559,8 @@ tabel_EW <-
              slope_hoogte >= 0.1 ~ "+++"),
          delta_hoogte = 
            case_when(
-             delta_hoogte <= -0.1 ~ "---",
-             delta_hoogte > -0.1 & delta_hoogte <= -0.05 ~ "--",
+             delta_hoogte <= -0.1 ~ "- - -",
+             delta_hoogte > -0.1 & delta_hoogte <= -0.05 ~ "- -",
              delta_hoogte > -0.05 & delta_hoogte <= -0.01 ~ "-",
              delta_hoogte > -0.01 & delta_hoogte < 0.01 ~ "0",
              delta_hoogte >= 0.01 & delta_hoogte < 0.05 ~ "+",
