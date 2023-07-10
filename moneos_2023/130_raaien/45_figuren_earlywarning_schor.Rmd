@@ -298,7 +298,7 @@ fig_raai <-
       dat_raai %>% 
       arrange(Year, distance_prof)
     naam <-
-      unique(dat_raai$raai_sal)
+      str_c(unique(dat_raai$raai_sal), "  -  schorplateau")
     
     colors <- 
       dat_raai %>% 
