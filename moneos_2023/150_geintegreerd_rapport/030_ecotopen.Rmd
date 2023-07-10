@@ -361,7 +361,7 @@ De oppervlaktes van de ecotopen binnen de 'enge' planimetrie zijn weergegeven in
 Wat de korte termijn evolutie betreft (= verschil tussen `r laatste_jaar` en `r laatste_jaar -1`), is er binnen de 'enge' planimetrie een afname in laag slik zacht substraat die wat kleiner is dan de afname in de volledige planimetrie.
 Hetzelfde geldt voor de afname in hoog slik zacht substraat.
 Het middelhoog slik zacht substraat is ook binnen de 'enge' planimetrie gestegen, maar minder dan in het volledige gebied.
-Ongeveer de helft van deze toename heeft dus plaatsgevonden binnen de laterale uitbreidingen.
+Ongeveer de helft van deze toename heeft plaatsgevonden binnen de laterale uitbreidingen.
 
 De oppervlakte potentiële pionierzone is zowel in het volledige gebied als binnen de 'enge' planimetrie gedaald ten opzichte van `r laatste_jaar -1`, maar het grootste deel van de daling heeft plaatsgevonden binnen de laterale uitbreidingen (hieronder valt eveneens de herinrichting rond Fort Filip).
 Hetzelfde geldt voor de toename aan schor, welke grotendeels plaatsvond binnen de uitgebreide gebieden.
@@ -410,25 +410,30 @@ knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_BEZ_", laatste_j
 #### Zeeschelde ecotopen 2.0
 
 De ecotopenkaart van de Beneden-Zeeschelde in `r laatste_jaar` is te zien in Figuur \@ref(fig:030-figuur-kaart-bez-2).
-Tabel \@ref(tab:030-tabel-oppervlakte-BEZ-2) toont voor `r laatste_jaar` de oppervlaktes per ecotoop in de Beneden-Zeeschelde `r laatste_jaar` volgens ecotoopindeling 2.0 en een vergelijking met de berekening volgens ecotopen 1.0.
+Tabel \@ref(tab:030-tabel-oppervlakte-BEZ-2) toont voor de oppervlaktes per ecotoop in de Beneden-Zeeschelde volgens ecotoopindeling 2.0 voor de jaren 2019 tot en met `r laatste_jaar`.
+De korte en lange termijn evolutie van de ecotopen is opnieuw beschreven in Tabel \@ref(tab:030-tabel-evolutie-BEZ-2) via de absolute verandering (ha) en de procentuele verandering (%) tussen de 2 jaren.
+Voor de korte termijn evolutie wordt het huidige jaar vergeleken met het jaar ervoor, terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (2019 voor Zeeschelde 2.0).
+Er zijn kleine verschillen in de oppervlaktes van Zeeschelde 1.0 en Zeeschelde 2.0 omwille van het modelleringsproces waarbij soms geïnterpoleerd wordt en datarasters vereenvoudigd worden.
 
 In het **sublitoraal** is een onderverdeling gemaakt tussen hoog- en laagdynamisch subtidaal, op basis van de maximale stroomsnelheid bij vloed.
 De tabel toont dat de diepere delen (diep en matig diep subtidaal) grotendeels hoogdynamisch zijn.
-Het aandeel laagdynamisch is relatief groter het ondiep subtidaal.
+Het aandeel laagdynamisch is relatief groter in het ondiep subtidaal.
+In het diep subtidaal is het aandeel laagdynamisch toegenomen over de korte termijn evolutie, terwijl het hoogdynamisch licht is afgenomen.
+In het matig diep subtidaal zijn zowel hoog- als laagdynamisch afgenomen, deze afname is sterker voor het hoogdynamisch.
+In het ondiep subtidaal zijn hoog- en laagdynamisch ongeveer gelijk toegenomen.
 
 Bij de berekening van het **litoraal** zijn aangepaste grenzen gebruikt ten opzichte van ecotopen 1.0, afhankelijk van de saliniteit.
-Doordat de grens tussen middelhoog en hoog slik in de aangepaste methode lager ligt dan in de oude methode (van 75% DD naar 60% DD), is het aandeel hoog slik zacht substraat meer dan verdubbeld in vergelijking met de oude methode, ten koste van het middelhoog slik zacht substraat.
-De slikken zijn nu gelijkmatiger verdeeld.
-Ook in het hard antropogeen slik is het hoog slik verdrievoudigd ten koste van het middelhoog slik, in vergelijking met de oude methode.
-
-In de andere ecotopen zijn minimale verschillen op te merken in vergelijking met de oude methode, vaak van \<0.1 ha.
-Deze kleine verschillen zijn voornamelijk te wijten aan het modelleringsproces waarbij soms geïnterpoleerd wordt en datarasters vereenvoudigd worden.
+In de ecotopen 2.0 is het laag slik zacht substraat afgenomen, net als in de ecotopen 2.0.
+Hetzelfde geldt voor de toename van het middelhoog slik, al is deze kleiner voor de ecotopen 2.0.
+Het hoog slik zacht substraat is toegenomen in de ecotopen 2.0, in tegenstelling tot de ecotopen 1.0 waar het gedaald is.
+Deze verschuiving van middelhoog slik naar hoog slik is een resultaat van de aangepaste grenzen.
 
 In de aangepaste methode wordt ook de helling van de slikken in rekening gebracht.
 De oppervlaktes per slikecotoop met een steile (\>25%) en zwakke (\<=25%) helling zijn beschreven in Tabel (\@ref(tab:030-tabel-oppervlakte-helling-BEZ-2)).
-Zowel het litoraal zacht substraat als het litoraal hard natuurlijk hebben voornamelijk geen steile hellingen (\> 98% van het natuurlijk substraat).
-In het litoraal antropogeen hard substraat is wel een redelijk aandeel steil, namelijk 33.1% van het totaal oppervlak litoraal hard antropogeen.
-De overige 66.9% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad van kleiner dan of gelijk aan 25%.
+Zowel het litoraal zacht substraat als het litoraal hard natuurlijk hebben vrijwel geen steile hellingen (\> 98% van het natuurlijk substraat).
+In het litoraal antropogeen hard substraat is wel een redelijk aandeel steil, namelijk 33% van het totaal oppervlak litoraal hard antropogeen.
+Dit is gelijkaardig aan het voorgaande jaar.
+De overige 67% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad van kleiner dan of gelijk aan 25%.
 
 <br/>
 
@@ -437,6 +442,18 @@ De overige 66.9% litoraal hard antropogeen heeft dus nog steeds een hellingsgraa
 caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde in ", laatste_jaar, " volgens de Zeeschelde ecotopen 2.0, in vergelijking met versie 1.0.")
 
 img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_BEZ_2019_", laatste_jaar, "_E2.PNG")
+
+figtab(knitr::opts_current$get()$label, 
+       img_file,
+       caption_tab)
+
+```
+
+```{r 030-tabel-evolutie-BEZ-2, results="asis", fig.show='hide', out.width="100%"}
+
+caption_tab <- str_c("Absolute verandering en procentuele verandering van de lange termijn evolutie (tussen 2019 en ", laatste_jaar, ") en de korte termijn evolutie (tussen ", laatste_jaar - 1, " en ", laatste_jaar, ") in de Beneden-Zeeschelde 2.0.")
+
+img_file <- paste0(pad_tabellen, "030_tabel_evolutie_BEZ_", laatste_jaar, "_E2.PNG")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
