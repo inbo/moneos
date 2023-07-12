@@ -519,44 +519,87 @@ grafdat %>%
 
 ```
 
-```{r Slib-Zeeschelde-subtidaal,fig.height=5, fig.width=8 }
+```{r Slib-Zeeschelde-intertidaal_zondertijarmen,fig.height=5, fig.width=8 }
+###bij datavoorbereiding negeer even de klassificatie van TZ en GM naar Zeeschelde I om onderstaande figuren te maken
 
-var <- "slib"
-  partim <- hoofd
-  deel <- "Zeeschelde"
-  fysn <- sub
-  tidaal <- "subtidaal"
-  sediment_datab <- sediment_data[sediment_data$variabele == var,]
-  sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
-  sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
-  grafdat <- sediment_datab
-  ggplot(grafdat, 
-         aes(x=factor(jaar),y=waarde)) +
-    geom_boxplot(aes(fill=fysiotoop)) + 
-    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
-    # coord_trans(y="log") +
-    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %")
+# var <- "slib"
+#   partim <- hoofd
+#   deel <- "Zeeschelde"
+#   fysn <- inter
+#   tidaal <- "intertidaal"
+#   sediment_datab <- sediment_data[sediment_data$variabele == var,]
+#   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
+#   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
+#   grafdat <- sediment_datab
+#   ggplot(grafdat, 
+#          aes(x=factor(jaar),y=waarde)) +
+#     geom_boxplot(aes(fill=fysiotoop)) + 
+#     # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+#     # coord_trans(y="log") +
+#     facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %")
+# 
+# ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"ZSIzndtijarmen.jpg"))
+# 
+# 
+# 
+# ggplot(grafdat,
+#          aes(x=jaar,y=waarde)) +
+#     geom_point(aes(color=fysiotoop)) + 
+#     geom_smooth(aes(color=fysiotoop)) +
+#     facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") +
+#     scale_x_continuous (name = "jaar",
+#                       breaks = grafdat$jaar,
+#                       labels = grafdat$jaar) 
+# 
+# ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trendZSIzndtijarmen.jpg"))
+# 
+# grafdat %>% 
+#   dplyr::filter(jaar > 2016) %>% 
+#   ggplot(aes(x = fysiotoop, y = waarde)) +
+#   geom_boxplot((aes(color = fysiotoop))) +
+#   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
+#                  
+# 
+# ```
+# 
+# 
+# ```{r Slib-Zeeschelde-subtidaal,fig.height=5, fig.width=8 }
+# 
+# var <- "slib"
+#   partim <- hoofd
+#   deel <- "Zeeschelde"
+#   fysn <- sub
+#   tidaal <- "subtidaal"
+#   sediment_datab <- sediment_data[sediment_data$variabele == var,]
+#   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
+#   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
+#   grafdat <- sediment_datab
+#   ggplot(grafdat, 
+#          aes(x=factor(jaar),y=waarde)) +
+#     geom_boxplot(aes(fill=fysiotoop)) + 
+#     # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+#     # coord_trans(y="log") +
+#     facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %")
+# 
+# ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,".jpg"))
 
-ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,".jpg"))
-
-
-
-ggplot(grafdat,
-         aes(x=jaar,y=waarde)) +
-    geom_point(aes(color=fysiotoop)) + 
-    geom_smooth(aes(color=fysiotoop)) +
-    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") +
-    scale_x_continuous (name = "jaar",
-                      breaks = grafdat$jaar,
-                      labels = grafdat$jaar) 
-
-ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
-
-grafdat %>% 
-  dplyr::filter(jaar > 2016) %>% 
-  ggplot(aes(x = fysiotoop, y = waarde)) +
-  geom_boxplot((aes(color = fysiotoop))) +
-  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
+# 
+# ggplot(grafdat,
+#          aes(x=jaar,y=waarde)) +
+#     geom_point(aes(color=fysiotoop)) + 
+#     geom_smooth(aes(color=fysiotoop)) +
+#     facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") +
+#     scale_x_continuous (name = "jaar",
+#                       breaks = grafdat$jaar,
+#                       labels = grafdat$jaar) 
+# 
+# ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
+# 
+# grafdat %>% 
+#   dplyr::filter(jaar > 2016) %>% 
+#   ggplot(aes(x = fysiotoop, y = waarde)) +
+#   geom_boxplot((aes(color = fysiotoop))) +
+#   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
                  
 
 ```
