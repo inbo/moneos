@@ -52,7 +52,7 @@ dumtab = function(label, caption=NULL) {
 
 ```
 
-```{r 130-meta-data}
+```{r 130-data}
 
 # aanpassen indien er meta-data zijn
 
@@ -66,12 +66,7 @@ tabel_raaien_vast <-
 tabel_raaien_vast <-  
   tabel_raaien_vast %>%  
   mutate(OMES = factor(OMES, levels = c(9:19, "19  trGM", "Durme", "Rupel", ""))) %>% 
-  mutate(rivier = 
-           case_when(
-             rivier == "Zijrivieren" ~ gebied,
-             TRUE ~ rivier
-           ),
-         sal_kort = 
+  mutate(sal_kort = 
            case_when(
              salzone == "Mesohalien" ~ "MH",
              salzone == "Zone grote saliniteitsgradiënt" ~ "SG",
@@ -82,7 +77,8 @@ tabel_raaien_vast <-
            ),
          rivier_kort = 
            case_when(
-             rivier == "Zeeschelde" ~ "ZS",
+             rivier == "Beneden Zeeschelde" ~ "BEZ",
+             rivier == "Boven Zeeschelde" ~ "BOZ",
              rivier == "Durme" ~ "DU",
              rivier == "Rupel" ~ "RU",
              rivier == "Dijle" ~ "DL",
@@ -101,19 +97,151 @@ raaien_BEZ <-
 
 raaien_BOZ <-
   tabel_raaien_vast %>% 
-  {.; filter(., rivier == "Zeeschelde" & !(OMES %in% 9:13)) %>% 
+  {.; filter(., str_detect(rivier, "Zeeschelde") & !(OMES %in% 9:13)) %>% 
       mutate(reekscode = factor(reekscode, levels = .$reekscode)) %>% 
       arrange(reekscode)} %>% 
   pull(reekscode)
 
 raaien_ZIJ <-
   tabel_raaien_vast %>% 
-  {.; filter(., rivier != "Zeeschelde") %>% 
+  {.; filter(., str_detect(rivier, "Zeeschelde", negate = TRUE)) %>% 
       mutate(reekscode = factor(reekscode, levels = .$reekscode)) %>% 
       arrange(reekscode)} %>% 
   pull(reekscode)
 
+raaien_MH <-
+    tabel_raaien_vast %>% 
+  {.; filter(., str_detect(salzone, "Mesohalien")) %>% 
+      mutate(reekscode = factor(reekscode, levels = .$reekscode)) %>% 
+      arrange(reekscode)} %>% 
+  pull(reekscode)
+
+raaien_SG <-
+    tabel_raaien_vast %>% 
+  {.; filter(., OMES %in% 10:13) %>% 
+      mutate(reekscode = factor(reekscode, levels = .$reekscode)) %>% 
+      arrange(reekscode)} %>% 
+  pull(reekscode)
+
+raaien_OH <-
+    tabel_raaien_vast %>% 
+  {.; filter(., str_detect(salzone, "Oligohalien") & OMES != 13) %>% 
+      mutate(reekscode = factor(reekscode, levels = .$reekscode)) %>% 
+      arrange(reekscode)} %>% 
+  pull(reekscode)
+
+raaien_ZL <-
+    tabel_raaien_vast %>% 
+  {.; filter(., str_detect(salzone, "lange verblijftijd")) %>% 
+      mutate(reekscode = factor(reekscode, levels = .$reekscode)) %>% 
+      arrange(reekscode)} %>% 
+  pull(reekscode)
+
+raaien_ZK <-
+    tabel_raaien_vast %>% 
+  {.; filter(., str_detect(salzone, "korte verblijftijd")) %>% 
+      mutate(reekscode = factor(reekscode, levels = .$reekscode)) %>% 
+      arrange(reekscode)} %>% 
+  pull(reekscode)
+
+
+tabel_trends_BEZ <- 
+  read_excel(paste0(pad_tabellen, "tabel_EW_slik.xlsx"),
+             sheet = "tabel_EW_slik") %>% 
+  filter(reekscode %in% raaien_BEZ) %>% 
+  full_join(read_excel(paste0(pad_tabellen, "tabel_EW_schor.xlsx"),
+             sheet = "tabel_EW_schor") %>% 
+              filter(reekscode %in% raaien_BEZ)) %>% 
+  mutate_all(~replace_na(., ""))
+
+raaien_trends_slik_BEZ <-
+  tabel_trends_BEZ %>% 
+  filter((str_length(`laag slik`) + str_length(`middelhoog slik`) + str_length(`hoog slik`)) != 0) %>% 
+  pull(reekscode)
+
+raaien_trends_schor_BEZ <-
+  tabel_trends_BEZ %>% 
+  filter(str_length(schor) != 0) %>% 
+  pull(reekscode)
+
+tabel_trends_BOZ <- 
+  read_excel(paste0(pad_tabellen, "tabel_EW_slik.xlsx"),
+             sheet = "tabel_EW_slik") %>% 
+  filter(reekscode %in% raaien_BOZ) %>% 
+  full_join(read_excel(paste0(pad_tabellen, "tabel_EW_schor.xlsx"),
+             sheet = "tabel_EW_schor") %>% 
+              filter(reekscode %in% raaien_BOZ)) %>% 
+  mutate_all(~replace_na(., ""))
+
+raaien_trends_slik_BOZ <-
+  tabel_trends_BOZ %>% 
+  filter((str_length(`laag slik`) + str_length(`middelhoog slik`) + str_length(`hoog slik`)) != 0) %>% 
+  pull(reekscode)
+
+raaien_trends_schor_BOZ <-
+  tabel_trends_BOZ %>% 
+  filter(str_length(schor) != 0) %>% 
+  pull(reekscode)
+
+tabel_trends_ZIJ <- 
+  read_excel(paste0(pad_tabellen, "tabel_EW_slik.xlsx"),
+             sheet = "tabel_EW_slik") %>% 
+  filter(reekscode %in% raaien_ZIJ) %>% 
+  full_join(read_excel(paste0(pad_tabellen, "tabel_EW_schor.xlsx"),
+             sheet = "tabel_EW_schor") %>% 
+              filter(reekscode %in% raaien_ZIJ)) %>% 
+  mutate_all(~replace_na(., ""))
+
+raaien_trends_slik_ZIJ <-
+  tabel_trends_ZIJ %>% 
+  filter((str_length(`laag slik`) + str_length(`middelhoog slik`) + str_length(`hoog slik`)) != 0) %>% 
+  pull(reekscode)
+
+raaien_trends_schor_ZIJ <-
+  tabel_trends_ZIJ %>% 
+  filter(str_length(schor) != 0) %>% 
+  pull(reekscode)
+
 ```
+
+
+```{r functie voor figuur recente profielen}
+
+get_fig_recent <-
+  function(raai, sectie) {
+    
+    if (sectie == "BEZ") {
+      raaien_trends_slik <- raaien_trends_slik_BEZ
+      raaien_trends_schor <- raaien_trends_schor_BEZ
+    } else if (sectie == "BOZ") {
+      raaien_trends_slik <- raaien_trends_slik_BOZ
+      raaien_trends_schor <- raaien_trends_schor_BOZ
+    } else {
+      raaien_trends_slik <- raaien_trends_slik_ZIJ
+      raaien_trends_schor <- raaien_trends_schor_ZIJ
+    }
+    
+    if (raai %in% raaien_trends_slik & raai %in% raaien_trends_schor) {
+      caption_fig <- str_c("Profielen voor slik (inclusief schorrand) en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+      fig <- knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
+                                str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
+    } else if (raai %in% raaien_trends_slik) {
+      caption_fig <- str_c("Profielen voor het slik (inclusief schorrand) op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+      fig <- knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
+    } else {
+      caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+      fig <- knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
+    }
+    
+    caption_fig <-
+      caption_fig %>% 
+      str_c(" Grenzen tussen schor (groen), hoog, middelhoog en laag slik (bruin) en subtidaal (blauw) worden weergegeven met vertikale stippellijnen (grenzen bepaald op basis van gegevens voor ", laatste_jaar, ").")
+    
+    return(list(cap = caption_fig, fig = fig))
+  }
+
+```
+
 
 # Sedimentatie en erosie op punten en raaien
 
@@ -138,7 +266,7 @@ We maken een onderscheid tussen 3 klassen van raaien afhankelijk van de priorite
 -   Optioneel: raaien die occasioneel worden ingemeten of waar specifieke vraag naar is.
 
 In de huidige rapportage worden de recente trends in de vaste MONEOS raaien van de Zeeschelde bekeken.
-Alsook de trends in aanvullende en optionele raaien die in `r laatste_jaar` werden ingemeten.
+<!-- , alsook de trends in aanvullende en optionele raaien die in `r laatste_jaar` werden ingemeten. -->
 
 ```{r 130-figuur-overzicht-raaien, fig.cap=caption_overzicht, out.width="100%"}
 
@@ -151,6 +279,8 @@ knitr::include_graphics(paste0(pad_figuren, "OverzichtskaartMoneosraaien_Zeesche
 <br/>
 
 ## Methode
+
+### Hoogtemeting op slik- en schorraaien
 
 Een overzicht van de vaste MONEOS raaien wordt gegeven in Tabel \@ref(tab:130-tabel-overzicht-raaien) in Bijlage \@ref(BL1).
 Hier wordt ook aangegeven voor welke van deze raaien in `r laatste_jaar` het slik (+schorrand) en/of het schorplateau werd ingemeten.
@@ -177,9 +307,33 @@ Van elke MONEOS raai worden bij opmeten ook foto's gemaakt, en op de meeste MONE
 
 <!-- Voor de berekening van de hoogteverandering op deze vaste punten wordt het gemiddelde genomen van de 3 metingen, wat direct gerelateerd kan worden aan de sedimentverandering. -->
 
+### analyse van trends en trendbreuken
+
+Om een indicatie te krijgen van de trends in sedimentatie en/of erosie in de voorbije jaren, wordt voor de slikken en schorplateaus waarvoor in het laatst jaar (`r laatste_jaar`) gegevens zijn verzameld een regressie analyse uitgevoerd op de vijf voorgaande jaren (`r laatste_jaar - 5` - `r laatste_jaar - 1`).
+De patronen uit `r laatste_jaar` worden hier dan mee vergeleken om na te gaan of er in het laatste jaar trendbreuken zijn opgetreden.
+Om topgrafische metingen uit verschillende jaren met elkaar te kunnen vergelijken, worden de afstanden langsheen de raai op elkaar afgestemd.
+Dit gebeurt door de afstanden af te ronden naar een gegeven interval (verschillend voor elke raai) dat wordt bepaald als het gemiddelde interval tussen de metingen over de verschillende jaren.
+Indien voor een bepaald jaar na afronden meerder hoogtemetingen binnen hetzelfde segment langs de lengte-as van de raai vallen, wordt het gemiddelde genomen over deze metingen.
+Vervolgens wordt voor elk gestandaardiseerd punt langs de raai de hoogteverandering ten opzichte van het referentiejaar (= eerste jaar in de reeks) berekend.
+Voor elk jaar worden de hoogteveranderingen dan uitgemiddeld per ecotoop:
+
+-   laag slik (inclusief metingen in het subtidaal)
+-   middelhoog slik
+-   hoog slik (inclusief schorrand)
+-   schorplateau (indien ingemeten)
+
+De bepaling van de ecotoopgrenzen binnen het slik gebeurt op basis van een vergelijking van de droogvalduurpercentages (DD) geassocieerd met de meest recente ecotopenkaart (***XXXREF***; grens laag - middelhoog slik: 25% DD in mesohalien en 35% DD in overige saliniteitszones; grens middelhoog - hoog slik: 60% DD) en de ingemeten hoogtes uit `r laatste_jaar`.
+Per raai en per ecotoop wordt de trend in sedimentatie/erosie berekend op basis van een regressie analyse over de periode `r laatste_jaar - 5` - `r laatste_jaar - 1`:
+
+$\Delta hoogte = 0 + \beta * \Delta jaar$
+
+waarbij $\Delta jaar$ het verschil weergeeft tussen een gegeven jaar en het referentiejaar.
+Om na te gaan of er in `r laatste_jaar` een trendbreuk optreedt ten opzichte voorgaande jaren, wordt de hoogteverandering uit `r laatste_jaar` vergeleken met de voorspelde 95% betrouwbaarheidsintervallen van de berekende trends. Indien de hoogteverandering buiten het betrouwbaarheidsinterval valt, wordt dit gezien als een trendbreuk.
+
+
 ## Beneden Zeeschelde
 
-Een overzicht van de in `r laatste_jaar` opgemeten vaste MONEOS raaien in de Beneden Zeeschelde wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BEZ).
+Een overzicht van de in `r laatste_jaar` opgemeten vaste MONEOS raaien in de Beneden Zeeschelde wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-MH) en Figuur \@ref(fig:130-figuur-raaien-SG).
 Voor raaien GBSa, GBSb, DO, GSb, GSc, LP, KPe en GW werd naast het slik en de schorrand aanvullend ook het schorplateau ingemeten.
 
 ### trends in recente jaren
@@ -192,25 +346,6 @@ Op basis van inspectie van de profielen werden hier echter geen opvallende trend
 <br/>
 
 ```{r 130-tabel-trends-BEZ}
-
-tabel_trends_BEZ <- 
-  read_excel(paste0(pad_tabellen, "tabel_EW_slik.xlsx"),
-             sheet = "tabel_EW_slik") %>% 
-  filter(reekscode %in% raaien_BEZ) %>% 
-  full_join(read_excel(paste0(pad_tabellen, "tabel_EW_schor.xlsx"),
-             sheet = "tabel_EW_schor") %>% 
-              filter(reekscode %in% raaien_BEZ)) %>% 
-  mutate_all(~replace_na(., ""))
-
-raaien_trends_slik_BEZ <-
-  tabel_trends_BEZ %>% 
-  filter((str_length(`laag slik`) + str_length(`middelhoog slik`) + str_length(`hoog slik`)) != 0) %>% 
-  pull(reekscode)
-
-raaien_trends_schor_BEZ <-
-  tabel_trends_BEZ %>% 
-  filter(str_length(schor) != 0) %>% 
-  pull(reekscode)
 
 cap_trends_BEZ <- str_c("Trends in sedimentatie/erosie op de slikken en schorren in de Beneden Zeeschelde, voor de periode ", laatste_jaar - 5, " - ", laatste_jaar - 1, " en (indien aanwezig) [x] trendbreuk in ", laatste_jaar, ". 0 = sedimentatie/erosie < 1cm/jaar; + = sedimentatie \u2265 1 cm/jaar; ++ = sedimentatie \u2265 5 cm/jaar; +++ = sedimentatie \u2265 10 cm/jaar; - = erosie \u2265 1 cm/jaar; -- = erosie \u2265 5 cm/jaar; --- = erosie \u2265 10 cm/jaar.")
 
@@ -228,7 +363,7 @@ tabel_trends_BEZ %>%
 
 ```{r 130-figuur-trends-slik-BEZ, fig.cap=caption_trend_slik_BEZ, out.width="100%"}
 
-caption_trend_slik_BEZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de slikken en schorrand in de Beneden Zeeschelde.")
+caption_trend_slik_BEZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, "; 95\\% betrouwbaarheidsinterval) op de slikken (inclusief schorrand) in de Beneden Zeeschelde.")
 
 knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_slik_BEZ.png"))
 
@@ -238,7 +373,7 @@ knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_slik_BE
 
 ```{r 130-figuur-trends-schor-BEZ, fig.cap=caption_trend_schor_BEZ, out.width="100%"}
 
-caption_trend_schor_BEZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de schorplateaus in de Beneden Zeeschelde.")
+caption_trend_schor_BEZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, "; 95\\% betrouwbaarheidsinterval) op de schorplateaus in de Beneden Zeeschelde.")
 
 knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_schor_BEZ.png"))
 
@@ -253,64 +388,73 @@ In het laag slik is er wel een verderzetting van de evolutie uit voorgaande jare
 
 ```{r 130-figuur-GBSa-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
+sectie <- "BEZ"
 raai <- "GBSa"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
+
+# if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
+#   caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+#   knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
+#                             str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
+# } else if (raai %in% raaien_trends_slik_BEZ) {
+#   caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+#   knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
+# } else {
+#   caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+#   knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
+# }
+# 
+# caption_fig <-
+#   caption_fig %>% 
+#   str_c(" Grenzen tussen schor (groen), hoog, middelhoog en laag slik (bruin) en subtidaal (blauw) worden weergegeven met vertikale stippellijnen (grenzen bepaald op basis van gegevens voor ", laatste_jaar, ").")
 
 ```
 
 <br/>
 
-Raai GBSb (Groot Buitenschoor) vertoond een trend van lichte sedimentatie op het middelhoog en hoog slik en op het schorplateau (Figuur \@ref(fig:130-figuur-GBSb-slik)). Het laag slik is relatief stabiel.
+Raai GBSb (Groot Buitenschoor) vertoond een trend van lichte sedimentatie op het middelhoog en hoog slik en op het schorplateau (Figuur \@ref(fig:130-figuur-GBSb-slik)).
+Het laag slik is relatief stabiel.
 
 ```{r 130-figuur-GBSb-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
+sectie <- "BEZ"
 raai <- "GBSb"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
+
+# if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
+#   caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+#   knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
+#                             str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
+# } else if (raai %in% raaien_trends_slik_BEZ) {
+#   caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+#   knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
+# } else {
+#   caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
+#   knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
+# }
 
 ```
 
 <br/>
 
 Raai ODa (Schor Ouden Doel) vertoont een opvallende trendbreuk in het laag slik met een plotse, sterke verdieping (Figuur \@ref(fig:130-figuur-ODa-slik)).
-Dit heeft te maken met het aanleggen van de in- en uitwateringsgeul van de ontpoldering in Hedwige/Prosper. De trend van lichte erosie in het middelhoog slik blijft onveranderd.
+Dit heeft te maken met het aanleggen van de in- en uitwateringsgeul van de ontpoldering in Hedwige/Prosper.
+De trend van lichte erosie in het middelhoog slik blijft onveranderd.
 
 ```{r 130-figuur-ODa-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "ODa"
+sectie <- "BEZ"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
@@ -322,40 +466,27 @@ In het laag slik is er een trendbreuk met een vermindering van de sedimentatie t
 ```{r 130-figuur-DO-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "DO"
+sectie <- "BEZ"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Op raai GSb (Galgenschoor) (Figuur \@ref(fig:130-figuur-GSb-slik)) zien we trendbreuken in het laag en hoog slik, waar de licht sedimenterende trend uit de vorgaande jaren is gewijzigd naar lichte erosie. Ook in het middelhoog slik is er de laatste twee jaar een trend tot meer erosie (maar niet zichtbaar als trendbreuk in `r laatste_jaar`).
+Op raai GSb (Galgenschoor) (Figuur \@ref(fig:130-figuur-GSb-slik)) zien we trendbreuken in het laag en hoog slik, waar de licht sedimenterende trend uit de vorgaande jaren is gewijzigd naar lichte erosie.
+Ook in het middelhoog slik is er de laatste twee jaar een trend tot meer erosie (maar niet zichtbaar als trendbreuk in `r laatste_jaar`).
 
 ```{r 130-figuur-GSb-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "GSb"
+sectie <- "BEZ"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
@@ -366,64 +497,44 @@ Zoals de vorige jaren vertoont raai GSc (Galgenschoor) een vrij sterke sedimenta
 ```{r 130-figuur-GSc-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "GSc"
+sectie <- "BEZ"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
 Op Raai LH (Lillo Haven) lijkt de trend van lichte sedimentatie van het laag en middelhoog slik in de vorige jaren te veranderen naar lichte (laag slik) tot sterke (middelhoog slik) sedimentatie (Figuur \@ref(fig:130-figuur-LH-slik)).
-De sedimentatie in het laag slik doet zich vooral voor op de overgang met het middelhoog slik. 
+De sedimentatie in het laag slik doet zich vooral voor op de overgang met het middelhoog slik.
 Op het middelhoog slik is er vrij veel variatie in sedimentatie/erosie tussen jaren.
 
 ```{r 130-figuur-LH-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "LH"
+sectie <- "BEZ"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Het laag slik op Raai LP (Lillo Potpolder) vertoont in `r laatste_jaar` een lichte erosie, terwijl dit stabiel was in voorgaande jaren (Figuur \@ref(fig:130-figuur-LP-slik)). In de hogere slikdelen zet de trend van lichte erosie uit voorgaande jaren zich verder, evenals de lichte sedimentatie op het schorplateau.
+Het laag slik op Raai LP (Lillo Potpolder) vertoont in `r laatste_jaar` een lichte erosie, terwijl dit stabiel was in voorgaande jaren (Figuur \@ref(fig:130-figuur-LP-slik)).
+In de hogere slikdelen zet de trend van lichte erosie uit voorgaande jaren zich verder, evenals de lichte sedimentatie op het schorplateau.
 
 ```{r 130-figuur-LP-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "LP"
+sectie <- "BEZ"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
@@ -434,41 +545,28 @@ Trends op Raai KPb (Ketenisse) blijven behouden in `r laatste_jaar` met sediment
 ```{r 130-figuur-KPb-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "KPb"
+sectie <- "BEZ"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
 Op raai KPe (Ketenisse) zet de trend van sterke sedimentatie op het laag slik zich verder in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-KPe-slik)).
-De hogere delen van het slik blijven stabiel. Op het schorplateau is er ondanks wat lichte erosie in `r laatste_jaar` geen trendbreuk met de lichte sedimentatie uit voorgaande jaren.
+De hogere delen van het slik blijven stabiel.
+Op het schorplateau is er ondanks wat lichte erosie in `r laatste_jaar` geen trendbreuk met de lichte sedimentatie uit voorgaande jaren.
 
 ```{r 130-figuur-KPe-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "KPe"
+sectie <- "BEZ"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
@@ -481,51 +579,36 @@ Op het middelhoog slik wordt de sterke sedimentatie in `r laatste_jaar` wel gezi
 ```{r 130-figuur-GW-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "GW"
+sectie <- "BEZ"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
 Raai HO (Hobookse Polder) vertoonde in de vorige jaren algemeen een eroderende trend (Figuur \@ref(fig:130-figuur-HO-slik)).
-in `r laatste_jaar` is deze trend op het laag en middelhoog slik echter afgeremd tot afwezig en op het hoog slik zelfs veranderd naar een sterke sedimentatie. Merk op dat er op raai HO eigenlijk zo goed als geen hoog slik is en deze sedimentatie zich eigenlijk voordoet in de schorrand. 
+in `r laatste_jaar` is deze trend op het laag en middelhoog slik echter afgeremd tot afwezig en op het hoog slik zelfs veranderd naar een sterke sedimentatie.
+Merk op dat er op raai HO eigenlijk zo goed als geen hoog slik is en deze sedimentatie zich eigenlijk voordoet in de schorrand.
 
 ```{r 130-figuur-HO-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "HO"
+sectie <- "BEZ"
 
-if (raai %in% raaien_trends_slik_BEZ & raai %in% raaien_trends_schor_BEZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BEZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-### Algemene bevindingen Beneden Zeeschelde
-
 ## Boven Zeeschelde
 
-Een overzicht van de vaste MONEOS raaien in de Boven Zeeschelde die werden opgemeten in `r laatste_jaar` wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BOZ).
+Een overzicht van de vaste MONEOS raaien in de Boven Zeeschelde die werden opgemeten in `r laatste_jaar` wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-OH), Figuur \@ref(fig:130-figuur-raaien-ZL) en Figuur \@ref(fig:130-figuur-raaien-ZK).
 Voor raaien TB, WE, PD, MK, KRb, GBa, APc, APa, PA, BM, HEUf en HEUc werd ook het schorplateau ingemeten.
 
 ### trends in recente jaren
@@ -538,25 +621,6 @@ Voor raaien TB, WE, PD, MK, GBa, APc, APa, PA konden geen trends en trendbreuken
 Op basis van inspectie van de profielen werden hier echter geen opvallende trends of trendbreuken vastgesteld.
 
 ```{r 130-tabel-trends-BOZ}
-
-tabel_trends_BOZ <- 
-  read_excel(paste0(pad_tabellen, "tabel_EW_slik.xlsx"),
-             sheet = "tabel_EW_slik") %>% 
-  filter(reekscode %in% raaien_BOZ) %>% 
-  full_join(read_excel(paste0(pad_tabellen, "tabel_EW_schor.xlsx"),
-             sheet = "tabel_EW_schor") %>% 
-              filter(reekscode %in% raaien_BOZ)) %>% 
-  mutate_all(~replace_na(., ""))
-
-raaien_trends_slik_BOZ <-
-  tabel_trends_BOZ %>% 
-  filter((str_length(`laag slik`) + str_length(`middelhoog slik`) + str_length(`hoog slik`)) != 0) %>% 
-  pull(reekscode)
-
-raaien_trends_schor_BOZ <-
-  tabel_trends_BOZ %>% 
-  filter(str_length(schor) != 0) %>% 
-  pull(reekscode)
 
 cap_trends_BOZ <- str_c("Trends in sedimentatie/erosie op de slikken en schorren in de Boven Zeeschelde, voor de periode ", laatste_jaar - 5, " - ", laatste_jaar - 1, " en (indien aanwezig) [x] trendbreuk in ", laatste_jaar, ". 0 = sedimentatie/erosie < 1cm/jaar; + = sedimentatie \u2265 1 cm/jaar; ++ = sedimentatie \u2265 5 cm/jaar; +++ = sedimentatie \u2265 10 cm/jaar; - = erosie \u2265 1 cm/jaar; -- = erosie \u2265 5 cm/jaar; --- = erosie \u2265 10 cm/jaar.")
 
@@ -574,7 +638,7 @@ tabel_trends_BOZ %>%
 
 ```{r 130-figuur-trends-slik-BOZ, fig.cap=caption_trend_slik_BOZ, out.width="100%"}
 
-caption_trend_slik_BOZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de slikken in de Beneden Zeeschelde.")
+caption_trend_slik_BOZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, "; 95\\% betrouwbaarheidsinterval) op de slikken (inclusief schorrand) in de Boven Zeeschelde.")
 
 knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_slik_BOZ.png"))
 
@@ -584,7 +648,7 @@ knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_slik_BO
 
 ```{r 130-figuur-trends-schor-BOZ, fig.cap=caption_trend_schor_BOZ, out.width="100%"}
 
-caption_trend_schor_BOZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de schorplateaus in de Boven Zeeschelde.")
+caption_trend_schor_BOZ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, "; 95\\% betrouwbaarheidsinterval) op de schorplateaus in de Boven Zeeschelde.")
 
 knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_schor_BOZ.png"))
 
@@ -599,416 +663,310 @@ Het slik op raai KV (Kijkverdriet) vertoont een trend van lichte tot matige sedi
 ```{r 130-figuur-KV-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "KV"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Ook op raai NOTb (Notelaer) (Figuur \@ref(fig:130-figuur-NOTb-slik)) vertoont het slik in de periode `r laatste_jaar - 5` - `r laatste_jaar - 1` een lichte tot matige trend van sedimentatie. Hierbij dient wel te worden opgemerkt dat deze trend in de laatste twee jaren is veranderd naar sedimentatie. Dit komt echter niet tot uiting als trendbreuk, omdat de omslag al langer aan de gang is dan `r laatste_jaar`.
+Ook op raai NOTb (Notelaer) (Figuur \@ref(fig:130-figuur-NOTb-slik)) vertoont het slik in de periode `r laatste_jaar - 5` - `r laatste_jaar - 1` een lichte tot matige trend van sedimentatie.
+Hierbij dient wel te worden opgemerkt dat deze trend in de laatste twee jaren is veranderd naar sedimentatie.
+Dit komt echter niet tot uiting als trendbreuk, omdat de omslag al langer aan de gang is dan `r laatste_jaar`.
 
 ```{r 130-figuur-NOTb-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "NOTb"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Op raai NOTc (Notelaer) (Figuur \@ref(fig:130-figuur-NOTc-slik)) zijn er geen trendbreuken waar te nemen in `r laatste_jaar`. De trends gaan van lichte erosie op het laag slik, over lichte sedimentatie op het middelhoog slik tot matige sedimentatie op het hoog slik. Ook hier dient, net als voor NOTb, echter opgemerkt te worden dat er in 2022 een trendbreuk lijkt te zijn opgetreden met relatief sterke erosie over het ganse slik. Dit komt niet tot uiting in onze analyse omdat die focust op het laatste jaar (`r laatste_jaar`).
+Op raai NOTc (Notelaer) (Figuur \@ref(fig:130-figuur-NOTc-slik)) zijn er geen trendbreuken waar te nemen in `r laatste_jaar`.
+De trends gaan van lichte erosie op het laag slik, over lichte sedimentatie op het middelhoog slik tot matige sedimentatie op het hoog slik.
+Ook hier dient, net als voor NOTb, echter opgemerkt te worden dat er in 2022 een trendbreuk lijkt te zijn opgetreden met relatief sterke erosie over het ganse slik.
+Dit komt niet tot uiting in onze analyse omdat die focust op het laatste jaar (`r laatste_jaar`).
 
 ```{r 130-figuur-NOTc-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "NOTc"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-De lichte tot matige sedimentatie uit de voorbije op laag en hoog slik op raai BAL (Ballooi) gaat verder in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-BAL-slik)). Voor het middelhoogslik lijkt de sedimentatie in `r laatste_jaar` te zijn gestopt.
- 
+De lichte tot matige sedimentatie uit de voorbije op laag en hoog slik op raai BAL (Ballooi) gaat verder in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-BAL-slik)).
+Voor het middelhoogslik lijkt de sedimentatie in `r laatste_jaar` te zijn gestopt.
+
 ```{r 130-figuur-BAL-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "BAL"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Opraai TB (Temsebrug) is er in `r laatste_jaar` op het laag slik een duidelijke trendbreuk, met plots sterke sedimentatie (Figuur \@ref(fig:130-figuur-TB-slik)). De trend van lichte erosie op het middelhoog slik blijft aanwezig.
- 
+Op raai TB (Temsebrug) is er in `r laatste_jaar` op het laag slik een duidelijke trendbreuk, met plots sterke sedimentatie (Figuur \@ref(fig:130-figuur-TB-slik)).
+De trend van lichte erosie op het middelhoog slik blijft aanwezig.
+
 ```{r 130-figuur-TB-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "TB"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Raai WE (Weert) (Figuur \@ref(fig:130-figuur-WE-slik)) vertoont de voorbije jaren een trend van mtige tot sterke erosie. Ook hier lijkt er zich in 2022 echter een trendbreuk te hebben voorgedaan, met in dat jaar een plotse sterke sedimentatie op hoog en vooral middelhoog slik. Deze zedimentatie is ook nog zichtbaar in de bovenste delen van het laag slik. Deze sedimentatie zorgt voor een versteiling van het slikprofiel.
- 
+Raai WE (Weert) (Figuur \@ref(fig:130-figuur-WE-slik)) vertoont de voorbije jaren een trend van mtige tot sterke erosie.
+Ook hier lijkt er zich in 2022 echter een trendbreuk te hebben voorgedaan, met in dat jaar een plotse sterke sedimentatie op hoog en vooral middelhoog slik.
+Deze zedimentatie is ook nog zichtbaar in de bovenste delen van het laag slik.
+Deze sedimentatie zorgt voor een versteiling van het slikprofiel.
+
 ```{r 130-figuur-WE-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "WE"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Hoewel er op raai BR (Branst) geen trendbreuken op de sterke sedimentatie trend uit de laatste jaren zijn waar te nemen in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-BR-slik)), lijkt hier toch ook een verandering te zijn opgetreden in het sedimentatiepatroon in 2022. De laatste twee jaar lijkt de sedimentatietrend sterk afgezwakt.
- 
+Hoewel er op raai BR (Branst) geen trendbreuken op de sterke sedimentatie trend uit de laatste jaren zijn waar te nemen in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-BR-slik)), lijkt hier toch ook een verandering te zijn opgetreden in het sedimentatiepatroon in 2022.
+De laatste twee jaar lijkt de sedimentatietrend sterk afgezwakt.
+
 ```{r 130-figuur-BR-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "BR"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Het sedimentatie/erosie patroon op raai PD (Plaat Driegoten) (Figuur \@ref(fig:130-figuur-PD-slik)) is sterk variabel tussen jaren. Netto zijn er geen grote veranderingen in slikhoogte waar te nemen. Alleen aan de schorrand lijkt er in r `laatste_jaar` een vrij sterke erosie te hebben plaatsgevonden.
+Het sedimentatie/erosie patroon op raai PD (Plaat Driegoten) (Figuur \@ref(fig:130-figuur-PD-slik)) is sterk variabel tussen jaren.
+Netto zijn er geen grote veranderingen in slikhoogte waar te nemen.
+Alleen aan de schorrand lijkt er in r `laatste_jaar` een vrij sterke erosie te hebben plaatsgevonden.
 
 ```{r 130-figuur-PD-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "PD"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
+De sterke sedimentatie en opbolling in het middelhoog slik op raai MK (Mariekerke) (Figuur \@ref(fig:130-figuur-MK-slik)) zet zich verder in `r laatste_jaar`.
+Laag en hoog slik, daarentegen, blijven relatief stabiel.
 
-
-De sterke sedimentatie en opbolling in het middelhoog slik op raai MK (Mariekerke) (Figuur \@ref(fig:130-figuur-MK-slik)) zet zich verder in `r laatste_jaar`. Laag en hoog slik, daarentegen, blijven relatief stabiel.
- 
 ```{r 130-figuur-MK-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "MK"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Raai GSHb (Groot Schoor van Hamme) is vrij stabiel met de voorbije jaren een licht erosieve trend in het laag slik en lichte sedimentatie in middelhoog en hoog slik (Figuur \@ref(fig:130-figuur-GSHb-slik)). In analogie met een aantal andere raaien uit de Boven Zeeschelde, zijn er wel indicaties voor een trendverandering in het hoog en middelhoog slik met minder sedimentatie vanaf  2022.
+Raai GSHb (Groot Schoor van Hamme) is vrij stabiel met de voorbije jaren een licht erosieve trend in het laag slik en lichte sedimentatie in middelhoog en hoog slik (Figuur \@ref(fig:130-figuur-GSHb-slik)).
+In analogie met een aantal andere raaien uit de Boven Zeeschelde, zijn er wel indicaties voor een trendverandering in het hoog en middelhoog slik met minder sedimentatie vanaf 2022.
 
 ```{r 130-figuur-GSHb-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "GSHb"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Raai KRb aan de Kramp (Figuur \@ref(fig:130-figuur-KRb-slik)) vertoont een trend tot vrij sterke erosie van het laag slik. De hogere delen van het slik en het schorplateau zijn stabiel.
- 
+Raai KRb aan de Kramp (Figuur \@ref(fig:130-figuur-KRb-slik)) vertoont een trend tot vrij sterke erosie van het laag slik.
+De hogere delen van het slik en het schorplateau zijn stabiel.
+
 ```{r 130-figuur-KRb-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "KRb"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Raai GB (Grembergen) (Figuur \@ref(fig:130-figuur-GBa-slik)) vertoonde de voorbije jaren een licht eroderende en licht sedimenterende trend in het laag en middelhoog slik, respectievelijk. Netto zijn er in `r laatste_jaar` echter zo goed als geen verschillen in slikhoogte in vergelijking met `r laatste_jaar - 5`.
- 
+Raai GB (Grembergen) (Figuur \@ref(fig:130-figuur-GBa-slik)) vertoonde de voorbije jaren een licht eroderende en licht sedimenterende trend in het laag en middelhoog slik, respectievelijk.
+Netto zijn er in `r laatste_jaar` echter zo goed als geen verschillen in slikhoogte in vergelijking met `r laatste_jaar - 5`.
+
 ```{r 130-figuur-GBa-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "GBa"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Ook op het laag en middelhoog slik van raai ZLa (Zele) (Figuur \@ref(fig:130-figuur-ZLa-slik)) zijn er netto zo goed als geen hoogteveranderingen tussen `r laatste_jaar - 5` en `r laatste_jaar`. Op het hoog slik is er echter wel een trendbreuk waar te nemen van lichte erosie in voorgaande jaren naar sterke sedimentatie in `r laatste_jaar`.
- 
+Ook op het laag en middelhoog slik van raai ZLa (Zele) (Figuur \@ref(fig:130-figuur-ZLa-slik)) zijn er netto zo goed als geen hoogteveranderingen tussen `r laatste_jaar - 5` en `r laatste_jaar`.
+Op het hoog slik is er echter wel een trendbreuk waar te nemen van lichte erosie in voorgaande jaren naar sterke sedimentatie in `r laatste_jaar`.
+
 ```{r 130-figuur-ZLa-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "ZLa"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Het laag slik op raai APc (Appels) (Figuur \@ref(fig:130-figuur-APc-slik)), vertoont een duidelijke trendbreuk, met een omslag van vrij sterke sedimentatie naar sterke erosie. Deze erosie lijkt zich al te hebben ingezet in 2022. Ook de sedimentatie in het middelhoog en hoog slik lijkt te zijn afgeremd in 2022, maar dit is niet zichtbaar als een trendbreuk in `r laatste_jaar`. Op het hoog slik doet de erosie zich vooral voor op de grens met het middelhoog slik, terwijl de vloedgeul aan de rand van het schor verder sedimenteert.
- 
+Het laag slik op raai APc (Appels) (Figuur \@ref(fig:130-figuur-APc-slik)), vertoont een duidelijke trendbreuk, met een omslag van vrij sterke sedimentatie naar sterke erosie.
+Deze erosie lijkt zich al te hebben ingezet in 2022.
+Ook de sedimentatie in het middelhoog en hoog slik lijkt te zijn afgeremd in 2022, maar dit is niet zichtbaar als een trendbreuk in `r laatste_jaar`.
+Op het hoog slik doet de erosie zich vooral voor op de grens met het middelhoog slik, terwijl de vloedgeul aan de rand van het schor verder sedimenteert.
+
 ```{r 130-figuur-APc-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "APc"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Slikhoogte op het laag en hoog slik van raai APa (Appels) (Figuur \@ref(fig:130-figuur-APa-slik)) is vrij stabiel. De trends worden vooral bepaald door hoogteveranderingen die optraden in 2019 ten opzichte van 2018. Op het middelhoog slik is er wel een trendbreuk waar te nemen, met een plotse, sterke sedimentatie.
- 
+Slikhoogte op het laag en hoog slik van raai APa (Appels) (Figuur \@ref(fig:130-figuur-APa-slik)) is vrij stabiel.
+De trends worden vooral bepaald door hoogteveranderingen die optraden in 2019 ten opzichte van 2018.
+Op het middelhoog slik is er wel een trendbreuk waar te nemen, met een plotse, sterke sedimentatie.
+
 ```{r 130-figuur-APa-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "APa"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-De sedimentatie/erosie patronen op raai PA (Paddebeek) (Figuur \@ref(fig:130-figuur-PA-slik)) blijven behouden. Er is matige sedimentatie op het laag slik en (zeer) lichte erosie op middelhoog en hoog slik.
- 
+De sedimentatie/erosie patronen op raai PA (Paddebeek) (Figuur \@ref(fig:130-figuur-PA-slik)) blijven behouden.
+Er is matige sedimentatie op het laag slik en (zeer) lichte erosie op middelhoog en hoog slik.
+
 ```{r 130-figuur-PA-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "PA"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-raai BM (Bergenmeersen) (Figuur \@ref(fig:130-figuur-BM-slik)) vertoont een gradiënt van sterke sedimentatie onderaan het slik naar lichte sedimentatie bovenaan het slik. Ook op het schorplateau is er de laatste jaren lichte sedimentatie opgetreden.
- 
+raai BM (Bergenmeersen) (Figuur \@ref(fig:130-figuur-BM-slik)) vertoont een gradiënt van sterke sedimentatie onderaan het slik naar lichte sedimentatie bovenaan het slik.
+Ook op het schorplateau is er de laatste jaren lichte sedimentatie opgetreden.
+
 ```{r 130-figuur-BM-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "BM"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Raai HEUc (Heusden) (Figuur \@ref(fig:130-figuur-HEUc-slik)) vertoont een trendbreuk naar matige erosie laag op het slik. Hoewel de schorrand (hoog slik) gemiddeld een trend van sedimentatie vertoont, lijkt er in 'r laatste_jaar' de ontwikkeling van een schorklif op te treden. Het schorplateau vertoont een trend van lichte sedimentatie, maar de gegevens zijn hier vrij sporadisch.
- 
+Raai HEUc (Heusden) (Figuur \@ref(fig:130-figuur-HEUc-slik)) vertoont een trendbreuk naar matige erosie laag op het slik.
+Hoewel de schorrand (hoog slik) gemiddeld een trend van sedimentatie vertoont, lijkt er in 'r laatste_jaar' de ontwikkeling van een schorklif op te treden.
+Het schorplateau vertoont een trend van lichte sedimentatie, maar de gegevens zijn hier vrij sporadisch.
+
 ```{r 130-figuur-HEUc-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "HEUc"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
 <br/>
 
-Voor raai HEUf zijn er niet voldoende meetpunten om trends voor het slik te berekenen. Ook voor het schorplateau zijn de gegevens vrij sporadisch. Uit die gegevens blijkt het schorplateau vrij stabiel (Figuur \@ref(fig:130-figuur-HEUf-slik)).
- 
+Voor raai HEUf zijn er niet voldoende meetpunten om trends voor het slik te berekenen.
+Ook voor het schorplateau zijn de gegevens vrij sporadisch.
+Uit die gegevens blijkt het schorplateau vrij stabiel (Figuur \@ref(fig:130-figuur-HEUf-slik)).
+
 ```{r 130-figuur-HEUf-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "HEUf"
+sectie <- "BOZ"
 
-if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_BOZ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
@@ -1016,38 +974,19 @@ if (raai %in% raaien_trends_slik_BOZ & raai %in% raaien_trends_schor_BOZ) {
 
 ## Durme, Rupel en zijrivieren
 
-De vaste MONEOS raaien uit Durme, Rupel en zijrivieren die werden opgemeten zijn weergegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BOZ). 
+De vaste MONEOS raaien uit Durme, Rupel en zijrivieren die werden opgemeten zijn weergegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BOZ).
 In `r laatste_jaar` werd voor raai DU zowel slik als schorplateau ingemeten.
 
 ### trends in recente jaren
 
 Tabel \@ref(tab:130-tabel-trends-ZIJ) geeft de trends in de meest recente jaren (`r laatste_jaar - 5` - `r laatste_jaar - 1`) evenals de trendbreuken in `r laatste_jaar`.
-Deze trends zijn verder gevisualiseerd in Figuur \@ref(fig:130-figuur-trends-slik-ZIJ) voor de slikken. Voor het schorplateau van DU waren niet voldoende recente gegevens voorhanden om de trend te berekenen. 
-<!-- en Figuur \@ref(fig:130-figuur-trends-schor-ZIJ) de voor de schorplateaus. -->
-
+Deze trends zijn verder gevisualiseerd in Figuur \@ref(fig:130-figuur-trends-slik-ZIJ) voor de slikken.
+Voor het schorplateau van DU waren niet voldoende recente gegevens voorhanden om de trend te berekenen.
+<!-- en Figuur @ref(fig:130-figuur-trends-schor-ZIJ) de voor de schorplateaus. -->
 
 ```{r 130-tabel-trends-ZIJ}
 
-tabel_trends_ZIJ <- 
-  read_excel(paste0(pad_tabellen, "tabel_EW_slik.xlsx"),
-             sheet = "tabel_EW_slik") %>% 
-  filter(reekscode %in% raaien_ZIJ) %>% 
-  full_join(read_excel(paste0(pad_tabellen, "tabel_EW_schor.xlsx"),
-             sheet = "tabel_EW_schor") %>% 
-              filter(reekscode %in% raaien_ZIJ)) %>% 
-  mutate_all(~replace_na(., ""))
-
-raaien_trends_slik_ZIJ <-
-  tabel_trends_ZIJ %>% 
-  filter((str_length(`laag slik`) + str_length(`middelhoog slik`) + str_length(`hoog slik`)) != 0) %>% 
-  pull(reekscode)
-
-raaien_trends_schor_ZIJ <-
-  tabel_trends_ZIJ %>% 
-  filter(str_length(schor) != 0) %>% 
-  pull(reekscode)
-
-cap_trends_ZIJ <- str_c("Trends in sedimentatie/erosie op de slikken en schorren in de Boven Zeeschelde, voor de periode ", laatste_jaar - 5, " - ", laatste_jaar - 1, " en (indien aanwezig) [x] trendbreuk in ", laatste_jaar, ". 0 = sedimentatie/erosie < 1cm/jaar; + = sedimentatie \u2265 1 cm/jaar; ++ = sedimentatie \u2265 5 cm/jaar; +++ = sedimentatie \u2265 10 cm/jaar; - = erosie \u2265 1 cm/jaar; -- = erosie \u2265 5 cm/jaar; --- = erosie \u2265 10 cm/jaar.")
+cap_trends_ZIJ <- str_c("Trends in sedimentatie/erosie op de slikken en schorren in Rupel, Durme en zijrivieren, voor de periode ", laatste_jaar - 5, " - ", laatste_jaar - 1, " en (indien aanwezig) [x] trendbreuk in ", laatste_jaar, ". 0 = sedimentatie/erosie < 1cm/jaar; + = sedimentatie \u2265 1 cm/jaar; ++ = sedimentatie \u2265 5 cm/jaar; +++ = sedimentatie \u2265 10 cm/jaar; - = erosie \u2265 1 cm/jaar; -- = erosie \u2265 5 cm/jaar; --- = erosie \u2265 10 cm/jaar.")
 
 tabel_trends_ZIJ %>%
   mutate_all(~cell_spec(., color = "black")) %>% 
@@ -1059,11 +998,11 @@ tabel_trends_ZIJ %>%
 
 ```
 
-<br/>
+<br/> <br/>
 
 ```{r 130-figuur-trends-slik-ZIJ, fig.cap=caption_trend_slik_ZIJ, out.width="100%"}
 
-caption_trend_slik_ZIJ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de slikken in de Beneden Zeeschelde.")
+caption_trend_slik_ZIJ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, "; 95\\% betrouwbaarheidsinterval) op de slikken (inclusief schorrand) in Rupel, Durme en zijrivieren.")
 
 knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_slik_ZIJ.png"))
 
@@ -1077,11 +1016,10 @@ fig_shor_trends_ZIJ <- length(raaien_trends_schor_ZIJ) > 0
 
 ```
 
-
 ```{r 130-figuur-trends-schor-ZIJ, eval=fig_shor_trends_ZIJ, fig.cap=caption_trend_schor_ZIJ, out.width="100%"}
 
 if(length(raaien_trends_schor_ZIJ) > 0) {
-  caption_trend_schor_ZIJ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, ") op de schorplateaus in de Boven Zeeschelde.")
+  caption_trend_schor_ZIJ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, "; 95\\% betrouwbaarheidsinterval) op de schorplateaus in Rupel, Durme en zijrivieren.")
   
   knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_schor_ZIJ.png"))
 }
@@ -1090,23 +1028,18 @@ if(length(raaien_trends_schor_ZIJ) > 0) {
 
 <br/>
 
-Er is een trend tot sterke sedimentatie op het slik van raai DU (Figuur \@ref(fig:130-figuur-DU-slik)). Vooral op het hoog slik wordt deze trend in `r laatste_jaar` verdergezet. Op laag en middelhoog slik is er in `r laatste_jaar` eerder wat erosie, maar dit resulteert niet in een duidelijke trendbreuk (wat inhoudt dat de variatie in erosie/sedimentatie tussen jaren relatief groot is).
+Er is een trend tot sterke sedimentatie op het slik van raai DU (Figuur \@ref(fig:130-figuur-DU-slik)).
+Vooral op het hoog slik wordt deze trend in `r laatste_jaar` verdergezet.
+Op laag en middelhoog slik is er in `r laatste_jaar` eerder wat erosie, maar dit resulteert niet in een duidelijke trendbreuk (wat inhoudt dat de variatie in erosie/sedimentatie tussen jaren relatief groot is).
 
 ```{r 130-figuur-DU-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "DU"
+sectie <- "ZIJ"
 
-if (raai %in% raaien_trends_slik_ZIJ & raai %in% raaien_trends_schor_ZIJ) {
-  caption_fig <- str_c("Profielen voor slik en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
-                            str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-} else if (raai %in% raaien_trends_slik_ZIJ) {
-  caption_fig <- str_c("Profielen voor het slik op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
-} else {
-  caption_fig <- str_c("Profiel voor het schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
-  knitr::include_graphics(str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png"))
-}
+res <- get_fig_recent(raai, sectie)
+caption_fig <- res$cap
+res$fig
 
 ```
 
@@ -1115,7 +1048,6 @@ if (raai %in% raaien_trends_slik_ZIJ & raai %in% raaien_trends_schor_ZIJ) {
 ## Algemene bevindingen
 
 Opvallend veel aanwijzingen voor trendbreuken in 2022 in hoog en middelhoog slik in Boven Zeeschelde met opvallen veel erosie in KV, NOTb, NOTc, BR, APc en sedimentatie in WE
-
 
 ## Referenties
 
@@ -1133,6 +1065,8 @@ R Foundation for Statistical Computing, Vienna, Austria.
 URL <http://www.R-project.org/>.
 
 <br/>
+
+\newpage
 
 ## Bijlage {#BL1}
 
@@ -1169,7 +1103,7 @@ tabel_raaien_vast <-
            ))
 
 
-cap_raaien_vast <- str_c("Overzicht vaste MONEOS raaien langs de Zeeschelde en zijrivieren. Raaicode, X,Y coördinaat (Lambert 72), naam,  saliniteitszone, OMES zone, afstand tot de Belgisch-Nederlandse grens, rivier en opmeting van slik (+ schorrand) en schorplateau in ", laatste_jaar, ".")
+cap_raaien_vast <- str_c("Overzicht vaste MONEOS raaien langs de Zeeschelde en zijrivieren. Raaicode, X,Y coördinaat (Lambert 72), naam,  saliniteitszone, OMES zone, afstand tot de Belgisch-Nederlandse grens, rivier, periodiciteit en opmeting van slik (inclusief schorrand) en schorplateau in ", laatste_jaar, ".")
 
 tabel_raaien_vast %>%
   mutate(sal_kort = if_else(str_length(sal_kort) == 0,
@@ -1193,46 +1127,99 @@ tabel_raaien_vast %>%
   # column_spec(1:3,width = "1in") %>%
   collapse_rows(columns = c(5:9), latex_hline = "full", valign = "middle")
 
-
 ```
 
 <br/>
 
-```{r 130-figuur-raaien-BEZ, fig.cap=caption_BEZ, out.width="47%", fig.show="hold"}
+\newpage
 
-figs_BEZ <- 
-  intersect(str_c(raaien_BEZ, ".png"),
+```{r 130-figuur-raaien-MH, fig.cap=caption_MH, out.width="47%", fig.show="hold", fig.fullwidth=TRUE}
+
+figs_MH <- 
+  intersect(str_c(raaien_MH, ".png"),
             list.files(str_c(pad_figuren, "vast/")))
 
-caption_BEZ <- "Raaien in de Beneden Zeeschelde"
+caption_MH <- str_c("Raaien uit het mesohalien in de Beneden Zeeschelde. Grens met schor (groen) en subtidaal (blauw) worden weergegeven met vertikale stippellijn (grenzen bepaald op basis van gegevens voor ", laatste_jaar, ").")
 
-knitr::include_graphics(str_c(pad_figuren, "vast/", figs_BEZ))
+knitr::include_graphics(str_c(pad_figuren, "vast/", figs_MH))
 
 ```
 
 <br/>
 
-```{r 130-figuur-raaien-BOZ, fig.cap=caption_BOZ, out.width="46%", fig.show="hold"}
+\newpage
 
-figs_BOZ <- 
-  intersect(str_c(raaien_BOZ, ".png"),
+```{r 130-figuur-raaien-SG, fig.cap=caption_SG, out.width="47%", fig.show="hold", fig.fullwidth=TRUE}
+
+figs_SG <- 
+  intersect(str_c(raaien_SG, ".png"),
             list.files(str_c(pad_figuren, "vast/")))
 
-caption_BOZ <- "Raaien in de Boven Zeeschelde"
+caption_SG <- str_c("Raaien uit de zone met grote saliniteitsgradiënt en het oligohalien in de Beneden Zeeschelde. Grens met schor (groen) en subtidaal (blauw) worden weergegeven met vertikale stippellijn (grenzen bepaald op basis van gegevens voor ", laatste_jaar, ").")
 
-knitr::include_graphics(str_c(pad_figuren, "vast/", figs_BOZ))
+knitr::include_graphics(str_c(pad_figuren, "vast/", figs_SG))
 
 ```
 
 <br/>
 
-```{r 130-figuur-raaien-zijrivieren, fig.cap=caption_ZIJ, out.width="46%", fig.show="hold"}
+\newpage
+
+```{r 130-figuur-raaien-OH, fig.cap=caption_OH, out.width="47%", fig.show="hold", fig.fullwidth=TRUE}
+
+figs_OH <- 
+  intersect(str_c(raaien_OH, ".png"),
+            list.files(str_c(pad_figuren, "vast/")))
+
+caption_OH <- str_c("Raaien uit het oligohalien in de Boven Zeeschelde. Grens met schor (groen) en subtidaal (blauw) worden weergegeven met vertikale stippellijn (grenzen bepaald op basis van gegevens voor ", laatste_jaar, ").")
+
+knitr::include_graphics(str_c(pad_figuren, "vast/", figs_OH))
+
+```
+
+<br/>
+
+\newpage
+
+```{r 130-figuur-raaien-ZL, fig.cap=caption_ZL, out.width="47%", fig.show="hold", fig.fullwidth=TRUE}
+
+figs_ZL <- 
+  intersect(str_c(raaien_ZL, ".png"),
+            list.files(str_c(pad_figuren, "vast/")))
+
+caption_ZL <- str_c("Raaien uit het zoet lange verblijftijd in de Boven Zeeschelde. Grens met schor (groen) en subtidaal (blauw) worden weergegeven met vertikale stippellijn (grenzen bepaald op basis van gegevens voor ", laatste_jaar, ").")
+
+knitr::include_graphics(str_c(pad_figuren, "vast/", figs_ZL))
+
+```
+
+<br/>
+
+\newpage
+
+```{r 130-figuur-raaien-ZK, fig.cap=caption_ZK, out.width="47%", fig.show="hold", fig.fullwidth=TRUE}
+
+figs_ZK <- 
+  intersect(str_c(raaien_ZK, ".png"),
+            list.files(str_c(pad_figuren, "vast/")))
+
+caption_ZK <- str_c("Raaien uit het zoet korte verblijftijd in de Boven Zeeschelde. Grens met schor (groen) en subtidaal (blauw) worden weergegeven met vertikale stippellijn (grenzen bepaald op basis van gegevens voor ", laatste_jaar, ").")
+
+knitr::include_graphics(str_c(pad_figuren, "vast/", figs_ZK))
+
+```
+
+<br/>
+
+\newpage
+
+```{r 130-figuur-raaien-zijrivieren, fig.cap=caption_ZIJ, out.width="47%", fig.show="hold", fig.fullwidth=TRUE}
 
 figs_ZIJ <- 
   intersect(str_c(raaien_ZIJ, ".png"),
             list.files(str_c(pad_figuren, "vast/")))
 
-caption_ZIJ <- "Raaien in de zijrivieren"
+caption_ZIJ <- str_c("Raaien uit Rupel, Durme en zijrivieren. Grens met schor (groen) en subtidaal (blauw) worden weergegeven met vertikale stippellijn (grenzen bepaald op basis van gegevens voor ", laatste_jaar, ").")
 
 knitr::include_graphics(str_c(pad_figuren, "vast/", figs_ZIJ))
 

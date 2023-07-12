@@ -79,6 +79,30 @@ tbl_vaste_raaien <-
 ```
 
 
+```{r}
+
+# tbl_vaste_raaien <-
+#   read_xlsx(path = str_c(pad_tabellen, "tbl_vaste_raaien_MONEOS.xlsx"))
+
+tbl_vaste_raaien <-
+  tbl_vaste_raaien %>% 
+  mutate(rivier = 
+           case_when(
+             OMES %in% 9:13 ~ "Beneden Zeeschelde",
+             !(OMES %in% 9:13) & rivier == "Zeeschelde" ~ "Boven Zeeschelde",
+             TRUE ~ rivier 
+           ),
+         rivier = 
+           case_when(
+             rivier == "Zijrivieren" ~ gebied,
+             TRUE ~ rivier
+           ),
+         OMES = factor(OMES, levels = c(9:19, "19  trGM", "Durme", "Rupel", ""))) %>% 
+  arrange(OMES, rivier, `afstand grens`)
+
+```
+
+
 ```{r wegschrijven gegevens}
 
 tbl_vaste_raaien %>% 
