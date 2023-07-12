@@ -54,22 +54,25 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
   # Om te starten met extractie van de gegevens uit de databank zie script 2017
   
  
-  data2020 <- read_excel(paste0(pad_data, "basis_sediment_SP20VLIZ.xlsx")) 
+  data2021 <- read_excel(paste0(pad_data, "basis_sediment_SP21VLIZ.xlsx")) 
   
    
-  data2020 <- data2020 %>% 
+  data2021 <- data2021 %>% 
     select(jaar, campagne, waterloop, tidaal, fysiotoop, locatie, X, Y, mediaan, OM, slib) %>% 
     gather("mediaan", "OM", "slib", key = variabele, value = waarde, na.rm = TRUE)  
   
   
-  dubbel <-data2020 %>%
+  dubbel <-data2021 %>%
     dplyr::group_by(jaar, campagne, waterloop, tidaal, fysiotoop, locatie, X, Y, variabele) %>%
     dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
     dplyr::filter(n > 1L)  
  
   
-  data <- read_excel(paste0(pad_data, "S_DS_V_004a_sediment_data2008_2019_rapportage2021.xlsx"))
+  data <- read_excel(paste0(pad_data, "S_DS_V_004a_sediment_data2008_2020_rapportage2022.xlsx"))
   
+  data <- data %>% 
+    select(jaar, campagne, waterloop, tidaal, fysiotoop, locatie, X, Y, variabele, waarde_punt) %>% 
+    rename(waarde = waarde_punt)
   
   ##promemory uit de dataset/databank zijn volgende data verwijderd bij de aanlevering naar VLIZ omdat ze foutief zijn gemeten:
   # foute data van GK 2015 intertidaal verwijderen
@@ -83,7 +86,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
                          # variabele %in% c("mediaan","slib") ))
   
   data <- data %>% 
-    rbind (data2020) %>% 
+    rbind (data2021) %>% 
     na.omit(TRUE)
 
 # template_data <- 
@@ -102,7 +105,7 @@ data weggeschreven naar `r paste0(pad_data, "template_data.csv")`
 
  file <- paste0(pad_data, "S_DS_V_004a_sediment_data2008_",(year(Sys.Date())-2),"_rapportage",year(Sys.Date()),".xlsx")
   
-  openxlsx::write.xlsx(data, file, row.names = FALSE, overwrite = TRUE)
+  openxlsx::write.xlsx(data, file, rowNames = FALSE, overwrite = TRUE)
 
   data %>% 
   write_delim(paste0(pad_data, "sediment_data.csv"),
