@@ -52,6 +52,8 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ```{r data}
 
+dpi <- 150
+
 jaar <- 2023
 campagne <- "C2022"
 campagne_jaren_EW <- 2018:2023
@@ -400,7 +402,7 @@ figuren_EW$fig[[1]]
 
 walk2(str_c("slik_profiel_EW_", figuren_EW$REEKSCODE), figuren_EW$fig, 
       ~ggsave(.y, file=str_c(pad_figuren, "early_warning/slik_profiel/", .x, ".png"), 
-              width=16, height=8, dpi= 350))
+              width=16, height=8, dpi = dpi))
 
 ```
 
@@ -602,11 +604,11 @@ fig_delta <-
     } else if ((sectie == "BOZ")) {
       tbl_raaien <- 
         tabel_raaien_vast %>% 
-        filter(rivier == "Zeeschelde" & !(OMES %in% 9:13))
+        filter(str_detect(rivier, "Zeeschelde") & !(OMES %in% 9:13))
     } else {
       tbl_raaien <- 
         tabel_raaien_vast %>% 
-        filter(rivier != "Zeeschelde")
+        filter(str_detect(rivier, "Zeeschelde", negate = TRUE))
     }
 
     raaien <- 
@@ -723,7 +725,7 @@ p <-
 p
 
 ggsave(file=str_c(pad_figuren, "early_warning/early_warning_slik_BEZ.png"), 
-              width=18, height=10, dpi= 350)
+              width=18, height=10, dpi = dpi)
 
 
 p <-
@@ -732,7 +734,7 @@ p <-
 p
 
 ggsave(file=str_c(pad_figuren, "early_warning/early_warning_slik_BOZ.png"), 
-              width=18, height=10, dpi= 350)
+              width=18, height=10, dpi = dpi)
 
 
 p <-
@@ -741,7 +743,7 @@ p <-
 p
 
 ggsave(file=str_c(pad_figuren, "early_warning/early_warning_slik_ZIJ.png"), 
-              width=18, height=10, dpi= 350)
+              width=18, height=10, dpi = dpi)
 
 ```
 

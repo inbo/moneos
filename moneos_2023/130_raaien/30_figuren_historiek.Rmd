@@ -48,6 +48,8 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ```{r data}
 
+dpi <- 150
+
 jaar <- 2023
 campagne <- "C2022"
 
@@ -355,7 +357,7 @@ fig_raai <-
 # 
 # walk2(str_c("Vast_", figuren_MONEOS$Naam), figuren_MONEOS$fig, 
 #       ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, "_", campagne, ".png"), 
-#               width=16, height=8, dpi= 350))
+#               width=16, height=8, dpi = dpi))
 
 figuren_MONEOS <-
   data_MONEOS %>% 
@@ -367,7 +369,7 @@ figuren_MONEOS$fig[[1]]
 
 walk2(figuren_MONEOS$REEKSCODE, figuren_MONEOS$fig, 
       ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, ".png"), 
-              width=16, height=8, dpi= 350))
+              width=16, height=8, dpi = dpi))
 
 
 figuren_MONEOS_slik <-
@@ -383,7 +385,7 @@ figuren_MONEOS_slik$fig[[1]]
 figuren_MONEOS_slik %>% 
   {.; walk2(str_c(.$REEKSCODE, "_slik"), .$fig, 
         ~ggsave(.y, file=str_c(pad_figuren, "vast/slik/", .x, ".png"), 
-                width=16, height=8, dpi= 350))}
+                width=16, height=8, dpi = dpi))}
 
 
 figuren_MONEOS_schor <-
@@ -399,7 +401,7 @@ figuren_MONEOS_schor$fig[[1]]
 figuren_MONEOS_schor %>% 
   {.; walk2(str_c(.$REEKSCODE, "_schor"), .$fig, 
         ~ggsave(.y, file=str_c(pad_figuren, "vast/schor/", .x, ".png"), 
-                width=16, height=8, dpi= 350))}
+                width=16, height=8, dpi = dpi))}
 
 ```
 
