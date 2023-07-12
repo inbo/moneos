@@ -152,8 +152,8 @@ fit3 <- lm(mediaan ~ slib, data = test)
 ggplotRegression(fit3)
 
 testslib <- test %>% 
-  filter(slib > 25) %>%  #slibbodem
-  filter(OM < 25) # geen veenbodem - arbitrair gekozen grens
+  dplyr::filter(slib > 25) %>%  #slibbodem
+  dplyr::filter(OM < 25) # geen veenbodem - arbitrair gekozen grens
   
 fit4 <- lm(OM ~ mediaan, data = testslib)
 ggplotRegression(fit4)
@@ -237,8 +237,8 @@ var <- "mediaan"
  
    grafdat <- sediment_datab
    kijk <- grafdat %>% 
-     filter(waterloop == "Zeeschelde I") %>% 
-     filter(tidaal == "intertidaal")
+     dplyr::filter(waterloop == "Zeeschelde I") %>% 
+     dplyr::filter(tidaal == "intertidaal")
    
    
   ggplot(data = subset(grafdat,!is.na(fysiotoop)), 
@@ -304,7 +304,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Mediane korrelgrootte (µm)") 
@@ -345,14 +345,14 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Mediane korrelgrootte (µm)") 
 
 grafdat %>% 
-  filter(jaar > 2016) %>%
-  filter(fysiotoop == "diep") %>% 
+  dplyr::filter(jaar > 2016) %>%
+  dplyr::filter(fysiotoop == "diep") %>% 
   ggplot(aes(x = waterloop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   xlab("") + ylab("Mediane korrelgrootte (µm)") 
@@ -360,23 +360,23 @@ grafdat %>%
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"diep.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>%
-  filter(fysiotoop == "diep") %>%
+  dplyr::filter(jaar > 2016) %>%
+  dplyr::filter(fysiotoop == "diep") %>%
   ggplot(aes(x = waterloop, y = waarde)) +
   geom_boxplot(aes(color = campagne)) +
   xlab("") + ylab("Mediane korrelgrootte (µm)") 
 
 
 grafdat %>% 
-  filter(jaar > 2016) %>%
-  filter(fysiotoop == "matig diep") %>% 
+  dplyr::filter(jaar > 2016) %>%
+  dplyr::filter(fysiotoop == "matig diep") %>% 
   ggplot(aes(x = waterloop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   xlab("") + ylab("Mediane korrelgrootte (µm)") 
 
 grafdat %>% 
-  filter(jaar > 2016) %>%
-  filter(fysiotoop == "ondiep") %>% 
+  dplyr::filter(jaar > 2016) %>%
+  dplyr::filter(fysiotoop == "ondiep") %>% 
   ggplot(aes(x = waterloop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   xlab("") + ylab("Mediane korrelgrootte (µm)") 
@@ -394,7 +394,13 @@ var <- "mediaan"
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
   grafdat <- sediment_datab
-  ggplot(grafdat, 
+
+  ###maak selectie indien geen extra zijrivieren bemonsterd werden
+grafdat <- grafdat %>% 
+  dplyr::filter(waterloop == "Durme"| waterloop == "Rupel")
+
+
+    ggplot(grafdat, 
          aes(x=factor(jaar),y=waarde)) +
     geom_boxplot(aes(fill=fysiotoop)) + 
     scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
@@ -404,23 +410,25 @@ var <- "mediaan"
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,".jpg"))
 
 
-
 ggplot(grafdat,
          aes(x=jaar,y=waarde)) +
     geom_point(aes(color=fysiotoop)) + 
     geom_smooth(aes(color=fysiotoop)) +
-    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Mediane korrelgrootte (µm)") +
+    facet_wrap(~waterloop, ncol=2) + xlab("") + ylab("Mediane korrelgrootte (µm)") +
     scale_x_continuous (name = "jaar",
                       breaks = grafdat$jaar,
-                      labels = grafdat$jaar) 
+                      labels = grafdat$jaar) +
+  ylim(0,250)+
+  theme(axis.text.x = element_text(angle = 90))
 
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
-  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Mediane korrelgrootte (µm)") 
+  facet_wrap(~waterloop, ncol=2) + xlab("") + ylab("Mediane korrelgrootte (µm)") +
+  ylim(0,200)
 ```
 
 ```{r Mediaan-zijrivieren-subtidaal,fig.height=5, fig.width=8 }
@@ -434,6 +442,12 @@ var <- "mediaan"
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
   grafdat <- sediment_datab
+  
+  ###maak selectie indien geen extra zijrivieren bemonsterd werden
+grafdat <- grafdat %>% 
+  dplyr::filter(waterloop == "Durme"| waterloop == "Rupel")
+
+  
   ggplot(grafdat, 
          aes(x=factor(jaar),y=waarde)) +
     geom_boxplot(aes(fill=fysiotoop)) + 
@@ -449,7 +463,7 @@ ggplot(grafdat,
          aes(x=jaar,y=waarde)) +
     geom_point(aes(color=fysiotoop)) + 
     geom_smooth(aes(color=fysiotoop)) +
-    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Mediane korrelgrootte (µm)") +
+    facet_wrap(~waterloop, ncol=2) + xlab("") + ylab("Mediane korrelgrootte (µm)") +
     scale_x_continuous (name = "jaar",
                       breaks = grafdat$jaar,
                       labels = grafdat$jaar) 
@@ -457,10 +471,10 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
-  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Mediane korrelgrootte (µm)") 
+  facet_wrap(~waterloop, ncol=2) + xlab("") + ylab("Mediane korrelgrootte (µm)") 
 ```
 
 ```{r Slib-Zeeschelde-intertidaal,fig.height=5, fig.width=8 }
@@ -497,7 +511,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
@@ -539,7 +553,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
@@ -582,7 +596,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
@@ -624,7 +638,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
@@ -661,15 +675,17 @@ ggplot(grafdat,
     facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Organisch materiaal %") +
     scale_x_continuous (name = "jaar",
                       breaks = grafdat$jaar,
-                      labels = grafdat$jaar) 
+                      labels = grafdat$jaar) +
+  ylim(0,20)
 
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
-  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Organisch materiaal %") 
+  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Organisch materiaal %") +
+  ylim(0,20)
                  
 
 ```
@@ -708,7 +724,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Organisch materiaal %") 
@@ -750,7 +766,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Organisch materiaal %") 
@@ -769,6 +785,11 @@ var <- "OM"
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
   grafdat <- sediment_datab
+  
+  ###maak selectie indien geen extra zijrivieren bemonsterd werden
+grafdat <- grafdat %>% 
+  dplyr::filter(waterloop == "Durme"| waterloop == "Rupel")
+
   ggplot(grafdat, 
          aes(x=factor(jaar),y=waarde)) +
     geom_boxplot(aes(fill=fysiotoop)) + 
@@ -792,7 +813,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,var,"_",deel,"_",tidaal,"trend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Organisch materiaal %") 
@@ -805,7 +826,7 @@ grafdat %>%
 
 tabel_jaar_waarden_Durme <- 
   sediment_data %>%
-  filter(waterloop == "Durme") %>% 
+  dplyr::filter(waterloop == "Durme") %>% 
   group_by(jaar,campagne,tidaal) %>% 
   summarise (count = n_distinct(locatie)) %>% 
   spread(tidaal, count)
@@ -827,10 +848,10 @@ var <- "slib"
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
   grafdat <- sediment_datab %>% 
-    filter (waterloop == "Durme") 
+    dplyr::filter (waterloop == "Durme") 
     
   grafdat %>% 
-    filter(jaar == 2011| jaar > 2015) %>% 
+    dplyr::filter(jaar == 2011| jaar > 2015) %>% 
     ggplot(aes(x=factor(jaar),y=waarde)) +
     geom_boxplot(aes(fill=fysiotoop)) + 
     xlab("") + ylab("slib % intertidaal")
@@ -867,7 +888,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durmetrend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
@@ -885,14 +906,14 @@ var <- "slib"
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
   grafdat <- sediment_datab %>% 
-    filter (waterloop == "Durme") 
+    dplyr::filter (waterloop == "Durme") 
     
   
  grafdat %>% 
-    filter(jaar == 2012| jaar > 2015) %>% 
+    dplyr::filter(jaar == 2012| jaar > 2015) %>% 
     ggplot(aes(x=factor(jaar),y=waarde)) +
     geom_boxplot(aes(fill=fysiotoop)) + 
-    xlab("") + ylab("slib % intertidaal")
+    xlab("") + ylab("slib % subtidaal")
 
 
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durme.jpg"))
@@ -906,13 +927,6 @@ ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durme.jpg"
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"boxDurme.jpg"))
 
 
-ggplot(grafdat, 
-         aes(x=factor(jaar),y=waarde)) +
-    geom_boxplot(aes()) + 
-    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
-    # coord_trans(y="log") +
-    xlab("") + ylab("slib % subtidaal")
-ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"boxDurme.jpg"))
 
 ####################
 ##mediaan intertidaal
@@ -927,7 +941,7 @@ var <- "mediaan"
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
   grafdat <- sediment_datab %>% 
-    filter (waterloop == "Durme") 
+    dplyr::filter (waterloop == "Durme") 
     
   
   ggplot(grafdat, 
@@ -953,7 +967,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durmetrend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("mediaan") 
@@ -971,7 +985,7 @@ var <- "mediaan"
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
   grafdat <- sediment_datab %>% 
-    filter (waterloop == "Durme") 
+    dplyr::filter (waterloop == "Durme") 
     
   
   ggplot(grafdat, 
@@ -996,7 +1010,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durmetrend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("mediaan")
@@ -1014,7 +1028,7 @@ var <- "OM"
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
   grafdat <- sediment_datab %>% 
-    filter (waterloop == "Durme") 
+    dplyr::filter (waterloop == "Durme") 
     
   
   ggplot(grafdat, 
@@ -1047,7 +1061,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durmetrend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("OM%") 
@@ -1065,7 +1079,7 @@ var <- "OM"
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
   grafdat <- sediment_datab %>% 
-    filter (waterloop == "Durme") 
+    dplyr::filter (waterloop == "Durme") 
     
   
   ggplot(grafdat, 
@@ -1090,7 +1104,7 @@ ggplot(grafdat,
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"Durmetrend.jpg"))
 
 grafdat %>% 
-  filter(jaar > 2016) %>% 
+  dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("OM%")
