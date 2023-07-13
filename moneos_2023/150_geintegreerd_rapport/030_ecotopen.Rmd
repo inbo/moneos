@@ -2,7 +2,7 @@
 editor_options: 
   markdown: 
     wrap: sentence
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r 030-hoofdstuk, include=FALSE}
@@ -88,7 +88,8 @@ In het tot nu toe toegepaste Zeeschelde ecotopenstelsel 1.0 werden subtidale (wa
 Van Braeckel *et al* (2018; 2020) onderzochten ondertussen de relatie tussen abiotische omgevingskenmerken en het voorkomen van ongewervelde bodemdiergemeenschappen.
 Op basis van hun bevindingen werd het ecotopenstelsel Zeeschelde 2.0 voorgesteld.
 In deze rapportage wordt de ecotopenkaart voor de Beneden-Zeeschelde volgens beide ecotopenstelsels voorgesteld en vergeleken.
-De kaart van het ecotopenstelsel 1.0 bestaat van `r laatste_jaar` tot `r vroegste_jaar`, terwijl de kaart van het ecotopenstelsel 2.0 maar teruggerekend is tot en met 2019.
+De kaart van het ecotopenstelsel 1.0 bestaat van `r vroegste_jaar` tot `r laatste_jaar`, terwijl de kaart van het ecotopenstelsel 2.0 teruggerekend is tot en met 2019.
+De ecotopenkaart Zeeschelde 2.0 is voor het eerst gerapporteerd in het MONEOS rapport van 2022 (kaart van toestand 2020) (Mertens & Van Braeckel, 2022).
 
 ## Methodologie
 
@@ -111,7 +112,7 @@ In Tabel \@ref(tab:030-tabel-klassen-E1) wordt ook een categorie zeer diep subti
 In de ecotopenkaart wordt dit samengenomen met het diep subtidaal.
 
 In de **litorale zone** worden ecotopen onderscheiden op basis van droogvalpercentage en geomorfologie.
-Litorale fysiotopen liggen tussen gemiddeld laagwater en gemiddelde hoogwater bij springtij (GLWS-GHWS).
+Litorale fysiotopen liggen tussen gemiddeld laagwater en gemiddeld hoogwater bij springtij (GLWS-GHWS).
 De gebruikte referenties zijn de hoogte bij LW30 (het 30e percentiel van de laagwaters) en bij HW85 (het 85e percentiel van de hoogwaters).
 Er worden 3 litorale zones onderscheiden op basis van het 25e en 75e percentiel van de droogvalduur (DD):
 
@@ -170,36 +171,26 @@ Vanaf 2019 weerspiegelen de wijzigenen in het hoog supralitoraal opnieuw de natu
 
 ```{r 030-tabel-klassen-E1, results="asis", fig.show='hide', out.width="100%"}
 
-# caption_tab <- "Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen."
+caption_tab <- "Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen."
+
+img_file <- paste0(pad_tabellen, "030_tabel_klassen_E1.png")
+
+figtab(knitr::opts_current$get()$label,
+       img_file,
+       caption_tab)
+
+# # Tabel ecotoopklassen obv fysiotoop en geomorf
+# ecotopen_df <- read_xlsx(path = str_c(pad_tabellen, "Klassen_Fysio_Geo_Eco.xlsx"))
 # 
-# img_file <- paste0(pad_tabellen, "030_tabel_klassen_E1.png")
+# cap_ecotopen <- "Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen"
 # 
-# figtab(knitr::opts_current$get()$label, 
-#        img_file,
-#        caption_tab)
-
-# Tabel ecotoopklassen obv fysiotoop en geomorf
-ecotopen_df <- read_xlsx(path = str_c(pad_tabellen, "Klassen_Fysio_Geo_Eco.xlsx"))
-
-cap_ecotopen <- "Fysiotoopklassen en geomorftypes worden gecombineerd tot ecotopenklassen"
-
-ecotopen_df  %>% 
-  knitr::kable(booktabs = TRUE) %>% 
-  kable_styling() %>% 
-  collapse_rows(columns = c(1, 2)) %>% 
-  row_spec(0, background = "lightgray") %>% 
-  row_spec(c(5:7, 11:13, 20:21), background = "#F6F6F6")
+# ecotopen_df  %>% 
+#   knitr::kable(booktabs = TRUE,
+#                caption = cap_ecotopen) %>% 
+#   collapse_rows(columns = c(1, 2)) %>% 
+#   row_spec(0, background = "lightgray") %>% 
+#   row_spec(c(5:7, 11:13, 20:21), background = "#F6F6F6")
   
-  # knitr::kable(booktabs = TRUE,
-  #              caption = cap_ecotopen,
-  #              align = c("l", rep("c", 12)),
-  #              col.names = c("", rep(c("Doel", "Antw.", "Steend.", "Branst"), 3)),
-  #              escape = FALSE) %>%
-  # add_header_above(c(" " = 1, "voorjaar" = 4, "zomer" = 4, "najaar" = 4)) %>%
-  # kable_styling("striped",
-  #               latex_options = c("striped", "scale_down"),
-  #               font_size = 15)
-
 ```
 
 ### Zeeschelde ecotopen 2.0
@@ -280,42 +271,25 @@ Tabel \@ref(tab:030-tabel-oppervlakte-BEZ) toont de oppervlaktes per ecotoop in 
 De korte en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-tabel-evolutie-BEZ) via de absolute verandering (ha) en de procentuele verandering (%) tussen de 2 jaren.
 Voor de korte termijn evolutie wordt het huidige jaar vergeleken met het jaar ervoor, terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (`r vroegste_jaar`).
 
-In `r laatste_jaar` is het **sublitoraal** met 0,7 hectare toegenomen ten opzichte van `r laatste_jaar - 1` (Tabel \@ref(tab:030-tabel-evolutie-BEZ)), en hiermee behaalt het sublitoraal in `r laatste_jaar` de hoogste oppervlakte sinds de start van de kartering (Tabel \@ref(tab:030-tabel-oppervlakte-BEZ)).
+In `r laatste_jaar` is het **sublitoraal** met 0,7 hectare toegenomen ten opzichte van `r laatste_jaar - 1` (Tabel \@ref(tab:030-tabel-evolutie-BEZ)) en hiermee behaalt het sublitoraal in `r laatste_jaar` de hoogste oppervlakte sinds de start van de kartering (Tabel \@ref(tab:030-tabel-oppervlakte-BEZ)).
 Over de gehele rapportage periode (lange termijn evolutie) is het sublitoraal in totaal met iets meer dan 15 ha toegenomen.
 
-In het **litoraal** is het zacht substraat in totaal ook met 0,7 hectare toegenomen sinds `r laatste_jaar - 1` Dit komt door een grote toename in het middelhoog slik, aangezien zowel het laag slik als het hoog slik zijn afgenomen in oppervlakte.
+In het **litoraal** is het zacht substraat in totaal ook met 0,7 hectare toegenomen sinds `r laatste_jaar - 1`.
+Dit komt door een grote toename in het middelhoog slik, aangezien zowel het laag slik als het hoog slik zijn afgenomen in oppervlakte.
 Deze toename in het middelhoog slik komt na een aanhoudende afname sinds 2018, maar de huidige oppervlakte is nog steeds lager dan deze in 2019.
 Sinds de start van de rapportage is het zacht litoraal met ongeveer 12 hectare gestegen, voornamelijk door een stijging in het hoog slik.
 Ook in het natuurlijk hard substraat is het litoraal veel gestegen sinds `r vroegste_jaar`, namelijk 14 hectare (een stijging van bijna 80% van de initiële oppervlakte).
 
 In het **supralitoraal** is de oppervlakte potentiële pionierzone hersteld naar de oppervlakte in `r laatste_jaar - 2`.
 In `r laatste_jaar - 1` werd een grote toename waargenomen omwille van een tijdelijke situatie van antropogene morfologische veranderingen, voornamelijk in de zone rondom Fort Filip.
-De herinrichting is momenteel afgerond en de kaart weerspiegelt nu de nieuwe situatie (*sub-kaart toevoegen?*).
+De herinrichting is momenteel afgerond en de kaart weerspiegelt nu de nieuwe situatie (Figuur \@ref(fig:030-figuur-kaart-ff)).
 De oppervlakte schor is met 18 hectare toegenomen ten opzichte van het voorgaande jaar.
-Voor een gedeelte is deze schortoename zichtbaar in de GGG Burchtse Weel, waarbij grote delen potentiële pionierzone inmiddels begroeid zijn (*kaartje*).
+Voor een gedeelte is deze schortoename zichtbaar in de GGG Burchtse Weel, waarbij grote delen potentiële pionierzone inmiddels begroeid zijn (Figuur \@ref(fig:030-figuur-kaart-bw)).
 In `r laatste_jaar - 1` was het hoog supralitoraal sterk toegenomen (bijna 17 ha) door een wijziging in methodologie, maar in `r laatste_jaar` is de oppervlakte opnieuw afgenomen met 8,6 hectare voor het begroeide hoog supralitoraal.
 Het hoog supralitoraal wat met breuksteen bedekt is (hard antropogeen) is juist toegenomen met bijna 4 hectare.
 In totaal is het antropogeen hard substraat (de breuksteenzones zowel in het litoraal als supralitoraal) toegenomen met bijna 5 hectare sinds het voorgaande jaar.
 
 De totale oppervlakte van de Beneden-Zeeschelde ecotopen is met 5,3 ha gestegen.
-
-\-\-\-- nog te checken / aanpassen -----
-
-...Het grotendeel hiervan is het gevolg van kleine uitbreidingen in de GGG's, met name het Bazels GGG.
-
-...De verandering in potentiële pionierzone is voornamelijk het resultaat van antropogene wijzigingen in de waterstanden van de GGGs en wijzigingen in de morfologie zoals het verleggen van dijken.
-Een toename in estuarien gebied (gereflecteerd in meer potentiële pionierzone) door gewijzigde waterstanden is bijvoorbeeld het geval in het Bazels GGG.).
-
-Figuur \@ref(fig:030-figuur-kaart-verschil-vs) toont de situatie in 2019 en 2020 ter hoogte van de Verlegde Schijn.
-Op deze plaats is een dijkaanpassing gebeurd die in oktober 2019 voltooid is.
-Op de kaart is te zien dat de er een grote hoeveelheid hoog slik bij is gekomen en dat er middelhoog slik is verdwenen.
-De totale oppervlakte toegevoegd bedraagt ongeveer 1 ha, terwijl het deel verwijderd ongeveer 0.5 ha bedraagt.
-In 2019 was er al ongeveer 0.25 ha aan schor verdwenen sinds 2018.
-Er is dus een totale gewonnen oppervlakte van ongeveer 0.25 ha sinds de start van de dijkverlegging.
-
-...
-
-\-\-\-- nog te checken / aanpassen -----
 
 <br/>
 
@@ -343,11 +317,19 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-```{r 030-figuur-kaart-verschil-vs, fig.cap=figuur_kaart_vs, out.width="100%"}
+```{r 030-figuur-kaart-ff, fig.cap=figuur_kaart_ff, out.width="100%"}
 
-figuur_kaart_vs <- "Verschil ecotopenkaart dijkverlegging Verlegde Schijn 2019 (links) en 2020 (rechts)."
+figuur_kaart_ff <- "Ecotopenkaart 2021 Fort Filip vernieuwde zone (centraal onder), overzichtskaart met rode kader als indicator detailkaart (linksboven), ecotopenkaart 2020 Fort Filip tussentijdse fase (rechtsboven)."
 
-knitr::include_graphics(paste0(pad_figuren, "003_figuur_verschil_2020_2019_VerlegdeSchijn.png"))
+knitr::include_graphics(paste0(pad_figuren, "030_figuur_FortFilip_2021.png"))
+
+```
+
+```{r 030-figuur-kaart-bw, fig.cap=figuur_kaart_ff, out.width="100%"}
+
+figuur_kaart_ff <- "Ecotopenkaart 2021 Burchtse Weel schoruitbreiding (centraal onder), overzichtskaart met rode kader als indicator detailkaart (linksboven), ecotopenkaart 2020 Burchtse Weel (rechtsboven)."
+
+knitr::include_graphics(paste0(pad_figuren, "030_figuur_BurchtseWeel_2021.png"))
 
 ```
 
@@ -499,6 +481,28 @@ MONEOS -- Geïntegreerd datarapport INBO: Toestand Zeeschelde 2017: Monitoringso
 Instituut voor Natuur- en Bosonderzoek.
 <https://doi.org/10.21436/inbor.15000892>
 
+Mertens A.
+& Van Braeckel A.
+(2021).
+Ecotopen *in* Van Ryckegem, G., Vanoverbeke, J., Van Braeckel, A., Van de Meutter, F., Mertens, W., Mertens, A., & Breine, J.
+(2021).
+MONEOS-Datarapport INBO: toestand Zeeschelde 2020.
+Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
+(Rapporten van het Instituut voor Natuur- en Bosonderzoek; Nr. 47).
+Instituut voor Natuur- en Bosonderzoek.
+<https://doi.org/10.21436/inbor.52484672>
+
+Mertens, A.
+& Van Braeckel A.
+(2022).
+Ecotopen *in* Van Ryckegem, G., Vanoverbeke, J., Van de Meutter, F., Vandevoorde, B., Mertens, W., Mertens, A., Van Braeckel, A., Smeekens, V., Thibau, K., Bezdenjesnji, O., Buerms, D., De Regge, N., Hessel, K., Lefranc, C., Soors, J., Van Lierop, F.
+(2022).
+MONEOS ‐ Geïntegreerd datarapport INBO: Toestand Zeeschelde 2021.
+Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
+Rapporten van het Instituut voor Natuur‐ en Bosonderzoek 2022 (Rapporten van het Instituut voor Natuur‐ en Bosonderzoek 2022 (26)).
+Instituut voor Natuur‐ en Bosonderzoek, Brussel.
+DOI: [https://doi.org/10.21436/inbor.85928183](https://doi.org/10.21436/inbor.52484672){.uri}
+
 Van Braeckel, A., Speybroeck, J., Vanoverbeke, J., Van Ryckegem, G., & Van den Bergh, E.
 (2018).
 Habitatmapping Zeeschelde subtidaal: Relatie tussen bodemdieren en hydro- en morfodynamiek.
@@ -512,16 +516,5 @@ Habitatmapping Zeeschelde Slik: habitatkarakteristieken van bodemdieren en garna
 (Rapporten van het Instituut voor Natuur- en Bosonderzoek; Nr. 31).
 Instituut voor Natuur- en Bosonderzoek.
 <https://doi.org/10.21436/inbor.18643770>
-
-Van Braeckel A.
-& Mertens A.
-(2021).
-Ecotopen *in* Van Ryckegem, G., Vanoverbeke, J., Van Braeckel, A., Van de Meutter, F., Mertens, W., Mertens, A., & Breine, J.
-(2021).
-MONEOS-Datarapport INBO: toestand Zeeschelde 2020.
-Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
-(Rapporten van het Instituut voor Natuur- en Bosonderzoek; Nr. 47).
-Instituut voor Natuur- en Bosonderzoek.
-<https://doi.org/10.21436/inbor.52484672>
 
 <br/>

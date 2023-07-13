@@ -25,6 +25,8 @@ library(INBOtheme)
 library(rprojroot)
 library(readxl)
 library(writexl)
+library(flextable)
+library(officer)
 
 ```
 
@@ -121,8 +123,28 @@ ecotopen_df <- data.frame(ecotopen) %>%
   arrange(Ecotoop) %>% 
   relocate(Fysiotoop, Geomorftype, Ecotoop)
 
-write_xlsx(ecotopen_df,
-           path = str_c(pad_tabellen, "Klassen_Fysio_Geo_Eco.xlsx"))
+```
+
+```{r make flextable}
+#### E1 klassen tabel ####
+
+set_flextable_defaults(background.color = "white")
+
+row_div <- c(5:7, 11:13, 20:21)
+
+flt_klassen <- 
+  ecotopen_df %>% 
+    flextable() %>% 
+    merge_v() %>% 
+    bold(i = 1, part = "header") %>% 
+    width(j = "Fysiotoop", width = 40, unit = "mm") %>%
+    width(j = "Geomorftype", width = 45, unit = "mm") %>% 
+    width(j = "Ecotoop", width = 67, unit = "mm") %>% 
+    bg(i = row_div, bg = "#D9D9D9", part = "body") %>% 
+    hline_bottom(part = "body", border = fp_border(color = "#D9D9D9", width = 1.5))
+
+output_name_klassen <- "030_tabel_klassen_E1.png"
+flt_klassen %>% save_as_image(path = str_c(pad_tabellen, output_name_klassen))
 
 ```
 
