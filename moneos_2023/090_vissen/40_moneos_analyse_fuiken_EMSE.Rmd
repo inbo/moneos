@@ -493,24 +493,38 @@ aantal_soorten_locatie <-
   distinct(jaar, seizoen, locatie, soort) %>% 
   count(jaar, seizoen, locatie, name = "soorten") %>% 
   group_by(jaar, locatie) %>%
-  summarise(soorten = round(mean(soorten))) %>% 
+  summarise(soorten_gem = round(mean(soorten))) %>% 
   ungroup() %>% 
+  left_join(data_fuiken %>% 
+              filter(aantal > 0) %>% 
+              distinct(jaar, locatie, soort) %>% 
+              count(jaar, locatie, name = "soorten_tot")) %>% 
   bind_rows(data_fuiken %>% 
               filter(aantal > 0) %>% 
               distinct(jaar, seizoen, soort) %>% 
               count(jaar, seizoen, name = "soorten") %>% 
               group_by(jaar) %>% 
-              summarise(soorten = round(mean(soorten))) %>% 
+              summarise(soorten_gem = round(mean(soorten))) %>% 
               ungroup() %>% 
-              mutate(locatie = "totaal over locaties")) %>% 
+              mutate(locatie = "totaal over locaties") %>% 
+              left_join(data_fuiken %>% 
+                          filter(aantal > 0) %>% 
+                          distinct(jaar, soort) %>% 
+                          count(jaar, name = "soorten_tot") %>% 
+                          mutate(locatie = "totaal over locaties"))) %>% 
   mutate(locatie = factor(locatie, levels = c(levels_locatie, "totaal over locaties")))
 
 aantal_soorten_locatie %>% 
-  ggplot(aes(locatie, soorten, fill = ordered(jaar), color = ordered(jaar))) +
+  ggplot(aes(locatie, soorten_gem, group = jaar)) +
   geom_col(position = position_dodge(width = 0.8),
            width = 0.6,
-           alpha = 0.8) +
-  geom_text(aes(y = soorten + 1, label = soorten),
+           linewidth = 1) +
+  geom_col(aes(y = soorten_tot, fill = ordered(jaar), color = ordered(jaar)),
+           position = position_dodge(width = 0.8),
+           width = 0.6,
+           linewidth = 1,
+           alpha = 0.75) +
+  geom_text(aes(y = soorten_tot + 1, label = soorten_tot),
             position = position_dodge(width = 0.8),
             size = 1.5, color = "steelblue4", fontface = "bold") +
   labs(fill = "jaar",
