@@ -306,17 +306,18 @@ data_fuiken <-
   data_fuiken %>% 
   filter(soort %in% soorten_vis)
 
-# soortenlijst <- 
-#   read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"), 
-#             sheet = "EMSE") %>% 
-#   select(-inEMSE, -exoot, -opmerking)
-# 
-# soorten_fuiken_sheet <-
-#   soortenlijst %>% 
-#   filter(!is.na(fuiken)) %>% 
-#   pull(soort)
-# 
-# setdiff(soorten_fuiken_sheet, soorten_vis)
+soortenlijst <-
+  read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"),
+            sheet = "EMSE") %>%
+  select(-inEMSE, -exoot, -opmerking)
+
+soorten_fuiken_sheet <-
+  soortenlijst %>%
+  filter(!is.na(fuiken)) %>%
+  pull(soort)
+
+setdiff(soorten_fuiken_sheet, soorten_vis)
+setdiff(soorten_vis, soorten_fuiken_sheet)
 
 ```
 
@@ -571,10 +572,11 @@ sheets_figuren[["aantal_soorten_seizoen"]] <-
               values_from = soorten)
 
 sheets_figuren[["aantal_soorten_locatie"]] <- 
-  aantal_soorten_locatie %>% 
-  pivot_wider(id_cols = c(jaar),
-              names_from = locatie,
-              values_from = soorten)
+  aantal_soorten_locatie
+# %>% 
+#   pivot_wider(id_cols = c(jaar),
+#               names_from = locatie,
+#               values_from = soorten)
 
 sheets_figuren[["aantal_soorten_totaal"]] <- 
   aantal_soorten_totaal
@@ -674,10 +676,12 @@ data_soorten_nieuw <-
          aantal > 0,
          soort %in% soorten_nieuw)
 
-data_soorten_nieuw %>% 
-  ggplot(aes(seizoen, aantal)) +
-  geom_col(aes(fill = soort)) +
-  facet_wrap(~locatie)
+if (nrow(data_soorten_nieuw) > 0) {
+  data_soorten_nieuw %>% 
+    ggplot(aes(seizoen, aantal)) +
+    geom_col(aes(fill = soort)) +
+    facet_wrap(~locatie)
+}
 
 sheets[["nieuwe_soorten"]] <- 
   data_soorten_nieuw %>% 

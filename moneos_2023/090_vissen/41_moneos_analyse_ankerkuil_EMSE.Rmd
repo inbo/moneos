@@ -292,6 +292,20 @@ data_ankerkuil <-
   data_ankerkuil %>% 
   filter(soort %in% soorten_vis)
 
+
+# soortenlijst <-
+#   read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"),
+#             sheet = "EMSE") %>%
+#   select(-inEMSE, -exoot, -opmerking)
+# 
+# soorten_fuiken_sheet <-
+#   soortenlijst %>%
+#   filter(!is.na(ankerkuil)) %>%
+#   pull(soort)
+# 
+# setdiff(soorten_fuiken_sheet, soorten_vis)
+# setdiff(soorten_vis, soorten_fuiken_sheet)
+
 ```
 
 
@@ -561,10 +575,11 @@ sheets_figuren[["aantal_soorten_seizoen"]] <-
               values_from = soorten)
 
 sheets_figuren[["aantal_soorten_locatie"]] <- 
-  aantal_soorten_locatie %>% 
-  pivot_wider(id_cols = c(jaar),
-              names_from = locatie,
-              values_from = soorten)
+  aantal_soorten_locatie
+# %>% 
+#   pivot_wider(id_cols = c(jaar),
+#               names_from = locatie,
+#               values_from = soorten)
 
 sheets_figuren[["aantal_soorten_totaal"]] <- 
   aantal_soorten_totaal
@@ -582,21 +597,21 @@ tabel_aantal_soorten <-
   distinct(seizoen, locatie, soort) %>% 
   count(seizoen, locatie, name = "soorten") %>% 
   bind_rows(data_ankerkuil %>% 
-  filter(soort != "haringachtigen") %>% 
+              filter(soort != "haringachtigen") %>% 
               filter(jaar == laatste_jaar,
                      aantal > 0) %>% 
               distinct(locatie, soort) %>% 
               count(locatie, name = "soorten") %>% 
               mutate(seizoen = "totaal over seizoenen")) %>% 
   bind_rows(data_ankerkuil %>% 
-  filter(soort != "haringachtigen") %>% 
+              filter(soort != "haringachtigen") %>% 
               filter(jaar == laatste_jaar,
                      aantal > 0) %>% 
               distinct(seizoen, soort) %>% 
               count(seizoen, name = "soorten") %>% 
               mutate(locatie = "totaal over locaties")) %>% 
   bind_rows(data_ankerkuil %>% 
-  filter(soort != "haringachtigen") %>% 
+              filter(soort != "haringachtigen") %>% 
               filter(jaar == laatste_jaar,
                      aantal > 0) %>% 
               distinct(soort) %>% 
@@ -646,6 +661,7 @@ sheets[["gevangen_soorten"]] <- tabel_gevangen_soorten
 
 (soorten_historisch <-
   data_ankerkuil %>% 
+  filter(soort != "haringachtigen") %>% 
   filter(jaar != laatste_jaar,
          aantal > 0) %>% 
   distinct(soort) %>% 
@@ -654,6 +670,7 @@ sheets[["gevangen_soorten"]] <- tabel_gevangen_soorten
 
 (soorten_recent <-
   data_ankerkuil %>% 
+  filter(soort != "haringachtigen") %>% 
   filter(jaar == laatste_jaar,
          aantal > 0) %>% 
   distinct(soort) %>% 
@@ -665,15 +682,18 @@ sheets[["gevangen_soorten"]] <- tabel_gevangen_soorten
 
 data_soorten_nieuw <-
   data_ankerkuil %>% 
+  filter(soort != "haringachtigen") %>% 
   left_join(locatie_scheldezone) %>% 
   filter(jaar == laatste_jaar,
          aantal > 0,
          soort %in% soorten_nieuw)
 
-data_soorten_nieuw %>% 
-  ggplot(aes(seizoen, aantal)) +
-  geom_col(aes(fill = soort)) +
-  facet_wrap(~locatie)
+if (nrow(data_soorten_nieuw) > 0) {
+  data_soorten_nieuw %>% 
+    ggplot(aes(seizoen, aantal)) +
+    geom_col(aes(fill = soort)) +
+    facet_wrap(~locatie)
+}
 
 sheets[["nieuwe_soorten"]] <- 
   data_soorten_nieuw %>% 
@@ -2022,12 +2042,14 @@ meta_data <-
             laatste_jaar = laatste_jaar,
             aantal_soorten = 
               data_ankerkuil %>% 
+              filter(soort != "haringachtigen") %>% 
               filter(!is.na(aantal),
                      aantal > 0) %>% 
               distinct(soort) %>% 
               nrow(),
             aantal_soorten_laatste_jaar = 
               data_ankerkuil %>% 
+              filter(soort != "haringachtigen") %>% 
               filter(!is.na(aantal),
                      aantal > 0,
                      jaar == laatste_jaar) %>% 
