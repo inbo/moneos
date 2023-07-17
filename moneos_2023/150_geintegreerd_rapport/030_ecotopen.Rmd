@@ -225,7 +225,7 @@ figtab(knitr::opts_current$get()$label,
 
 In de **litorale zone** werden de grenswaarden van de droogliggingsduurklassen aangepast.
 Deze grenswaarden zijn bovendien anders in de brakke zone dan in de rest van de Zeeschelde (oligohalien en zoet) (Tabel \@ref(tab:030-tabel-slik-ecotopen)).
-De grens tussen laag en middelhoog slik blijft 25%DD in saliniteitszones "Mesohalien" en "Zone met sterke saliniteitsgradiënt" (brak), maar verschuift naar 35%DD in de rest van de Zeeschelde (Figuur @ref(fig:030-figuur-salzones)).
+De grens tussen laag en middelhoog slik blijft 25%DD in saliniteitszones "Mesohalien" en "Zone met sterke saliniteitsgradiënt" (brak), maar verschuift naar 35%DD in de rest van de Zeeschelde (voor de saliniteitszones zie Figuur in Hoofdstuk 1. Inleiding).
 De overgang van middelhoog naar hoog slik wordt 60%DD in plaats van 75%DD in de volledige Zeeschelde.
 
 <br/> <!--# Gelieve ook in de tabel de termen Zeeschelde 1.0 en Zeeschelde 2.0 te gebruiken, 'oud', 'nieuw' en 'aangepast' zijn te vage begrippen -->
@@ -239,16 +239,6 @@ img_file <- paste0(pad_tabellen, "030_tabel_slik_ecotopen.png")
 figtab(knitr::opts_current$get()$label, 
        img_file,
        caption_tab)
-
-```
-
-<br/>
-
-```{r 030-figuur-salzones, fig.cap=figuur_kaart_salzone, out.width="100%"}
-
-figuur_kaart_salzone <- "Saliniteitszones in de Zeeschelde met overgang brak - zoet."
-
-knitr::include_graphics(paste0(pad_figuren, "030_figuur_saliniteitszones_grens.png"))
 
 ```
 
@@ -421,7 +411,7 @@ De overige 67% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad 
 
 ```{r 030-tabel-oppervlakte-BEZ-2, results="asis", fig.show='hide', out.width="100%"}
 
-caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde in ", laatste_jaar, " volgens de Zeeschelde ecotopen 2.0, in vergelijking met versie 1.0.")
+caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde in ", laatste_jaar, " volgens de Zeeschelde ecotopen 2.0.")
 
 img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_BEZ_2019_", laatste_jaar, "_E2.PNG")
 
