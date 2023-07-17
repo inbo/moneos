@@ -1349,7 +1349,8 @@ relatieve_aantallen_EMSE <-
          max_gewicht = relatief_gewicht >= prop_lim) %>%
   ungroup() %>% 
   group_by(soort) %>% 
-  mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
+  mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
+  # mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
   ungroup() %>% 
   group_by(jaar, scheldezone, salgroep, dieet, indeling) %>%
   mutate(relatief_aantal = relatief_aantal/sum(relatief_aantal)) %>% 
@@ -1572,7 +1573,8 @@ relatieve_aantallen_EMSE <-
          max_gewicht = relatief_gewicht >= prop_lim) %>%
   ungroup() %>% 
   group_by(soort) %>% 
-  mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
+  mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
+  # mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
   ungroup() %>% 
   group_by(jaar, scheldezone, salgroep, dieet, indeling) %>%
   mutate(relatief_aantal = relatief_aantal/sum(relatief_aantal),
@@ -2169,8 +2171,8 @@ relatieve_aantallen_salgroep <-
          max_gewicht = relatief_gewicht >= prop_lim) %>%
   ungroup() %>% 
   group_by(soort) %>% 
-  # mutate(soort = ifelse(any(max_aantal | max_gewicht), soort, "rest")) %>%
-  mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
+  mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
+  # mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
   ungroup() %>% 
   # mutate(soort = if_else(max_aantal | max_gewicht, soort, "rest")) %>%
   group_by(jaar, scheldezone, salgroep) %>%
@@ -2186,6 +2188,8 @@ relatieve_aantallen_salgroep <-
                           c(., "rest"))) %>% 
   select(-aantal_per_fuikdag, -gewicht_per_fuikdag) %>% 
   left_join(gemiddeld_aantal_salgroep) %>% 
+  mutate(aantal_per_fuikdag = relatief_aantal*aantal_per_fuikdag,
+         gewicht_per_fuikdag = relatief_gewicht*gewicht_per_fuikdag) %>% 
   mutate(salgroep = factor(salgroep, levels = c("mariene en estuariene soorten", "diadrome soorten", "zoetwatersoorten")))
 
 
@@ -2326,8 +2330,8 @@ relatieve_aantallen_dieet <-
          max_gewicht = relatief_gewicht >= prop_lim) %>%
   ungroup() %>% 
   group_by(soort) %>% 
-  # mutate(soort = ifelse(any(max_aantal | max_gewicht), soort, "rest")) %>%
-  mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
+  mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
+  # mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
   ungroup() %>% 
   # mutate(soort = if_else(max_aantal | max_gewicht, soort, "rest")) %>%
   group_by(jaar, scheldezone, dieet) %>%
@@ -2343,6 +2347,8 @@ relatieve_aantallen_dieet <-
                           c(., "rest"))) %>% 
   select(-aantal_per_fuikdag, -gewicht_per_fuikdag) %>% 
   left_join(gemiddeld_aantal_dieet) %>% 
+  mutate(aantal_per_fuikdag = relatief_aantal*aantal_per_fuikdag,
+         gewicht_per_fuikdag = relatief_gewicht*gewicht_per_fuikdag) %>% 
   mutate(dieet = factor(dieet, levels = c("benthivoren", "omnivoren", "piscivoren", "planktivoren")))
 
 

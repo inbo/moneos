@@ -785,7 +785,7 @@ relatief_aantal_laatste_jaar <-
          relatief_gewicht_laatste_jaar = gewicht/sum(gewicht)) %>% 
   ungroup() %>% 
   group_by(soort) %>% 
-  mutate(soort2 = ifelse(any(relatief_aantal_laatste_jaar >= prop_lim | relatief_gewicht_laatste_jaar >= prop_lim), soort, "rest")) %>% 
+  mutate(soort2 = ifelse(any(relatief_aantal_laatste_jaar >= prop_lim) | any(relatief_gewicht_laatste_jaar >= prop_lim), soort, "rest")) %>% 
   ungroup() %>% 
   group_by(seizoen, locatie, soort2) %>% 
   summarise(aantal = sum(aantal)) %>% 
@@ -850,7 +850,7 @@ relatief_gewicht_laatste_jaar <-
          relatief_gewicht_laatste_jaar = gewicht/sum(gewicht)) %>% 
   ungroup() %>% 
   group_by(soort) %>% 
-  mutate(soort2 = ifelse(any(relatief_aantal_laatste_jaar >= prop_lim | relatief_gewicht_laatste_jaar >= prop_lim), soort, "rest")) %>% 
+  mutate(soort2 = ifelse(any(relatief_aantal_laatste_jaar >= prop_lim) | any(relatief_gewicht_laatste_jaar >= prop_lim), soort, "rest")) %>% 
   ungroup() %>% 
   group_by(seizoen, locatie, soort2) %>% 
   summarise(gewicht = sum(gewicht)) %>% 
@@ -1089,7 +1089,8 @@ relatieve_aantallen_EMSE <-
          max_gewicht = relatief_gewicht >= prop_lim) %>%
   ungroup() %>% 
   group_by(soort) %>% 
-  mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
+  mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
+  # mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
   ungroup() %>% 
   group_by(jaar, scheldezone, salgroep, dieet, indeling) %>%
   mutate(relatief_aantal = relatief_aantal/sum(relatief_aantal),
@@ -1618,13 +1619,13 @@ relatieve_aantallen_salgroep <-
          max_gewicht = relatief_gewicht >= prop_lim) %>%
   ungroup() %>% 
   group_by(soort) %>% 
-  # mutate(soort = ifelse(any(max_aantal | max_gewicht), soort, "rest")) %>%
-  mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
+  mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
+  # mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
   ungroup() %>% 
   # mutate(soort = if_else(max_aantal | max_gewicht, soort, "rest")) %>%
   group_by(jaar, scheldezone, salgroep) %>%
-  mutate(relatief_aantal = relatief_aantal/sum(relatief_aantal),
-         relatief_gewicht = relatief_gewicht/sum(relatief_gewicht)) %>% 
+  mutate(relatief_aantal2 = relatief_aantal/sum(relatief_aantal),
+         relatief_gewicht2 = relatief_gewicht/sum(relatief_gewicht)) %>% 
   ungroup() %>% 
   mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full),
@@ -1635,6 +1636,8 @@ relatieve_aantallen_salgroep <-
                           c(., "rest"))) %>% 
   select(-aantal_per_kub, -gewicht_per_kub) %>% 
   left_join(gemiddeld_aantal_salgroep) %>% 
+  mutate(aantal_per_kub = relatief_aantal*aantal_per_kub,
+         gewicht_per_kub = relatief_gewicht*gewicht_per_kub) %>% 
   mutate(salgroep = factor(salgroep, levels = c("mariene en estuariene soorten", "diadrome soorten", "zoetwatersoorten")))
 
 
@@ -1775,8 +1778,8 @@ relatieve_aantallen_dieet <-
          max_gewicht = relatief_gewicht >= prop_lim) %>%
   ungroup() %>% 
   group_by(soort) %>% 
-  # mutate(soort = ifelse(any(max_aantal | max_gewicht), soort, "rest")) %>%
-  mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
+  mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
+  # mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
   ungroup() %>% 
   # mutate(soort = if_else(max_aantal | max_gewicht, soort, "rest")) %>%
   group_by(jaar, scheldezone, dieet) %>%
@@ -1792,6 +1795,8 @@ relatieve_aantallen_dieet <-
                           c(., "rest"))) %>% 
   select(-aantal_per_kub, -gewicht_per_kub) %>% 
   left_join(gemiddeld_aantal_dieet) %>% 
+  mutate(aantal_per_kub = relatief_aantal*aantal_per_kub,
+         gewicht_per_kub = relatief_gewicht*gewicht_per_kub) %>% 
   mutate(dieet = factor(dieet, levels = c("benthivoren", "omnivoren", "piscivoren", "planktivoren")))
 
 
