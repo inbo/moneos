@@ -68,21 +68,29 @@ for(i in 1:nrow(meta_data)){
 
 #### Soortenrijkdom in `r laatste_jaar`
 
-We vingen `r aantal_soorten_laatste_jaar` vissoorten in `r laatste_jaar`.
+In `r laatste_jaar` werden `r aantal_soorten_laatste_jaar` vissoorten gevangen in de fuiken.
 Een overzicht van de soorten gevangen in `r laatste_jaar` is weergegeven in Tabel \@ref(tab:092-tabel-overzicht-soorten).
-In de zone met sterke saliniteitsgradiënt (Doel en Antwerpen) werden er meer soorten gevangen dan in de oligohaliene (Steendorp) en zoetwater (Branst) zone (Tabel \@ref(tab:092-tabel-aantal-soorten)).
-Over de beschouwde periode worden er inderdaad systematisch meer soorten gevangen in deze zone en neemt het aantal soorten af naar de oligohaliene en zoete zone (Figuur \@ref(fig:092-figuur-aantal-soorten-locatie-historisch)).
-Het totaal aantal soorten jaarlijks gevangen in de Zeeschelde in de periode 2012-`r laatste_jaar` varieert rond de 40 (Figuur \@ref(fig:092-figuur-aantal-soorten-historisch)).
-In de periode 2017-2020 leek het aantal soorten te dalen, maar in `r laatste_jaar` lijkt de soortenrijkdom zich te herstellen.
+In de zone met sterke saliniteitsgradiënt (Paardenschor en Antwerpen) en de oligohaliene zone (Steendorp) werden er meer soorten gevangen dan in de zoetwaterzone met lange (Kastel) en korte (Appels, Overbeke) verblijftijd (Tabel \@ref(tab:092-tabel-aantal-soorten)).
+Historisch worden er over de beschouwde periode (`r vroegste_jaar` - `r laatste_jaar`) meest soorten gevangen in de zone met sterke saliniteitsgradiënt (Zandvliet/Paardenschor \> Antwerpen) (Figuur \@ref(fig:092-figuur-aantal-soorten-locatie-historisch)).
+Vanaf 2017 worden in die zone wel minder soorten gevangen.
+<!--# merk op dat dit bijna overeenkomt met de vervanging van Zandvliet door Pardenschor (in najaar 2015). Enkel 2016 vormt dus een uitzondering met staalname aan Paardenschor maar nog hoge aantallen. Maar ook in Antwerpen is het patroon zichtbaar. --> In het oligohalien (Steendorp) worden historisch iets minder soorten gevangen, maar toch meer dan in het zoetwater (lange - Kastel - en korte - Appels, Overbeke - veblijftijd).
+In r laatste_jaar zijn er op de drie locaties in de zoetwater zone beduidend minder soorten gevangen dan de jaren voorheen.
+Dit heeft te maken met een vermindering van de vangstinspanning van 48 naar 24 uur.
+De soortensamenstelling op elke locatie kan sterk verschillen tussen de seizoenen, met een turnover van ongeveer één derde van de soorten.
+Het totaal aantal soorten jaarlijks gevangen met fuiken in de Zeeschelde (over alle locaties) in de periode `r vroegste_jaar` - `r laatste_jaar` varieert rond de 33 (Figuur \@ref(fig:092-figuur-aantal-soorten-historisch)).
+Het aantal gevangen soorten per jaar vertoont meer variatie vanaf 2016.
+Het relatief laag aantal soorten in `r laatste_jaar` wordt ook mede veroorzaakt door de halvering van het aantal fuikdagen per campagne.
+tot een kwart van het aantal gevangen soorten kan verschillen tussen de locaties.
 
 ```{r 092-tabel-overzicht-soorten}
 
 tabel_gevangen_soorten <-
   read_excel(paste0(pad_tabellen, "tabellen_vissen.xlsx"),
-             sheet = "gevangen_soorten")
+             sheet = "gevangen_soorten") %>% 
+  arrange(soort)
 
 cap_gevangen_soorten <-
-  paste0("Overzicht van de vissoorten gevangen tijdens de ankerkuilcampagnes in de Zeeschelde in ",
+  paste0("Overzicht van de vissoorten gevangen met fuiken in de Zeeschelde in ",
          laatste_jaar,
          ".")
 
@@ -92,7 +100,7 @@ tabel_gevangen_soorten  %>%
   knitr::kable(booktabs = TRUE,
                caption = cap_gevangen_soorten,
                align = c("l", rep("c", 12)),
-               col.names = c("", rep(c("Antw.", "Appels", "Kastel", "Overb.", "Paard.", "Steend."), 3)),
+               col.names = c("", rep(c("Paard.", "Antw.", "Steend.", "Kastel", "Appels", "Overb."), 3)),
                escape = FALSE) %>%
   add_header_above(c(" " = 1, "voorjaar" = 6, "zomer" = 6, "najaar" = 6)) %>%
   kable_styling("striped",
@@ -110,7 +118,7 @@ tabel_aantal_soorten <-
              sheet = "aantal_soorten")
 
 cap_aantal_soorten <-
-  paste0("Aantal soorten gevangen tijdens de ankerkuilcampagnes in de Zeeschelde in ",
+  paste0("Aantal soorten gevangen met fuiken in de Zeeschelde in ",
          laatste_jaar,
          ".")
 
@@ -132,7 +140,7 @@ tabel_aantal_soorten  %>%
 ```{r 092-figuur-aantal-soorten-locatie-historisch, fig.cap=cap_aantal_soorten_locatie, out.width="110%"}
 
 cap_aantal_soorten_locatie <-
-  str_c("Het aantal gevangen soorten in de Zeeschelde per locatie tijdens de ankerkuilcampagnes in de Zeeschelde in de periode 2012-",laatste_jaar,". Soorten gemiddeld over de verschillende seizoenen.")
+  str_c("Het aantal gevangen soorten in de Zeeschelde per locatie met fuiken in de Zeeschelde in de periode 2012-",laatste_jaar,". Soorten gemiddeld over de verschillende seizoenen.")
 
 knitr::include_graphics(paste0(pad_figuren, "aantal_soorten_locatie.jpg"))
 
@@ -140,36 +148,30 @@ knitr::include_graphics(paste0(pad_figuren, "aantal_soorten_locatie.jpg"))
 
 <br/>
 
-```{r 092-figuur-aantal-soorten-historisch, fig.cap=cap_aantal_soorten, out.width="90%"}
-
-cap_aantal_soorten <-
-  str_c("Het aantal gevangen soorten in de Zeeschelde tijdens de ankerkuilcampagnes in de Zeeschelde in de periode 2012-",laatste_jaar,". Soorten gepooled over de verschillende seizoenen.")
-
-knitr::include_graphics(paste0(pad_figuren, "aantal_soorten_totaal.jpg"))
-
-```
-
-<br/>
-
 #### Relatieve soortensamenstelling voor de meest dominante soorten in `r laatste_jaar`
 
-We analyseren alle vangstgegevens van `r laatste_jaar`.
+Alle vangstgegevens van `r laatste_jaar` worden geanalyseerd.
 Soorten met in alle seizoenen en locaties een relatieve bijdrage kleiner dan 10% voor zowel de aantallen als biomassa worden als 'rest' samengenomen.
 
-Uit deze analyse blijkt dat de relatieve soortenabundantie zowel seizoenaal als ruimtelijk verschilt (Figuur \@ref(fig:092-figuur-relatief-aantal)).
-In het voorjaar van `r laatste_jaar` was haring de meest abundante soort in Doel en Antwerpen (zone met sterke saliniteitsgradiënt) en ook in Steendorp (oligohalien).
-In Branst (zoetwater) worden de vangstaantallen in het voorjaar gedomineerd door brakwatergrondel.
-In alle locaties is er een belangrijke bijdrage van het aantal spieringen, die nog sterk toeneemt in de zomer en het najaar.
-De aantallen in Steendorp en Branst zijn in de zomer volledig gedomineerd door spiering met 99% resp 97%.
+Deze analyse geeft aan dat de relatieve abundantie van de soorten zowel seizoenaal als ruimtelijk verschilt (Figuur \@ref(fig:092-figuur-relatief-aantal)).
+In het voorjaar van `r laatste_jaar` waren schol, bot en zeebaars dominant aan het Paardenschor, in Antwerpen waren dat vooral spiering en bot.
+In Steendorp werd er naast spiering ook relatief veel paling gevangen.
+In de zoete zone overheersten naast snoekbaars de typische zoetwatersoorten blankvoorn, kolblei en brasem.
+In Kastel was er ook nog een redelijk aantal spiering.
+In de zomer werd er overal bot gevangen, in de saliniteitsgradiënt aangevuld met tong, terwijl in de zoete zone snoekbaars de overhand nam, aangevuld met paling, blankvoorn en brasem.
+Dit beeld veranderde compleet in het najaar, wanneer brakwatergrondel de fuikvangsten overheerste van Antwerpen tot Appels.
+In de zone met saliniteitsgradiënt blijven tong en bot belangrijk, in Overbeke zijn dat de paling en kolblei.
 
-Uitgedrukt in biomassa overheerst de spiering ook in het voorjaar in Antwerpen en Steendorp (Figuur \@ref(fig:092-figuur-relatieve-biomassa)).
-In het voorjaar in Branst maken snoekbaars en fint echter elk ruim een derde van de biomassa uit, twee soorten die in de aantallen nauwelijks vertegenwoordigd zijn.
-Het betreft enkele volwassen finten en snoekbaarsen tussen ontelbare spieringlarven en brakwatergrondels.
+Uitgedrukt in biomassa overheerst de snoekbaars de zoete zone reeds in het voorjaar, in de zone met saliniteitsgradiënt zijn dat bot, dunlipharder, spiering en zeebaars.
+In Kastel overheersen optrekkende finten niet in de aantallen maar wel in de biomassa.
+Snoekbaars en paling blijven dominant in de zomer.
+In het Paardenschor is nu tong de belangrijkste soort (Figuur \@ref(fig:092-figuur-relatieve-biomassa)).
+In het najaar laten ook de talrijke kleine brakwatergrondeltjes zich bescheiden opmerken in de biomassa getallen.
 
 ```{r 092-figuur-relatief-aantal, fig.cap=cap_relatief_aantal, out.width="100%"}
 
 cap_relatief_aantal <-
-  str_c("Het relatief aantal gevangen individuen in de Zeeschelde tijdens de ankerkuilcampagnes in de zomer en het najaar van ",laatste_jaar,". De getallen geven de percentages van het aantal gevangen vissen weer.")
+  str_c("Het relatief aantal individuen per soort en per seizoen gevangen met fuiken in de Zeeschelde in ",laatste_jaar,". De getallen geven de percentages van het aantal gevangen vissen weer.")
 
 knitr::include_graphics(paste0(pad_figuren, "relatief_aantal_gevangen_individuen.jpg"))
 
@@ -180,7 +182,7 @@ knitr::include_graphics(paste0(pad_figuren, "relatief_aantal_gevangen_individuen
 ```{r 092-figuur-relatieve-biomassa, fig.cap=cap_relatieve_biomassa, out.width="100%"}
 
 cap_relatieve_biomassa <-
-  str_c("De relatieve biomassa van de vangsten in de Zeeschelde tijdens de ankerkuilcampagnes in de zomer en het najaar van ",laatste_jaar,". De getallen geven de percentages van de totale biomassa weer.")
+  str_c("De relatieve biomassa per soort en per seizoen gevangen met fuiken in de Zeeschelde in ",laatste_jaar,". De getallen geven de percentages van de totale biomassa weer.")
 
 knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_gevangen_individuen.jpg"))
 
@@ -373,6 +375,7 @@ Slechts een aantal soorten komen echter in relatief hoge aantallen voor.
 
 Van de estuariene en mariene soorten komen brakwatergrondel, dikkopje, haring en zeebaars vrij frequent voor (\> 1 individu per 1000m³, Figuur \@ref(fig:092-figuur-mariene-sleutelsoorten)).
 De overige soorten komen slechts in zeer kleine aantallen voor.
+<!--# y-as in figuren moet individuen per fuikdag en niet fuikdagen zijn) -->
 
 -   Brakwatergrondel komt in de grootste aantallen voor in het zoetwater en vertoont piekdensiteiten rond 2018.
     In `r laatste_jaar` zijn de aantallen waargenomen in de ankerkuil vangsten laag.
