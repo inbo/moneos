@@ -269,17 +269,30 @@ data_fuiken <-
 
 ```{r kleurcodes soorten}
 
-set.seed(90)
+load(file = str_c(pad_data, "soorten_kleur.RData"))
 
-my_pal_wes <- 
-  c(wes_palette("Darjeeling1", 
-                type = "continuous", 
-                n = length(unique(soortenlijst$soort))) %>% 
-      unname() %>%
-      sample(), 
-    "darkslategrey")
-names(my_pal_wes) <-
-  c(unique(soortenlijst$soort), "rest")
+# set.seed(58)
+# set.seed(61)
+# set.seed(73)
+# set.seed(76)
+
+# my_pal_wes <- 
+#   c(wes_palette("Darjeeling1", 
+#                 type = "continuous", 
+#                 n = length(soorten_kleur)) %>% 
+#       unname() %>%
+#       sample(), 
+#     "darkslategrey")
+# names(my_pal_wes) <-
+#   c(soorten_kleur, "rest")
+
+
+  my_pal_wes <-
+    c(soorten_indeling_kleur$kleur, 
+      "azure",
+      "darkslategrey")
+  names(my_pal_wes) <-
+    c(soorten_indeling_kleur$soort, "haringachtigen", "rest")
 
 ```
 
@@ -613,7 +626,8 @@ tabel_aantal_soorten <-
                      locatie = "totaal over locaties")) %>% 
   mutate(seizoen = factor(seizoen, levels = c("voorjaar", "zomer", "najaar", "totaal over seizoenen")),
          locatie = factor(locatie, levels = c(levels_locatie, "totaal over locaties"))) %>% 
-  pivot_wider(id_cols = locatie, names_from = seizoen, values_from = soorten)
+  pivot_wider(id_cols = locatie, names_from = seizoen, values_from = soorten) %>% 
+  arrange(locatie)
 
 knitr::kable(tabel_aantal_soorten)
 
@@ -692,77 +706,6 @@ sheets[["nieuwe_soorten"]] <-
 
 #### relatief aantal gevangen individuen
 
-```{r test kleurcode, eval=FALSE}
-
-relatief_aantal <- 
-  data_fuiken %>% 
-  filter(jaar == laatste_jaar) %>% 
-  group_by(seizoen, locatie) %>%
-  mutate(relatief_aantal = aantal/sum(aantal),
-         relatief_gewicht = gewicht/sum(gewicht)) %>% 
-  ungroup() %>% 
-  group_by(soort) %>% 
-  mutate(soort2 = ifelse(any(relatief_aantal >= prop_lim | relatief_gewicht >= prop_lim), soort, "rest")) %>% 
-  ungroup() %>% 
-  group_by(seizoen, locatie, soort2) %>% 
-  summarise(aantal = sum(aantal)) %>% 
-  ungroup() %>% 
-  group_by(seizoen, locatie) %>% 
-  mutate(soort2 = soort2,
-         aantal = round(aantal/sum(aantal)*100)) %>% 
-  ungroup() %>% 
-  rename(soort = soort2) %>% 
-  mutate(soort = factor(soort, 
-                        levels = unique(soort) %>% 
-                          sort() %>% 
-                          setdiff("rest") %>% 
-                          c(., "rest")))
-
-for(s in 51:100) {
-
-  set.seed(s)
-  
-  my_pal_wes <- 
-    c(wes_palette("Darjeeling1", 
-                  type = "continuous", 
-                  n = length(unique(soortenlijst$soort))) %>% 
-        unname() %>%
-        sample(), 
-      "darkslategrey")
-  names(my_pal_wes) <-
-    c(unique(soortenlijst$soort), "rest")
-  
-  the_pal <- 
-    my_pal_wes[names(my_pal_wes) %in% unique(relatief_aantal$soort)]
-  
-  pl <-
-    relatief_aantal %>% 
-    mutate(aantal = if_else(aantal == 0, NA_real_, aantal)) %>% 
-    ggplot(aes(x ="", y = aantal, fill = soort)) +
-    geom_col(position = "fill") +
-    # geom_text(aes(label = soort),
-    #            size = 3) +
-    geom_text(aes(label = aantal, size = aantal),
-              position = position_fill(vjust = 0.5),
-              show.legend = FALSE) +
-    coord_polar("y", start=0) +
-    facet_grid(locatie ~ seizoen) +
-    labs(title = str_c("seed = ", s),
-         x = NULL,
-         y = NULL) +
-    scale_x_discrete(breaks = NULL) +
-    scale_y_continuous(breaks = NULL) +
-    scale_fill_manual(values = the_pal) +
-    theme(
-      # legend.position = "bottom",
-      legend.title = element_blank())
-  print(pl)
-  
-}
-
-```
-
-
 ```{r relatief aantal gevangen individuen laatste jaar, fig.height=6, fig.width=6}
 
 relatief_aantal_laatste_jaar <- 
@@ -792,7 +735,8 @@ relatief_aantal_laatste_jaar <-
                         levels = unique(soort) %>% 
                           sort() %>% 
                           setdiff("rest") %>% 
-                          c(., "rest")))
+                          c(., "rest")),
+         locatie = factor(locatie, levels = levels_locatie))
 
 
 the_pal <- 
@@ -854,7 +798,8 @@ relatief_gewicht_laatste_jaar <-
                         levels = unique(soort) %>% 
                           sort() %>% 
                           setdiff("rest") %>% 
-                          c(., "rest")))
+                          c(., "rest")),
+         locatie = factor(locatie, levels = levels_locatie))
 
 
 the_pal <- 

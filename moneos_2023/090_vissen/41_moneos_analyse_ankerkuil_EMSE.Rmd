@@ -254,18 +254,21 @@ data_ankerkuil <-
 
 ```{r kleurcodes soorten}
 
-set.seed(90)
+load(file = str_c(pad_data, "soorten_kleur.RData"))
+
+set.seed(73)
+# set.seed(76)
 
 my_pal_wes <- 
   c(wes_palette("Darjeeling1", 
                 type = "continuous", 
-                n = length(unique(soortenlijst$soort))) %>% 
+                n = length(soorten_kleur)) %>% 
       unname() %>%
       sample(), 
     "azure",
     "darkslategrey")
 names(my_pal_wes) <-
-  c(unique(soortenlijst$soort), "haringachtigen", "rest")
+  c(soorten_kleur, "haringachtigen", "rest")
 
 ```
 
@@ -620,7 +623,8 @@ tabel_aantal_soorten <-
                      locatie = "totaal over locaties")) %>% 
   mutate(seizoen = factor(seizoen, levels = c("voorjaar", "zomer", "najaar", "totaal over seizoenen")),
          locatie = factor(locatie, levels = c(levels_locatie, "totaal over locaties"))) %>% 
-  pivot_wider(id_cols = locatie, names_from = seizoen, values_from = soorten)
+  pivot_wider(id_cols = locatie, names_from = seizoen, values_from = soorten) %>% 
+  arrange(locatie)
 
 knitr::kable(tabel_aantal_soorten)
 
