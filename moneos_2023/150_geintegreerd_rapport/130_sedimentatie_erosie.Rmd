@@ -204,7 +204,6 @@ raaien_trends_schor_ZIJ <-
 
 ```
 
-
 ```{r functie voor figuur recente profielen}
 
 get_fig_recent <-
@@ -241,7 +240,6 @@ get_fig_recent <-
   }
 
 ```
-
 
 # Sedimentatie en erosie op punten en raaien
 
@@ -328,8 +326,8 @@ Per raai en per ecotoop wordt de trend in sedimentatie/erosie berekend op basis 
 $\Delta hoogte = 0 + \beta * \Delta jaar$
 
 waarbij $\Delta jaar$ het verschil weergeeft tussen een gegeven jaar en het referentiejaar.
-Om na te gaan of er in `r laatste_jaar` een trendbreuk optreedt ten opzichte voorgaande jaren, wordt de hoogteverandering uit `r laatste_jaar` vergeleken met de voorspelde 95% betrouwbaarheidsintervallen van de berekende trends. Indien de hoogteverandering buiten het betrouwbaarheidsinterval valt, wordt dit gezien als een trendbreuk.
-
+Om na te gaan of er in `r laatste_jaar` een trendbreuk optreedt ten opzichte voorgaande jaren, wordt de hoogteverandering uit `r laatste_jaar` vergeleken met de voorspelde 95% betrouwbaarheidsintervallen van de berekende trends.
+Indien de hoogteverandering buiten het betrouwbaarheidsinterval valt, wordt dit gezien als een trendbreuk.
 
 ## Beneden Zeeschelde
 
@@ -478,6 +476,7 @@ res$fig
 
 Op raai GSb (Galgenschoor) (Figuur \@ref(fig:130-figuur-GSb-slik)) zien we trendbreuken in het laag en hoog slik, waar de licht sedimenterende trend uit de vorgaande jaren is gewijzigd naar lichte erosie.
 Ook in het middelhoog slik is er de laatste twee jaar een trend tot meer erosie (maar niet zichtbaar als trendbreuk in `r laatste_jaar`).
+Het zou interessant zijn om te onderzoeken of de waargenomen patronen te relateren zijn aan de geleverde onderhoudsbaggerwerken van de drempel van Frederik, gelegen in de vaargeul nabij raai GSb.
 
 ```{r 130-figuur-GSb-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -590,8 +589,8 @@ res$fig
 <br/>
 
 Raai HO (Hobookse Polder) vertoonde in de vorige jaren algemeen een eroderende trend (Figuur \@ref(fig:130-figuur-HO-slik)).
-in `r laatste_jaar` is deze trend op het laag en middelhoog slik echter afgeremd tot afwezig en op het hoog slik zelfs veranderd naar een sterke sedimentatie.
-Merk op dat er op raai HO eigenlijk zo goed als geen hoog slik is en deze sedimentatie zich eigenlijk voordoet in de schorrand.
+in `r laatste_jaar` is deze trend op het laag en middelhoog slik echter afgeremd tot afwezig en op het hoog slik zelfs veranderd naar een sedimentatie.
+Deze verschillen zijn echter veroorzaakt door ofwel op of tussen de hier aanwezige breuksteen te meten.
 
 ```{r 130-figuur-HO-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -742,7 +741,7 @@ res$fig
 
 Raai WE (Weert) (Figuur \@ref(fig:130-figuur-WE-slik)) vertoont de voorbije jaren een trend van mtige tot sterke erosie.
 Ook hier lijkt er zich in 2022 echter een trendbreuk te hebben voorgedaan, met in dat jaar een plotse sterke sedimentatie op hoog en vooral middelhoog slik.
-Deze zedimentatie is ook nog zichtbaar in de bovenste delen van het laag slik.
+Deze sedimentatie is ook nog zichtbaar in de bovenste delen van het laag slik.
 Deze sedimentatie zorgt voor een versteiling van het slikprofiel.
 
 ```{r 130-figuur-WE-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
