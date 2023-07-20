@@ -79,7 +79,7 @@ for(i in 1:nrow(meta_data)){
 ## Inleiding
 
 Om de evolutie van de diversiteit van estuariene habitats in de Zeeschelde op te volgen vormt de ecotopenkaart, samen met haar basiskaarten de fysiotopenkaart en een geomorfologische kaart, het belangrijkste instrument.
-Deze kaarten worden voor de Beneden-Zeeschelde jaarlijks gemaakt en 3-jaarlijks voor de Boven-Zeeschelde, Rupel en Durme.
+Deze kaarten worden jaarlijks gemaakt voor de Beneden-Zeeschelde en 3-jaarlijks voor de Boven-Zeeschelde, Rupel en Durme.
 In dit MONEOSrapport wordt de ecotopenkaart van `r laatste_jaar` van de Beneden-Zeeschelde besproken.
 In de ecotopenkaart worden habitatoppervlakten in natuurontwikkelingsprojecten (NOP's) zoals ontpolderingen, GGG's en dijkverleggingen mee opgenomen wanneer deze een open aansluiting hebben met de Zeeschelde.
 
@@ -94,10 +94,39 @@ De ecotopenkaart Zeeschelde 2.0 is voor het eerst gerapporteerd in het MONEOS ra
 ## Methodologie
 
 De ecotopenkaart versie 1.0 wordt samengesteld uit enerzijds een geomorfologische kaart en anderzijds een fysiotopenkaart (Tabel \@ref(tab:030-tabel-klassen-E1)).
-Voor een uitgebreide bespreking van materiaal en methode wordt verwezen naar Van Braeckel & Elsen (2018).
-Hier worden kort de verschillende ecotopen beschreven.
-Voor de ecotopenkaart versie 2.0 zijn ook gegevens nodig over de plaatselijke maximale stroomsnelheid bij vloed voor het afbakenen van de subtidale ecotopen.
-De slikecotopen in versie 2.0 hanteert andere en niet overal dezelfde overspoelingsgrenzen, op basis van de verspreiding van bodemdiergemeenschappen.
+Beiden worden hier kort beschreven.
+Voor een uitgebreidere bespreking van materiaal en methode wordt verwezen naar Van Braeckel & Elsen (2018).
+
+<!--# stukje achtergrondinformatie toegevoegd -->
+
+De **geomorfologische kaart** bevat de schorgrens en de substraattypes.
+De harde substraattypes die onderscheiden worden zijn: hard natuurlijk substraat (veen- en kleibanken), hard antropogeen substraat (breuksteen, schanskorven), en volledig verhard.
+Verder wordt de schorgrens ingetekend als schor- en dijkvegetatie en worden de getijdeplassen aangeduid.
+De kaart wordt gemaakt aan de hand van enerzijds false colour beelden genomen bij laag water eens in de drie jaar (in opdracht van De Vlaamse Waterweg) en anderzijds orthofotomozaïeken van Vlaanderen voor de tussenliggende jaren (deze zijn niet altijd bij laag water genomen).
+Voor de huidige Beneden-Zeeschelde kaart is gebruikt gemaakt van het false color beeld van 2019 en de orthofotomozaïek van 2021.
+De grenzen worden hierop ingetekend, vertrekkende van de grenzen van het voorgaande jaar, door personen met een uitgebreide terreinkennis.
+Figuur \@ref(fig:030-figuur-geomorfkaart) toont een voorbeeld van de geomorfologische kaart 2021 ter hoogte van schor Ouden Doel met links het false color beeld van 2019 bij laag water en rechts de orthofotomozaïek van 2021.
+
+De **fysiotopenkaart** is een kaart van de abiotische eenheden en combineert een digitaal hoogtemodel met overspoelingsfrequenties en droogvalduurpercentielen om zo de verschillende fysiotopen te onderscheiden.
+Het digitaal hoogtemodel is een gecombineerd grid bestaande uit enerzijds lidar hoogtemetingen en anderzijds multibeam bathymetrie metingen.
+Dit grid wordt samengesteld en aangeleverd door Maritieme Toegang.
+Daarnaast worden waterstandsmetingen per tijposten over een periode van 4 jaar (afkomstig van het Waterbouwkundig Laboratorium via HIC webservices) geïnterpoleerd om overspoelingsfrequenties en droogvalduurpercentages te bekomen.
+Door verschillende doorsnedes te maken voor elke waterhoogte met het hoogtemodel worden de fysiotopen verkregen.
+In de ecotopenkaart versie 2.0 worden ook stroomsnelheden in rekening gebracht.
+Hiervoor worden de sublitorale fysiotopen nog gecombineerd met gegevens over de plaatselijke maximale stroomsnelheid bij vloed.
+
+*Deze fysiotopen worden gecombineerd met de geomorfologische kaart om de ecotopen te bekomen.*
+
+*Voor de ecotopenkaart versie 2.0 zijn ook gegevens nodig over de plaatselijke maximale stroomsnelheid bij vloed voor het afbakenen van de subtidale ecotopen. De slikecotopen in versie 2.0 hanteert andere en niet overal dezelfde overspoelingsgrenzen, op basis van de verspreiding van bodemdiergemeenschappen.*
+
+<!--# nog zien dat er geen overlap is met het stuk hieronder. Eigenlijk worden de fysiotopenkaart en geomorfoflogische kaart hieronder bij ecotopen besproken... -->
+
+```{r 030-figuur-geomorfkaart, fig.cap=figuur_geomorfkaart, out.width="100%"}
+
+figuur_geomorfkaart <- "Geomorfologische kaart 2021 voorbeeld ter hoogte van schor van Ouden Doel met als achtergrond false color beeld 2019 (links) en orthofotomozaïek Vlaanderen 2021 (rechts)."
+
+knitr::include_graphics(paste0(pad_figuren, "030_voorbeeld_geomorf_2021.png"))
+```
 
 ### Zeeschelde ecotopen 1.0
 
@@ -195,13 +224,14 @@ figtab(knitr::opts_current$get()$label,
 
 ### Zeeschelde ecotopen 2.0
 
-De ecotopenkaart van de Beneden-Zeeschelde 2020 werd ook opgemaakt volgens het Zeeschelde ecotopenstelsel 2.0.
+De ecotopenkaart van de Beneden-Zeeschelde wordt ook opgemaakt volgens het Zeeschelde ecotopenstelsel 2.0.
 Dit nieuwe ecotopenstelsel is het resultaat van een analyse van biomassa en gemeenschapssamenstelling van ongewervelde bodemdieren in functie van bepalende factoren zoals hoogte in het getijvenster en stroomsnelheid.
 Het wordt uitgebreid besproken in Van Braeckel et al. (2018) voor de sublitorale zone en in Van Braeckel et al. (2020) voor de litorale zone.
 De nieuwe indeling van de ecotopen weerspiegelt beter de leefgebieden van verschillende levensgemeenschappen.
 
 In de **sublitorale zone** blijven de dieptegrenzen gehandhaafd maar daarbovenop worden hoog- en laagdynamische habitats onderscheiden.
 De hydrodynamische indeling is gebaseerd op maximale stroomsnelheid bij vloed, berekend volgens het Scaldis 3D-model van het Waterbouwkundig Laboratorium.
+Voor de jaren 2019 - 2021 is steeds hetzelfde Scaldis 2019 model gebruikt.
 De grenswaarden verschillen per diepteklasse (Tabel \@ref(tab:030-tabel-dynamiek-ecotopen)).
 In het ondiep subtidaal is de maximale stroomsnelheid voor laagdynamisch habitat 1.01 m/s.
 In het matig diep subtidaal is dit 0.92 m/s en in het diep subtidaal wordt 0.83 m/s gehanteerd.
