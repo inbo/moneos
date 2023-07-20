@@ -849,7 +849,7 @@ sheets_figuren[["relatief_gewicht_laatste_jaar"]] <-
 
 #### aantallen EMSE
 
-```{r aantallen EMSE}
+```{r aantallen EMSE, eval=FALSE}
 
 gemiddeld_aantal_EMSE <- 
   data_fuiken %>% 
@@ -934,7 +934,7 @@ gemiddeld_aantal_EMSE <-
 
 #### gewicht EMSE
 
-```{r gewicht EMSE}
+```{r gewicht EMSE, eval=FALSE}
 
 gemiddeld_gewicht_EMSE <- 
   data_fuiken %>% 
@@ -1512,23 +1512,24 @@ relatieve_aantallen_EMSE <-
             gewicht_per_fuikdag = mean(gewicht_per_fuikdag)) %>% 
   ungroup() %>% 
   group_by(jaar, scheldezone, salgroep, dieet, indeling) %>%
-  mutate(relatief_aantal = aantal_per_fuikdag/sum(aantal_per_fuikdag),
-         relatief_gewicht = gewicht_per_fuikdag/sum(gewicht_per_fuikdag)) %>% 
+  mutate(aantal_per_fuikdag_tot = sum(aantal_per_fuikdag),
+         gewicht_per_fuikdag_tot = sum(gewicht_per_fuikdag)) %>% 
+  ungroup() %>% 
+  mutate(relatief_aantal = aantal_per_fuikdag/aantal_per_fuikdag_tot,
+         relatief_gewicht = gewicht_per_fuikdag/gewicht_per_fuikdag_tot) %>% 
   mutate(max_aantal = relatief_aantal >= prop_lim,
          max_gewicht = relatief_gewicht >= prop_lim) %>%
-  ungroup() %>% 
   group_by(soort) %>% 
   mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
-  # mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
   ungroup() %>% 
-  group_by(jaar, scheldezone, salgroep, dieet, indeling) %>%
-  mutate(relatief_aantal = relatief_aantal/sum(relatief_aantal),
-         relatief_gewicht = relatief_gewicht/sum(relatief_gewicht)) %>% 
+  group_by(jaar, scheldezone, soort, salgroep, dieet, indeling) %>%
+  summarise(aantal_per_fuikdag_tot = mean(aantal_per_fuikdag_tot),
+            gewicht_per_fuikdag_tot = mean(gewicht_per_fuikdag_tot),
+            aantal_per_fuikdag = sum(aantal_per_fuikdag),
+            gewicht_per_fuikdag = sum(gewicht_per_fuikdag),
+            relatief_aantal = aantal_per_fuikdag/aantal_per_fuikdag_tot,
+            relatief_gewicht = gewicht_per_fuikdag/gewicht_per_fuikdag_tot) %>%
   ungroup() %>% 
-  # add_row(tibble(salgroep = "diadrome soorten", 
-  #                indeling = "Diadr -- Benth", 
-  #                jaar = vroegste_jaar:laatste_jaar) %>% 
-  #           expand_grid(scheldezone = c("SG", "OH", "ZL", "ZK"))) %>% 
   add_row(indeling_EMSE_missing %>% 
             expand_grid(jaar = vroegste_jaar:laatste_jaar,
                         scheldezone = unique(locatie_scheldezone$scheldezone))) %>%
@@ -1539,10 +1540,7 @@ relatieve_aantallen_EMSE <-
                         levels = unique(soort) %>% 
                           sort() %>% 
                           setdiff("rest") %>% 
-                          c(., "rest"))) %>% 
-  select(-aantal_per_fuikdag, -gewicht_per_fuikdag) %>% 
-  left_join(gemiddeld_aantal_EMSE) %>% 
-  mutate(aantal_per_fuikdag = relatief_aantal*aantal_per_fuikdag)
+                          c(., "rest")))
 
 
 data_split <-
@@ -1725,12 +1723,6 @@ ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_zoet.jpg"), widt
 
 
 ```{r relatie soortbiomassa vs totale biomassa}
-
-relatieve_aantallen_EMSE <- 
-  relatieve_aantallen_EMSE %>% 
-  left_join(gemiddeld_gewicht_EMSE) %>% 
-  mutate(gewicht_per_fuikdag = relatief_gewicht*gewicht_per_fuikdag)
-
 
 data_split <-
   relatieve_aantallen_EMSE %>% 
@@ -2084,21 +2076,6 @@ ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_zoet.jpg"), width = 6, 
 
 ```{r aantallen en biomassa per salgroep}
 
-gemiddeld_aantal_salgroep <- 
-  data_fuiken %>% 
-  left_join(locatie_scheldezone) %>% 
-  group_by(jaar, scheldezone, seizoen, locatie, salgroep) %>%
-  summarise(aantal_per_fuikdag = sum(aantal_per_fuikdag),
-            gewicht_per_fuikdag = sum(gewicht_per_fuikdag)) %>% 
-  ungroup() %>% 
-  group_by(jaar, scheldezone, salgroep) %>%
-  summarise(aantal_per_fuikdag = mean(aantal_per_fuikdag),
-            gewicht_per_fuikdag = mean(gewicht_per_fuikdag)) %>% 
-  ungroup() %>% 
-  mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
-         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full))
-
-
 relatieve_aantallen_salgroep <- 
   data_fuiken %>% 
   left_join(locatie_scheldezone) %>% 
@@ -2108,21 +2085,23 @@ relatieve_aantallen_salgroep <-
             gewicht_per_fuikdag = mean(gewicht_per_fuikdag)) %>% 
   ungroup() %>% 
   group_by(jaar, scheldezone, salgroep) %>%
-  mutate(relatief_aantal = aantal_per_fuikdag/sum(aantal_per_fuikdag),
-         relatief_gewicht = gewicht_per_fuikdag/sum(gewicht_per_fuikdag)) %>% 
-  # mutate(max_aantal = relatief_aantal == max(relatief_aantal),
-  #        max_gewicht = relatief_gewicht == max(relatief_gewicht)) %>%
+  mutate(aantal_per_fuikdag_tot = sum(aantal_per_fuikdag),
+         gewicht_per_fuikdag_tot = sum(gewicht_per_fuikdag)) %>% 
+  ungroup() %>% 
+  mutate(relatief_aantal = aantal_per_fuikdag/aantal_per_fuikdag_tot,
+         relatief_gewicht = gewicht_per_fuikdag/gewicht_per_fuikdag_tot) %>% 
   mutate(max_aantal = relatief_aantal >= prop_lim,
          max_gewicht = relatief_gewicht >= prop_lim) %>%
-  ungroup() %>% 
   group_by(soort) %>% 
   mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
-  # mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
   ungroup() %>% 
-  # mutate(soort = if_else(max_aantal | max_gewicht, soort, "rest")) %>%
-  group_by(jaar, scheldezone, salgroep) %>%
-  mutate(relatief_aantal = relatief_aantal/sum(relatief_aantal),
-         relatief_gewicht = relatief_gewicht/sum(relatief_gewicht)) %>% 
+  group_by(jaar, scheldezone, soort, salgroep) %>%
+  summarise(aantal_per_fuikdag_tot = mean(aantal_per_fuikdag_tot),
+            gewicht_per_fuikdag_tot = mean(gewicht_per_fuikdag_tot),
+            aantal_per_fuikdag = sum(aantal_per_fuikdag),
+            gewicht_per_fuikdag = sum(gewicht_per_fuikdag),
+            relatief_aantal = aantal_per_fuikdag/aantal_per_fuikdag_tot,
+            relatief_gewicht = gewicht_per_fuikdag/gewicht_per_fuikdag_tot) %>%
   ungroup() %>% 
   mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full),
@@ -2130,12 +2109,8 @@ relatieve_aantallen_salgroep <-
                         levels = unique(soort) %>% 
                           sort() %>% 
                           setdiff("rest") %>% 
-                          c(., "rest"))) %>% 
-  select(-aantal_per_fuikdag, -gewicht_per_fuikdag) %>% 
-  left_join(gemiddeld_aantal_salgroep) %>% 
-  mutate(aantal_per_fuikdag = relatief_aantal*aantal_per_fuikdag,
-         gewicht_per_fuikdag = relatief_gewicht*gewicht_per_fuikdag) %>% 
-  mutate(salgroep = factor(salgroep, levels = c("mariene en estuariene soorten", "diadrome soorten", "zoetwatersoorten")))
+                          c(., "rest")),
+         salgroep = factor(salgroep, levels = c("mariene en estuariene soorten", "diadrome soorten", "zoetwatersoorten")))
 
 
 data_split <-
@@ -2241,47 +2216,32 @@ ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_sal
 
 ```{r aantallen en biomassa per dieet}
 
-gemiddeld_aantal_dieet <- 
-  data_fuiken %>% 
-  left_join(locatie_scheldezone) %>% 
-  filter(!is.na(dieet)) %>% 
-  group_by(jaar, scheldezone, seizoen, locatie, dieet) %>%
-  summarise(aantal_per_fuikdag = sum(aantal_per_fuikdag),
-            gewicht_per_fuikdag = sum(gewicht_per_fuikdag)) %>% 
-  ungroup() %>% 
-  group_by(jaar, scheldezone, dieet) %>%
-  summarise(aantal_per_fuikdag = mean(aantal_per_fuikdag),
-            gewicht_per_fuikdag = mean(gewicht_per_fuikdag)) %>% 
-  ungroup() %>% 
-  mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
-         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full))
-
-
 relatieve_aantallen_dieet <- 
   data_fuiken %>% 
   left_join(locatie_scheldezone) %>% 
-  filter(aantal > 0,
-         !is.na(dieet)) %>% 
+  filter(aantal > 0) %>% 
   group_by(jaar, scheldezone, soort, dieet) %>%
   summarise(aantal_per_fuikdag = mean(aantal_per_fuikdag),
             gewicht_per_fuikdag = mean(gewicht_per_fuikdag)) %>% 
   ungroup() %>% 
   group_by(jaar, scheldezone, dieet) %>%
-  mutate(relatief_aantal = aantal_per_fuikdag/sum(aantal_per_fuikdag),
-         relatief_gewicht = gewicht_per_fuikdag/sum(gewicht_per_fuikdag)) %>% 
-  # mutate(max_aantal = relatief_aantal == max(relatief_aantal),
-  #        max_gewicht = relatief_gewicht == max(relatief_gewicht)) %>%
+  mutate(aantal_per_fuikdag_tot = sum(aantal_per_fuikdag),
+         gewicht_per_fuikdag_tot = sum(gewicht_per_fuikdag)) %>% 
+  ungroup() %>% 
+  mutate(relatief_aantal = aantal_per_fuikdag/aantal_per_fuikdag_tot,
+         relatief_gewicht = gewicht_per_fuikdag/gewicht_per_fuikdag_tot) %>% 
   mutate(max_aantal = relatief_aantal >= prop_lim,
          max_gewicht = relatief_gewicht >= prop_lim) %>%
-  ungroup() %>% 
   group_by(soort) %>% 
   mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
-  # mutate(soort = ifelse(any(max_aantal), soort, "rest")) %>%
   ungroup() %>% 
-  # mutate(soort = if_else(max_aantal | max_gewicht, soort, "rest")) %>%
-  group_by(jaar, scheldezone, dieet) %>%
-  mutate(relatief_aantal = relatief_aantal/sum(relatief_aantal),
-         relatief_gewicht = relatief_gewicht/sum(relatief_gewicht)) %>% 
+  group_by(jaar, scheldezone, soort, dieet) %>%
+  summarise(aantal_per_fuikdag_tot = mean(aantal_per_fuikdag_tot),
+            gewicht_per_fuikdag_tot = mean(gewicht_per_fuikdag_tot),
+            aantal_per_fuikdag = sum(aantal_per_fuikdag),
+            gewicht_per_fuikdag = sum(gewicht_per_fuikdag),
+            relatief_aantal = aantal_per_fuikdag/aantal_per_fuikdag_tot,
+            relatief_gewicht = gewicht_per_fuikdag/gewicht_per_fuikdag_tot) %>%
   ungroup() %>% 
   mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full),
@@ -2289,12 +2249,8 @@ relatieve_aantallen_dieet <-
                         levels = unique(soort) %>% 
                           sort() %>% 
                           setdiff("rest") %>% 
-                          c(., "rest"))) %>% 
-  select(-aantal_per_fuikdag, -gewicht_per_fuikdag) %>% 
-  left_join(gemiddeld_aantal_dieet) %>% 
-  mutate(aantal_per_fuikdag = relatief_aantal*aantal_per_fuikdag,
-         gewicht_per_fuikdag = relatief_gewicht*gewicht_per_fuikdag) %>% 
-  mutate(dieet = factor(dieet, levels = c("benthivoren", "omnivoren", "piscivoren", "planktivoren")))
+                          c(., "rest")),
+         dieet = factor(dieet, levels = c("benthivoren", "omnivoren", "piscivoren", "planktivoren")))
 
 
 data_split <-
