@@ -37,20 +37,19 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
 ```
 
-```{r 120-meta_data, include=FALSE}
+<!-- ```{r 120-meta_data, include=FALSE} -->
 
-meta_data <-
-  read_delim(paste0(pad_data, "meta_data.csv"),
-             delim = ";")
+<!-- meta_data <- -->
+<!--   read_delim(paste0(pad_data, "meta_data.csv"), -->
+<!--              delim = ";") -->
 
-for(i in 1:nrow(meta_data)){
-  ##first extract the object value
-  tempobj=meta_data$waarde[i]
-  ##now create a new variable with the original name of the list item
-  eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
-}
-
-```
+<!-- for(i in 1:nrow(meta_data)){ -->
+<!--   ##first extract the object value -->
+<!--   tempobj=meta_data$waarde[i] -->
+<!--   ##now create a new variable with the original name of the list item -->
+<!--   eval(parse(text=paste(meta_data$naam[i],"= tempobj"))) -->
+<!-- } -->
+<!-- ``` -->
 
 ```{r 120-basisdata, include=FALSE}
 zoogdier_data <- read_csv(paste0(pad_data, "zoogdier_data.csv"))
@@ -62,7 +61,7 @@ zoogdier_data <- read_csv(paste0(pad_data, "zoogdier_data.csv"))
 
 ## Inleiding
 
-Er is in Vlaanderen of in het Schelde-estuarium voorlopig geen systematische monitoring van de vijf behandelde zoogdiersoorten (gewone zeehond, grijze zeehond, bruinvis, bever en otter).
+Er bestaat in Vlaanderen of in het Schelde-estuarium geen systematische monitoring van de vijf behandelde zoogdiersoorten (gewone zeehond, grijze zeehond, bruinvis, bever en otter).
 Voor otter wordt momenteel via het meetnettenproject een systematische monitoring opgestart (Gouwy et al. 2021, [webref1](https://meetnetten.be/projects/66/), [webref2](https://meetnetten.be/)).
 Van Den Berge *et al.* (2019) geeft een uitgebreid overzicht van recente waarnemingen van otter in Vlaanderen.\
 
@@ -101,7 +100,8 @@ Tabel \@ref(tab:120-tabel2) en figuur \@ref(fig:120-figuur1) geven een overzicht
 ```{r 120-tabel1}
 # inlezen tabel
 aantal_waarnemingen <-
-  read_csv(paste0(pad_tabellen, "aantal_waarnemingen2.csv"))
+  read_csv(paste0(pad_tabellen, "aantal_waarnemingen.csv"))
+soort_nUTM1 <- read.csv(str_c(pad_data, "soort_nUTM1.csv"))
 
 # hoofding tabel
 caption_x_waarden <- "Totaal aantal waarnemingen in de vallei van de Zeeschelde en haar bijrivieren (inclusief niet gevalideerde waarnemingen). "
@@ -167,12 +167,11 @@ knitr::include_graphics(paste0(pad_figuren, "120_fig1_aantal_ind.jpg"))
 
 #### Bever
 
-De gestage uitbreiding van de bever in de Scheldevallei (Mertens, 2016) zet zich 2021 voort.
-Het aantal ingevoerde waarnemingen lag hoger dan in 2020, het totaal aantal ingevoerde individuen iets lager.
-Het aantal km-hokken met waarnemingen steeg van 128 in 2020 naar 143 in 2021.\
+De gestage uitbreiding van de bever in de Scheldevallei (Mertens, 2016) lijkt te stagneren.
+Zowel het aantal ingevoerde waarnemingen als het totaal aantal ingevoerde individuen lagen in 2022 iets lager dan in 2021. Het aantal km-hokken waarin bever werd waargenomen was in 2022 nagenoeg gelijk aan dat in 2021 (resp. 143 en 139).\
 
-In stroomgebied van de Grote Nete blijft de soort beperkt tot de vallei van de de Grote Laak.
-Opmerkelijk zijn nieuwe waarnemingslocaties in de buurt van Antwerpen en de Antwerpse haven.
+Ondertussen zijn grote delen van de Scheldevallei gekoloniseerd. In het Gentse zijn veel waarnemingen. Tussen Gent en Schellebelle zijn er nagenoeg geen waarnemingen. In dit traject komt dan ook weinig geschikt leefgebied voor in de vallei of in het estuarium. Van Schellebelle tot de Durmemonding zijn er waarnemingen in de meeste kilometerhokken. Hier liggen vele geschikte, kleine en grote waterpartijen. In de Durmevallei wordt de bever op vele plekken waargenomen. Verder stroomafwaarts zijn de Scheldepolders in Klein Brabant en de Polders van Kruibeke hotspots. Sinds 2021 is de soort in Antwerpen aanwezig ter hoogte van de Burchtse Weel en het Noordkasteel. Ten westen van de Antwerpse haven lijkt de Noorzuidverbinding en de Grote Geul in 2022 definitef gekoloniseerd. In de Rupelvallei tussen Niel en Boom zijn er geen waarnemingen, hier domineren industriële activiteiten en is er geen geschikt leefgebied. Stroomopwaarts Boom tot aan 
+de samenvloeiing van Zenne, Dijle en Nete komen in de vallei meerdere grote waterpartijen voor, de meeste ervan zijn bezet door bever. Langs de Zenne komt de bever op meerdere plekken voor. Stroomopwaarts Mechelen is de Dijlevallei nagenoeg volledig gekoloniseerd. Dit geldt ook voor de Bendennetevallei stroomopwaarts Lier en de Kleine Netevallei tot in Grobbendonk.  In stroomgebied van de Grote Nete blijft de soort alsnog beperkt tot de vallei van de de Grote Laak. 
 
 ```{r figuur2, fig.cap=caption_figuur2, out.width="80%"}
 caption_figuur2 <- "Evolutie van het aantal km-hokken (UTM1-hokken) met beverwaarnemingen in vallei van de Schelde en haar tijgebonden zijrivieren."
@@ -181,21 +180,21 @@ knitr::include_graphics(paste0(pad_figuren, "bever_utm.png"))
 ```
 
 ```{r figuur3, fig.cap=caption_figuur3, out.width="90%"}
-caption_figuur3 <- "Geografische spreiding van gevalideerde beverwaarnemingen in 2019."
+caption_figuur3 <- "Geografische spreiding van gevalideerde beverwaarnemingen in 2020."
 
-knitr::include_graphics(paste0(pad_figuren, "bever2019.png"))
+knitr::include_graphics(paste0(pad_figuren, "Europese Bever_2020.png"))
 ```
 
 ```{r figuur4, fig.cap=caption_figuur4, out.width="90%"}
-caption_figuur4 <- "Geografische spreiding van gevalideerde beverwaarnemingen in 2020."
+caption_figuur4 <- "Geografische spreiding van gevalideerde beverwaarnemingen in 2021."
 
-knitr::include_graphics(paste0(pad_figuren, "bever2020.png"))
+knitr::include_graphics(paste0(pad_figuren, "Europese Bever_2021.png"))
 ```
 
 ```{r figuur5, fig.cap=caption_figuur5, out.width="90%"}
-caption_figuur5 <- "Geografische spreiding van gevalideerde beverwaarnemingen in 2021."
+caption_figuur5 <- "Geografische spreiding van gevalideerde beverwaarnemingen in 2022."
 
-knitr::include_graphics(paste0(pad_figuren, "bever2021.png"))
+knitr::include_graphics(paste0(pad_figuren, "Europese Bever_2022.png"))
 ```
 
 <br/>
@@ -207,27 +206,22 @@ Tot 2019 werden slechts sporadisch sporen of dieren waargenomen in de omgeving v
 Gerichte opvolging (spraints, cameravallen) in deze omgeving toonde aan dat de soort sinds 2014 constant aanwezig is en zich vermoedelijk voortplant (Gouwy et al., 2017).
 Na de vondst van uitwerpselen in Waasmunster in 2019 leidde gericht onderzoek o.a.
 met cameravallen, in de Durmevallei en verder stroomopwaarts langs de Schelde tot veel bijkomende waarnemingen.
-In 2020 waren er (`r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2020 & str_detect(zoogdier_data$status, "Goed")),])` gevalideerde waarnemingen en 2021 `r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2021 & str_detect(zoogdier_data$status, "Goed")),])`.
-De meeste waarneming vonden plaats langs de Durme in de buurt van het Molsbroek, maar ook in Berlare langs de Schelde en in Willebroek langs de Rupel werd otter waargenomen.
-Er waren geen meldingen uit de Polders van Kruibeke, waar de otter voorgaande jaren werd waargenomen.
-Toch was de soort hier wel aanwezig (mond. mededelingen Koen Van Den Berge, Bram Vereecken).
+In 2020 waren er in totaal (`r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2020 & str_detect(zoogdier_data$status, "Goed")),])` gevalideerde waarnemingen in `r soort_nUTM1[which(soort_nUTM1$naam_nl == "Europese Otter" & soort_nUTM1$Jaar == 2020),]$n` utm-hokken,  in 2021 `r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2021 & str_detect(zoogdier_data$status, "Goed")),])` waarnemingen in `r soort_nUTM1[which(soort_nUTM1$naam_nl == "Europese Otter" & soort_nUTM1$Jaar == 2021),]$n` utm-hokken en in 2022 `r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2022 & str_detect(zoogdier_data$status, "Goed")),])` waarnemingen in `r soort_nUTM1[which(soort_nUTM1$naam_nl == "Europese Otter" & soort_nUTM1$Jaar == 2022),]$n` utm-hokken.
+Zowel in 2021 als in 2022 zijn de meeste waarneming afkomstig uit de Durmevallei en de omgeving van het Berlare Broe. De otter werd ook in 2022 waargenomen langs de Rupel. Er waren geen meldingen uit de Polders van Kruibeke. Toch was de soort hier, net als voorgaande jaren, aanwezig (mond. mededelingen Koen Van Den Berge, Bram Vereecken).
 
 ```{r figuur6, fig.cap=caption_figuur6, out.width="90%"}
-caption_figuur6 <- "Geografische spreiding van gevalideerde otterwaarnemingen in 2019."
-
-knitr::include_graphics(paste0(pad_figuren, "otter2019.png"))
+caption_figuur6 <- "Geografische spreiding van gevalideerde otterwaarnemingen in 2020."
+knitr::include_graphics(paste0(pad_figuren, "Europese Otter_2020.png"))
 ```
 
 ```{r figuur7, fig.cap=caption_figuur7, out.width="90%"}
-caption_figuur7 <- "Geografische spreiding van gevalideerde otterwaarnemingen in 2020."
-
-knitr::include_graphics(paste0(pad_figuren, "otter2020.png"))
+caption_figuur7 <- "Geografische spreiding van gevalideerde otterwaarnemingen in 2021."
+knitr::include_graphics(paste0(pad_figuren, "Europese Otter_2021.png"))
 ```
 
 ```{r figuur8, fig.cap=caption_figuur8, out.width="90%"}
-caption_figuur8 <- "Geografische spreiding van gevalideerde otterwaarnemingen in 2021."
-
-knitr::include_graphics(paste0(pad_figuren, "otter2021.png"))
+caption_figuur8 <- "Geografische spreiding van gevalideerde otterwaarnemingen in 2022."
+knitr::include_graphics(paste0(pad_figuren, "Europese Otter_2022.png"))
 ```
 
 <br/>
@@ -239,22 +233,16 @@ De soort plant zich niet voort in het Belgisch deel van het Schelde-estuarium.\
 
 <br/>
 
-Gewone zeehonden hielden zich in 2021 net als voorgaande jaren voornamelijk op nabij de grens met Nederland ter hoogte van het Groot Buitenschoor en het Schor Ouden Doel.
-Het aantal ingevoerde individuen lijkt hoger dan voorgaande jaren (zie figuur \@ref(fig:120-figuur1)), maar de zeehond die op 2 september op de Nete in Lier verbleef, werd elf maal ingegeven.
-Andere waarnemingen stroomopwaarts Antwerpen:
-
--   23 april, een exemplaar op het zeekanaal in Hingene; wellicht betreft dit een foute determinatie van de grijze zeehond die daar op dezelfde dag werd waargenomen
--   24 april, een exemplaar op de Zeeschelde in Baasrode
--   18 september, een exemplaar in Temse op de Zeeschelde
--   5 oktober, een exemplaar op de Zeeschelde in Sint-Amands
+Zoals de voorgaande jaren werden in 2022 de meeste gewone zeehonden waargenomen nabij de grens met Nederland ter hoogte van het Groot Buitenschoor en het Schor Ouden Doel. Daarnaast waren er op de Schelde waarnemingen ter hoogte van Blokkersdijk, in Hoboken, aan de Durmemonding en, meest stroomopwaarts, in Moerzeke. In september, oktober en november werd de soort waargenomen op het meest stroomafwaartse deel van de Zenne en aan de samenvloeiing van Zenne en Dijle. In september was er ook een waarneming op de Rupel ter hoogte van het Broek De Naeyer. Op 26 augustus bezocht één zeehond het Hamsadok in de haven van Antwerpen.  
+Zowel het aantal waarnemingen als het aantal ingevoerde individuen lag in 2022 lager dan in 2021, maar hoger dan alle vorige jaren (zie figuur \@ref(fig:120-figuur1)).
 
 ```{r tabel3}
 # inlezen tabel
 zeehond2021 <-
-  read_csv(paste0(pad_tabellen, "/zeehond2021.csv"))
+  read_csv(paste0(pad_tabellen, "/zeehond2022.csv"))
 
 # hoofding tabel
-caption_x_waarden <- "Waarnemingen van gewone zeehond in 2021. "
+caption_x_waarden <- "Waarnemingen van gewone zeehond in 2022. "
 
 
 # opmaak tabel
@@ -272,21 +260,18 @@ zeehond2021 %>%
 
 #### Grijze zeehond
 
-Naast gewone zeehonden duiken de laatste jaren ook grijze zeehonden regelmatig op in de Zeeschelde.
-Daarom worden de waarnemingen van deze soort ook opgenomen in de rapportage.
+Naast gewone zeehonden duiken de laatste jaren ook regelmatig grijze zeehonden op in de Zeeschelde.  
 
-In april (1 waarneming) en juni (2 waarnemingen) werd de grijze zeehond waargenomen nabij de grens met Nederland.
-Op 23 april zwom in de late namiddag een exemplaar in de Schelde ter hoogte van de sluis in Hingene, wat later dezelfde dag moet het dier door de sluis gesukkeld zijn want 's avonds waren er waarnemingen in het zeekanaal.
-Op 30 april zwom een grijze zeehond ter hoogte van het veer Weert - Driegoten.
-De opmerkelijkste waarneming betreft zes exemplaren op 11 oktober, opnieuw op de Schelde in Hingene.
+In april en september werd een exemplaar waargenomen ter hoogte van het Schor Ouden Doel, in mei aan de Boerenschans in Antwerpen, in augustus aan het Zennegat en in oktober helemaal zelfs net stroomopwaarts de stuw op de tijarm in Merelbeke.
+<br/>
 
 ```{r tabel4}
 # inlezen tabel
 grijzezeehond2021 <-
-  read_csv(paste0(pad_tabellen, "/grijzezeehond2021.csv"))
+  read_csv(paste0(pad_tabellen, "/grijzezeehond2022.csv"))
 
 # hoofding tabel
-caption_x_waarden <- "Waarnemingen van grijze zeehond in 2021."
+caption_x_waarden <- "Waarnemingen van grijze zeehond in 2022."
 
 
 # opmaak tabel
@@ -304,17 +289,19 @@ grijzezeehond2021 %>%
 
 #### Bruinvis
 
-In 2021 werden slechts vier waarnemingen van bruinvis ingevoerd in waarnemingen.be.
-Eén waarneming vond plaats in Zandvliet in maart.
-De drie overige waarnemingen stemmen uit september, een keer twee en een keer één exemplaar in Zandvliet en op 25 september één exemplaar stroomopwaarts Antwerpen in Baasrode.
+In 2013 werd een groot aantal bruinvissen waargenomen in het Belgisch deel van het Schelde-estuarium. Voor en na 2013 zijn er eigenlijk slechts sporadisch waarnemingen van deze soort.  
+<br/>
+
+In 2022 werd slechts één waarneming van bruinvis op de Schelde ingevoerd in waarnemingen.be 
+en wel net aan de grens ter hoogte van het Verdronken Land van Saeftinghe (20 augustus).
 
 ```{r tabel5}
 # inlezen tabel
 bruinvis2021 <-
-  read_csv(paste0(pad_tabellen, "/bruinvis2021.csv"))
+  read_csv(paste0(pad_tabellen, "/bruinvis2022.csv"))
 
 # hoofding tabel
-caption_x_waarden <- "Waarnemingen van bruinvis in 2021."
+caption_x_waarden <- "Waarnemingen van bruinvis in 2022."
 
 
 # opmaak tabel
@@ -331,12 +318,12 @@ bruinvis2021 %>%
 
 ## Discussie
 
-Noch voor gewone zeehond, noch voor grijze zeehond zijn er instandhoudingsdoelstelling voor de Zeeschelde.
-Veel waarnemingen van de zeehondensoorten zijn niet gevalideerd en dus onzeker, zoals blijkt uit de dubbele determinatie op 23 april in Hingene.
-Gewone zeehond werd in 2021 regelmatig waargenomen ter hoogte van de grens.
-Slechts vier exemplaren werden stroomopwaarts Anwterpen gespot.
-Met zes waarnemingen blijft de grijze zeehond een weinig frequente verschijning.
-Dit kan ook gezegd worden van de bruinsvis met 4 waarneminen in 2021.
+Noch voor gewone zeehond, noch voor grijze zeehond zijn er instandhoudingsdoelstelling voor de Zeeschelde.    
+Gewone zeehond werd in 2022 zoals stteds vooral waargenomen ter hoogte van de grens.
+
+Met vijf waarnemingen blijft de grijze zeehond een zeldzame verschijning.  
+
+Dit kan ook gezegd worden van de bruinvis met slechts 1 waarneming.
 
 Voor bever en otter zijn wel instandhoudingsdoelen geformuleerd.
 Adriaensen *et al.* (2005) stellen dat voldoende ruimte en geschikt habitat aanwezig moeten zijn binnen strikt beschermde natuurgebieden voor een potentiële populatie bevers van ca.
@@ -345,13 +332,13 @@ Voor otter moet er voldoende potentieel leefgebied zijn om een leefbare kernpopu
 
 Bij een doorgedreven inventarisatie van beverterritoria in Vlaanderen vonden Huysentruyt *et al.* (2019) in 2017 29 beverterritoria in de vallei van de Zeeschelde en tijgebonden zijrivieren.
 In dat zelfde jaar werden beverwaarnemingen verricht in 64 km-hokken, m.a.w. een verhouding van `r round(64/29, 2)` km-hokken per territoria.
-Indien deze verhouding een constante is, zouden er in 2021 ca.
-`r round(143/(64/29),0)` territoria zijn.
-Volgens de methode in Huysentruyt *et al.* (2019) stemt dit overeen met `r round(143/(64/29)*0.6,0)` reproductieve eenheden (families) en `r round(143/(64/29)*2.8,0)` individuen.
-De doelstelling voor bever zou in 2021 dus gerealiseerd zijn.\
+Indien deze verhouding een constante is, zouden er in 2022 ca.
+`r round(139/(64/29),0)` territoria zijn.
+Volgens de methode in Huysentruyt *et al.* (2019) stemt dit overeen met `r round(139/(64/29)*0.6,0)` reproductieve eenheden (families) en `r round(139/(64/29)*2.8,0)` individuen.
+De doelstelling voor bever zou dus ook in 2022 (nagenoeg) gerealiseerd zijn.\
 
 Voor de otter is dit niet het geval.
-Dat er meerdere exemplaren in twee deelgebieden (ruime omgeving van de Rupelmonding en Durmevallei - Berlare Broek) voorkomen is duidelijk, maar zeker nog geen 20-25 individuen.
+Dat er meerdere exemplaren in twee deelgebieden (ruime omgeving van de Rupelmonding en Durmevallei - Berlare Broek) voorkomen werd bevestigd in 2022. M er zijn aar zeker nog geen 20-25 individuen.
 
 <br/>
 
