@@ -18,6 +18,8 @@ library(readxl)
 library(kableExtra)
 library(rprojroot) ## workaround pad
 
+conflicted::conflicts_prefer(dplyr::filter)
+
 ```
 
 ```{r 090-pad}
@@ -48,6 +50,8 @@ figtab <-
 ```
 
 ```{r 090-meta-data}
+
+laatste_jaar <- 2022
 
 soortenlijst <- 
   read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"), 
