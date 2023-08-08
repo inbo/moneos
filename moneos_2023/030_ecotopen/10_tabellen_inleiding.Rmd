@@ -202,7 +202,8 @@ movedown <- ecotopen_df_20 %>%
 ecotopen_df_20 <- ecotopen_df_20 %>% 
   dplyr::filter(!Ecotoop %in% c("Hoog supralitoraal (begroeid)", "Hoog supralitoraal hard antropogeen", "Getijdeplas", "Antropogeen")) %>% 
   bind_rows(movedown %>% 
-              arrange(fct_relevel(Ecotoop, "Hoog supralitoraal (begroeid)", "Hoog supralitoraal hard antropogeen", "Getijdeplas", "Antropogeen")))
+              arrange(fct_relevel(Ecotoop, "Hoog supralitoraal (begroeid)", "Hoog supralitoraal hard antropogeen", "Getijdeplas", "Antropogeen"))) %>% 
+  rename("Max. snelheid (vloed)" = maxV)
   
   
 
