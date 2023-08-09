@@ -1,3 +1,4 @@
+
 ```{r 090-hoofdstuk, include=FALSE}
 
 hoofdstuk <- "090_vissen"
@@ -51,7 +52,7 @@ figtab <-
 
 ```{r 090-meta-data}
 
-laatste_jaar <- 2022
+laatste_jaar <- 2022 
 
 soortenlijst <- 
   read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"), 
@@ -123,8 +124,9 @@ Zesjaarlijkse afvissingen, het absolute minimum voor de KRW, geven te grote lacu
 Om seizoenale patronen te documenteren vissen we in de lente, zomer en herfst.
 
 Ankerkuilvisserij geeft een goed beeld van de visgemeenschap in de waterkolom, fuikvisserij bemonstert eerder nabij de bodem.
-De resultaten van beide vangstmethoden verstrekken complementaire informatie over de kraamkamerfunctie en recrutering van de visgemeenschappen in het estuarium doorheen het jaar en in de verschillende saliniteitszones.
-Algemeen worden meer soorten gevangen met de ankerkuil, de resultaten van de fuikvangsten leveren echter een hogere shannon diversiteit (Breine & Van den Bergh, 2022).
+De resultaten van beide vangstmethoden verstrekken complementaire informatie over de kraamkamerfunctie en rekrutering van de visgemeenschappen in het estuarium doorheen het jaar en in de verschillende saliniteitszones.
+Algemeen worden meer soorten gevangen met de ankerkuil.
+De resultaten van de fuikvangsten leveren echter een hogere Shannon diversiteit (Breine & Van den Bergh, 2022).
 De resultaten van het reguliere INBO meetnet worden aangevuld met extra informatie uit de resultaten van een vrijwilligersmeetnet (hier niet gerapporteerd).
 Schietfuiken worden in alle EMSE Scheldezones niveau 3 uitgezet.
 Aanvankelijk werd ook op de zijrivieren jaarlijks gevist maar sinds 2012 werd dit verminderd naar driejaarlijks omdat de totale inspanning te groot werd en omdat de ecosysteem evaluatie vooral op de Zeeschelde zelf gericht is.
@@ -176,7 +178,7 @@ Aantallen en biomassa worden omgerekend naar aantallen en biomassa per m\textsup
 In de periode 2012-`r laatste_jaar` werd jaarlijks gevist in de lente (eind april of begin mei), de zomer (juli) en in het najaar (september), .
 In 2020 werd uitzonderlijk enkel in de zomer en het najaar gevist.
 Er wordt telkens op vier locaties bemonsterd: Doel, Antwerpen, Steendorp en Branst (Figuur \@ref(fig:090-figuur-locaties-ankerkuil)).
-Doel en Antwerpen bevinden zich in de EMSE niveau 3 Scheldezone met sterke saliniteitsgradiënt, Steendorp bevindt zich in de oligohaliene zone en Branst in de zoetwater zone met lange verblijftijd.
+Doel en Antwerpen bevinden zich in de EMSE niveau 3 scheldezone met sterke saliniteitsgradiënt, Steendorp bevindt zich in de oligohaliene zone en Branst in de zoetwater zone met lange verblijftijd.
 De Lambert coördinaten van de locaties zijn: Doel: 143350; 223091, Antwerpen: 149192; 210267, Steendorp: 142898; 200951 en Branst: 137181; 195683.
 
 ```{r 090-figuur-locaties-ankerkuil, fig.cap=cap_locaties_ankerkuil, out.width="100%"}
@@ -239,7 +241,7 @@ De waargenomen soorten worden onderverdeeld in zogenaamde functionele groepen op
 De indeling qua habitatgebruik is als volgt:
 
 -   Estuariene soorten en mariene migranten. Estuariene soorten brengen hun hele levenscyclus in het estuarium door. Mariene migranten (juvenielen, seizoensgasten, dwaalgasten) kunnen hun levenscyclus op zee vervolledigen maar ze komen de gunstiger condities in het estuarium opzoeken vb. om op te groeien.
--   Diadrome soorten moeten zich tussen zoet- en zoutwater verplaatsen om voort te planten en zo hun levenscyclus te vervolledigen.
+-   Diadrome soorten moeten zich tussen zoet- en zoutwater verplaatsen om zich voort te planten en zo hun levenscyclus te vervolledigen.
 -   Zoetwatersoorten die ook in het estuarium hun levenscyclus kunnen vervolledigen.
 
 De indeling qua dieetvoorkeur is als volgt:
@@ -250,15 +252,15 @@ De indeling qua dieetvoorkeur is als volgt:
 -   Planktivoor
 
 De functionele groep omnivore estuariene soorten en mariene migranten is niet opgenomen in de EMSE indeling (zie EMSE 2021).
-Omwille van de functionele betekenis van deze groep in de Zeeschelde wordt deze echter wel opgenomen in de MONEOS rapportage.
-Sommige combinaties van habitatgebruik en dieetvoorkeur komen niet voor in de data.
-In de figuren worden deze functionele groepen wel telkens mee opgenomen om een overzichtelijke vaste structuur te behouden.
+Omdat van deze groep, althans volgens de EMSE dieetvoorkeur per soort, toch redelijke aantallen voorkomen in de Zeeschelde wordt deze echter wel opgenomen in de MONEOS rapportage.
+Sommige combinaties van habitatgebruik en dieetvoorkeur komen niet voor in de data. 
+Om een overzichtelijke vaste structuur te behouden worden ze wel telkens mee opgenomen in de figuren.
 <!--# kan evt. nog aangepast worden (zie vorig) jaar, maar dan moeten de figuren wel aangepast worden -->
 
-Een overzicht van soorten die sinds 2012 in de Zeeschelde werden gevangen, met aanduiding van de bovenstaande indeling, wordt gegeven in Tabel \@ref(tab:090-tabel-zeeschelde-soorten) in bijlage.
+Een overzicht van soorten die sinds 2012 in de Zeeschelde werden gevangen, met aanduiding van EMSE habitatgebruik en dieetvoorkeur wordt gegeven in Tabel \@ref(tab:090-tabel-zeeschelde-soorten) in bijlage.
 Er werden in die periode `r aantal_soorten` soorten gevangen waarvan `r aantal_soorten_beide` soorten in zowel ankerkuil als fuiken `r aantal_soorten_enkel_ankerkuil` soorten enkel met de ankerkuil en `r aantal_soorten_enkel_fuiken` soorten enkel met de dubbele schietfuiken.
-Voor elk van de EMSE functionele groepen worden per jaar en per vangstmethode het totaal aantal gevangen individuen en de totale biomassa per vangsteenheid (m³ bemonsterd water voor ankerkuil, 1 fuikdag voor fuikvangsten) alsook het aantal soorten en de Shannon diversiteit gerapporteerd.
-Dit per Scheldezone (EMSE niveau 3) en gemiddeld over de bemonsterde seizoenen (voorjaar, zomer, najaar).
+Voor elk van de EMSE functionele groepen worden per jaar en per vangstmethode het totaal aantal gevangen individuen en de totale biomassa per vangsteenheid (1000m³ bemonsterd water voor ankerkuil, 1 fuikdag voor fuikvangsten) alsook het aantal soorten en de Shannon diversiteit gerapporteerd.
+Dit per scheldezone (EMSE niveau 3) en gemiddeld over de bemonsterde seizoenen (voorjaar, zomer, najaar).
 
 De Shannon diversiteit *D* wordt berekend als:
 
@@ -267,7 +269,8 @@ D = exp \left( -\sum^S_i p_i ln (p_i) \right)
 $$
 
 waarbij *S* het aantal gevangen soorten in de functionele groep is en *p~i~* de relatieve abundantie van soort *i*.
-*D* neemt een waarde aan tussen 1 en *S*, afhankelijk van de gelijkheid (evenness) in abundantie van de soorten (bij *D* = *S* hebben alle soorten in de groep een gelijke abundantie).
+*D* neemt een waarde aan tussen 1 en *S*, afhankelijk van de gelijkheid (evenness) in abundantie van de soorten.
+Indien *D* = *S* hebben alle soorten in de groep een gelijke abundantie.
 
 Naast de algemene trends per functionele groep wordt er ook gekeken naar de trends van een aantal sleutelsoorten.
 Deze soorten zijn zo geselecteerd dat ze een goede vertegenwoordiging geven van de verschillende saliniteits- en dieetvoorkeuren (zie bijlage Tabel \@ref(tab:090-tabel-zeeschelde-soorten)) en zijn belangrijke indicatoren voor het ecologisch functioneren van het systeem.
