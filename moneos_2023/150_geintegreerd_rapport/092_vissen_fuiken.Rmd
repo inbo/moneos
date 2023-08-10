@@ -70,17 +70,21 @@ for(i in 1:nrow(meta_data)){
 
 In `r laatste_jaar` werden `r aantal_soorten_laatste_jaar` vissoorten gevangen in de fuiken.
 Een overzicht van de soorten gevangen in `r laatste_jaar` is weergegeven in Tabel \@ref(tab:092-tabel-overzicht-soorten).
+De relatieve soortenrijkdom per saliniteitszone vertoont een gelijkaardige trend met fuiken en ankerkuil.
 In de zone met sterke saliniteitsgradiënt (Paardenschor en Antwerpen) en de oligohaliene zone (Steendorp) werden er meer soorten gevangen dan in de zoetwaterzone met lange (Kastel) en korte (Appels, Overbeke) verblijftijd (Tabel \@ref(tab:092-tabel-aantal-soorten)).
-Historisch worden er over de beschouwde periode (`r vroegste_jaar` - `r laatste_jaar`) meest soorten gevangen in de zone met sterke saliniteitsgradiënt (Zandvliet/Paardenschor \> Antwerpen) (Figuur \@ref(fig:092-figuur-aantal-soorten-locatie-historisch)).
-Vanaf 2017 worden in die zone wel minder soorten gevangen.
-<!--# merk op dat dit bijna overeenkomt met de vervanging van Zandvliet door Pardenschor (in najaar 2015). Enkel 2016 vormt dus een uitzondering met staalname aan Paardenschor maar nog hoge aantallen. Maar ook in Antwerpen is het patroon zichtbaar. --> In het oligohalien (Steendorp) worden historisch iets minder soorten gevangen, maar toch meer dan in het zoetwater (lange - Kastel - en korte - Appels, Overbeke - veblijftijd).
-In r laatste_jaar zijn er op de drie locaties in de zoetwater zone beduidend minder soorten gevangen dan de jaren voorheen.
-Dit heeft te maken met een vermindering van de vangstinspanning van 48 naar 24 uur.
+In elke zone werden echter minder soorten bovengehaald met de fuiken.
+Over de seizoenen werden met de fuiken minst soorten gevangen in het najaar terwijl dat met de ankerkuil in de zomer was.
+
+Ook totaal over de beschouwde periode (`r vroegste_jaar` - `r laatste_jaar`) worden meest soorten gevangen in de zone met sterke saliniteitsgradiënt (Zandvliet/Paardenschor \> Antwerpen) (Figuur \@ref(fig:092-figuur-aantal-soorten-locatie-historisch)) en daalt de soortenrijkdom in stroomopwaartse richting, net zoals met de ankerkuilvangsten.
+Vanaf 2017 worden in de zone met sterke saliniteitsgradiënt wel minder soorten gevangen, terwijl meer stroomopwaarts het aantal soorten lijkt toe te nemen.
+<!--# merk op dat dit bijna overeenkomt met de vervanging van Zandvliet door Paardenschor (in najaar 2015). Enkel 2016 vormt dus een uitzondering met staalname aan Paardenschor maar nog hoge aantallen. Maar ook in Antwerpen is het patroon zichtbaar, dus geen aandacht aan besteden?. -->
+
 De soortensamenstelling op elke locatie kan sterk verschillen tussen de seizoenen, met een turnover van ongeveer één derde van de soorten.
 Het totaal aantal soorten jaarlijks gevangen met fuiken in de Zeeschelde (over alle locaties) in de periode `r vroegste_jaar` - `r laatste_jaar` varieert rond de 33 (Figuur \@ref(fig:092-figuur-aantal-soorten-historisch)).
+Tot een kwart van het aantal gevangen soorten kan verschillen tussen de locaties.
 Het aantal gevangen soorten per jaar vertoont meer variatie vanaf 2016.
-Het relatief laag aantal soorten in `r laatste_jaar` wordt ook mede veroorzaakt door de halvering van het aantal fuikdagen per campagne.
-tot een kwart van het aantal gevangen soorten kan verschillen tussen de locaties.
+In 2022 zijn er met de fuiken beduidend minder soorten gevangen dan de jaren voorheen.
+Dit heeft waarschijnlijk te maken met de halvering van het aantal fuikdagen per campagne (van 2 naar 1 etmaal per locatie).
 
 ```{r 092-tabel-overzicht-soorten}
 
@@ -140,7 +144,7 @@ tabel_aantal_soorten  %>%
 ```{r 092-figuur-aantal-soorten-locatie-historisch, fig.cap=cap_aantal_soorten_locatie, out.width="110%"}
 
 cap_aantal_soorten_locatie <-
-  str_c("Het aantal gevangen soorten in de Zeeschelde per locatie met fuiken in de Zeeschelde in de periode 2012-",laatste_jaar,". Soorten gemiddeld over de verschillende seizoenen.")
+  str_c("Het aantal soorten gevangen per locatie met fuiken in de Zeeschelde in de periode 2009-",laatste_jaar,". Het donkere deel per balk geeft het gemiddeld aantal soorten gevangen per jaar en locatie; het lichtere deel geeft het totaal aantal gevangen soorten per jaar en locatie.")
 
 knitr::include_graphics(paste0(pad_figuren, "aantal_soorten_locatie.jpg"))
 
@@ -153,20 +157,29 @@ knitr::include_graphics(paste0(pad_figuren, "aantal_soorten_locatie.jpg"))
 Alle vangstgegevens van `r laatste_jaar` worden geanalyseerd.
 Soorten met in alle seizoenen en locaties een relatieve bijdrage kleiner dan 10% voor zowel de aantallen als biomassa worden als 'rest' samengenomen.
 
-Deze analyse geeft aan dat de relatieve abundantie van de soorten zowel seizoenaal als ruimtelijk verschilt (Figuur \@ref(fig:092-figuur-relatief-aantal)).
-In het voorjaar van `r laatste_jaar` waren schol, bot en zeebaars dominant aan het Paardenschor, in Antwerpen waren dat vooral spiering en bot.
-In Steendorp werd er naast spiering ook relatief veel paling gevangen.
-In de zoete zone overheersten naast snoekbaars de typische zoetwatersoorten blankvoorn, kolblei en brasem.
-In Kastel was er ook nog een redelijk aantal spiering.
-In de zomer werd er overal bot gevangen, in de saliniteitsgradiënt aangevuld met tong, terwijl in de zoete zone snoekbaars de overhand nam, aangevuld met paling, blankvoorn en brasem.
-Dit beeld veranderde compleet in het najaar, wanneer brakwatergrondel de fuikvangsten overheerste van Antwerpen tot Appels.
-In de zone met saliniteitsgradiënt blijven tong en bot belangrijk, in Overbeke zijn dat de paling en kolblei.
+Deze analyse geeft aan dat de relatieve abundantie van de soorten zowel ruimtelijk als per seizoen verschilt (Figuur \@ref(fig:092-figuur-relatief-aantal)).
+Het patroon verschilt ook sterk van dat van de ankerkuilvangsten en geeft algemeen een meer divers beeld met minder uitgesproken dominantie van een aantal soorten.
+
+In het voorjaar van `r laatste_jaar` overheersen schol, bot en zeebaars de aantallen aan het Paardenschor.
+In Antwerpen zijn dat vooral spiering en bot.
+In Steendorp wordt er naast spiering ook relatief veel paling gevangen.
+In de zoete zone overheersen naast snoekbaars de typische zoetwatersoorten blankvoorn, kolblei en brasem.
+In Kastel is er ook nog een redelijk aantal spiering.
+In de zomer worden overal redelijke aantallen bot gevangen.
+In de zone met sterke saliniteitsgradiënt overheerst tong, in Antwerpen aangevuld met snoekbaars.
+In de zoete zone neemt snoekbaars in de zomer de overhand, aangevuld met paling, blankvoorn en brasem.
+Dit beeld verandert compleet in het najaar.
+In die periode overheerst brakwatergrondel de fuikvangsten van Antwerpen tot Appels.
+Aan het Paardenschor blijven tong en bot belangrijk, aangevuld met zeebaars.
+In Overbeke zijn dat de paling en kolblei.
 
 Uitgedrukt in biomassa overheerst de snoekbaars de zoete zone reeds in het voorjaar, in de zone met saliniteitsgradiënt zijn dat bot, dunlipharder, spiering en zeebaars.
 In Kastel overheersen optrekkende finten niet in de aantallen maar wel in de biomassa.
 Snoekbaars en paling blijven dominant in de zomer.
-In het Paardenschor is nu tong de belangrijkste soort (Figuur \@ref(fig:092-figuur-relatieve-biomassa)).
-In het najaar laten ook de talrijke kleine brakwatergrondeltjes zich bescheiden opmerken in de biomassa getallen.
+Aangevuld met brasem in de zoete zone en spiering en zeebaars meer stroomafwaarts.
+In het Paardenschor is tong nu de belangrijkste soort (Figuur \@ref(fig:092-figuur-relatieve-biomassa)).
+In het najaar overheersen achtereenvolgens zeebaars, bot en paling de biomassa van stroomaf naar stroomop.
+Ook de talrijke kleine brakwatergrondeltjes laten zich bescheiden opmerken in de biomassa getallen.
 
 ```{r 092-figuur-relatief-aantal, fig.cap=cap_relatief_aantal, out.width="100%"}
 
@@ -194,39 +207,45 @@ knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_gevangen_individ
 
 ##### Algemene trends per saliniteits- en dieetvoorkeur
 
-In de hieronder volgende figuren voor aantallen en biomassa worden de bijdrage van de meest abundante soorten per functionele groep met individuele kleurcodes weergegeven.
+In de hieronder volgende figuren voor aantallen en biomassa worden de bijdragen van de meest abundante soorten per functionele groep met individuele kleurcodes weergegeven.
 Soorten die binnen een functionele groep minder dan 10% van zowel de aantallen als de biomassa uitmaken worden telkens samengenomen als 'rest'.
 
 [Estuariene soorten en mariene migranten]{.underline}
 
-Figuur \@ref(fig:092-figuur-aantallen-marien-EMSE) geeft per saliniteitszone (EMSE niveau 3) en dieetvoorkeur de aantallen weer voor de gevangen estuariene soorten en mariene migranten.
+Figuur \@ref(fig:092-figuur-aantallen-marien-EMSE) en Figuur \@ref(fig:092-figuur-biomassa-marien-EMSE) geven per saliniteitszone (EMSE niveau 3) en dieetvoorkeur respectievelijk de aantallen en biomassa weer voor de gevangen estuariene soorten en mariene migranten.
 
-Brakwatergrondel en dikkopje zijn veruit de meest talrijke benthivore soorten in deze groep.
-De grootste aantallen vonden we in de zoetwaterzone in Branst, vooral sinds 2016 (vaak 100-200 individuen per 1000m³, met een piek in van 600 in 2018).
-In `r laatste_jaar` zijn de aantallen lager dan de periode voordien.
+In deze estuariene gebruik groep overwegen benthivoren in aantal en biomassa.
+Eerst vooral in de zone met sterke saliniteitsgradiënt maar de laatste jaren ook in de zoete zones.
+In aantallen volgen planktivoren maar in biomassa zijn dat omnivoren.
 
-Omnivore mariene en estuariene soorten worden qua aantallen gedomineerd door kleine zeenaald in de zone met sterke saliniteitsgradiënt en door, hoofdzakelijk juveniele, zeebaarsen die in het oligohalien en zoetwater komen opgroeien.
-De aantallen zijn beduidend lager dan voor de benthivore soorten van deze groep (\< 5 individuen per 1000m³).
-De laatste jaren wordt deze soortengroep minder gevangen dan in de periode voor 2018.
+In de zone met sterke saliniteitsgradiënt worden vooral tong en schol gevangen als benthivore mariene migranten.
+Het aantal tongen per fuikdag daalde sterk na 2011 en toonde nog een beperkte piek in 2017.
+Brakwatergrondel en dikkopje zijn veruit de meest talrijke benthivore estuariene soorten in de oligohaliene en zoete zones.
+De aantallen per fuikdag schommelen sterk zonder bepaalde trend.
+In `r laatste_jaar` is er een piek in de zoete zones.
+Deze werd ook waargenomen in Branst met de ankerkuilvangsten.
 
-Piscivore estuariene en mariene soorten komen in de Zeeschelde niet voor, de éénmalige vangst van een smelt uitgezonderd.
+Omnivore mariene soorten worden qua aantallen en biomassa gedomineerd door zeebaars.
+Vooral in de zone met sterke saliniteitsgradiënt, zijn ze opvallend aanwezig in de fuikvangsten sinds 2015, terwijl ze in deze zone relatief minder gevangen worden met de ankerkuil.
+Opvallend is ook de piek van steenbolk in 2019.
 
-Planktivore individuen van de groep estuarien residente en mariene migranten zijn meest talrijk in de zone met sterke saliniteitsgradiënt (tot 150 individuen per 1000m³) maar ze zijn toch ook tot in de zoete zone terug te vinden.
-Het gaat hier vooral om de juvenielen van mariene soorten haring en sprot die de luwte van het estuarium opzoeken om op te groeien.
-Recente aantallen zijn eerder laag in vergelijking met sommige periodes in het verleden (2013-2014, 2018).
+Piscivore estuariene en mariene soorten volgens de EMSE indeling werden in de Zeeschelde niet gevangen met fuiken.
+
+Planktivore individuen van de groep estuarien residente en mariene migranten zijn vooral juvenielen van mariene soorten haring en sprot, die de luwte van het estuarium opzoeken om op te groeien.
+Ze zijn meest talrijk in de zone met sterke saliniteitsgradiënt maar ze zijn toch ook tot in de zoete zone terug te vinden.
+Daar waar de piek in de ankerkuil aantallen zich in 2022 voordeed was dat in 2021 voor de fuikvangsten.
 
 De patronen voor biomassa vertonen grotendeels dezelfde verhoudingen tussen soortgroepen, saliniteitszones en soorten (Figuur \@ref(fig:092-figuur-biomassa-marien-EMSE)).
-De omnivore mariene en estuariene soorten vertonen echter wel een grotere soortendiversiteit qua biomassa dan qua aantallen in de zone met sterke saliniteitsgradiënt.
-De dominatie van zeenaald in de aantallen is hier een stuk minder uitgesproken in de biomassa.
 
-De sterke dominantie van één of twee soorten qua aantallen binnen elke soortgroep is ook duidelijk zichtbaar in Figuur \@ref(fig:092-figuur-diversiteit-marien-EMSE).
-Zelfs als er in totaal (S) 5 of meer soorten voorkomen in een groep worden de functionele groepen gedomineerd door één of twee soorten (D).
+De sterke dominantie van één of twee soorten qua aantallen binnen elke soortgroep is ook duidelijk zichtbaar Uit Figuur \@ref(fig:092-figuur-diversiteit-marien-EMSE) blijkt de sterke dominantie van één of twee soorten qua aantallen binnen elke soortgroep.
+De functionele groepen worden gedomineerd door slechts één of twee soorten (D), ook als er in totaal (S) 5 of meer soorten voorkomen in een groep.
+Uitzonderlijk komt in de zone met sterke saliniteitsgradiënt een diversiteit (D) hoger dan 2 voor.
 Soortenaantal en diversiteit vertonen geen uitgesproken trends binnen de soortgroepen, maar zijn relatief stabiel.
 
 ```{r 092-figuur-aantallen-marien-EMSE, fig.cap=aantallen_marien_EMSE, out.width="110%"}
 
 aantallen_marien_EMSE <-
-  str_c("Totaal aantal gevangen individuen van estuariene soorten en mariene migranten in de Zeeschelde in de periode 2012-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
+  str_c("Totaal aantal gevangen individuen van estuariene soorten en mariene migranten in de Zeeschelde in de periode 2009-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
 
 knitr::include_graphics(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_marien.jpg"))
 
@@ -237,7 +256,7 @@ knitr::include_graphics(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE
 ```{r 092-figuur-biomassa-marien-EMSE, fig.cap=biomassa_marien_EMSE, out.width="110%"}
 
 biomassa_marien_EMSE <-
-  str_c("Totale biomassa gevangen individuen van estuariene soorten en mariene migranten in de Zeeschelde in de periode 2012-",laatste_jaar,". Jaargemiddelde biomassa per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
+  str_c("Totale biomassa gevangen individuen van estuariene soorten en mariene migranten in de Zeeschelde in de periode 2009-",laatste_jaar,". Jaargemiddelde biomassa per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
 
 knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_marien.jpg"))
 
@@ -248,7 +267,7 @@ knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMS
 ```{r 092-figuur-diversiteit-marien-EMSE, fig.cap=diversiteit_marien_EMSE, out.width="100%"}
 
 diversiteit_marien_EMSE <-
-  str_c("Aantal soorten (S, lichtblauw) en Shannon diversiteit (D, donkerblauw) van estuariene soorten en mariene migranten in de Zeeschelde in de periode 2012-",laatste_jaar,". Jaargemiddelde diversiteit per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
+  str_c("Aantal soorten (S, lichtblauw) en Shannon diversiteit (D, donkerblauw) van estuariene soorten en mariene migranten in de Zeeschelde in de periode 2009-",laatste_jaar,". Jaargemiddelde diversiteit per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
 
 knitr::include_graphics(paste0(pad_figuren, "diversiteit_S_D_EMSE_marien.jpg"))
 
@@ -259,27 +278,25 @@ knitr::include_graphics(paste0(pad_figuren, "diversiteit_S_D_EMSE_marien.jpg"))
 [Diadrome soorten]{.underline}
 
 Er zijn geen diadrome benthivore vissoorten in de Zeeschelde.
-De twee zogenaamd piscivore soorten, de zeeprik en de rivierprik zijn eigenlijk parasitaire soorten waarvan er telkens maar enkele gevangen worden.
-Aantallen, biomassa en dominantie zijn dus sterk variabel in de tijd en per saliniteitszone voor deze functionele groep.
-Volwassen finten worden meegenomen onder de omnivoren, maar eten niet tijdens de paaitrek, hun dieet doet dus eigenlijk niet ter zake voor de Zeeschelde.
+De twee zogenaamd piscivore soorten, de zeeprik en de rivierprik zijn eigenlijk parasitaire soorten waarvan slechts sporadisch een enkel groter exemplaar met de fuik gevangen wordt.
+De enige dieetgroep van tel onder de diadromen zijn de omnivore soorten.
+In de fuikvangsten zijn de jonge spieringen minder dominant aanwezig dan in de ankerkuil.
+Ook bot, driedoornige stelkelbaars, dunlipharder, fint en paling laten zich opmerken in de aantallen en/of biomassa (Figuur \@ref(fig:092-figuur-aantallen-diadroom-EMSE); (Figuur \@ref(fig:092-figuur-biomassa-diadroom-EMSE)).
 
-De diadrome soorten in de Zeeschelde zijn dus voornamelijk omnivoor en deze functionele groep is zo sterk gedomineerd door spiering (Figuur \@ref(fig:092-figuur-aantallen-diadroom-EMSE)) dat bot, driedoornige stekelbaars, fint en paling, die nochtans ook zeer regelmatig gevangen worden, niet eens apart vermeld worden maar samen met nog enkele andere, minder algemene soorten, onder 'rest' verwerkt worden.
+In de zone met grote saliniteitsgradiënt wordt bot in de grootste antallen gevangen.
+Spieringen zijn meest talrijk in de oligohaliene en zoetwater zone met pieken tot 400-600 individuen per fuikdag in 2015 in Overbeke.
+In recente jaren zijn de aantallen, net als in de ankerkuildata een stuk lager (\<50 individuen per fuikdag).
+Vergelijking van aantallen en biomassa in de verschillende saliniteitszones doet ook op basis van fuikdata vermoeden dat de spieringen gemiddeld het kleinst zijn in de zoete zone en het grootste in de zone met sterke saliniteitsgradiënt.
+De biomassa van omnivore diadromen in de oligohaliene en zoete zones wordt vooral door paling en in sommige gevallen ook optrekkende fint bepaald (Figuur \@ref(fig:092-figuur-biomassa-diadroom-EMSE)).
+In de zone met sterke saliniteitsgradient maken vooral paling, bot en een enkele keer ook dunlipharder en fint de biomassa uit.
 
-Spieringen zijn meest talrijk in de oligohaliene en zoetwater zone met pieken tot 4000-6000 individuen per 1000m³ in 2014.
-In recente jaren zijn de aantallen een stuk lager (50-600 individuen per 1000m³).
-Vergelijking van aantallen en biomassa in de verschillende saliniteitszones doet vermoeden dat de spieringen gemiddeld het kleinst zijn in de zoete zone en het grootste in de zone met sterke saliniteitsgradiënt.
-Deze soort plant zich inderdaad voort stroomopwaarts in de zoete zone met korte verblijftijd, groeit op in het estuarium en trekt na enkele jaren naar zee.
-Om het recruteringsucces te bepalen moet echter de grootteklasse verdeling per seizoen en per locatie geanalyseerd worden.
-Deze data zijn voorhanden maar worden niet gebruikt in EMSE.
-(Figuur \@ref(fig:092-figuur-biomassa-diadroom-EMSE)).
-Met uitzondering van een dip rond 2016 en een piek in 2019 in het oligohalien (≈ 700 individuen per 1000m³) is de biomassa aan spiering relatief stabiel.
-
-Diversiteit voor diadrome functionele groepen is dus zeer laag, hoewel er tot 8 omnivore soorten samen kunnen voorkomen blijft de spiering dominant over alles heen (Figuur \@ref(fig:092-figuur-diversiteit-diadroom-EMSE)).
+Diversiteit voor diadrome omnivoren is gemiddeld hoger dan voor mariene en estuarien residente soorten voor de fuikvangsten omdat spiering als pelagiale soort minder domineert met deze vangstmethode.
+(Figuur \@ref(fig:092-figuur-diversiteit-diadroom-EMSE)).
 
 ```{r 092-figuur-aantallen-diadroom-EMSE, fig.cap=aantallen_diadroom_EMSE, out.width="110%"}
 
 aantallen_diadroom_EMSE <-
-  str_c("Totaal aantal gevangen individuen van diadrome soorten in de Zeeschelde in de periode 2012-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
+  str_c("Totaal aantal gevangen individuen van diadrome soorten in de Zeeschelde in de periode 2009-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
 
 knitr::include_graphics(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_diadroom.jpg"))
 
@@ -290,7 +307,7 @@ knitr::include_graphics(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE
 ```{r 092-figuur-biomassa-diadroom-EMSE, fig.cap=biomassa_diadroom_EMSE, out.width="110%"}
 
 biomassa_diadroom_EMSE <-
-  str_c("Totale biomassa gevangen individuen van diadrome soorten in de Zeeschelde in de periode 2012-",laatste_jaar,". Jaargemiddelde biomassa per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
+  str_c("Totale biomassa gevangen individuen van diadrome soorten in de Zeeschelde in de periode 2009-",laatste_jaar,". Jaargemiddelde biomassa per scheldezone (EMSE, niveau 3) en EMSE soortgroepen.")
 
 knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_diadroom.jpg"))
 
@@ -311,17 +328,35 @@ knitr::include_graphics(paste0(pad_figuren, "diversiteit_S_D_EMSE_diadroom.jpg")
 
 [Zoetwater soorten]{.underline}
 
-Zoetwater soorten zijn meest talrijk in de zoetwaterzone waar de aantallen en biomassa vanaf 2016 algemeen toenemen (Figuur \@ref(fig:092-figuur-aantallen-zoetwater-EMSE), Figuur \@ref(fig:092-figuur-biomassa-zoetwater-EMSE)).
-Binnen de zoetwatersoorten zijn omnivoren de meest talrijke en de meest soortenrijke functionele groep en ze vertegenwoordigen ook de grootste biomassa.
-Snoekbaars is dominant in deze groep, zowel in aantallen als in biomassa.
-Benthivore zoetwater soorten worden qua aantallen gedomineerd door brasem, tiendoornige stekelbaars en blauwbandgrondel, qua gewicht is enkel brasem dominant in deze functionele groep.
-Baars en de exotische zonnebaars zijn de enige piscivore zoetwatersoorten voor de Zeeschelde.
-Baars is de dominante soort naar aantallen en gewicht.
+Bij de zoetwater soorten zijn omnivoren het meest talrijk en vertegenwoordigen de grootste biomassa, gevolgd door benthivoren en vervolgens piscivoren (Figuur \@ref(fig:092-figuur-aantallen-zoetwater-EMSE), Figuur \@ref(fig:092-figuur-biomassa-zoetwater-EMSE)).
 
-Zowel voor de omnivore als de piscivore zoetwatersoorten werden in `r laatste_jaar` hogere aantallen gevangen dan de jaren voordien in de zoetwaterzone.
-Voor de piscivore zoetwatersoorten weerspiegelt dit zich ook in de de biomassa (Figuur \@ref(fig:092-figuur-biomassa-zoetwater-EMSE)).
+De fuikresultaten van de zoetwater soorten geven een zeer verschillend beeld van dat van de ankerkuilvangsten.
+Van deze estuariene gebruikgroep worden relatief meer individuen per fuikdag gevangen in de zone met sterke saliniteitsgradiënt en ook in de oligohaliene zone.
+Kijken we echter naar de biomassa gegevens dan verandert het beeld grondig met de hogere biomassa's in stroomopwaartse richting.
 
-Zoals voor de mariene, estuariene en diadrome soorten worden de soortengroepen opnieuw grotendeels gedomineerd door één à twee soorten (D), hoewel vaak meer soorten gevangen worden (S) (Figuur \@ref(fig:092-figuur-diversiteit-zoetwater-EMSE)).
+In de groep van benthische zoetwatersoorten bepalen vooral brasem en een enkele keer blauwbandgrondel de relatieve aantallen, die in stroomopwaartse richting afnemen.
+De biomassa wordt echter bijna uitsluitend door brasem bepaald, die in individuele grootte en gewicht net toeneemt in stroomopwaartse richting van gemiddeld 10g aan de grens naar 300-400g in Overbeke.
+Daarom is de biomassa van deze functionele groep relatief groter in de stroomopwaartse stations.
+Opvallend zijn een recordvangst van grote brasems in Steendorp in de zomer van 2014 en een steur van 124cm en 13,5 kg in Kastel in 2019.
+Deze zijn niet te zien in de aantallen maar wegen wel door in de biomassa.
+
+Snoekbaars is de meest talrijk gevangen omnivore zoetwatersoort, maar bepaalt de biomassa niet in dezelfde mate als bij de ankerkuilvangsten.
+Er worden er meer gevangen in de zone met sterke saliniteitsgradiënt maar de exemplaren worden groter en zwaarder in stroomopwaartse richting.
+Ook kolblei wordt meer gevangen aan de grens maar de exemplaren worden groter in stroomopwaartse richting.
+Blankvoorn en giebel zijn overal en bijna altijd aanwezig maar dragen relatief weinig bij aan de biomassa.
+Het omgekeerde is waar voor snoek, meerval en karper.
+Vooral in de zoete zone met korte verblijftijd bepalen hun relatief geringe aantallen in grote mate de biomassa.
+Zwartbekgrondel wordt vooral in de brakke zone gevangen.
+
+Baars is de belangrijkste piscivore zoetwatersoort.
+In de zone met saliniteitsgradiënt wordt deze soort al geruime tijd in redelijke aantallen gevangen.
+In de zoete zone nemen de aantallen geleidelijk toe.
+Net zoals voor de meeste andere typische zoetwatersoorten neemt de biomassa toe in stroomopwaartse richting.
+
+Afgezien van 2 alvervangsten zijn er geen planktivore zoetwatersoorten in de Zeeschelde gevangen met fuiken.
+
+Vooral in de zoete zone met korte verblijtijd zijn zowel diversiteit (D), als soortenrijkdom (S) voor de omnivore en benthivore zoetwater soorten relatief hoger dan voor andere functionele groepen.
+(Figuur \@ref(fig:092-figuur-diversiteit-zoetwater-EMSE)).
 
 ```{r 092-figuur-aantallen-zoetwater-EMSE, fig.cap=aantallen_zoetwater_EMSE, out.width="110%"}
 
@@ -358,41 +393,34 @@ knitr::include_graphics(paste0(pad_figuren, "diversiteit_S_D_EMSE_zoet.jpg"))
 
 #### Trends in sleutelsoorten
 
-Een aantal soorten beschouwen we als sleutelsoorten in de Zeeschelde omdat ze informatie geven over één of meerdere ecologische functies van het estuarium of omdat ze europees beschermd zijn.
-De diadrome sleutelsoorten zijn: fint, spiering, bot, paling en rivierprik.
-Ze geven informatie over het gebruik van het estuarium als migratiekanaal.
-Fint- en spieringvangsten geven daarenboven informatie over het gebruik van het estuarium als paaihabitat.
-Mariene sleutelsoorten zijn haring, zeebaars, tong en ansjovis.
-Hun aanwezigheid toont aan dat het estuarium als opgroeigebied (kraamkamer) wordt gebruikt.
-De ecologische eigenschappen van een aantal soorten worden hier kort besproken.
-
-Van de 25 sleutelsoorten uit de lijst (EMSE 2021) worden er 22 waargenomen in de Zeeschelde aan de hand van ankerkuil bevissingen: 8 mariene en estuariene soorten, 6 diadrome soorten en 8 zoetwater soorten.
+Van de 25 sleutelsoorten uit de lijst (EMSE 2021) worden er 22 waargenomen in de Zeeschelde met fuiken: 8 mariene en estuariene soorten, 6 diadrome soorten en 8 zoetwater soorten.
 Slechts een aantal soorten komen echter in relatief hoge aantallen voor.
 
 <!--# enkel figuren voor aantallen worden getoond. Figuren voor biomassa zijn wel terug te vinden onder PRJ_SCHELDE\VNSC\Rapportage_INBO\2022\090_vissen\figuren -->
 
 [Estuariene soorten en mariene migranten]{.underline}
 
-Van de estuariene en mariene soorten komen brakwatergrondel, dikkopje, haring en zeebaars vrij frequent voor (\> 1 individu per 1000m³, Figuur \@ref(fig:092-figuur-mariene-sleutelsoorten)).
+Van de estuariene en mariene soorten komen brakwatergrondel, dikkopje, haring en zeebaars vrij frequent voor (\> 30 per fuikdag, Figuur \@ref(fig:092-figuur-mariene-sleutelsoorten)).
 De overige soorten komen slechts in zeer kleine aantallen voor.
-<!--# y-as in figuren moet individuen per fuikdag en niet fuikdagen zijn) -->
 
--   Brakwatergrondel komt in de grootste aantallen voor in het zoetwater en vertoont piekdensiteiten rond 2018.
-    In `r laatste_jaar` zijn de aantallen waargenomen in de ankerkuil vangsten laag.
+-   Brakwatergrondel werd in de eerste jaren vooral in de zone met sterke saliniteitsgradiënt gevangen maar vertoont in recentere jaren grotere pieken in de zoete zones ook in `r laatste_jaar` werden veel brakwatergrondels gevangen met de fuiken.
 
--   Dikkopje komt meestal in de hoogste aantallen voor in het oligohalien.
-    Na hoge densiteiten in 2018 en 2020 komen er in `r laatste_jaar` slechts lage aantallen voor.
+-   Dikkopje bevindt zich gemiddeld meer stroomafwaarts en is veel minder talrijk dan brakwatergrondel.
+    Er was een grote piek in de oligohaliene zone in 2020.
+    In `r laatste_jaar` waren de aantallen redelijk laag in alle zones.
 
 -   Haring komt vooral voor in de zone met sterke saliniteitsgradiënt.
-    De aantallen zijn relatief stabiel, met piekdensiteiten in 2014 en 2018.
+    2019 en 2021 waren piekjaren voor de oligohaliene zone, 2021 ook voor de zone met sterke saliniteitsgradiënt.
+    In 2022 was het aantal haringen in de fuikvangsten in alle zones eerder gering.
 
--   Zeebaars wordt vooral waargenomen in de zoetwater zone en in het oligohalien.
-    In vergelijking met de periode 2012-2017 komt er nu weinig zeebaars voor in de Schelde.
+-   Schol en ook zeebaars nemen de laatste jaren een vlucht in de zone met sterke saliniteitsgradiënt.
+    Zeedonderpad en slakdolf werden na 2014 niet meer gevangen.
+    <!--# toch wel raar, voor zeebaars staat dit besluit helemaal haaks op dat van de ankerkuil resultaten voor sleutelsoorten... -->
 
 ```{r 092-figuur-mariene-sleutelsoorten, fig.cap=cap_aantal_sleutelsoorten_marien, out.width="100%"}
 
 cap_aantal_sleutelsoorten_marien <-
-  str_c("Aantallen van sleutelsoorten binnen estuariene soorten en mariene migranten in de Zeeschelde in de periode 2012-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3).")
+  str_c("Aantallen van sleutelsoorten binnen estuariene soorten en mariene migranten in de Zeeschelde in de periode 2009-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3).")
 
 knitr::include_graphics(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marien.jpg"))
 
@@ -402,29 +430,28 @@ knitr::include_graphics(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marie
 
 [Diadrome soorten]{.underline}
 
-De meest voorkomende diadrome sleutelsoorten (\> 1 individu per 1000m³) zijn bot, fint en vooral spiering (Figuur \@ref(fig:092-figuur-diadrome-sleutelsoorten)).
-Paling wordt slechts in kleine aantallen gevangen, maar is qua biomassa toch vrij belangrijk.
+De meest voorkomende diadrome sleutelsoorten (\> 15 individuen per fuikdag) zijn bot, paling en vooral spiering (Figuur \@ref(fig:092-figuur-diadrome-sleutelsoorten)).
 
--   Bot komt voor in alle drie de scheldezones waar afvissingen met ankerkuil worden gedaan, maar met over het algemeen de hoogste aantallen in het zoetwater.
-    Aantallen bot varieren van jaar tot jaar, met in `r laatste_jaar` vrij hoge aantallen.
+-   Bot komt voor in alle scheldezones.
+    Met fuiken worden veel meer exemplaren in de zone met sterke saliniteitsgradiënt gevangen dan in andere zones, terwijl dat met de ankerkuil eerder in de oligohaliene en zoete zone met lange verblijftijd is.
+    Aantallen bot die met de fuiken gevangen worden gaan in dalende lijn met in `r laatste_jaar` vrij lage aantallen.
 
--   Fint aantallen vertoonden pieken in 2012, 2015 en 2017.
-    Hoewel de aantallen recent een stuk lager zijn, kunnen ze in het voorjaar tijdens de paaiperiode toch een belangrijk deel van de biomassa uitmaken in de zoetwaterzone (zie Figuur \@ref(fig:092-figuur-relatief-aantal)).
-    Sterke variatie in de aantallen kan zowel aan de paaitrek als aan het recruteringssucces te wijten zijn.
-    Aangezien het om een habitatrichtlijn soort gaat die terugkwam nadat ze lange tijd als uitgestorven beschouwd was is het belangrijk om door jaarlijkse analyse van paaitrek én recrutering te evalueren hoe duurzaam deze hervestiging van de fint in de Zeeschelde is.
+-   Er worden niet elk jaar finten gevangen in de fuiken.
+    Dat is niet abnormaal voor deze pelagiale soort, die eerder in de waterkolom dan aan de laagwaterlijn gevangen wordt.
+    Hoewel de aantallen recent een stuk lager zijn, kunnen ze in het voorjaar tijdens de paaiperiode toch een belangrijk deel van de biomassa uitmaken in de zoetwaterzone (zie Figuur \@ref(fig:092-figuur-relatief-aantal) <!--# moet er hier niet eerder naar de biomassa figuur verwezen worden? -->).
+    Aangezien het om een habitatrichtlijn soort gaat die terugkwam nadat ze lange tijd als uitgestorven beschouwd was, is het belangrijk om door jaarlijkse analyse van paaitrek én rekrutering te evalueren hoe duurzaam deze hervestiging van de fint in de Zeeschelde is.
 
--   Paling wordt vooral gevangen in het oligohalien en zoetwater.
+-   Paling wordt vooral gevangen in het oligohalien en zoetwater en is vooral qua biomassa vrij belangrijk.
     De aantallen vertonen een licht dalende trend.
-    Deze trend is minder duidelijk in de biomassa die vrij sterk varieert van jaar tot jaar.
 
 -   Spiering is in het algemeen de soort met de hoogste aantallen en biomassa in de Zeeschelde (zie ook Figuur \@ref(fig:092-figuur-relatief-aantal), \@ref(fig:092-figuur-relatief-aantal), \@ref(fig:092-figuur-aantallen-diadroom-EMSE) en \@ref(fig:092-figuur-biomassa-diadroom-EMSE)).
-    Deze soort vertoonde een heel sterke piek in aantallen in 2014.
-    Recent vertonen de aantallen weer een licht toenemende trend.
+    Deze soort vertoonde een heel sterke piek in aantallen in 2014 in de ankerkuilvangsten en in 2015 in de fuikvangsten.
+    Recent vertonen de fuikaantallen een dalende trend, met 2022 als een bodemjaar, net zoals voor de ankerkuilvangsten.
 
 ```{r 092-figuur-diadrome-sleutelsoorten, fig.cap=cap_aantal_sleutelsoorten_diadroom, out.width="100%"}
 
 cap_aantal_sleutelsoorten_diadroom <-
-  str_c("Aantallen van diadrome sleutelsoorten in de Zeeschelde in de periode 2012-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3).")
+  str_c("Aantallen van diadrome sleutelsoorten in de Zeeschelde in de periode 2009-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3).")
 
 knitr::include_graphics(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadroom.jpg"))
 
@@ -436,18 +463,20 @@ knitr::include_graphics(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadr
 
 De meest voorkomende sleutelsoorten qua aantallen/biomassa voor de zoetwatersoorten zijn blankvoorn, brasem en snoekbaars (Figuur \@ref(fig:092-figuur-zoetwater-sleutelsoorten)).
 
--   Blankvoorn vertoont een forse toename in aantallen in `r laatste_jaar` in het zoetwater.
-    Wat betreft biomassa is echter al vanaf 2019 een duidelijke toename waar te nemen.
+-   Na een afname in de periode 2009-2015 van het aantal blankvoorns in de fuikvangsten in alle zones behalve het zoet met korte verblijftijd, variëren de aantallen.
+    In `r laatste_jaar` werden er relatief veel blankvoorns gevangen in het oligohalien en zoetwater.
 
--   Brasem vertoont een duidelijke toename in aantallen in het zoetwater vanaf 2016 in vergelijking met de jaren ervoor.
+-   De hoogste aantallen brasem worden meestal gevangen in de zone met sterke saliniteitsgradiënt en het mesohalien.
+    Verder vertoont brasem geen duidelijke trend in aantallen.
 
--   Ook snoekbaars vertoont een toename vanaf 2016.
-    Deze soort komt naast het zoetwater ook vaak voor in het oligohalien en zelfs in de zone met sterke saliniteitsgradiënt.
+-   Snoekbaars vertoont een bescheiden toename in de zoete zones.
+    In de meer saline zones zijn de aantallen in de fuikvangsten eerder variabel.
+    In 2022 werden in elke zone redelijke aantallen snoekbaars gevangen met de fuiken.
 
 ```{r 092-figuur-zoetwater-sleutelsoorten, fig.cap=cap_aantal_sleutelsoorten_zoetwater, out.width="100%"}
 
 cap_aantal_sleutelsoorten_zoetwater <-
-  str_c("Aantallen van zoetwater sleutelsoorten in de Zeeschelde in de periode 2012-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3).")
+  str_c("Aantallen van zoetwater sleutelsoorten in de Zeeschelde in de periode 2009-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3).")
 
 knitr::include_graphics(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.jpg"))
 
@@ -457,30 +486,48 @@ knitr::include_graphics(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.
 
 #### Alternatieve evaluatie per estuarien habitatgebruik of dieet
 
-Het guildenconcept wordt normaal gezien gebruikt om een bepaald kenmerk van visgemeenschappen te onderzoeken.
-De voorkomende soorten worden dan gegroepeerd op basis van dat bepaald kenmerk.
-In de EMSE methodiek worden twee van deze kenmerken gebruikt, het gebruik van estuariene habitats en het dieet, en werd beslist om deze te 'nesten' waardoor er 10 functionele groepen gevormd werden.
+Alternatief aan de EMSE indeling kunnen we het gildenconcept toepassen zoals gebruikelijk en enerzijds het estuarien habitat gebruik door de visgemeenschap evalueren en anderzijds de visgemeenschap positioneren in het estuariene voedselweb.
+Op die manier wordt per functioneel aspect de volledige visgemeenschap van de Zeeschelde beschouwd.
 
-Alternatief kunnen we ook het guildenconcept toepassen zoals gebruikelijk en enerzijds het estuarien habitat gebruik door de visgemeenschap evalueren en anderzijds de positie van de visgemeenschap te positioneren in het estuariene voedselweb.
+Fuikvangsten en ankerkuil leveren een verschillend beeld op van de relatieve densiteit en biomassa per saliniteitzone.
+In de zone met grote saliniteitsgradiënt worden gemiddeld de grootste aantallen per fuikdag gevangen.
+De biomassa verdeling toont dan weer een ander beeld naargelang het estuarien gebruik of naargelang het dieet.
 
 ##### Estuarien habitat gebruik
 
 De resultaten voor aantallen, biomassa en diversiteit per groep van estuarien habitat gebruik worden weergegeven in respectivelijk Figuur \@ref(fig:092-figuur-aantallen-habitat), Figuur \@ref(fig:092-figuur-biomassa-habitat) en Figuur \@ref(fig:092-figuur-diversiteit-habitat).
+Het beeld op basis van fuikvangsten is iets complexer en toont andere accenten dan op basis van ankerkuildata.
 
-Naar estuarien habitat gebruik toe zijn spieringen zonder meer de dominante trekvissen, zowel naar aantal als naar biomassa en dat geldt in alle saliniteitszones van de Zeeschelde.
-Snoekbaars is de dominante zoetwatersoort, eveneens in aantal en biomassa, maar de dominantie is minder uitgesproken dan die van de spiering.
-Het beeld van mariene en estuariene soorten is iets complexer.
-Deze guildengroep bevat ook de meeste soorten en in de EMSE methodiek worden meerdere estuariene habitat gebruiken samengevoegd.
-In de zoete zone met lange verblijftijd en in het oligohalien zijn brakwatergrondel en dikkopje, twee estuarien residente soorten, de meest talrijke soorten van deze guildengroep.
-In de zone met sterke saliniteitgradiënt is haring, een mariene migrant het meest talrijk.
-Indien we naar de biomassa kijken winnen haring en ook sprot aan belang in de twee stroomafwaartse zones en zelfs in de zoete zone met lange verblijftijd.
+In de zone met sterke saliniteitgradiënt overheerst tong zowel naar aantallen als naar biomassa in de groep van mariene migranten.
+Sinds 2012 zijn aantallen en biomassa per fuikdag wel plots fel verminderd.
+Ook zeebaars en haring zijn steeds in grote aantallen aanwezig, in toenemende mate sinds 2015.
+Schol verdween na 2010 maar is sinds 2018 terug aanwezig.
+Brakwatergrondel en dikkopje zijn als estuarien residenten ook elk jaar vertegenwoordigd in redelijk grote aantallen.
+In de oligohaliene zone zijn dikkopje, haring en brakwatergrondel de belangrijkste soorten uit deze functionele groep.
+De aantallen en biomassa nemen toe sinds 2017.
+In de zoete zones is brakwatergrondel de belangrijkste estuariene soort.
+De aantallen in de fuikvangsten variëren er sterk, met af en toe een extreme piek.
+In drogere jaren komen ook haring en zeebaars opgroeien tot in de zoete zones.
+
+Bot is de belangrijkste trekvis in de zone met sterke saliniteitgradiënt, in aantallen én biomassa, in aantallen gevolgd door driedoornige stekelbaars en spiering.
+Paling overheerst echter de biomassa en in sommige jaren wegen ook de optrekkende/terugkerende finten mee.
+In de meer stroomopwaartse oligohaliene en zoete zones is spiering zonder meer de meest talrijk aanwezige trekvis.
+Ook hier overheerst paling echter in de trekvis biomassa, soms bijgestaan door fint.
+
+Aantallen en biomassa van de zoetwatervissen vertonen een meer gediversifieerd beeld.
+Snoekbaars is de dominante zoetwatersoort in aantal, maar de dominantie is niet zeer uitgesproken.
+snoekbaars, karper, europese meerval, brasem en snoekbaars leveren de belangrijkste bijdragen aan de biomassa van zoetwatersoorten.
+
+De zoewatervissen zijn de meest soortenrijke estuariene gebruik groep.
+De diversiteit is het grootst voor de zoetwatersoorten in de zoete zone met korte verblijftijd.
+Het is vooral in deze groep dat in 2022 minder soorten gevangen werden met de fuiken, vermoedelijk ook door het feit dat de vangstinspanning gehalveerd werd.
 
 <br/>
 
 ```{r 092-figuur-aantallen-habitat, fig.cap=aantallen_habitat, out.width="110%"}
 
 aantallen_habitat <-
-  str_c("Totaal aantal gevangen individuen voor elke groep van estuarien habitat gebruik in de periode 2012-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3) en habitatgroepen.")
+  str_c("Totaal aantal gevangen individuen voor elke groep van estuarien habitat gebruik in de periode 2009-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3) en habitatgroepen.")
 
 knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"))
 
@@ -491,7 +538,7 @@ knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantalle
 ```{r 092-figuur-biomassa-habitat, fig.cap=biomassa_habitat, out.width="110%"}
 
 biomassa_habitat <-
-  str_c("Totale biomassa gevangen individuen voor elke groep van estuarien habitat gebruik in de periode 2012-",laatste_jaar,". Jaargemiddelde biomassa per scheldezone (EMSE, niveau 3) en habitatgroepen.")
+  str_c("Totale biomassa gevangen individuen voor elke groep van estuarien habitat gebruik in de periode 2009-",laatste_jaar,". Jaargemiddelde biomassa per scheldezone (EMSE, niveau 3) en habitatgroepen.")
 
 knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"))
 
@@ -502,7 +549,7 @@ knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa
 ```{r 092-figuur-diversiteit-habitat, fig.cap=diversiteit_habitat, out.width="100%"}
 
 diversiteit_habitat <-
-  str_c("Aantal soorten (S, lichtblauw) en Shannon diversiteit (D, donkerblauw) voor elke groep van estuarien habitat gebruik in de periode 2012-",laatste_jaar,". Jaargemiddelde diversiteit per scheldezone (EMSE, niveau 3) en habitatgroepen.")
+  str_c("Aantal soorten (S, lichtblauw) en Shannon diversiteit (D, donkerblauw) voor elke groep van estuarien habitat gebruik in de periode 2009-",laatste_jaar,". Jaargemiddelde diversiteit per scheldezone (EMSE, niveau 3) en habitatgroepen.")
 
 knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_salgroep.jpg"))
 
@@ -512,21 +559,30 @@ knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_sa
 
 ##### Dieet
 
-De resultaten voor aantallen, biomassa en diversiteit per dieetgroep worden weergegeven in respectivelijk Figuur \@ref(fig:092-figuur-aantallen-dieet), Figuur \@ref(fig:092-figuur-biomassa-dieet) en Figuur \@ref(fig:092-figuur-diversiteit-dieet).
+De resultaten voor aantallen, biomassa en diversiteit per dieetgroep worden weergegeven in respectievelijk Figuur \@ref(fig:092-figuur-aantallen-dieet), Figuur \@ref(fig:092-figuur-biomassa-dieet) en Figuur \@ref(fig:092-figuur-diversiteit-dieet).
+<!--# spiering zeebaars en rest zijn niet te zien in de legende en zijn wel redelijk belangrijk! -->
 
-Brakwatergrondel en dikkopje zijn ook de dominante benthivoren.
-Spiering is de dominante omnivoor.
+Benthivoren en omnivoren zijn het meest talrijk en maken ook het grootste deel van de biomassa uit.
+Het is dan ook in deze groepen dat het aantal soorten minder was in 2022 door de verminderde vangstinspanning.
+Tong in de zone met sterke saliniteitsgradiënt en brakwatergrondel in de zoetwater zone zijn de dominante benthivoren qua aantallen.
+Brasem domineert echter qua biomassa in de oligohaliene en zoetwaterzone.
+Spiering (zoete zone) en bot (saliniteitsfgradiënt) zijn de dominante omnivoren wat betreft aantallen.
+Voor de biomassa's bij de omnivoren is er geen duidelijke dominantie van een bepaalde soort.
+Bot, europese meerval, fint, karper, kolblei, snoek en snoekbaars.
+Dit wordt vaak bepaald door de vangst van enkele grote individuen.
 Baars, rivierprik en zeeprik zijn de enige piscivoren die in kleine en sterk wisselende aantallen gevangen worden.
 Haring en sprot zijn de enige planktivore soorten van betekenis in de Zeeschelde.
-Omnivoren vormen de meest soortenrijke trofische groep maar de diversiteit in deze groep is klein door de absolute dominantie van de spiering.
-Benthivoren zijn de tweede trofische groep naar soortenrijkdom toe, eveneens sterk gedomineerd door maar twee soorten, de diversiteit is dus iets groter.
+Omnivoren vormen de meest soortenrijke trofische groep maar de diversiteit in deze groep (berekend op basis van aantallen) blijft toch relatief klein door de dominantie van vooral bot en spiering in de aantallen.
+Benthivoren zijn de tweede trofische groep naar soortenrijkdom toe, maar zijn eveneens sterk gedomineerd door een beperkt aantal soorten.
+
+Net zoals bij de ankerkuilgegevens geldt hier de kanttekening dat de meeste spieringen juveniele planktivoren zijn en dat adulte spiering, europese meerval, snoek, snoekbaars en zeebaars eigenlijk voornamelijk als piscivoor gekend staan in de Zeeschelde.
 
 <br/>
 
 ```{r 092-figuur-aantallen-dieet, fig.cap=aantallen_dieet, out.width="110%"}
 
 aantallen_dieet <-
-  str_c("Totaal aantal gevangen individuen per dieetgroep in de periode 2012-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3) en dieetgroepen.")
+  str_c("Totaal aantal gevangen individuen per dieetgroep in de periode 2009-",laatste_jaar,". Jaargemiddelde aantallen per scheldezone (EMSE, niveau 3) en dieetgroepen.")
 
 knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_dieet.jpg"))
 
@@ -537,7 +593,7 @@ knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantalle
 ```{r 092-figuur-biomassa-dieet, fig.cap=biomassa_dieet, out.width="110%"}
 
 biomassa_dieet <-
-  str_c("Totale biomassa gevangen individuen per dieetgroep in de periode 2012-",laatste_jaar,". Jaargemiddelde biomassa per scheldezone (EMSE, niveau 3) en dieetgroepen.")
+  str_c("Totale biomassa gevangen individuen per dieetgroep in de periode 2009-",laatste_jaar,". Jaargemiddelde biomassa per scheldezone (EMSE, niveau 3) en dieetgroepen.")
 
 knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_dieet.jpg"))
 
@@ -548,7 +604,7 @@ knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa
 ```{r 092-figuur-diversiteit-dieet, fig.cap=diversiteit_dieet, out.width="100%"}
 
 diversiteit_dieet <-
-  str_c("Aantal soorten (S, lichtblauw) en Shannon diversiteit (D, donkerblauw) per dieetgroep in de periode 2012-",laatste_jaar,". Jaargemiddelde diversiteit per scheldezone (EMSE, niveau 3) en dieetgroepen.")
+  str_c("Aantal soorten (S, lichtblauw) en Shannon diversiteit (D, donkerblauw) per dieetgroep in de periode 2009-",laatste_jaar,". Jaargemiddelde diversiteit per scheldezone (EMSE, niveau 3) en dieetgroepen.")
 
 knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_dieet.jpg"))
 

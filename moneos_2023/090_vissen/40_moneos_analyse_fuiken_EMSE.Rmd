@@ -2136,7 +2136,7 @@ data_split <-
                     scale_fill_manual(values = pal_split) +
                     labs(y = get_lab_aantal(),
                          fill = ind) + 
-                    guides(fill=guide_legend(nrow=5)) +
+                    guides(fill=guide_legend(nrow=6)) +
                     theme(#rect = element_blank(),
                           # rect = element_rect(fill = 'transparent', colour = NA_character_),
                           legend.justification = c(0,1),
@@ -2177,7 +2177,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 14, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 15, height = 8, bg = "white")
 
 
 ggp_all <-
@@ -2197,7 +2197,7 @@ ggp_all <-
   theme(legend.position = "none",
         axis.text = element_text(size = 10),
         axis.text.x = element_text(angle = 90, vjust = 0.5),
-        strip.text = element_text(size = 12))
+        strip.text = element_text(size = 11))
 
 
 plot_grid(ggp_all,
@@ -2209,7 +2209,7 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 14, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 15, height = 8, bg = "white")
 
 ```
 
@@ -2276,7 +2276,7 @@ data_split <-
                     scale_fill_manual(values = pal_split) +
                     labs(y = get_lab_aantal(),
                          fill = ind) + 
-                    guides(fill=guide_legend(nrow=4)) +
+                    guides(fill=guide_legend(nrow=5)) +
                     theme(#rect = element_blank(),
                           # rect = element_rect(fill = 'transparent', colour = NA_character_),
                           legend.justification = c(0,1),
@@ -2305,7 +2305,7 @@ ggp_all <-
   theme(legend.position = "none",
         axis.text = element_text(size = 10),
         axis.text.x = element_text(angle = 90, vjust = 0.5),
-        strip.text = element_text(size = 12))
+        strip.text = element_text(size = 11))
 
 
 plot_grid(ggp_all,
@@ -2337,7 +2337,7 @@ ggp_all <-
   theme(legend.position = "none",
         axis.text = element_text(size = 10),
         axis.text.x = element_text(angle = 90, vjust = 0.5),
-        strip.text = element_text(size = 12))
+        strip.text = element_text(size = 11))
 
 
 plot_grid(ggp_all,
