@@ -1474,6 +1474,7 @@ plot_mav <- function(data){
 
 mav_Zsc %>%   plot_mav()
 
+mav_Zsc %>% bind_rows(mav_ZschSigma_estuarien) %>%  plot_mav()
 ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_glijdendgemiddelde_Zeeschelde_estuarien.jpg"))
 
 mav_Zsc_ZR %>%   plot_mav()
@@ -1482,8 +1483,9 @@ mav_Zsc_ZR %>% bind_rows(mav_Zsc_ZR_Sigma)  %>%
 
 ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_website2022.png"), width = 30, height = 15, units = "cm")
 
-# mav_Zsc %>% bind_rows(mav_ZschSigma_estuarien) %>% bind_rows(mav_ZscSigma) %>% 
-#   plot_mav()
+mav_Zsc %>% bind_rows(mav_ZschSigma_estuarien) %>% bind_rows(mav_ZschSigma_estuarien_wetland) %>% plot_mav()
+ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_ZeescheldeSS_estuarien_Wetland.png"), width = 30, height = 15, units = "cm")
+
 # 
 # mav_Zsc %>% bind_rows(mav_ZscSigma) %>% bind_rows(mav_ZscSigmaVallei) %>% 
 #   plot_mav()
