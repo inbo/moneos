@@ -1,3 +1,59 @@
+
+```{r 090-hoofdstuk, include=FALSE}
+
+hoofdstuk <- "050_hogere_planten"
+
+```
+
+
+```{r 090-setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.pos = "H")
+knitr::opts_knit$set(eval.after = "fig.cap")
+
+```
+
+
+```{r 090-libraries}
+
+library(tidyverse)
+library(readxl)
+library(kableExtra)
+library(rprojroot) ## workaround pad
+
+conflicted::conflicts_prefer(dplyr::filter)
+
+```
+
+
+```{r 090-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+
+```
+
+
+```{r 050-table_from_figure-function}
+figtab_landscape <- 
+  function(label, image_file, caption=NULL) {
+    txt <- sprintf('\\newpage\n\\begin{landscape}\n\\begin{table}[H]\n\\caption{%s}\n\\label{tab:%s}\n\\includegraphics{%s}\n\\end{table}\n\\end{landscape}\n\\newpage\n', 
+                   caption, 
+                   label, 
+                   image_file)
+    magick::image_read(image_file) %>% magick::image_ggplot() %>% print()
+    writeLines(txt)
+  }
+```
+
 # Hogere planten
 
 Fichenummers: S-DS-V-001 -- Hogere planten; P-DS-V-001a - Hogere planten)
@@ -7,7 +63,20 @@ Fichenummers: S-DS-V-001 -- Hogere planten; P-DS-V-001a - Hogere planten)
 ## Inleiding
 
 Op de schorren van het Zeeschelde-estuarium wordt de diversiteit aan hogere planten opgevolgd door middel van vegetatieopnames.
-Deze worden gemaakt van de bestaande permanente kwadraten (PQ) en aangevuld met losse vegetatieopnames welke stratified random worden gelokaliseerd in functie van de huidige vegetatietypes of doelvegetatietypes (Leyssen *et al*., 2006; Meire & Maris, 2008).
+Deze worden gemaakt van de bestaande permanente kwadraten (PQ) en aangevuld met losse vegetatieopnames welke stratified random worden gelokaliseerd in functie van de huidige vegetatietypes of doelvegetatietypes (Leyssen et al., 2006; Meire & Maris, 2008).
+
+
+```{r 050-tabel-vegetatieopnames, results="asis", fig.show='hide', out.width="100%"}
+
+caption_tab <- 
+  "Per gebied en per jaar is een overzicht gegeven van de beschibare vegetatieopnames. Met een letter is aangegeven of het een vegetatieopname is van een permanent kwadraat (PQ) of een losse locatie: A: PQ INBO, A*: PQ INBO Zomerklokje, A**: PQ INBO LSVI 91E0\\_sf, B: losse vegetatieopname INBO, C: PQ ANB en D: PQ UA."
+img_file <- paste0(pad_figuren, "media/image1.jpeg")
+figtab_landscape(knitr::opts_current$get()$label, 
+       img_file,
+       caption_tab)
+
+```
+
 
 ## Materiaal en methode
 
@@ -61,20 +130,22 @@ De resultaten zullen gepubliceerd worden in de rapportage van 2024 wanneer de 38
 De vegetatieopnames zijn opgeslagen in de INBO-databank INBOVEG onder de survey Schelde-estuarium.
 De vegetatieopnames van 2022 gemaakt van de permanente kwadraten zijn geëxporteerd uit deze databank als een access-databank: VegetatieopnamesPQ_Zeeschelde_2022.accdb.
 
-![(#fig:Figuur1) Structuur van de relationele databank VegetatieopnamesPQ_Zeeschelde_2022.accdb.](G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dUVZJLVE1U2RobWs/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2023/050_hogere_planten/figuren/media/image1.jpg){width="5.90625in" height="2.759027777777778in"}
+![(#fig:Figuur1) Structuur van de relationele databank VegetatieopnamesPQ_Zeeschelde_2022.accdb.](G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dUVZJLVE1U2RobWs/INBODATA/PROJECTEN/PRJ_SCHELDE/VNSC/Rapportage_INBO/2023/050_hogere_planten/figuren/media/image2.jpg){width="5.90625in" height="2.759027777777778in"}
 
 Deze databank bevat 5 tabellen, die onderling gekoppeld zijn (Figuur \@ref(fig:Figuur1)).
-In de tabel 'ivRecording2022' zijn kopgegevens van de vegetatieopname gegeven zoals datum, lengte, breedte, auteur, etc. (Tabel \@ref(tab:Tabel2)).
+In de tabel 'ivRecording2022' zijn kopgegevens van de vegetatieopname gegeven zoals datum, lengte, breedte, auteur, etc. (Tabel \@ref(tab:Tabel3)).
 Deze tabel is eveneens de basistabel van de aangeleverde vegetatieopnames.
-Deze tabel is gekoppeld aan de tabel 'ivRLQualifier2022' waarin de code van het permanent kwadraat (PQ) gegeven is, waarvan de vegetatieopname is gemaakt (Tabel \@ref(tab:Tabel3)).
+Deze tabel is gekoppeld aan de tabel 'ivRLQualifier2022' waarin de code van het permanent kwadraat (PQ) gegeven is, waarvan de vegetatieopname is gemaakt (Tabel \@ref(tab:Tabel4)).
 
-De tabel 'ivRLLayer2022' is eveneens direct gekoppeld aan de basistabel 'ivRecording2022' en bevat de verschillende vegetatielagen die aangetroffen zijn in elke vegetatieopname (Tabel \@ref(tab:Tabel4)).
+De tabel 'ivRLLayer2022' is eveneens direct gekoppeld aan de basistabel 'ivRecording2022' en bevat de verschillende vegetatielagen die aangetroffen zijn in elke vegetatieopname (Tabel \@ref(tab:Tabel5)).
 Ook is per vegetatielaag de procentuele bedekking gegeven in deze tabel.
-Op zijn beurt is deze tabel gekoppeld aan de tabel 'ivRLTaxonOccurrence2022' waarin per vegetatielaag de bedekkingen van de aangetroffen plantensoorten gegeven zijn (Londoschaal) (Tabel \@ref(tab:Tabel5)).
-De naam van de overeenkomstige plantensoort is gegeven in de gekoppelde tabel 'ivRLIdentification2022' (Tabel \@ref(tab:Tabel6)).
+Op zijn beurt is deze tabel gekoppeld aan de tabel 'ivRLTaxonOccurrence2022' waarin per vegetatielaag de bedekkingen van de aangetroffen plantensoorten gegeven zijn (Londoschaal) (Tabel \@ref(tab:Tabel6)).
+De naam van de overeenkomstige plantensoort is gegeven in de gekoppelde tabel 'ivRLIdentification2022' (Tabel \@ref(tab:Tabel7)).
+
+\newpage
 
 | Tabel 'ivRecording2022' |                                                                                                                                        |
-|:----------------------|--------------------------------------------------|
+|:------------------|-----------------------------------------------------|
 | ID                      | Uniek volgnummer                                                                                                                       |
 | RecordingGivid          | Unieke code van de vegetatieopname in de databank INBOVEG.                                                                             |
 | LocationCode            | Naam van het schor waar het PQ gelegen is                                                                                              |
@@ -85,41 +156,43 @@ De naam van de overeenkomstige plantensoort is gegeven in de gekoppelde tabel 'i
 | Observer                | Auteur van de vegetatieopname                                                                                                          |
 | VagueDateBegin          | Datum wanneer de vegetatieopname is gemaakt                                                                                            |
 
-: (#tab:Tabel2) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRecording2022' van de Access-databank VegetatieopnamesPQ_Zeeschelde_2022.accdb.
+: (#tab:Tabel3) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRecording2022' van de Access-databank VegetatieopnamesPQ_Zeeschelde_2022.accdb.
 
 | Tabel 'ivRLQualifier2022' |                                                                 |
-|:-------------------------|------------------------------------------------|
+|:-----------------------|------------------------------------------------|
 | ID                        | Uniek volgnummer                                                |
 | RecordingID               | ID corresponderend met tabel 'ivRecording2022'                  |
 | QualifierCode             | Nummer of code van het PQ waarvan de vegetatieopname is gemaakt |
 
-: (#tab:Tabel3) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRLQualifier2022' van de Access-databank VegetatieopnamesPQ_Zeeschelde_2022.accdb.
+: (#tab:Tabel4) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRLQualifier2022' van de Access-databank VegetatieopnamesPQ_Zeeschelde_2022.accdb.
 
 | Tabel 'ivRLLayer2022' |                                                                                                                                                                                                                           |
-|:--------------------|---------------------------------------------------|
+|:-----------------|------------------------------------------------------|
 | ID                    | Uniek volgnummer                                                                                                                                                                                                          |
 | RecordingID           | ID corresponderend met tabel 'ivRecording2022'                                                                                                                                                                            |
 | LayerCode             | Deze code verwijst naar de verschillende vegetatielagen binnen de vegetatieopname (TOT: totale bedekking; BH: boomlaag; SH: struiklaag; KH: kruidlaag; MO: moslaag; AL: algenlaag; NB: naakte bodem; STR: strooisellaag). |
 | CoverCode             | Deze waarde is de procentuele bedekking die de betreffende vegetatielaag inneemt in het plot. 'x-1' betekent een bedekking van minder dan 1%                                                                              |
 
-: (#tab:Tabel4) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRLLayer2022' van de Access-databank VegetatieopnamesPQ_Zeeschelde_2022.accdb.
+: (#tab:Tabel5) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRLLayer2022' van de Access-databank VegetatieopnamesPQ_Zeeschelde_2022.accdb.
+
+\newpage
 
 | Tabel 'ivRLTaxonOccurrence2022' |                                                                                                                  |
-|:------------------------------|-----------------------------------------------|
+|:-------------------|----------------------------------------------------|
 | ID                              | Uniek volgnummer                                                                                                 |
 | LayerID                         | ID corresponderend met tabel 'ivRLLayer2022'                                                                     |
 | CoverageCode                    | Bedekkingen (Londo-schaal) van de verschillende plantensoorten die in de overeenkomstige lagen zijn aangetroffen |
 
-: (#tab:Tabel5) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRLTaxonOccurrence2' van de Access-databank VegetatieopnamesPQ_Zeeschelde_20122.accdb.
+: (#tab:Tabel6) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRLTaxonOccurrence2' van de Access-databank VegetatieopnamesPQ_Zeeschelde_20122.accdb.
 
 | Tabel 'ivRLIdentification2022' |                                                       |
-|:---------------------------|---------------------------------------------|
+|:--------------------------|---------------------------------------------|
 | ID                             | Uniek volgnummer                                      |
 | OccurrenceID                   | ID corresponderend met tabel 'ivRLTaxonOccurence2022' |
 | TaxonFullText                  | Wetenschappelijke naam van de plantensoort            |
 | TaxonGroup                     | VP: vaatplant; BR: bryofyt; !!: wier                  |
 
-: (#tab:Tabel6) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRLIdentification2022' van de Access-databank VegetatieopnamesPQ_Zeeschelde_20122.accdb.
+: (#tab:Tabel7) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRLIdentification2022' van de Access-databank VegetatieopnamesPQ_Zeeschelde_20122.accdb.
 
 ### Coördinaten
 
