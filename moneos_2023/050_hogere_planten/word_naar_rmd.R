@@ -8,7 +8,7 @@ pad_data <- maak_pad(hoofdstuk, "data")
 pad_figuren <- maak_pad(hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
-convert_docx_to_rmd(from = "050_hogere_planten/hogere_planten.docx",
+convert_docx_to_rmd(from = "050_hogere_planten/hogere_planten_v2.docx",
                     to = "150_geintegreerd_rapport/050_hogere_planten_magweg.Rmd",
                     dir_media = pad_figuren)
 
