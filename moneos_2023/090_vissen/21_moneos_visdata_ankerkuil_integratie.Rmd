@@ -367,58 +367,111 @@ write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
                 NA_gewicht = gewicht_NA_of_0_ruw),
            path = str_c(pad_data, "controle/controle_NA_aantal_of_gewicht_ankerkuil.xlsx"))
 
+
+(uniek_aantal_of_gewicht_historisch <-
+  symdiff(
+    aantal_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[is.na(.) | . > 0] %>% 
+      names(),
+    gewicht_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[is.na(.) | . > 0] %>% 
+      names()))
+
 ```
 
 
-```{r vergelijking soorten met historisch}
+```{r vergelijking aanwezige soorten met historisch}
 
 (soorten_historisch_aanwezig <-
-  aantal_historisch %>% 
-  pivot_longer(-ID_afvissing,
-               names_to = "soort",
-               values_to = "aantal") %>% 
-  group_by(soort) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  filter(aantal > 0) %>% 
-  pull(soort))
+  union(
+    aantal_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[. > 0] %>% 
+      names(),
+    gewicht_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[. > 0] %>% 
+      names()) %>% 
+    sort())
 
-(soorten_historisch_nul <-
-  aantal_historisch %>% 
-  pivot_longer(-ID_afvissing,
-               names_to = "soort",
-               values_to = "aantal") %>% 
-  group_by(soort) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  filter(aantal == 0) %>% 
-  pull(soort))
+(soorten_historisch_afwezig <-
+  intersect(
+    aantal_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[. == 0] %>% 
+      names(),
+    gewicht_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[. == 0] %>% 
+      names()) %>% 
+    sort())
+
+intersect(soorten_historisch_aanwezig, soorten_historisch_afwezig)
+setdiff(aantal_historisch %>% 
+          select(-ID_afvissing) %>%
+          names(), 
+        union(soorten_historisch_aanwezig, soorten_historisch_afwezig))
 
 
 (soorten_recent_aanwezig <-
-   data_per_datum %>% 
-   group_by(soort) %>% 
-   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-   ungroup() %>% 
-   filter(aantal > 0) %>% 
-   pull(soort))
+    data_per_datum %>% 
+    group_by(soort) %>% 
+    summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+    ungroup() %>% 
+    filter(aantal > 0) %>% 
+    pull(soort) %>% 
+    sort())
 
-(soorten_recent_nul <-
+(soorten_recent_afwezig <-
     data_per_datum %>% 
     group_by(soort) %>% 
     summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
     ungroup() %>% 
     filter(aantal == 0) %>% 
-    pull(soort))
+    pull(soort) %>% 
+    sort())
+
+intersect(soorten_recent_aanwezig, soorten_recent_afwezig)
+setdiff(data_per_datum %>% 
+          distinct(soort) %>%
+          pull(), 
+        union(soorten_recent_aanwezig, soorten_recent_afwezig))
 
 
-(unieke_soorten_historisch <-
-  setdiff(soorten_historisch_aanwezig, 
-          soorten_recent_aanwezig))
+(soorten_totaal_afwezig <-
+  setdiff(soorten_historisch_afwezig, soorten_recent_aanwezig) %>% 
+    sort())
 
-(unieke_soorten_recent <-
-  setdiff(soorten_recent_aanwezig, 
-          soorten_historisch_aanwezig))
+(soorten_totaal_aanwezig <-
+  union(soorten_historisch_aanwezig, soorten_recent_aanwezig) %>% 
+    sort())
+
+(soorten_totaal <-
+    union(soorten_totaal_aanwezig, soorten_totaal_afwezig) %>% 
+    sort())
+
+(unieke_soorten_historisch_aanwezig <-
+    setdiff(soorten_historisch_aanwezig, 
+            soorten_recent_aanwezig) %>% 
+    sort())
+
+(unieke_soorten_historisch_totaal <-
+    setdiff(union(soorten_historisch_aanwezig, soorten_historisch_afwezig), 
+            soorten_recent_aanwezig) %>% 
+    sort())
+
+(unieke_soorten_recent_aanwezig <-
+    setdiff(soorten_recent_aanwezig, 
+            soorten_historisch_aanwezig) %>% 
+    sort())
 
 haringachtigen <-
   data_per_datum %>% 
@@ -470,17 +523,19 @@ gewicht_recent <-
 
 aantal_historisch_finaal <-
   aantal_historisch %>% 
+  .[,names(aantal_historisch) %in% c("ID_afvissing", soorten_historisch_aanwezig)] %>% 
   arrange(ID_afvissing) %>% 
-  add_column(matrix(data = 0, nrow = nrow(aantal_historisch), ncol = length(unieke_soorten_recent)) %>% 
+  add_column(matrix(data = 0, nrow = nrow(aantal_historisch), ncol = length(unieke_soorten_recent_aanwezig)) %>% 
                as_tibble() %>% 
-               rename_at(., vars(names(.)), ~ unieke_soorten_recent))
+               rename_at(., vars(names(.)), ~ unieke_soorten_recent_aanwezig))
 
 gewicht_historisch_finaal <-
   gewicht_historisch %>% 
+  .[,names(aantal_historisch) %in% c("ID_afvissing", soorten_historisch_aanwezig)] %>% 
   arrange(ID_afvissing) %>% 
-  add_column(matrix(data = 0, nrow = nrow(gewicht_historisch), ncol = length(unieke_soorten_recent)) %>% 
+  add_column(matrix(data = 0, nrow = nrow(gewicht_historisch), ncol = length(unieke_soorten_recent_aanwezig)) %>% 
                as_tibble() %>% 
-               rename_at(., vars(names(.)), ~ unieke_soorten_recent))
+               rename_at(., vars(names(.)), ~ unieke_soorten_recent_aanwezig))
 
 
 start_ID <- max(campagnes_historisch$ID_afvissing)
@@ -492,20 +547,20 @@ campagnes_recent_finaal <-
 aantal_recent_finaal <-
   aantallen_recent %>% 
   mutate(ID_afvissing = ID_afvissing + start_ID) %>% 
-  add_column(matrix(data = 0, nrow = nrow(aantallen_recent), ncol = length(unieke_soorten_historisch)) %>% 
+  add_column(matrix(data = 0, nrow = nrow(aantallen_recent), ncol = length(unieke_soorten_historisch_aanwezig)) %>% 
                as_tibble() %>% 
-               rename_at(., vars(names(.)), ~ unieke_soorten_historisch))
+               rename_at(., vars(names(.)), ~ unieke_soorten_historisch_aanwezig))
 
 gewicht_recent_finaal <-
   gewicht_recent %>% 
   mutate(ID_afvissing = ID_afvissing + start_ID) %>% 
-  add_column(matrix(data = 0, nrow = nrow(gewicht_recent), ncol = length(unieke_soorten_historisch)) %>% 
+  add_column(matrix(data = 0, nrow = nrow(gewicht_recent), ncol = length(unieke_soorten_historisch_aanwezig)) %>% 
                as_tibble() %>% 
-               rename_at(., vars(names(.)), ~ unieke_soorten_historisch))
+               rename_at(., vars(names(.)), ~ unieke_soorten_historisch_aanwezig))
 
 
 soorten_order <- 
-  union(union(soorten_historisch_aanwezig, soorten_historisch_nul), soorten_recent_aanwezig) %>% 
+  union(soorten_historisch_aanwezig, soorten_recent_aanwezig) %>% 
   sort()
 
 campagnes <-
@@ -526,29 +581,29 @@ gewicht <-
 
 # NAs vervangen voor soorten die overal nul zijn, maar niet wanneer aantallen of gewicht wel aanwezig zijn
 
-afwezige_soorten <-
-  intersect(
-    aantallen %>% 
-      select(-ID_afvissing) %>% 
-      colSums(na.rm = TRUE) %>% 
-      .[. == 0] %>% 
-      names(),
-    gewicht %>% 
-      select(-ID_afvissing) %>% 
-      colSums(na.rm = TRUE) %>% 
-      .[. == 0] %>% 
-      names())
-
-soorten_replace <-
-  as.list(rep(0, length(afwezige_soorten)))
-names(soorten_replace) <- afwezige_soorten
-
-aantallen <-
-  aantallen %>% 
-  replace_na(soorten_replace)
-gewicht <-
-  gewicht %>% 
-  replace_na(soorten_replace)
+# afwezige_soorten <-
+#   intersect(
+#     aantallen %>% 
+#       select(-ID_afvissing) %>% 
+#       colSums(na.rm = TRUE) %>% 
+#       .[. == 0] %>% 
+#       names(),
+#     gewicht %>% 
+#       select(-ID_afvissing) %>% 
+#       colSums(na.rm = TRUE) %>% 
+#       .[. == 0] %>% 
+#       names())
+# 
+# soorten_replace <-
+#   as.list(rep(0, length(afwezige_soorten)))
+# names(soorten_replace) <- afwezige_soorten
+# 
+# aantallen <-
+#   aantallen %>% 
+#   replace_na(soorten_replace)
+# gewicht <-
+#   gewicht %>% 
+#   replace_na(soorten_replace)
 
 ```
 
