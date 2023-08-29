@@ -69,7 +69,6 @@ filename_historisch <-
   list.files(path = pad_data_historisch,
              pattern = "ankerkuil_VLIZ")
 
-
 campagnes_historisch <- 
   read_xlsx(str_c(pad_data_historisch, filename_historisch),
             sheet = "campagnes")
@@ -450,9 +449,22 @@ setdiff(data_per_datum %>%
   setdiff(soorten_historisch_afwezig, soorten_recent_aanwezig) %>% 
     sort())
 
-(soorten_totaal_aanwezig <-
+soorten_totaal_aanwezig <-
   union(soorten_historisch_aanwezig, soorten_recent_aanwezig) %>% 
+    sort()
+
+(soorten_totaal_aanwezig_invertebraten <-
+  soorten_totaal_aanwezig %>% 
+  keep(~ str_detect(., "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat")) %>% 
+  sort())
+
+(soorten_totaal_aanwezig_vis <-
+    setdiff(soorten_totaal_aanwezig, soorten_totaal_aanwezig_invertebraten) %>% 
     sort())
+
+(soorten_totaal_aanwezig <-
+  c(soorten_totaal_aanwezig_vis, soorten_totaal_aanwezig_invertebraten))
+
 
 (soorten_totaal <-
     union(soorten_totaal_aanwezig, soorten_totaal_afwezig) %>% 
@@ -560,8 +572,7 @@ gewicht_recent_finaal <-
 
 
 soorten_order <- 
-  union(soorten_historisch_aanwezig, soorten_recent_aanwezig) %>% 
-  sort()
+  soorten_totaal_aanwezig
 
 campagnes <-
   campagnes_historisch %>% 
