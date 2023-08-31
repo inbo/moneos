@@ -1,3 +1,9 @@
+---
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
 ```{r 130-hoofdstuk, include=FALSE}
 
 hoofdstuk <- "130_sedimentatie_erosie"
@@ -16,7 +22,7 @@ knitr::opts_knit$set(eval.after = "fig.cap")
 library(tidyverse)
 library(readxl)
 library(kableExtra)
-library(INBOtheme)
+# library(INBOtheme)
 library(rprojroot) ## workaround pad
 
 conflicted::conflicts_prefer(dplyr::filter)
@@ -35,6 +41,7 @@ source(find_root_file("../pad.R", criterion = is_rstudio_project))
 pad_data <- maak_pad(hoofdstuk, "data")
 pad_figuren <- maak_pad(hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+pad_fotos <- maak_pad(hoofdstuk, "fotos")
 
 ```
 
@@ -294,12 +301,12 @@ Bij de meetcampagne wordt een eerdere meetreeks in de RTK-GPS ingelezen.
 In het veld wordt vervolgens naar elk gemeten punt van de raai teruggaan.
 Zodoende kunnen de raaien op een efficiënte manier opnieuw ingemeten worden met een minimale horizontale afwijking.
 Door schoruitbreiding of -erosie kan het startpunt van de raai verschillen tussen de jaren.
-Ook de lokale laagwater grens kan verschuiven door sedimentatie/erosie.\
+Ook de lokale laagwatergrens kan verschuiven door sedimentatie/erosie.
 Tijdens de meetcampagne is gebruik gemaakt van het standaard veldwerkprotocol (cfr. 2e lijnsrapportage, Van Braeckel et al., 2014) met beschrijvingen van de schorrand en de verschillende slikzones.
 De ingemeten data van de raaien worden vervolgens in GIS 'gesnapt' naar een rechte referentieraailijn met de INBO-GIS-tool.
 Na controle van de GIS-data worden de gegevens vervolgens in R (R Core Team 2013) geïmporteerd voor verdere verwerking.
 
-Van elke MONEOS raai worden bij opmeten ook foto's gemaakt, en op de meeste MONEOS-raaien is per ecotoop een vast punt vastgelegd waar 3 RTK-GPSmetingen worden uitgevoerd en een sedimentstaal (10cm diep) wordt genomen.
+Van elke MONEOS-raai worden bij opmeten ook foto's gemaakt, en op de meeste MONEOS-raaien is per ecotoop een vast punt vastgelegd waar 3 RTK-GPSmetingen worden uitgevoerd en een sedimentstaal (10cm diep) wordt genomen.
 
 <!-- Op de meeste MONEOS-raaien en sommige NOP's is per ecotoop een vast punt vastgelegd waar 3 RTK-GPSmetingen worden uitgevoerd alsook een foto en sedimentstaal (10cm diep) wordt genomen. -->
 
@@ -320,21 +327,26 @@ Voor elk jaar worden de hoogteveranderingen dan uitgemiddeld per ecotoop:
 -   hoog slik (inclusief schorrand)
 -   schorplateau (indien ingemeten)
 
-De bepaling van de ecotoopgrenzen binnen het slik gebeurt op basis van een vergelijking van de droogvalduurpercentages (DD) geassocieerd met de meest recente ecotopenkaart (***XXXREF***; grens laag - middelhoog slik: 25% DD in mesohalien en 35% DD in overige saliniteitszones; grens middelhoog - hoog slik: 60% DD) en de ingemeten hoogtes uit `r laatste_jaar`.
+De bepaling van de ecotoopgrenzen binnen het slik gebeurt op basis van een vergelijking van de droogvalduurpercentages (DD) geassocieerd met de meest recente ecotopenkaart (ecotopen Zeeschelde 2.0 - zie methodologie ecotopen \@ref(ECTM) in hoofdstuk 3 Ecotopen; grens laag - middelhoog slik: 25% DD in mesohalien en 35% DD in overige saliniteitszones; grens middelhoog - hoog slik: 60% DD) en de ingemeten hoogtes uit `r laatste_jaar`.
 Per raai en per ecotoop wordt de trend in sedimentatie/erosie berekend op basis van een regressie analyse over de periode `r laatste_jaar - 5` - `r laatste_jaar - 1`:
 
-$\Delta hoogte = 0 + \beta * \Delta jaar$
+$$\Delta hoogte = 0 + \beta * \Delta jaar$$
 
 waarbij $\Delta jaar$ het verschil weergeeft tussen een gegeven jaar en het referentiejaar.
 Om na te gaan of er in `r laatste_jaar` een trendbreuk optreedt ten opzichte voorgaande jaren, wordt de hoogteverandering uit `r laatste_jaar` vergeleken met de voorspelde 95% betrouwbaarheidsintervallen van de berekende trends.
 Indien de hoogteverandering buiten het betrouwbaarheidsinterval valt, wordt dit gezien als een trendbreuk.
 
-## Beneden Zeeschelde
+### Weergave van de profielen
 
-Een overzicht van de in `r laatste_jaar` opgemeten vaste MONEOS raaien in de Beneden Zeeschelde wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-MH) en Figuur \@ref(fig:130-figuur-raaien-SG).
+Voor alle in 2023 ingemeten raaien wordt het historisch overzicht van de ingemeten punten per jaar weergegeven in Bijlage \@ref(BL1).
+Bij de bespreking van de recente trends wordt voor elke raai een vereenvoudigde figuur met gestandaardiseerde afstanden tussen de punten weergegeven, zoals hierboven beschreven.
+
+## Beneden-Zeeschelde
+
+Een overzicht van de in `r laatste_jaar` opgemeten vaste MONEOS-raaien in de Beneden-Zeeschelde wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-MH) en Figuur \@ref(fig:130-figuur-raaien-SG).
 Voor raaien GBSa, GBSb, DO, GSb, GSc, LP, KPe en GW werd naast het slik en de schorrand aanvullend ook het schorplateau ingemeten.
 
-### trends in recente jaren
+### Trends in recente jaren
 
 De trends in de meest recente jaren (`r laatste_jaar - 5` - `r laatste_jaar - 1`) evenals de trendbreuken in `r laatste_jaar` zijn weergegeven in Tabel \@ref(tab:130-tabel-trends-BEZ) en in Figuur \@ref(fig:130-figuur-trends-slik-BEZ) voor de slikken en Figuur \@ref(fig:130-figuur-trends-schor-BEZ) voor de schorplateaus.
 
@@ -345,7 +357,7 @@ Op basis van inspectie van de profielen werden hier echter geen opvallende trend
 
 ```{r 130-tabel-trends-BEZ}
 
-cap_trends_BEZ <- str_c("Trends in sedimentatie/erosie op de slikken en schorren in de Beneden Zeeschelde, voor de periode ", laatste_jaar - 5, " - ", laatste_jaar - 1, " en (indien aanwezig) [x] trendbreuk in ", laatste_jaar, ". 0 = sedimentatie/erosie < 1cm/jaar; + = sedimentatie \u2265 1 cm/jaar; ++ = sedimentatie \u2265 5 cm/jaar; +++ = sedimentatie \u2265 10 cm/jaar; - = erosie \u2265 1 cm/jaar; -- = erosie \u2265 5 cm/jaar; --- = erosie \u2265 10 cm/jaar.")
+cap_trends_BEZ <- str_c("Trends in sedimentatie/erosie op de slikken en schorren in de Beneden Zeeschelde, voor de periode ", laatste_jaar - 5, " - ", laatste_jaar - 1, " en (indien aanwezig) [x] trendbreuk in ", laatste_jaar, ". 0 = sedimentatie/erosie < 1cm/jaar; + = sedimentatie \u2265 1 cm/jaar; ++ = sedimentatie \u2265 5 cm/jaar; +++ = sedimentatie \u2265 10 cm/jaar; - = erosie \u2265 1 cm/jaar; - - = erosie \u2265 5 cm/jaar; - - - = erosie \u2265 10 cm/jaar.")
 
 tabel_trends_BEZ %>%
   mutate_all(~cell_spec(., color = "black")) %>% 
@@ -413,8 +425,8 @@ res$fig
 
 <br/>
 
-Raai GBSb (Groot Buitenschoor) vertoond een trend van lichte sedimentatie op het middelhoog en hoog slik en op het schorplateau (Figuur \@ref(fig:130-figuur-GBSb-slik)).
-Het laag slik is relatief stabiel.
+Raai GBSb (Groot Buitenschoor) vertoont een trend van lichte sedimentatie in de meeste zones: middelhoog en hoog slik en op het schorplateau (Figuur \@ref(fig:130-figuur-GBSb-slik)).
+De mate van sedimentatie vlakt wel af.
 
 ```{r 130-figuur-GBSb-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -442,7 +454,7 @@ res$fig
 <br/>
 
 Raai ODa (Schor Ouden Doel) vertoont een opvallende trendbreuk in het laag slik met een plotse, sterke verdieping (Figuur \@ref(fig:130-figuur-ODa-slik)).
-Dit heeft te maken met het aanleggen van de in- en uitwateringsgeul van de ontpoldering in Hedwige/Prosper.
+Dit is te wijten aan terugschreidende erosie vanuit de noordelijk nabijgelegen nieuwe in- en uitwateringsgeul van de ontpoldering in Hedwige/Prosper.
 De trend van lichte erosie in het middelhoog slik blijft onveranderd.
 
 ```{r 130-figuur-ODa-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
@@ -474,7 +486,7 @@ res$fig
 
 <br/>
 
-Op raai GSb (Galgenschoor) (Figuur \@ref(fig:130-figuur-GSb-slik)) zien we trendbreuken in het laag en hoog slik, waar de licht sedimenterende trend uit de vorgaande jaren is gewijzigd naar lichte erosie.
+Op raai GSb (Galgenschoor) (Figuur \@ref(fig:130-figuur-GSb-slik)) zien we trendbreuken in het laag en hoog slik, waar de licht sedimenterende trend uit de voorgaande jaren is gewijzigd naar lichte erosie.
 Ook in het middelhoog slik is er de laatste twee jaar een trend tot meer erosie (maar niet zichtbaar als trendbreuk in `r laatste_jaar`).
 Het zou interessant zijn om te onderzoeken of de waargenomen patronen te relateren zijn aan de geleverde onderhoudsbaggerwerken van de drempel van Frederik, gelegen in de vaargeul nabij raai GSb.
 
@@ -554,9 +566,9 @@ res$fig
 
 <br/>
 
-Op raai KPe (Ketenisse) zet de trend van sterke sedimentatie op het laag slik zich verder in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-KPe-slik)).
+Op raai KPe (Ketenisse) zet de trend sterke van sedimentatie op het laag slik beneden de breuksteengordel zich verder in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-KPe-slik)).
 De hogere delen van het slik blijven stabiel.
-Op het schorplateau is er ondanks wat lichte erosie in `r laatste_jaar` geen trendbreuk met de lichte sedimentatie uit voorgaande jaren.
+Op het schorplateau treedt over grotere delen erosie op in `r laatste_jaar`, maar dit vormt geen trendbreuk met de licht sedimenterende trend door de variatie in de voorgaande jaren.
 
 ```{r 130-figuur-KPe-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -571,9 +583,14 @@ res$fig
 
 <br/>
 
-Op het laag slik van raai GW (Galgenweel) is er in `r laatste_jaar` een relatief sterke sedimentatie (Figuur \@ref(fig:130-figuur-GW-slik)).
-Door de grote variabiliteit in sedimentatie/erosie tussen jaren, uit dit zich echter niet als een trendbreuk op de eroderende trend uit de vorige jaren.
-Op het middelhoog slik wordt de sterke sedimentatie in `r laatste_jaar` wel gezien als een duidelijke trendbreuk met de sterk erosieve trend uit vorige jaren.
+Het laag en middelhoog slik van raai GW (Galgenweel) is een morfologisch heel actieve zone.
+Op het laag slik is er in `r laatste_jaar` een relatief sterke sedimentatie met vaak wat zandiger materiaal (Figuur \@ref(fig:130-figuur-GW-slik)).
+Door de grote variabiliteit in sedimentatie/erosie van meerdere decimeters tussen jaren, uit dit zich echter niet als een trendbreuk op de eroderende trend uit de vorige jaren.
+Op het middelhoog slik wordt de sterke sedimentatie in `r laatste_jaar` wel gezien als een duidelijke trendbreuk na de sterk erosieve trend uit vorige jaren.
+
+<!--# Enigszins onverwacht is ook de sterke sedimentatie van GW (Galgenweel)- dit in tegenstelling tot wat we in Waterbus rapport stellen voor deze zone. (eerder ook al dynamische zone - maar sedimentatie blijkt nu toch ook mogelijk niettegenstaande de bus). -->
+<!--# JV: Maar de erosie aan de schorklif blijft behouden. -->
+
 
 ```{r 130-figuur-GW-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -589,8 +606,10 @@ res$fig
 <br/>
 
 Raai HO (Hobookse Polder) vertoonde in de vorige jaren algemeen een eroderende trend (Figuur \@ref(fig:130-figuur-HO-slik)).
-in `r laatste_jaar` is deze trend op het laag en middelhoog slik echter afgeremd tot afwezig en op het hoog slik zelfs veranderd naar een sedimentatie.
-Deze verschillen zijn echter veroorzaakt door ofwel op of tussen de hier aanwezige breuksteen te meten.
+In `r laatste_jaar` is deze trend op het laag en middelhoog slik afgeremd doordat harde lagen meer zijn geëxposeerd en de dunne sliblaag verloren.
+Net onder de ontstane microklif op het laag slik zijn afzettingen van zandig materiaal (met microribbels) terug te vinden (Figuur \@ref(fig:130-foto-HO-slik)).
+Merk op dat raai HO zo goed als geen hoog slik heeft (deel tussen groene en bruine stippellijn) en dat het bestaande hoog slik vooral uit breuksteen bestaat (Figuur \@ref(fig:130-foto-HO-slik)).
+
 
 ```{r 130-figuur-HO-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -605,23 +624,33 @@ res$fig
 
 <br/>
 
-## Boven Zeeschelde
+```{r 130-foto-HO-slik, fig.cap=caption_foto, out.width="100%", fig.show="hold"}
 
-Een overzicht van de vaste MONEOS raaien in de Boven Zeeschelde die werden opgemeten in `r laatste_jaar` wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-OH), Figuur \@ref(fig:130-figuur-raaien-ZL) en Figuur \@ref(fig:130-figuur-raaien-ZK).
-Voor raaien TB, WE, PD, MK, KRb, GBa, APc, APa, PA, BM, HEUf en HEUc werd ook het schorplateau ingemeten.
+caption_foto <- "Foto van de situatie van het slik en de schorgrens in het voorjaar 2023 aan de Hobookse Polder."
 
-### trends in recente jaren
+knitr::include_graphics(paste0(pad_fotos, "HOboken.JPG"))
+
+```
+
+<br/>
+
+## Boven-Zeeschelde
+
+Een overzicht van de vaste MONEOS-raaien in de Boven-Zeeschelde die werden opgemeten in `r laatste_jaar` wordt gegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-OH), Figuur \@ref(fig:130-figuur-raaien-ZL) en Figuur \@ref(fig:130-figuur-raaien-ZK).
+Voor raaien TB, WE, PD, MK, KRb, GBa, APc, APa, PA, BM, HEUf en HEUc is ook het schorplateau ingemeten.
+
+### Trends in recente jaren
 
 De trends in de meest recente jaren (`r laatste_jaar - 5` - `r laatste_jaar - 1`) evenals de trendbreuken in `r laatste_jaar` zijn weergegeven in Tabel \@ref(tab:130-tabel-trends-BOZ).
 Figuur \@ref(fig:130-figuur-trends-slik-BOZ) illustreert de trends op de slikken en Figuur \@ref(fig:130-figuur-trends-schor-BOZ) de trends op de schorplateaus.
 
 Voor raai HEUf kon geen trend geanalyseerd worden op het slik wegens te weinig gegevens in de laatste jaren.
-Voor raaien TB, WE, PD, MK, GBa, APc, APa, PA konden geen trends en trendbreuken geanalyseerd worden voor het schorplateau wegens te weinig metingen in de laatste jaren.
-Op basis van inspectie van de profielen werden hier echter geen opvallende trends of trendbreuken vastgesteld.
+Voor raaien TB, WE, PD, MK, GBa, APc, APa, PA konden geen trends en trendbreuken geanalyseerd worden voor het schorplateau wegens te weinig metingen t.g.v. dichte begroeiing (wilgen).
+Op basis van inspectie van beperkte meetpunten op de schorprofielen worden geen opvallende trends of trendbreuken vastgesteld.
 
 ```{r 130-tabel-trends-BOZ}
 
-cap_trends_BOZ <- str_c("Trends in sedimentatie/erosie op de slikken en schorren in de Boven Zeeschelde, voor de periode ", laatste_jaar - 5, " - ", laatste_jaar - 1, " en (indien aanwezig) [x] trendbreuk in ", laatste_jaar, ". 0 = sedimentatie/erosie < 1cm/jaar; + = sedimentatie \u2265 1 cm/jaar; ++ = sedimentatie \u2265 5 cm/jaar; +++ = sedimentatie \u2265 10 cm/jaar; - = erosie \u2265 1 cm/jaar; -- = erosie \u2265 5 cm/jaar; --- = erosie \u2265 10 cm/jaar.")
+cap_trends_BOZ <- str_c("Trends in sedimentatie/erosie op de slikken en schorren in de Boven Zeeschelde, voor de periode ", laatste_jaar - 5, " - ", laatste_jaar - 1, " en (indien aanwezig) [x] trendbreuk in ", laatste_jaar, ". 0 = sedimentatie/erosie < 1cm/jaar; + = sedimentatie \u2265 1 cm/jaar; ++ = sedimentatie \u2265 5 cm/jaar; +++ = sedimentatie \u2265 10 cm/jaar; - = erosie \u2265 1 cm/jaar; - - = erosie \u2265 5 cm/jaar; - - - = erosie \u2265 10 cm/jaar.")
 
 tabel_trends_BOZ %>%
   mutate_all(~cell_spec(., color = "black")) %>% 
@@ -655,7 +684,7 @@ knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_schor_B
 
 <br/>
 
-de volgende trends en trenbreuken kunnen worden waargenomen in de Boven Zeeschelde:
+De volgende trends en trendbreuken kunnen worden waargenomen in de Boven Zeeschelde:
 
 Het slik op raai KV (Kijkverdriet) vertoont een trend van lichte tot matige sedimentatie (Figuur \@ref(fig:130-figuur-KV-slik)).
 
@@ -673,7 +702,7 @@ res$fig
 <br/>
 
 Ook op raai NOTb (Notelaer) (Figuur \@ref(fig:130-figuur-NOTb-slik)) vertoont het slik in de periode `r laatste_jaar - 5` - `r laatste_jaar - 1` een lichte tot matige trend van sedimentatie.
-Hierbij dient wel te worden opgemerkt dat deze trend in de laatste twee jaren is veranderd naar sedimentatie.
+Hierbij dient wel te worden opgemerkt dat deze trend in de laatste twee jaren is veranderd naar erosie.
 Dit komt echter niet tot uiting als trendbreuk, omdat de omslag al langer aan de gang is dan `r laatste_jaar`.
 
 ```{r 130-figuur-NOTb-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
@@ -691,8 +720,8 @@ res$fig
 
 Op raai NOTc (Notelaer) (Figuur \@ref(fig:130-figuur-NOTc-slik)) zijn er geen trendbreuken waar te nemen in `r laatste_jaar`.
 De trends gaan van lichte erosie op het laag slik, over lichte sedimentatie op het middelhoog slik tot matige sedimentatie op het hoog slik.
-Ook hier dient, net als voor NOTb, echter opgemerkt te worden dat er in 2022 een trendbreuk lijkt te zijn opgetreden met relatief sterke erosie over het ganse slik.
-Dit komt niet tot uiting in onze analyse omdat die focust op het laatste jaar (`r laatste_jaar`).
+Ook hier dient, net als voor NOTb, opgemerkt te worden dat in 2022 wel een trendbreuk lijkt te zijn opgetreden met relatief sterke erosie over het ganse slik.
+Dit komt niet tot uiting in onze analyse van trendbreuken omdat die focust op het laatste jaar (`r laatste_jaar`).
 
 ```{r 130-figuur-NOTc-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -707,8 +736,8 @@ res$fig
 
 <br/>
 
-De lichte tot matige sedimentatie uit de voorbije op laag en hoog slik op raai BAL (Ballooi) gaat verder in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-BAL-slik)).
-Voor het middelhoogslik lijkt de sedimentatie in `r laatste_jaar` te zijn gestopt.
+De lichte tot matige sedimentatie uit de voorbije jaren op laag en hoog slik op raai BAL (Ballooi) gaat verder in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-BAL-slik)).
+Voor het middelhoog slik treedt wel een trendbreuk op en is de sedimentatie in `r laatste_jaar` gestopt.
 
 ```{r 130-figuur-BAL-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -723,8 +752,8 @@ res$fig
 
 <br/>
 
-Op raai TB (Temsebrug) is er in `r laatste_jaar` op het laag slik een duidelijke trendbreuk, met plots sterke sedimentatie (Figuur \@ref(fig:130-figuur-TB-slik)).
-De trend van lichte erosie op het middelhoog slik blijft aanwezig.
+In de binnenbocht ter hoogte van raai TB (Temsebrug) is in `r laatste_jaar` op het laag slik een duidelijke trendbreuk, met plots sterke sedimentatie op de zandige slikplaat en erosie boven de slikplaat nabij het middelhoog slik (Figuur \@ref(fig:130-figuur-TB-slik)).
+Na een plotse sedimentatie in 2022 blijft de trend van lichte erosie op het middelhoog slik uit voorgaande jaren doorgaan met uitholling en vorming van een vloedgeul en een uitgesproken slik- en schorklif (Figuur \@ref(fig:130-foto-TB-slik)).
 
 ```{r 130-figuur-TB-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -739,10 +768,20 @@ res$fig
 
 <br/>
 
-Raai WE (Weert) (Figuur \@ref(fig:130-figuur-WE-slik)) vertoont de voorbije jaren een trend van mtige tot sterke erosie.
-Ook hier lijkt er zich in 2022 echter een trendbreuk te hebben voorgedaan, met in dat jaar een plotse sterke sedimentatie op hoog en vooral middelhoog slik.
-Deze sedimentatie is ook nog zichtbaar in de bovenste delen van het laag slik.
-Deze sedimentatie zorgt voor een versteiling van het slikprofiel.
+```{r 130-foto-TB-slik, fig.cap=caption_foto, out.width="100%", fig.show="hold"}
+
+caption_foto <- "Foto van de situatie van het slik en de schorgrens in het voorjaar 2023 aan Temsebrug."
+
+knitr::include_graphics(paste0(pad_fotos, "TB_middelhoogslikenschorzichtmetklif.JPG"))
+
+```
+
+<br/>
+
+Op Raai WE (Weert) (Figuur \@ref(fig:130-figuur-WE-slik)) is in de voorbije jaren een omslag/kanteling opgetreden van een uitgehold profiel met vloedgeul na matige erosie in de jaren tot 2021 naar een steiler profiel vanaf 2022.
+Na 2021 treedt immers sterke sedimentatie op van hoog en vooral middelhoog slik en erosie op de laagste delen van het slik met verkleining van de dynamische zandplaat tot gevolg (Figuur \@ref(fig:130-foto-WE-slik)B).
+Aangezien de sterke sedimentatie in de hogere delen van het slik zich hoofdzakelijk voor deden in 2022 is dit niet te zien als een trendbreuk in de trendanalyses, omdat die focussen op de evolutie in `r laatste_jaar`.
+Deze veranderingen gaan ook gepaard met schorerosie van het stroomafwaarts schordeel met klifvorming en afbraak van een rietschordeel na ondergraving in 2022 (Figuur \@ref(fig:130-foto-WE-slik)A).
 
 ```{r 130-figuur-WE-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -757,8 +796,19 @@ res$fig
 
 <br/>
 
-Hoewel er op raai BR (Branst) geen trendbreuken op de sterke sedimentatie trend uit de laatste jaren zijn waar te nemen in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-BR-slik)), lijkt hier toch ook een verandering te zijn opgetreden in het sedimentatiepatroon in 2022.
+```{r 130-foto-WE-slik, fig.cap=caption_foto, out.width="100%", fig.show="hold"}
+
+caption_foto <- "Foto van de situatie van het slik en de schorgrens in het voorjaar 2023 aan Weert."
+
+knitr::include_graphics(paste0(pad_fotos, "WEreeks.JPG"))
+
+```
+
+<br/>
+
+Hoewel op raai BR (Branst) geen trendbreuken op de sterke sedimentatie trend uit de laatste jaren zijn waar te nemen in `r laatste_jaar` (Figuur \@ref(fig:130-figuur-BR-slik)), lijkt hier toch ook een verandering te zijn opgetreden in het sedimentatiepatroon in 2022.
 De laatste twee jaar lijkt de sedimentatietrend sterk afgezwakt.
+In 2023 lijkt er ook sterke erosie van de voorliggende ondiep subtidale zone nabij het laagwater te zijn opgetreden.
 
 ```{r 130-figuur-BR-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -773,9 +823,12 @@ res$fig
 
 <br/>
 
-Het sedimentatie/erosie patroon op raai PD (Plaat Driegoten) (Figuur \@ref(fig:130-figuur-PD-slik)) is sterk variabel tussen jaren.
-Netto zijn er geen grote veranderingen in slikhoogte waar te nemen.
-Alleen aan de schorrand lijkt er in r `laatste_jaar` een vrij sterke erosie te hebben plaatsgevonden.
+<!--# Hier is wel duidelijk een verschil tussen de figuur met de gemiddelden en de ruwe data -->
+
+Het sedimentatie/erosie-patroon op de dynamische binnenbocht van raai PD (Plaat Driegoten) (Figuur \@ref(fig:130-figuur-PD-slik)) is zeer sterk variabel tussen jaren.
+Netto zijn geen grote veranderingen in slikhoogte waar te nemen.
+Alleen aan de laagwaterlijn lijkt in `r laatste_jaar` (en het voorgaande jaar) een vrij sterke erosie en dus verkleining van de zandplaat plaats te vinden.
+De sterke sedimentatie van het slik tussen 2019 en 2022 is vooral een herstel na een sterke erosie tussen 2018 en 2019 (Figuur \@ref(fig:130-figuur-PD-slik)).
 
 ```{r 130-figuur-PD-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -790,8 +843,9 @@ res$fig
 
 <br/>
 
-De sterke sedimentatie en opbolling in het middelhoog slik op raai MK (Mariekerke) (Figuur \@ref(fig:130-figuur-MK-slik)) zet zich verder in `r laatste_jaar`.
+De sterke sedimentatie en opbolling in het middelhoog slik op raai MK (Mariekerke) (Figuur \@ref(fig:130-figuur-MK-slik)) zet zich verder door in `r laatste_jaar`.
 Laag en hoog slik, daarentegen, blijven relatief stabiel.
+<!--# Hier kan eventueel de figuur MK er bij en dan volgende tekst. 'Deze sterke sedimentatie op MK gaat gepaard met sterke morfologische veranderingen met een erosie van de centrale zandplaat en verschuiving weg van de vaargeul naar de rechteroever. --> <!--# JV: voorgaande snap ik niet. -->
 
 ```{r 130-figuur-MK-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -806,8 +860,9 @@ res$fig
 
 <br/>
 
-Raai GSHb (Groot Schoor van Hamme) is vrij stabiel met de voorbije jaren een licht erosieve trend in het laag slik en lichte sedimentatie in middelhoog en hoog slik (Figuur \@ref(fig:130-figuur-GSHb-slik)).
-In analogie met een aantal andere raaien uit de Boven Zeeschelde, zijn er wel indicaties voor een trendverandering in het hoog en middelhoog slik met minder sedimentatie vanaf 2022.
+Raai GSHb (Groot Schoor van Hamme), heeft een NTMB-oever (natuurtechnische milieubouw) en is verstevigd met palenrijen en een bredere breuksteengordel in het laag slik.
+De raai is vrij stabiel met de voorbije jaren een licht erosieve trend aan de onderkant van het laag slik en lichte sedimentatie in middelhoog en hoog slik (Figuur \@ref(fig:130-figuur-GSHb-slik)).
+Naar analogie met een aantal andere raaien uit de Boven-Zeeschelde, zijn er wel indicaties voor een trendverandering in het hoog en middelhoog slik met minder sedimentatie vanaf 2022.
 
 ```{r 130-figuur-GSHb-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -822,7 +877,7 @@ res$fig
 
 <br/>
 
-Raai KRb aan de Kramp (Figuur \@ref(fig:130-figuur-KRb-slik)) vertoont een trend tot vrij sterke erosie van het laag slik.
+Raai KRb aan de Kramp (Figuur \@ref(fig:130-figuur-KRb-slik)), voorzien van een NTMB-oever (Figuur \@ref(fig:130-foto-KRb-slik)), blijft een trend van erosie aanhouden in het laag slik.
 De hogere delen van het slik en het schorplateau zijn stabiel.
 
 ```{r 130-figuur-KRb-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
@@ -838,8 +893,18 @@ res$fig
 
 <br/>
 
-Raai GB (Grembergen) (Figuur \@ref(fig:130-figuur-GBa-slik)) vertoonde de voorbije jaren een licht eroderende en licht sedimenterende trend in het laag en middelhoog slik, respectievelijk.
-Netto zijn er in `r laatste_jaar` echter zo goed als geen verschillen in slikhoogte in vergelijking met `r laatste_jaar - 5`.
+```{r 130-foto-KRb-slik, fig.cap=caption_foto, out.width="100%", fig.show="hold"}
+
+caption_foto <- "NTMB-oever (natuurtechnische milieubouw), verstevigd met palenrijen aan de Kramp."
+
+knitr::include_graphics(paste0(pad_fotos, "KRbNTMB.JPG"))
+
+```
+
+<br/>
+
+Raai GBa (Grembergen) met NTMB-oever (Figuur \@ref(fig:130-figuur-GBa-slik)) vertoonde de voorbije jaren een licht eroderende en licht sedimenterende trend in het laag en middelhoog slik, respectievelijk.
+Netto zijn in `r laatste_jaar` echter zo goed als geen verschillen in slikhoogte in vergelijking met `r laatste_jaar - 5`.
 
 ```{r 130-figuur-GBa-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -854,7 +919,7 @@ res$fig
 
 <br/>
 
-Ook op het laag en middelhoog slik van raai ZLa (Zele) (Figuur \@ref(fig:130-figuur-ZLa-slik)) zijn er netto zo goed als geen hoogteveranderingen tussen `r laatste_jaar - 5` en `r laatste_jaar`.
+Ook op het laag en middelhoog slik van raai ZLa (Zele) met NTMB-oever (Figuur \@ref(fig:130-figuur-ZLa-slik)) zijn er netto zo goed als geen hoogteveranderingen tussen `r laatste_jaar - 5` en `r laatste_jaar`.
 Op het hoog slik is er echter wel een trendbreuk waar te nemen van lichte erosie in voorgaande jaren naar sterke sedimentatie in `r laatste_jaar`.
 
 ```{r 130-figuur-ZLa-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
@@ -871,7 +936,7 @@ res$fig
 <br/>
 
 Het laag slik op raai APc (Appels) (Figuur \@ref(fig:130-figuur-APc-slik)), vertoont een duidelijke trendbreuk, met een omslag van vrij sterke sedimentatie naar sterke erosie.
-Deze erosie lijkt zich al te hebben ingezet in 2022.
+Deze erosie lijkt zich al te hebben ingezet in 2022 met vorming van meerdere terugschreidende slikkliffen (Figuur \@ref(fig:130-foto-APc-slik); zie ook Figuur \@ref(fig:130-figuur-raaien-ZK) in Bijlage \@ref(BL1)).
 Ook de sedimentatie in het middelhoog en hoog slik lijkt te zijn afgeremd in 2022, maar dit is niet zichtbaar als een trendbreuk in `r laatste_jaar`.
 Op het hoog slik doet de erosie zich vooral voor op de grens met het middelhoog slik, terwijl de vloedgeul aan de rand van het schor verder sedimenteert.
 
@@ -888,9 +953,19 @@ res$fig
 
 <br/>
 
+```{r 130-foto-APc-slik, fig.cap=caption_foto, out.width="100%", fig.show="hold"}
+
+caption_foto <- "Foto van de situatie van het slik in het voorjaar 2023 aan Appels (APc)."
+
+knitr::include_graphics(paste0(pad_fotos, "APc.JPG"))
+
+```
+
+<br/>
+
 Slikhoogte op het laag en hoog slik van raai APa (Appels) (Figuur \@ref(fig:130-figuur-APa-slik)) is vrij stabiel.
-De trends worden vooral bepaald door hoogteveranderingen die optraden in 2019 ten opzichte van 2018.
-Op het middelhoog slik is er wel een trendbreuk waar te nemen, met een plotse, sterke sedimentatie.
+De trends worden vooral bepaald door de plotse hoogteverandering die optrad tussen 2019 en 2018.
+Op het middelhoog slik is wel een trendbreuk waar te nemen, met een plotse, sterke sedimentatie.
 
 ```{r 130-figuur-APa-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -905,8 +980,8 @@ res$fig
 
 <br/>
 
-De sedimentatie/erosie patronen op raai PA (Paddebeek) (Figuur \@ref(fig:130-figuur-PA-slik)) blijven behouden.
-Er is matige sedimentatie op het laag slik en (zeer) lichte erosie op middelhoog en hoog slik.
+De sedimentatie/erosie patronen op de verstevigde raai PA (Paddebeek) (Figuur \@ref(fig:130-figuur-PA-slik)) blijven behouden.
+Er is matige sedimentatie op het laag slik en lichte erosie op middelhoog en hoog slik waardoor het weinige zacht slik sterk verminderd is. <!--# misschien voor dit traject overschakelen naar een ander profiel van brede schoren of konkelschoor -->
 
 ```{r 130-figuur-PA-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -921,8 +996,8 @@ res$fig
 
 <br/>
 
-raai BM (Bergenmeersen) (Figuur \@ref(fig:130-figuur-BM-slik)) vertoont een gradiënt van sterke sedimentatie onderaan het slik naar lichte sedimentatie bovenaan het slik.
-Ook op het schorplateau is er de laatste jaren lichte sedimentatie opgetreden.
+De binnenbocht aan raai BM (Bergenmeersen) (Figuur \@ref(fig:130-figuur-BM-slik)) vertoont een gradiënt van sterke sedimentatie onderaan het slik naar lichte sedimentatie bovenaan het slik.
+Ook in het GGG Bergenmeersen (schorplateau) is de laatste jaren lichte sedimentatie opgetreden (gealterneerd met inklinking in de komgronden).
 
 ```{r 130-figuur-BM-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -937,9 +1012,12 @@ res$fig
 
 <br/>
 
+<!--# ik zou vereenvoudigde figuur schor niet tonen ofwel enkel de meetfiguur Er is al langer een schorklif met wilgen waarbij ze grotendeels omvallen en sedimentatiezones ontstaan-->
+<!--# JV: bovenstaande snap ik niet -->
+
 Raai HEUc (Heusden) (Figuur \@ref(fig:130-figuur-HEUc-slik)) vertoont een trendbreuk naar matige erosie laag op het slik.
-Hoewel de schorrand (hoog slik) gemiddeld een trend van sedimentatie vertoont, lijkt er in 'r laatste_jaar' de ontwikkeling van een schorklif op te treden.
-Het schorplateau vertoont een trend van lichte sedimentatie, maar de gegevens zijn hier vrij sporadisch.
+De beboste schorrand vertoont een schorklif die verder uitholt.
+Het schorplateau van de ontpoldering vertoont een trend van lichte sedimentatie, maar de gegevens zijn door de bosrijke omgeving vrij sporadisch (zie ook Figuur \@ref(fig:130-figuur-raaien-ZK)).
 
 ```{r 130-figuur-HEUc-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -973,8 +1051,13 @@ res$fig
 
 ## Durme, Rupel en zijrivieren
 
+<!--# Hier zou ik gewoon zeggen dat er geen trend zijn gebruikt en enkele profielen van durme en hopelijk ook rupel tonen en wat bespreken (old school method) dit is wel héél summier. ofwel meer figuren tonen waarbij je de lineaire trend weglaat en zonder test enkel een kromme kurve toelaat spline, loess. Het is een herstellend systeem na uitbaggering dus werkt de lineaire trend niet zo goed.  -->
+<!--# JV: bovenstaande opmerking ivb met trends snap ik niet. Als dit over schorplateau van DU gaat, gaan andere methodes ook niet helpen. Er zijn gewoon niet genoeg meetpunten (schor is niet breed genoeg) om er iets over te zeggen. De evoluties in de schorrand (>15 m van de dijk, zijn (standaard) meegenomen in de trend van het slik (hoog slik + schorrand)) -->
+
+<!--# In 2023 is enkel DU ingemeten en geen van de MONEOS raaien in de Rupel (laatst in 2021). Die kunnen dan ook niet gerapporteerd worden, en dan is het inderdaad wat summier :). Ik zie het probleem daar niet van.  -->
+
 De vaste MONEOS raaien uit Durme, Rupel en zijrivieren die werden opgemeten zijn weergegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BOZ).
-In `r laatste_jaar` werd voor raai DU zowel slik als schorplateau ingemeten.
+In `r laatste_jaar` werd enkel raai DU (zowel het slik als het schorplateau) ingemeten.
 
 ### trends in recente jaren
 
@@ -1046,7 +1129,62 @@ res$fig
 
 ## Algemene bevindingen
 
-Opvallend veel aanwijzingen voor trendbreuken in 2022 in hoog en middelhoog slik in Boven Zeeschelde met opvallen veel erosie in KV, NOTb, NOTc, BR, APc en sedimentatie in WE
+Algemeen kunnen we stellen dat in de omgeving tussen Doel en Lillo de morfodynamiek van de lage slikzone op verschillende plaatsen is gewijzigd met een verlaging ten opzichte van de trend voor DO, GSb, LP (ook ODa maar dit is door de nabijheid van de in- en uitwateringsgeul van de nieuwe ontpoldering Hedwige/Prosper) of verhoging in de binnenbocht LH.
+Ook in de zone rond Antwerpen en Hoboken (GW en HO) treedt meer sedimentatie op met vorming van mesoribbels (zandig sediment).
+
+Daarnaast zijn er opvallend veel aanwijzingen voor trendbreuken in 2022 in hoog en middelhoog slik in de Boven-Zeeschelde met opvallend veel erosie of stagnatie in NOTb, NOTc, BR, PD, GSHb, APc en sedimentatie in WE Ook zien we lokale zoneveranderingen o.a. in TB, GSHb, KRb.
+<!--# JV: wat bedoel je met dit laatste ivm TB, GSHb, KRb? Aan TB is er de sterke ontwikkeling van die zandplaat, maar GSHb en KRb zijn NTMB-oevers die vrij stabiel zijn -->
+
+De hoogteverschilkaarten afgeleid van LIDAR en bathymetrische data uit 2022 en 2019 (bron DVW, aMT) tonen ook de sterke morfologische veranderingen in de laatste jaren.
+Stroomafwaarts Temsebrug (TB-raai; Figuur \@ref(fig:130-verschilkaart-TB)) is de vorming van een vloedgeul in het stroomafwaartse deel van de slikplaat waar te nemen (groene wig tussen sterk verhoogde, donkerbruine zandplaatzone en schorgrens).
+Deze vloedgeul op de slikplaat bereikt in 2023 de TB-raai.
+Stroomopwaarts vertonen ook andere tidale-fluviale pointbars of binnenbochten met een zandplaat sterke veranderingen zoals WE (Weert) en PD (Plaat van Driegoten).
+Nabij de WE-raai (Figuur \@ref(fig:130-verschilkaart-WE)) vertoont de zandplaat erosie nabij de laagwaterlijn.
+Er is ook sedimentatie van het hoog slik en erosie van het schor aan de stroomafwaartse kop van het 'Stort van Weert' zichtbaar.
+In 2023 zet dit zich door met een versteiling van de zandplaat.
+Ook rond de PD-raai toont de hoogteverschilkaart 2022-2019 een verkleining van de zandplaat (Figuur \@ref(fig:130-verschilkaart-PD)) aan de laagwaterlijn.
+De sedimentatie van het overige slik tussen 2019 en 2022 is vooral een herstel na een sterke erosie na zandwinning tussen 2018 en 2019.
+
+De sterke en snelle ontwikkelingen met sterke veranderingen in slikprofielvorm van pointbars zoals TB, WE en PD wijst op een toename van de hydro- en mofodynamiek.
+Het ontstaan en verdwijnen van vloedgeulen, snelle zandafzettingen en schorklifvorming wijzen in de richting van toename van hydrodynamiek bij vloed met een verwachte toename van het bodemtransport van zand binnen deze estuariene riviersectie.
+Stroomopwaarts kan erosie onderaan de NTMB-oeverprofielen (GSHb, GBa) ook wijzen op een effect meer stroomopwaarts wijst.
+<!--# JV: Deze zin klopt niet. Wat bedoel je hier? --> Verder onderzoek naar de veranderingen in deze zone en mogelijke impact van huidige rivierbeheermaatregelen is hierbij wenselijk.
+
+<!--# JV: Er is bij de figuren ook een verschilkaart voor MK toegevoegd, maar ik zie die hier niet besproken? -->
+
+<!--# Verdere uitruiming van de Boven-Zeeschelde dient zo veel mogelijk tegengewerkt worden o.a. door verminderen of stoppen van de zandwinning,…Een afvlakking van de sedimentatietrend in gebieden (BR, MK,) waar het globaal steeds sedimenteerde. Dit kan een gevolg zijn van toegenomen hydrodynamiek of verschuiving van de grotere sedimentconcentratie in de Zeeschelde waardoor de sedimentbeschikbaarheid vermindert. -->
+
+```{r 130-verschilkaart-TB, fig.cap=caption_verschil_TB, out.width="100%", fig.show="hold"}
+
+caption_verschil_TB <- "Verschilkaart tussen 2019 en 2022 ter hoogte van Temsebrug"
+
+knitr::include_graphics(str_c(pad_figuren, "verschilkaarten/TB.jpg"))
+
+```
+
+<br/>
+
+```{r 130-verschilkaart-WE, fig.cap=caption_verschil_WE, out.width="100%", fig.show="hold"}
+
+caption_verschil_WE <- "Verschilkaart tussen 2019 en 2022 ter hoogte van Temsebrug"
+
+knitr::include_graphics(str_c(pad_figuren, "verschilkaarten/WE.jpg"))
+
+```
+
+<br/>
+
+```{r 130-verschilkaart-PD, fig.cap=caption_verschil_PD, out.width="100%", fig.show="hold"}
+
+caption_verschil_PD <- "Verschilkaart tussen 2019 en 2022 ter hoogte van Temsebrug"
+
+knitr::include_graphics(str_c(pad_figuren, "verschilkaarten/PD.jpg"))
+
+```
+
+<br/>
+
+
 
 ## Referenties
 
