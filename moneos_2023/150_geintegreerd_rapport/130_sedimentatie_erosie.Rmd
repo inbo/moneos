@@ -214,7 +214,7 @@ raaien_trends_schor_ZIJ <-
 ```{r functie voor figuur recente profielen}
 
 get_fig_recent <-
-  function(raai, sectie) {
+  function(raai, sectie, slik = TRUE, schor = TRUE) {
     
     if (sectie == "BEZ") {
       raaien_trends_slik <- raaien_trends_slik_BEZ
@@ -227,11 +227,11 @@ get_fig_recent <-
       raaien_trends_schor <- raaien_trends_schor_ZIJ
     }
     
-    if (raai %in% raaien_trends_slik & raai %in% raaien_trends_schor) {
+    if (slik & raai %in% raaien_trends_slik & schor & raai %in% raaien_trends_schor) {
       caption_fig <- str_c("Profielen voor slik (inclusief schorrand) en schorplateau op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
       fig <- knitr::include_graphics(c(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"),
                                 str_c(pad_figuren, "early_warning/schor_profiel/schor_profiel_EW_", raai,".png")))
-    } else if (raai %in% raaien_trends_slik) {
+    } else if (slik & raai %in% raaien_trends_slik) {
       caption_fig <- str_c("Profielen voor het slik (inclusief schorrand) op raai ", raai, " voor de periode ", laatste_jaar - 5, " - ", laatste_jaar, ".")
       fig <- knitr::include_graphics(str_c(pad_figuren, "early_warning/slik_profiel/slik_profiel_EW_", raai,".png"))
     } else {
@@ -589,8 +589,8 @@ Door de grote variabiliteit in sedimentatie/erosie van meerdere decimeters tusse
 Op het middelhoog slik wordt de sterke sedimentatie in `r laatste_jaar` wel gezien als een duidelijke trendbreuk na de sterk erosieve trend uit vorige jaren.
 
 <!--# Enigszins onverwacht is ook de sterke sedimentatie van GW (Galgenweel)- dit in tegenstelling tot wat we in Waterbus rapport stellen voor deze zone. (eerder ook al dynamische zone - maar sedimentatie blijkt nu toch ook mogelijk niettegenstaande de bus). -->
-<!--# JV: Maar de erosie aan de schorklif blijft behouden. -->
 
+<!--# JV: Maar de erosie aan de schorklif blijft behouden. -->
 
 ```{r 130-figuur-GW-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -609,7 +609,6 @@ Raai HO (Hobookse Polder) vertoonde in de vorige jaren algemeen een eroderende t
 In `r laatste_jaar` is deze trend op het laag en middelhoog slik afgeremd doordat harde lagen meer zijn geëxposeerd en de dunne sliblaag verloren.
 Net onder de ontstane microklif op het laag slik zijn afzettingen van zandig materiaal (met microribbels) terug te vinden (Figuur \@ref(fig:130-foto-HO-slik)).
 Merk op dat raai HO zo goed als geen hoog slik heeft (deel tussen groene en bruine stippellijn) en dat het bestaande hoog slik vooral uit breuksteen bestaat (Figuur \@ref(fig:130-foto-HO-slik)).
-
 
 ```{r 130-figuur-HO-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -845,7 +844,6 @@ res$fig
 
 De sterke sedimentatie en opbolling in het middelhoog slik op raai MK (Mariekerke) (Figuur \@ref(fig:130-figuur-MK-slik)) zet zich verder door in `r laatste_jaar`.
 Laag en hoog slik, daarentegen, blijven relatief stabiel.
-<!--# Hier kan eventueel de figuur MK er bij en dan volgende tekst. 'Deze sterke sedimentatie op MK gaat gepaard met sterke morfologische veranderingen met een erosie van de centrale zandplaat en verschuiving weg van de vaargeul naar de rechteroever. --> <!--# JV: voorgaande snap ik niet. -->
 
 ```{r 130-figuur-MK-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -1012,9 +1010,6 @@ res$fig
 
 <br/>
 
-<!--# ik zou vereenvoudigde figuur schor niet tonen ofwel enkel de meetfiguur Er is al langer een schorklif met wilgen waarbij ze grotendeels omvallen en sedimentatiezones ontstaan-->
-<!--# JV: bovenstaande snap ik niet -->
-
 Raai HEUc (Heusden) (Figuur \@ref(fig:130-figuur-HEUc-slik)) vertoont een trendbreuk naar matige erosie laag op het slik.
 De beboste schorrand vertoont een schorklif die verder uitholt.
 Het schorplateau van de ontpoldering vertoont een trend van lichte sedimentatie, maar de gegevens zijn door de bosrijke omgeving vrij sporadisch (zie ook Figuur \@ref(fig:130-figuur-raaien-ZK)).
@@ -1024,7 +1019,7 @@ Het schorplateau van de ontpoldering vertoont een trend van lichte sedimentatie,
 raai <- "HEUc"
 sectie <- "BOZ"
 
-res <- get_fig_recent(raai, sectie)
+res <- get_fig_recent(raai, sectie, schor = FALSE)
 caption_fig <- res$cap
 res$fig
 
@@ -1051,11 +1046,6 @@ res$fig
 
 ## Durme, Rupel en zijrivieren
 
-<!--# Hier zou ik gewoon zeggen dat er geen trend zijn gebruikt en enkele profielen van durme en hopelijk ook rupel tonen en wat bespreken (old school method) dit is wel héél summier. ofwel meer figuren tonen waarbij je de lineaire trend weglaat en zonder test enkel een kromme kurve toelaat spline, loess. Het is een herstellend systeem na uitbaggering dus werkt de lineaire trend niet zo goed.  -->
-<!--# JV: bovenstaande opmerking ivb met trends snap ik niet. Als dit over schorplateau van DU gaat, gaan andere methodes ook niet helpen. Er zijn gewoon niet genoeg meetpunten (schor is niet breed genoeg) om er iets over te zeggen. De evoluties in de schorrand (>15 m van de dijk, zijn (standaard) meegenomen in de trend van het slik (hoog slik + schorrand)) -->
-
-<!--# In 2023 is enkel DU ingemeten en geen van de MONEOS raaien in de Rupel (laatst in 2021). Die kunnen dan ook niet gerapporteerd worden, en dan is het inderdaad wat summier :). Ik zie het probleem daar niet van.  -->
-
 De vaste MONEOS raaien uit Durme, Rupel en zijrivieren die werden opgemeten zijn weergegeven in Bijlage \@ref(BL1) Figuur \@ref(fig:130-figuur-raaien-BOZ).
 In `r laatste_jaar` werd enkel raai DU (zowel het slik als het schorplateau) ingemeten.
 
@@ -1064,7 +1054,6 @@ In `r laatste_jaar` werd enkel raai DU (zowel het slik als het schorplateau) ing
 Tabel \@ref(tab:130-tabel-trends-ZIJ) geeft de trends in de meest recente jaren (`r laatste_jaar - 5` - `r laatste_jaar - 1`) evenals de trendbreuken in `r laatste_jaar`.
 Deze trends zijn verder gevisualiseerd in Figuur \@ref(fig:130-figuur-trends-slik-ZIJ) voor de slikken.
 Voor het schorplateau van DU waren niet voldoende recente gegevens voorhanden om de trend te berekenen.
-<!-- en Figuur @ref(fig:130-figuur-trends-schor-ZIJ) de voor de schorplateaus. -->
 
 ```{r 130-tabel-trends-ZIJ}
 
@@ -1080,7 +1069,7 @@ tabel_trends_ZIJ %>%
 
 ```
 
-<br/> <br/>
+<br/>
 
 ```{r 130-figuur-trends-slik-ZIJ, fig.cap=caption_trend_slik_ZIJ, out.width="100%"}
 
@@ -1129,34 +1118,34 @@ res$fig
 
 ## Algemene bevindingen
 
-Algemeen kunnen we stellen dat in de omgeving tussen Doel en Lillo de morfodynamiek van de lage slikzone op verschillende plaatsen is gewijzigd met een verlaging ten opzichte van de trend voor DO, GSb, LP (ook ODa maar dit is door de nabijheid van de in- en uitwateringsgeul van de nieuwe ontpoldering Hedwige/Prosper) of verhoging in de binnenbocht LH.
-Ook in de zone rond Antwerpen en Hoboken (GW en HO) treedt meer sedimentatie op met vorming van mesoribbels (zandig sediment).
+Algemeen kunnen we stellen dat in de omgeving tussen Doel en Lillo de morfodynamiek van de lage slikzone op verschillende plaatsen is gewijzigd met sedimentatie in de binnenbocht LH en meer erosie op meerdere plaatsen ten opzichte van de trend uit vorige jaren voor DO, GSb en LP.
+ODa kent ook een plotse sterke erosie in `r laatste_jaar`, maar dit is een gevolg van de nabijheid van de in- en uitwateringsgeul van de nieuwe ontpoldering Hedwige/Prosper.
 
-Daarnaast zijn er opvallend veel aanwijzingen voor trendbreuken in 2022 in hoog en middelhoog slik in de Boven-Zeeschelde met opvallend veel erosie of stagnatie in NOTb, NOTc, BR, PD, GSHb, APc en sedimentatie in WE Ook zien we lokale zoneveranderingen o.a. in TB, GSHb, KRb.
-<!--# JV: wat bedoel je met dit laatste ivm TB, GSHb, KRb? Aan TB is er de sterke ontwikkeling van die zandplaat, maar GSHb en KRb zijn NTMB-oevers die vrij stabiel zijn -->
+Ook in de zone rond Antwerpen en Hoboken (GW en HO) nam de morfodynamiek (zandmobiliteit) toe met grote zandafzetting ter hoogte van de Galgenweel-raai (GW) en zelfs met kleine lokale zandige afzettingen (mesoribbels) in Hoboken (HO) onderaan de slikkliffen.
+Hier verliest het slik wel het grootste deel van het slib waarbij meer harde substraat komt bloot te liggen.
 
-De hoogteverschilkaarten afgeleid van LIDAR en bathymetrische data uit 2022 en 2019 (bron DVW, aMT) tonen ook de sterke morfologische veranderingen in de laatste jaren.
-Stroomafwaarts Temsebrug (TB-raai; Figuur \@ref(fig:130-verschilkaart-TB)) is de vorming van een vloedgeul in het stroomafwaartse deel van de slikplaat waar te nemen (groene wig tussen sterk verhoogde, donkerbruine zandplaatzone en schorgrens).
+Daarnaast zijn er opvallend veel aanwijzingen voor trendbreuken in 2022 in hoog en middelhoog slik in de Boven-Zeeschelde met plotse erosie of stagnatie van de sedimentatie in NOTb, NOTc, BR, PD, GSHb, APc en sterke sedimentatie nabij de Durmemonding in WE.
+
+De hoogteverschilkaarten afgeleid van LIDAR en bathymetrische data uit 2022 en 2019 (bron DVW, aMT) bevestigen de sterke morfologische veranderingen in dit gebied.
+Zo is in het stroomafwaartse deel van de slikplaat bij Temsebrug (nabij de TB-raai; Figuur \@ref(fig:130-verschilkaart-TB)) de vorming van een vloedgeul waar te nemen (groene wig tussen sterk verhoogde, donkerbruine zandplaatzone en schorgrens).
 Deze vloedgeul op de slikplaat bereikt in 2023 de TB-raai.
-Stroomopwaarts vertonen ook andere tidale-fluviale pointbars of binnenbochten met een zandplaat sterke veranderingen zoals WE (Weert) en PD (Plaat van Driegoten).
+
+Stroomopwaarts vertonen ook andere tidale-fluviale pointbars of binnenbochten met een zandplaat, zoals WE (Weert) en PD (Plaat van Driegoten), sterke veranderingen.
 Nabij de WE-raai (Figuur \@ref(fig:130-verschilkaart-WE)) vertoont de zandplaat erosie nabij de laagwaterlijn.
-Er is ook sedimentatie van het hoog slik en erosie van het schor aan de stroomafwaartse kop van het 'Stort van Weert' zichtbaar.
-In 2023 zet dit zich door met een versteiling van de zandplaat.
-Ook rond de PD-raai toont de hoogteverschilkaart 2022-2019 een verkleining van de zandplaat (Figuur \@ref(fig:130-verschilkaart-PD)) aan de laagwaterlijn.
-De sedimentatie van het overige slik tussen 2019 en 2022 is vooral een herstel na een sterke erosie na zandwinning tussen 2018 en 2019.
+Dit gaat gepaard met sedimentatie van het hoog slik en erosie van het schor aan de stroomafwaartse kop van het 'Stort van Weert'.
+In 2023 zet dit zich door met een versteiling van de zandplaat zoals te zien in de WE-raai.
+Ook rond de PD-raai toont de hoogteverschilkaart tussen 2022 en 2019 een verkleining van de zandplaat aan de laagwaterlijn (Figuur \@ref(fig:130-verschilkaart-PD)).
+De sedimentatie van het overige slik tussen 2019 en 2022 is vooral een herstel na zandwinning tussen 2018 en 2019.
+Een vergelijkbare morfologische evolutie is te zien aan de binnenbocht van Mariekerke (Figuur \@ref(fig:130-verschilkaart-MK)) met erosie naar de vaargeul toe en sedimentatie tegen de oever.
+Deze sedimentatie treedt zowel op linkeroever als rechteroever ter hoogte van de ingang van de voormalige ebgeul op de MK-raai.
 
-De sterke en snelle ontwikkelingen met sterke veranderingen in slikprofielvorm van pointbars zoals TB, WE en PD wijst op een toename van de hydro- en mofodynamiek.
-Het ontstaan en verdwijnen van vloedgeulen, snelle zandafzettingen en schorklifvorming wijzen in de richting van toename van hydrodynamiek bij vloed met een verwachte toename van het bodemtransport van zand binnen deze estuariene riviersectie.
-Stroomopwaarts kan erosie onderaan de NTMB-oeverprofielen (GSHb, GBa) ook wijzen op een effect meer stroomopwaarts wijst.
-<!--# JV: Deze zin klopt niet. Wat bedoel je hier? --> Verder onderzoek naar de veranderingen in deze zone en mogelijke impact van huidige rivierbeheermaatregelen is hierbij wenselijk.
-
-<!--# JV: Er is bij de figuren ook een verschilkaart voor MK toegevoegd, maar ik zie die hier niet besproken? -->
-
-<!--# Verdere uitruiming van de Boven-Zeeschelde dient zo veel mogelijk tegengewerkt worden o.a. door verminderen of stoppen van de zandwinning,…Een afvlakking van de sedimentatietrend in gebieden (BR, MK,) waar het globaal steeds sedimenteerde. Dit kan een gevolg zijn van toegenomen hydrodynamiek of verschuiving van de grotere sedimentconcentratie in de Zeeschelde waardoor de sedimentbeschikbaarheid vermindert. -->
+De sterke en snelle ontwikkelingen met sterke veranderingen in slikprofielvorm van pointbars zoals TB, WE en PD wijzen op een plotse verandering in hydro- en morfodynamiek.
+Het ontstaan en verdwijnen van vloedgeulen, snelle zandafzettingen en schorklifvorming wijzen in de richting van toename van hydrodynamiek bij vloed die gepaard gaat met groter bodemtransport van zand dat in de binnenbocht zelfs de slikoevers bereikt.
+Verder onderzoek naar de recente veranderingen in deze zone en mogelijke impact van huidige rivierbeheermaatregelen is hierbij wenselijk.
 
 ```{r 130-verschilkaart-TB, fig.cap=caption_verschil_TB, out.width="100%", fig.show="hold"}
 
-caption_verschil_TB <- "Verschilkaart tussen 2019 en 2022 ter hoogte van Temsebrug"
+caption_verschil_TB <- "Verschilkaart tussen 2019 en 2022 ter hoogte van Temsebrug."
 
 knitr::include_graphics(str_c(pad_figuren, "verschilkaarten/TB.jpg"))
 
@@ -1166,7 +1155,7 @@ knitr::include_graphics(str_c(pad_figuren, "verschilkaarten/TB.jpg"))
 
 ```{r 130-verschilkaart-WE, fig.cap=caption_verschil_WE, out.width="100%", fig.show="hold"}
 
-caption_verschil_WE <- "Verschilkaart tussen 2019 en 2022 ter hoogte van Temsebrug"
+caption_verschil_WE <- "Verschilkaart tussen 2019 en 2022 ter hoogte van Weert."
 
 knitr::include_graphics(str_c(pad_figuren, "verschilkaarten/WE.jpg"))
 
@@ -1176,7 +1165,7 @@ knitr::include_graphics(str_c(pad_figuren, "verschilkaarten/WE.jpg"))
 
 ```{r 130-verschilkaart-PD, fig.cap=caption_verschil_PD, out.width="100%", fig.show="hold"}
 
-caption_verschil_PD <- "Verschilkaart tussen 2019 en 2022 ter hoogte van Temsebrug"
+caption_verschil_PD <- "Verschilkaart tussen 2019 en 2022 ter hoogte van de Plaat van Driegoten."
 
 knitr::include_graphics(str_c(pad_figuren, "verschilkaarten/PD.jpg"))
 
@@ -1184,7 +1173,15 @@ knitr::include_graphics(str_c(pad_figuren, "verschilkaarten/PD.jpg"))
 
 <br/>
 
+```{r 130-verschilkaart-MK, fig.cap=caption_verschil_MK, out.width="100%", fig.show="hold"}
 
+caption_verschil_MK <- "Verschilkaart tussen 2019 en 2022 ter hoogte van Mariekerke."
+
+knitr::include_graphics(str_c(pad_figuren, "verschilkaarten/MK.jpg"))
+
+```
+
+<br/>
 
 ## Referenties
 
