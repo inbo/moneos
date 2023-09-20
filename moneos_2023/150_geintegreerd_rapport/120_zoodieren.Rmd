@@ -76,7 +76,7 @@ Daarom worden de waarnemingen van deze soorten ook opgenomen in de rapportage.
 
 ## Materiaal en methode
 
-Alle vrijgegeven waarnemingen van [waarnemingen.be](http://www.waarnemingen.be/) van otter, bruinvis, gewone zeehond, grijze zeehond en bever tussen 2010 en 2021 werden opgevraagd.
+Alle vrijgegeven waarnemingen van [waarnemingen.be](http://www.waarnemingen.be/) van otter, bruinvis, gewone zeehond, grijze zeehond en bever tussen 2010 en 2022 werden opgevraagd.
 Deze gegevens mogen enkel gebruikt worden voor de geïntegreerde systeemmonitoring van het Schelde-estuarium -- MONEOS.
 Deze gegevens mogen niet worden overgenomen zonder toestemming van de eigenaar (Natuurpunt Studie vzw).\
 
@@ -88,7 +88,7 @@ omdat de zoekinspanning niet gekend is en het meldingsgedrag variabel is.
 De hier behandelde soorten zijn echter meldenswaardige soorten.
 Ruwe trendinschatting zijn met het nodige voorbehoud eventueel wel zinvol (Herremans et al. 2018).\
 
-Data van 2020 en vroeger kunnen verschillen van vorige dataleveringen als gevolg van retroactieve ingave van waarnemingen.
+Data van 2021 en vroeger kunnen verschillen van vorige dataleveringen als gevolg van retroactieve ingave van waarnemingen.
 
 ## Resultaten
 
@@ -163,7 +163,7 @@ knitr::include_graphics(paste0(pad_figuren, "120_fig1_aantal_ind.jpg"))
 
 <br/>
 
-### Overzicht waarnemingen 2021
+### Overzicht waarnemingen 2022
 
 #### Bever
 
@@ -207,7 +207,7 @@ Gerichte opvolging (spraints, cameravallen) in deze omgeving toonde aan dat de s
 Na de vondst van uitwerpselen in Waasmunster in 2019 leidde gericht onderzoek o.a.
 met cameravallen, in de Durmevallei en verder stroomopwaarts langs de Schelde tot veel bijkomende waarnemingen.
 In 2020 waren er in totaal (`r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2020 & str_detect(zoogdier_data$status, "Goed")),])` gevalideerde waarnemingen in `r soort_nUTM1[which(soort_nUTM1$naam_nl == "Europese Otter" & soort_nUTM1$Jaar == 2020),]$n` utm-hokken,  in 2021 `r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2021 & str_detect(zoogdier_data$status, "Goed")),])` waarnemingen in `r soort_nUTM1[which(soort_nUTM1$naam_nl == "Europese Otter" & soort_nUTM1$Jaar == 2021),]$n` utm-hokken en in 2022 `r nrow(zoogdier_data[which(zoogdier_data$naam_nl == "Europese Otter" & year(zoogdier_data$datum) == 2022 & str_detect(zoogdier_data$status, "Goed")),])` waarnemingen in `r soort_nUTM1[which(soort_nUTM1$naam_nl == "Europese Otter" & soort_nUTM1$Jaar == 2022),]$n` utm-hokken.
-Zowel in 2021 als in 2022 zijn de meeste waarneming afkomstig uit de Durmevallei en de omgeving van het Berlare Broe. De otter werd ook in 2022 waargenomen langs de Rupel. Er waren geen meldingen uit de Polders van Kruibeke. Toch was de soort hier, net als voorgaande jaren, aanwezig (mond. mededelingen Koen Van Den Berge, Bram Vereecken).
+Zowel in 2021 als in 2022 zijn de meeste waarneming afkomstig uit de Durmevallei en de omgeving van het Berlare Broek. De otter werd ook in 2022 waargenomen langs de Rupel. Er waren geen meldingen uit de Polders van Kruibeke. Toch was de soort hier, net als voorgaande jaren, aanwezig (mond. mededelingen Koen Van Den Berge, Bram Vereecken).
 
 ```{r figuur6, fig.cap=caption_figuur6, out.width="90%"}
 caption_figuur6 <- "Geografische spreiding van gevalideerde otterwaarnemingen in 2020."
@@ -319,7 +319,7 @@ bruinvis2021 %>%
 ## Discussie
 
 Noch voor gewone zeehond, noch voor grijze zeehond zijn er instandhoudingsdoelstelling voor de Zeeschelde.    
-Gewone zeehond werd in 2022 zoals stteds vooral waargenomen ter hoogte van de grens.
+Gewone zeehond werd in 2022 zoals steeds vooral waargenomen ter hoogte van de grens.
 
 Met vijf waarnemingen blijft de grijze zeehond een zeldzame verschijning.  
 
@@ -338,7 +338,7 @@ Volgens de methode in Huysentruyt *et al.* (2019) stemt dit overeen met `r round
 De doelstelling voor bever zou dus ook in 2022 (nagenoeg) gerealiseerd zijn.\
 
 Voor de otter is dit niet het geval.
-Dat er meerdere exemplaren in twee deelgebieden (ruime omgeving van de Rupelmonding en Durmevallei - Berlare Broek) voorkomen werd bevestigd in 2022. M er zijn aar zeker nog geen 20-25 individuen.
+Dat er meerdere exemplaren in twee deelgebieden (ruime omgeving van de Rupelmonding en Durmevallei - Berlare Broek) voorkomen werd bevestigd in 2022. Maar er zijn zeker nog geen 20-25 individuen.
 
 <br/>
 
