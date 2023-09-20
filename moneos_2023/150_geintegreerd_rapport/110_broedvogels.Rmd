@@ -44,16 +44,16 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
 ```{r 110-meta_data}
 
-meta_data <- 
-  read_delim(paste0(pad_data, "meta_data.csv"),
-             delim = ";")
-  
-for(i in 1:nrow(meta_data)){
-  ##first extract the object value
-  tempobj=meta_data$waarde[i]
-  ##now create a new variable with the original name of the list item
-  eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
-}
+# meta_data <- 
+#   read_delim(paste0(pad_data, "meta_data.csv"),
+#              delim = ";")
+#   
+# for(i in 1:nrow(meta_data)){
+#   ##first extract the object value
+#   tempobj=meta_data$waarde[i]
+#   ##now create a new variable with the original name of the list item
+#   eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+# }
 
 ```
 
@@ -150,7 +150,7 @@ Volgende Sigmagebieden nemen we mee in de analyse (zie Figuur \@ref(fig:110-figu
 -   Polders van Kruibeke: geleidelijke inrichting sinds 2008, GGG Bazel-noord sinds 2015
 -   Zennegat: inrichting afgerond in 2017
 
-Om volledige tijdsreeksen te bekomen voor de Sigmagebieden werd een extrapolatie van de data doorgevoerd.
+Grote Wal kent een tussentijds beheer als wetland en werd niet beschouwd voor deze analyse. Grote vijver zal vanaf volgend jaar in de analyse meegenomen worden. Om volledige tijdsreeksen te bekomen voor de Sigmagebieden werd een extrapolatie van de data doorgevoerd.
 De jaren voorafgaand aan de inrichting kregen de aantallen van de nulmeting (T0) toegekend.
 Gaten in de tijdsreeksen na de inrichting vullen we op d.m.v. een lineair verband (afronding naar boven).
 Indien er geen telgegevens zijn van het laatste rapportagejaar worden deze gelijk gesteld aan deze van het laatste getelde jaar.
@@ -161,34 +161,28 @@ Figuur \@ref(fig:110-figuur2) toont de data met uitzondering van de vijf algemen
 Deze figuur toont de trends van de soorten binnen de gebieden met instandhoudingsdoelstellingen in het Schelde-estuarium.
 Hoewel geen gebiedsdekkende kartering mogelijk is, wordt aangenomen dat het aantal territoria voor deze soorten een redelijk accuraat beeld geeft van de reële aantallen.
 
-Verscheidene soorten komen tot 2021 nog steeds zelden tot broeden in het IHD-gebied Schelde-estuarium (grote karekiet, kwak, kwartelkoning, roerdomp en paapje) of werden nog nooit vastgesteld als broedvogel (purperreiger).
+Verscheidene soorten komen tot 2022 nog steeds zelden tot broeden in het IHD-gebied Schelde-estuarium (grote karekiet, kwak, kwartelkoning, roerdomp en paapje) of werden nog nooit vastgesteld als broedvogel (purperreiger).
 Van deze soorten worden geen trends besproken.
-Grote karekiet bereikte in 2021 met 4 territoria wel een record.
-Deze soort dook een eerste keer op in 2012.
-Tussen 2012 en 2020 broedde de soort niet jaarlijks en werden nooit meer dan 2 territoria vastgesteld.
+Grote karekiet lijkt zich wel te gaan vestigen als regelmatige broedvogel met opnieuw 2 territoria in 2022.
 
 Lepelaar behoorde tot 2020 ook tot bovenstaande categorie, maar ondertussen lijkt de soort zich te vestigen als broedvogel in het IHD-gebied.
-Na een schuchtere poging tot nestbouw in de Wijmeers (Wichelen) in 2016 en twee nesten in het Broek De Naeyer (Willebroek) in 2020 werden in 2021 10 nesten gevonden in de Durmevallei (Waasmunster) en 4 in het Noordelijk gebied (Beveren).
+Na een schuchtere poging tot nestbouw in de Wijmeers (Wichelen) in 2016 en twee nesten in het Broek De Naeyer (Willebroek) in 2020 werden in 2021 10 nesten gevonden in de Durmevallei (Waasmunster) en 4 in het Noordelijk gebied (Beveren). In 2022 werden 7 nesten geteld in de Durmevallei.
 
 Van de jaarlijks broedende soorten komt een aanzienlijk deel van de populatie van grutto, snor, woudaap en zomertaling voor buiten de haven.
 Voor de andere soorten (baardman, bruine kiekendief, kluut, tureluur) is het Noordelijk gebied van het Antwerpse havengebied op linkeroever veruit het belangrijkste broedgebied.
 Baardman broedt zelden stroomopwaarts Antwerpen.
-In 2021 werd voor het eerst een broedgeval vastgesteld in het Zennegat (Mechelen).
+In 2021 en opnieuw in 2022 werden voor het eerst een broedgevallen vastgesteld in het Zennegat (Mechelen).
 
 Baardman, woudaap en snor vertonen de laatste jaren een stijgende trend in de vallei van de Zeeschelde en haar tijgebonden zijrivieren (NOP-zone).\
-Het aantal territoria baardman varieert tussen 15 in 2013 en 39 in 2021 met een uitschieter van 56 in 2018.
+Het aantal territoria baardman was met 72 territoria het hoogste sinds de start van de meting, de IHD doelstelling komt in de buurt (100 territioria).
 
 Tussen 2003 en 2010 werden jaarlijks 1 tot 4 territoria snor vastgesteld, bijna uitsluitend in het Noordelijk gebied in de Antwerpse haven.
 Tussen 2010 en 2020 schommelden de aantallen tussen 4 en 10, waarbij de soort ook opdook stroomopwaarts Antwerpen.
-Met 13 territoria wordt in 2021 het record gebroken.
-Opvallend is dat de soort in 2021 niet meer broedt in het Noordelijk gebied.
-De 13 territroia zijn verspreid over de hele Scheldevallei (van Berlare tot Antwerpen), de Durmevallei (Lokeren, Waasmunster), de Rupelvallei (Mechelen) en de vallei van de Kleine Nete (Zandhove).
+Sinds 2021 komen er meer dan 10 territoria voor in het IHD-gebied maar opvallend is dat de soort sinds 2021 niet meer broedt in het Noordelijk gebied.
 De populatie is echter nog ver verwijderd van de tot doel gestelde populatie (100 broedparen), waardoor de stijging op \@ref(fig:110-figuur2) weinig opvalt.
 
 Ook het aantal woudaapterritoria neemt de laatste jaren toe.
-Tussen 1995 en 2013 broedde de soort niet jaarlijks met maximaal 2 territoria.
-In de periode 2014 - 2020 schommelde het aantal territoria tussen 3 en 7.
-In 2021 werden 9 territoria vastgesteld, waarvan 4 in de Durmevallei.
+In 2022 werd een recordaantal van 13 territoria vastgesteld, waarvan 4 in de Durmevallei en 4 in Grote Wal.
 
 De aantallen grutto vertonen een maximum tussen 2012 en 2015 met ca.
 60 territoria.
@@ -196,65 +190,43 @@ Sinds 2017 lijken de aantallen te dalen.
 Deze daling speelde zich aanvankelijk uitsluitend af in het Noordelijk gebied , van ca.
 30 territoria in de periode 2010 - 2012 naar minder dan 10 territoria vanaf 2018, terwijl de aantallen stroomopwaarts in een ruim gebied gebied rond de Kalkense Meersen stabiel bleven.
 Na 2018 dalen de aantallen ook daar van ca.
-40 - 45 naar 33 in 2021, terwijl in het Noordelijk gebied een voorzichtige stijging lijkt op te treden naar 14 territoria.
+40 - 45 naar 28 in 2022, terwijl in het Noordelijk gebied een voorzichtige stijging lijkt op te treden naar 17 territoria.
 
 De hoogste aantallen kluut werden vastgesteld in de periode tussen 2012 en 2017 (bijna 200 territoria).
 In 2018 en 2019 kende de soort een stevige dip (resp. 10 en 45 territoria).
-Na het nemen van uitgebreide beschermingsmaatregelen tegen grondpredatoren in het Noordelijk gebied (vossenrasters) stijgen de aantallen opnieuw tot 150 territoria in 2021.
-Het overgrote deel van de kluten (\> 85%) broedt nu opnieuw in natuurgebieden in de haven (Noordelijk gebied en Potpolder Lillo).
-Verder broedt kluut in kleine aantallen in de Polders van Kruibeke, het Noordelijk eiland en de Paardeweide.
+Na het nemen van uitgebreide beschermingsmaatregelen tegen grondpredatoren in het Noordelijk gebied (vossenrasters) stijgen de aantallen opnieuw tot rond de 150 territoria sinds 2020.
+Het overgrote deel van de kluten (\> 85%) broedt nu opnieuw in natuurgebieden in de haven (Noordelijk gebied, Potpolder Lillo en Antwerpen rechteroever).
+Verder broedt kluut in kleine aantallen met wisselend succes in de Polders van Kruibeke, het Noordelijk eiland en de Paardeweide.
 
-De aantallen zomertaling stijgen na 2007 wat te verklaren is door de stapsgewijze inrichting van (estuariene) gebieden van het Sigmaplan.
+De aantallen zomertaling stijgen na 2007 wat te verklaren is door de stapsgewijze inrichting van (estuariene) gebieden van het Sigmaplan. In 2022 wordt voor het eerst sinds 2002 het IHD-doel bereikt.
 In de eerste jaren na inrichting van overstromingsgebieden met gecontroleerd gereduceerd getij en ontpolderingen verschijnen zomertalingen.
 Tengevolge van de vegetatiesuccessie (verruiging) nemen de aantallen nadien terug af.
-Bemoedigend is dat zomertaling in 2020 en 2021 ook in enkele niet-estuariene gebieden aanwezig was (Molsbroek, Paardeweide-oost en Noordelijk eiland).
-De op stapel staande inrichtingen van niet-estuariene moerasgebieden van het Sigmaplan zijn noodzakelijk om de doelen voor zomertaling duurzaam te realiseren.
-Opvallend is de afwezigheid van zomertaling in het Noordelijk gebied in 2021, voor het eerst sinds 2013.
+De laatste jaren nemen de aantallen echter ook duidelijk toe in niet-estuariene gebieden (Molsbroek, Paardeweide-oost, Grote Wal, Beneden Nete en Noordelijk eiland).
 
 De tureluurpopulatie kende tussen 2005 en 2010-2012 een toename tot ca.
 50 territoria, het merendeel in het Noordelijk gebied.
 Daarna boerde de populatie achteruit tot minder dan 30 territoria in de periode 2017 - 2020, als gevolg van een stijgende predatiedruk.
 De beschermingsmaatregelen die op de linkerscheldeoever worden genomen tegen grondpredatoren werpen in 2021 hun vruchten af, het aantal territoria steeg opnieuw naar 40.
-Met 9 territoria bruine kiekendief, het hoogste aantal sinds 2011, was 2021 opnieuw een goed jaar.
-Net als in 2020 werden in 2021 vijf territoria gevonden in het Galgeschoor.
+Met 9 territoria bruine kiekendief bleef in 2022 het aantal territoria op peil. Het Galgenschoor is met 6 territoria wel een bastion voor deze soort.
 
-Het aantal territoria van porseleinhoen kent een erratisch verloop dat sterk afhangt van de weersomstandigheden in het voorjaar.
-In 2021 werden 3 territoria vastgesteld.
+Het aantal territoria van porseleinhoen kent een erratisch verloop, sterk onder de doelstelling, dat sterk afhangt van de weersomstandigheden in het voorjaar.
+In 2022 werden 0 territoria vastgesteld.
 
 Figuur \@ref(fig:110-figuur3) toont de evolutie van zes algemene soorten in frequent getelde ingerichte Sigmagebieden.
 
-Rietzanger zet de stijgende trend van de laatste jaren overtuigend verder.
-In de onderzochte Sigmagebieden stroomopwaarts Antwerpen neemt de soort sterk toe, terwijl de aantallen in het Noordelijk gebied afnamen ten opzichte van 2020.
-In de beperkte set van onderzochte natuurgebieden tellen we in 2021 meer dan dubbel zoveel territoria dan het tot doel gesteld aantal voor de hele Scheldevallei (IHD = 170).
-In 2021 telden we 333 blauwborstterritoria een daling met 10% t.o.v. 2021, maar ongeveer even veel als in 2019.
-Het aantal territoria blijft dus dubbel zo hoog als in de periode 2005 - 2010 (130 - 160).
-In de onderzochte gebieden broedde in 2020 dus bijna `r round(333/5.5, digits = -1)` % van de tot doel gestelde populatie (IHD = 550).
-Het doel wordt voor deze soort dus quasi zeker bereikt.
+De sterk stijgende trend van de Rietzanger lijkt in 2022 af te vlakken.
+In de beperkte set van onderzochte natuurgebieden tellen we in 2022 meer dan dubbel zoveel territoria dan het tot doel gesteld aantal voor de hele Scheldevallei (IHD = 170). Ook voor de blauwborst komt al een hoog percentage `r round(335/5.5, digits = -1)` % voor in deze kleine subset van gebieden. Voor deze soort is ook het doel (IHD = 550) gehaald.
 
-Dit geldt wellicht ook voor dodaars, alhoewel die de laatste jaren wat achteruitgaat in de onderzochte gebieden.
-Met 35 territoria daalde het het aantal voor het eerst sinds 2014 onder 40.
-Dit wordt vooral veroorzaakt door lage aantallen in het Noordelijk gebied in 2021.
-Gezien de natte omstandigheden in het voorjaar, zeker in vergelijking met de droge lentes in de periode2017 - 2020, is dit verwonderlijk.
-Dodaars houdt zich namelijk graag op in ondiepe en dus veelal tijdelijke plassen.
-Momenteel vullen de onderzochte gebieden toch nog `r round(35/0.5, digits = -1)` % van de doelstelling in (IHD = 50).
-Dit betekent dat ook voor deze soort het doel wellicht wordt bereikt.
+Dit geldt ook voor dodaars, alhoewel die de laatste jaren wat achteruitgaat in de onderzochte gebieden. Wetende dat er al 28 territoria geteld werden in 2022 in Grote Wal is het doel bereikt. De inrichting van Grote Wal betreft momenteel een tussentijds beheer als wetland. De achteruitgang in de subset is vooral veroorzaakt door lage aantallen in het Noordelijk gebied.
 
-Slobeend kende een sterke toename in de haven in de periode 2010 - 2015 naar 15 - 30 territoria.
-De laatste jaren daalde het aantal territoria er tot een 10-tal.
-In 2021 waren het er 9.
-In de Sigmagebieden stelden we in de periode 2005 - 2013 ca.
-20 broedparen vast.
-Vanaf 2014 schommelde het aantal rond de 30 (28 - 36).
-In 2020 telden we er slechts 24 en in 2021 slechts 23.
-Droogte in het voorjaar kan voor 2021 niet als reden worden ingeroepen.
-Met 32 territoria wordt in de onderzochte gebieden `r round(32/1.50, 0)` % van de doelstelling gerealiseerd (IHD = 150).
-Het doel voor deze soort in de Scheldevallei wordt wellicht niet bereikt.
+Slobeend kende een sterke toename in de haven in de periode 2010 - 2015 30 territoria.
+De laatste jaren daalde het aantal territoria er tot een 10-tal. Ook in de lijst van Sigmagebieden daalde het aantal, maar in Grote Wal kwamen 19 territoria voor. De som van alle gekende territoria is ruim onder het doel.
+Het doel voor deze soort (IHD = 150) in de Scheldevallei wordt dus wellicht niet bereikt.
 
 Zomertaling verscheen in het Noordelijk gebied in 2008, in de Sigma-gebieden broedt de soort sinds 2011.
 In 2021 was de soort voor het eerst sinds 2013 afwezig.
-In de Sigmagebieden worden de laatste vier jaren telkens 6 territoria gevonden.
-De onderzochte gebieden herbergden in 2021 `r 6/0.2` % van de tot doel gestelde aantallen.
-Wellicht wordt de doelstelling in de Scheldvallei niet gerealiseerd.
+In de lijst van Sigmagebieden worden de laatste vier jaren telkens 6 territoria gevonden.
+
 
 Scholekster broedt tegenwoordig vooral op akkers in het landbouwgebied.
 In de natuurontwikkelingsgebieden van het Sigmaplan komt maar een klein aantal scholeksters tot broeden.
