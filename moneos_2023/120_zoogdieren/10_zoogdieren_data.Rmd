@@ -1,0 +1,208 @@
+---
+params:
+  hoofdstuk: "120_zoogdieren"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "MONEOS zoogdieren data"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+options(knitr.kable.NA = '')
+```
+
+```{r libraries}
+
+library(tidyverse)
+library(rprojroot)
+library(readxl)
+library(lubridate)
+library(kableExtra)
+
+```
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+```{r data}
+pad_data
+zoogdier_data <- 
+  read_excel(path = 
+               paste0(pad_data,
+                      "INBODATAVR-332_divers_wbe_SelectieUTM1_DumpTem20230521.xlsx"))
+```
+
+# Soorten in aangeleverde data
+
+In de dataset zitten waarnemingen van 5 soorten en één verzamelsoort (zeehond onbekend).
+
+```{r soorten}
+zoogdier_data %>% 
+  group_by(Soort = naam_nl) %>% 
+  summarise() %>% 
+  kbl() %>% 
+  kable_styling(full_width = FALSE, position = "left")
+```
+
+# Jaren in aangeleverde data
+
+De dataset bevat alle waarnemingen uit de periode 2010- 2022.
+
+```{r jaren}
+zoogdier_data %>% 
+  group_by(Jaar = year(datum)) %>% 
+  summarise()%>% 
+  kbl() %>% 
+  kable_styling(full_width = FALSE, position = "left")
+```
+
+# Gedrag in aangeleverde data
+
+Tot 2017 of 2018 werden waarnemingen van sporen (ook) als gedrag ingegeven. Vanaf 2019 gebeurt dit niet meer. Meerderheid van waarnemingen heeft gedrag "ter plaatse", dit is de default in de mobiele app.
+
+```{r gedrag}
+zoogdier_data %>% 
+  count(gedrag) %>% 
+  knitr::kable() %>% 
+  kable_styling(full_width = FALSE, position = "left")
+```
+
+```{r gedrag per jaar}
+zoogdier_data %>% 
+  count(gedrag, Jaar = year(datum)) %>% 
+  spread(key = Jaar, value = n) %>% 
+  knitr::kable() %>% 
+  kable_styling()
+```
+
+# Methode in aangeleverde data
+
+Tot 2017 werd waarnemingsmethode in de overgrote meerderheid van de waarneming niet vermeld (NA). Andere waarnemingsmethodes werden amper ingevuld. Vanaf 2017 neemt het aandeel van waarnemingen waarbij de waarnemingsmethode is gespecificeerd toe. De categorie "onbekend" blijft wel een aanzienlijk aandeel innemen.
+
+```{r methode}
+zoogdier_data %>% 
+  count(methode) %>% 
+  knitr::kable() %>% 
+  kable_styling(full_width = FALSE, position = "left")
+```
+
+```{r methode per jaar}
+zoogdier_data %>% 
+  count(methode, Jaar = year(datum)) %>% 
+  spread(key = Jaar, value = n) %>% 
+  knitr::kable() %>% 
+  kable_styling()
+```
+
+# Combinatie gedrag - methode
+
+
+Analyse is niet makkelijk voor bever. Combinatie gedrag - methode is niet echt logisch voor deze soort. Bv. de categorie gedrag "(nabij) nest/burcht" kan zowel de aanwezigheid van een burcht betekenen als een zichtwaarneming van een induvidu bij de burcht. Bij gedrag bestaat een categorie bezet nest en bij methode bestaat een categorie "verlaten nest". Wij gebruiken het als zichtwaarnemingen indien methode niet aangegevens wordt dat het om sporen of een burcht gaat (zie 20_zoogdieren_analyse.Rmd). 
+
+```{r gedrag-methode}
+zoogdier_data %>% 
+  count(gedrag, methode) %>% 
+  knitr::kable() %>% 
+  kable_styling(full_width = FALSE, position = "left")
+```
+
+```{r gedrag-methode-bever}
+zoogdier_data %>% 
+  filter(str_detect(naam_nl, "Bever")) %>% 
+  count(gedrag, methode) %>% 
+  knitr::kable() %>% 
+  kable_styling(full_width = FALSE, position = "left")
+zoogdier_data %>% 
+  filter(str_detect(naam_nl, "Bever"),
+         (gedrag == "overige" & is.na(methode))|
+          (gedrag == "ter plaatse" & is.na(methode))|
+           (gedrag == "ter plaatse" & methode == "onbekend")
+         ) %>% 
+  count(gedrag, methode, jaar = year(datum)) %>% 
+  knitr::kable() %>% 
+  kable_styling(full_width = FALSE, position = "left")
+```
+
+Er zijn 221 waarnemingen van bever zonder specificatie (combinaties (gedrag = "overige" en methode = na), (gedrag = "ter plaatse" en methode = na) op een totaal van `r nrow(zoogdier_data[,2] == "Europese Bever")` waarnemingen. Gedrag = "ter plaatse" is de standaard instelling in ObsMap. Dit kan dus betekenen da het dier ter plaatse bleef maar ook dat het veld gedrag door de waarnemer niet werd ingevuld. Na 2017 komt de combinatie gedrag = "ter plaatse" en methode = na niet meer voor omdat een waarde voor methode moest worden ingevoerd, de standaardwaarde is vanaf toen "onbekend".
+
+```{r gedrag-methode per jaar}
+zoogdier_data %>% 
+  count(gedrag, methode, Jaar = year(datum)) %>% 
+  spread(key = Jaar, value = n) %>% 
+  knitr::kable() %>% 
+  kable_styling()
+```
+
+<br/>
+
+# Status
+
+De meeste waarnemingen zijn op één of andere wijze gevalideerd (`r round(sum(str_detect(zoogdier_data$status, "Goed"))/count(zoogdier_data)*100, 0)` %).\
+`r round(sum(zoogdier_data$status == "Onbehandeld")/count(zoogdier_data)*100, 0)` % van waarnemingen zijn niet gevalideerd, `r round(sum(str_detect(zoogdier_data$status, "Niet"))/count(zoogdier_data)*100, 0)` % van de waarnemingen zijn gecategoriseerd als "Niet te beoordelen".
+
+Als we dit per soort bekeken valt op dat voor bever, otter (en bruinvis) een groot deel van de waarnemingen gevalideerd zijn. Voor gewone en grijze zeehond en 'zeehond onbekend' is (sinds 2016) een aanzienlijk deel van de waarnemingen onbehandeld. Gebrek aan goed bewijsmateriaal van deze laatste soorten is een mogelijke reden hiervoor, maar ook mindere aandacht van de personen die moeten valideren is een mogelijke reden, zeker gezien ook bij 'zeehond onbekend' het overgrote deel van de waarnemingen onbehandeld is.
+<br/>
+
+```{r status}
+zoogdier_data %>% 
+  count(status) %>% 
+  knitr::kable(caption = "Validatiestatus van de waarnemingen (totaal aantal in de dataset).") %>% 
+  kable_styling(full_width = FALSE, position = "left")
+```
+<br/>
+
+```{r}
+zoogdier_data %>% 
+  count(status, Jaar = year(datum)) %>% 
+  spread(key = Jaar, value = n) %>% 
+  knitr::kable(caption = "Validatiestatus van de waarnemingen (totaal aantal per jaar).") %>% 
+  kable_styling(position = "left")
+```
+<br/>
+
+
+```{r}
+zoogdier_data %>% 
+  mutate(status2 = case_when(str_detect(status, "Goedg") ~ "Goedgekeurd",
+                             TRUE ~ status)) %>% 
+  count(status2, naam_nl, Jaar = year(datum)) %>% 
+  ggplot(aes(x = Jaar, y = n, color = status2)) +
+  geom_point() +
+  labs(x ="", y = "Aantal") +
+  scale_x_continuous(breaks = seq(2010, 2025, by = 5),
+                     minor_breaks = seq(2010, 2025, by = 1)) +
+  scale_y_continuous(label = ~ scales::comma(.x, accuracy = 1)) +
+  scale_color_manual(values = c("green", "red", "grey")) +
+  facet_wrap(facets = ~naam_nl, scales = "free") 
+```
+<br/>
+<br/>
+<br/>
+
+data gecreëerd op `r Sys.time()`
+
+data weggeschreven naar `r paste0(pad_data, "template_data.csv")`
+
+```{r wegschrijven-data}
+
+zoogdier_data %>% 
+  write_csv(paste0(pad_data, "zoogdier_data_2010_2022.csv"))
+
+```

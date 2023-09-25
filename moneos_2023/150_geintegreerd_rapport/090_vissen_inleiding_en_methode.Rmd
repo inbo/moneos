@@ -1,0 +1,313 @@
+```{r 090-hoofdstuk, include=FALSE}
+
+hoofdstuk <- "090_vissen"
+
+```
+
+```{r 090-setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.pos = "H")
+knitr::opts_knit$set(eval.after = "fig.cap")
+
+```
+
+```{r 090-libraries}
+
+library(tidyverse)
+library(readxl)
+library(kableExtra)
+library(rprojroot) ## workaround pad
+
+conflicted::conflicts_prefer(dplyr::filter)
+
+```
+
+```{r 090-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+
+```
+
+```{r 090-table_from_figure-function}
+figtab <- 
+  function(label, image_file, caption=NULL) {
+    txt <- sprintf('\\begin{table}[H]\n\\caption{%s}\n\\label{tab:%s}\n\\includegraphics{%s}\n\\end{table}', 
+                   caption, 
+                   label, 
+                   image_file)
+    magick::image_read(image_file) %>% magick::image_ggplot() %>% print()
+    writeLines(txt)
+  }
+```
+
+```{r 090-meta-data}
+
+laatste_jaar <- 2022 
+
+soortenlijst <- 
+  read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"), 
+            sheet = "EMSE") %>% 
+  select(-inEMSE, -exoot, -opmerking)
+
+aantal_soorten <-
+  nrow(soortenlijst)
+
+aantal_soorten_fuiken <-
+  soortenlijst %>% 
+  filter(!is.na(fuiken)) %>% 
+  nrow()
+
+aantal_soorten_ankerkuil <-
+  soortenlijst %>% 
+  filter(!is.na(ankerkuil)) %>% 
+  nrow()
+
+aantal_soorten_beide <-
+  soortenlijst %>% 
+  filter(!is.na(fuiken) & !is.na(ankerkuil)) %>% 
+  nrow()
+
+aantal_soorten_enkel_fuiken <-
+  aantal_soorten_fuiken - aantal_soorten_beide
+
+aantal_soorten_enkel_ankerkuil <-
+  aantal_soorten_ankerkuil - aantal_soorten_beide
+
+# meta_data <- 
+#   read_delim(paste0(pad_data, "vissen_meta_data.csv"),
+#              delim = ";")
+#   
+# for(i in 1:nrow(meta_data)){
+#   ##first extract the object value
+#   tempobj=meta_data$waarde[i]
+#   ##now create a new variable with the original name of the list item
+#   eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+# }
+
+```
+
+# Vissen
+
+Fichenummer: FICHE S-DS-V-004a -- Vissen (KRW)
+
+**Joost Vanoverbeke, Erika Van den Bergh, Gunther Van Ryckegem**
+
+## Inleiding
+
+De meeste vissen hebben een complexe levenscyclus.
+Gedurende hun leven doorlopen ze verschillende niveaus in het voedselweb en bevolken ze diverse ecologische niches.
+Estuaria zijn voedselrijk en door de diversiteit aan habitats voorzien ze voedsel en leefruimte voor veel jonge en adulte vissen (Baldoa & Drake, 2002).
+Voor veel vissoorten vervullen ze verschillende functies naargelang het levensstadium.
+Sommige soorten gebruiken estuaria als paaihabitat (Able, 2005; Van Der Meulen et al., 2013).
+De kinderkamerfunctie voor jonge vis werd uitgebreid toegelicht door Elliott & Hemingway (2002).
+Maes et al. (2007, 2008) en Stevens et al. (2009) gaan dieper in op de functie van estuaria als doorgangszone voor trekvissen.
+
+Het bestuderen van de visfauna in de Zeeschelde is belangrijk om de invulling van deze functies te begrijpen en om de ecologische lange termijn ontwikkelingen in het gebied op te volgen.
+De Zeeschelde verzamelt een belangrijk deel van de bovenstroomse vuilvrachten.
+Opvolging van de visstand in de Zeeschelde weerspiegelt dus ook de kwaliteit van de bovenstroomse gebieden.
+De Europese Kaderrichtlijn Water (KRW, 2000/60/EG) verplicht om iedere zes jaar de ecologische toestand van oppervlaktewaterlichamen te rapporteren op basis van enkele bio-indicatoren waaronder de visgemeenschap.
+De KRW rapportage gebeurt op basis van de daartoe speciaal ontworpen visindices (Breine et al, 2007; 2010).
+In deze MONEOS rapportage wordt de Evaluatie Methodiek Schelde Estuarium (EMSE, 2021) toegepast.
+
+De visgemeenschap in de Zeeschelde wordt jaarlijks opgevolgd met dubbele schietfuiken en met ankerkuilvisserij (Tabel \@ref(tab:090-tabel-visinspanning)), niet alleen omwille van de dynamiek van het systeem maar ook om het ecosysteem herstel te evalueren na jarenlange plaatselijke en tijdelijke zuurstofloze condities (Maris et al., 2011).
+Zesjaarlijkse afvissingen, het absolute minimum voor de KRW, geven te grote lacunes om dit herstelproces te documenteren.
+Om seizoenale patronen te documenteren vissen we in de lente, zomer en herfst.
+
+Ankerkuilvisserij geeft een goed beeld van de visgemeenschap in de waterkolom, fuikvisserij bemonstert eerder nabij de bodem.
+De resultaten van beide vangstmethoden verstrekken complementaire informatie over de kraamkamerfunctie en rekrutering van de visgemeenschappen in het estuarium doorheen het jaar en in de verschillende saliniteitszones.
+Algemeen worden meer soorten gevangen met de ankerkuil.
+De resultaten van de fuikvangsten leveren echter een hogere Shannon diversiteit (Breine & Van den Bergh, 2022).
+De resultaten van het reguliere INBO meetnet worden aangevuld met extra informatie uit de resultaten van een vrijwilligersmeetnet (hier niet gerapporteerd).
+Schietfuiken worden in alle EMSE Scheldezones niveau 3 uitgezet.
+Aanvankelijk werd ook op de zijrivieren jaarlijks gevist maar sinds 2012 werd dit verminderd naar driejaarlijks omdat de totale inspanning te groot werd en omdat de ecosysteem evaluatie vooral op de Zeeschelde zelf gericht is.
+Ankerkuilvisserij kan enkel uitgevoerd worden in de Zeeschelde tot in de zoete zone met lange verblijftijd omdat de geul verder stroomopwaarts daarvoor te nauw wordt.
+
+INBO fuikvangst- en ankerkuilgegevens zijn beschikbaar via de V.I.S. databank ([https://vis2.inbo.be/](https://vis2.inbo.be/#home)) (Brosens et al., 2015).
+Vrijwilligersdata worden afzonderlijk opgeslagen.
+
+In de huidige rapportage worden ankerkuil data en fuikgegevens van de Zeeschelde besproken.
+Gegevens van de zijrivieren worden later verwerkt en gerapporteerd.
+Ankerkuildata en fuikdata van het reguliere Zeeschelde meetnet worden aangeleverd als xlsx-bestanden aan de Scheldemonitor.
+
+```{r 090-tabel-visinspanning, results="asis", fig.show='hide', out.width="100%"}
+caption_tab <- "Historisch overzicht van de visinspanning  met schietfuiken (groen) en ankerkuil (blauw) in de verschillende zones van de Zeeschelde."
+img_file <- paste0(pad_figuren, "visinspanningINBO.jpg")
+figtab(knitr::opts_current$get()$label, 
+       img_file,
+       caption_tab)
+```
+
+## Materiaal en Methode
+
+### Ankerkuil
+
+De ankerkuilen zijn geïnstalleerd op een platbodemschip, 'De Harder' met registratienummer BOU25, eigendom van het visserijbedrijf Bout-Van Dijke.
+De ankerkuil bestaat uit twee 8 meter brede stalen balken waarvan de onderste tot op de bodem wordt neergelaten en de bovenste tot net op of boven de waterlijn.
+De uiteinden van de balken zijn verbonden met het scheepsanker waarmee het vaartuig voor anker ligt.
+Tussen de balken is over de volledige breedte (8 m) een net of kuil met een maaswijdte van 20 mm gespannen.
+Het doorstromende water houdt het net open.
+De periode van het getij waarin gevist kan worden, is meestal van één uur na tot één uur voor de kentering van het getij, afhankelijk van de stroming die voldoende sterk moet zijn.
+Op iedere locatie wordt één keer bij eb en één keer bij vloed gevist met één net aan bakboord en één net aan stuurboord.
+De netten worden gelijktijdig aan stuurboord en bakboord neergelaten.
+Het eerste net wordt meestal na een uur leeggemaakt en het tweede net na twee uur.
+Zo kunnen twee vangsten per getijfase gemaakt worden en wordt het risico op misvangst beperkt.
+De vangst wordt aan boord verwerkt.
+
+Eenmaal de vangst op het dek is gestort, halen we er onmiddellijk de minder algemene soorten en grote individuen uit.
+Deze worden geïdentificeerd, geteld, gemeten en gewogen.
+Van de zeer algemene soorten nemen we een deelmonster door 'voortgezette halvering', een gebruikelijk verdeelsysteem in de visserij.
+Op die manier houden we een hanteerbaar, representatief aandeel over.
+Vervolgens worden alle vissen in het deelstaal op soort geïdentificeerd, geteld, gemeten en gewogen.
+Alle gevangen vissen worden na wegen en meten terug gezet in de Zeeschelde.
+
+Het bemonsterde watervolume wordt berekend met behulp van een mechanische stroomsnelheidsmeter met propeller die voor de duur van de vangst te water wordt gelaten.
+De gemiddelde hoogte van de waterkolom, die met de duur van het getij verandert, wordt vermenigvuldigd met de kuilbreedte (8m) en de door de stroomsnelheidsmeter gepasseerde waterstroom.
+
+Aantallen en biomassa worden omgerekend naar aantallen en biomassa per m\textsuperscript{3} volume afgevist water.
+
+In de periode 2012-`r laatste_jaar` werd jaarlijks gevist in de lente (eind april of begin mei), de zomer (juli) en in het najaar (september).
+In 2020 werd uitzonderlijk enkel in de zomer en het najaar gevist.
+Er wordt telkens op vier locaties bemonsterd: Doel, Antwerpen, Steendorp en Branst (Figuur \@ref(fig:090-figuur-locaties-ankerkuil)).
+Doel en Antwerpen bevinden zich in de EMSE niveau 3 scheldezone met sterke saliniteitsgradiënt, Steendorp bevindt zich in de oligohaliene zone en Branst in de zoetwater zone met lange verblijftijd.
+De Lambert coördinaten van de locaties zijn: Doel: 143350; 223091, Antwerpen: 149192; 210267, Steendorp: 142898; 200951 en Branst: 137181; 195683.
+
+```{r 090-figuur-locaties-ankerkuil, fig.cap=cap_locaties_ankerkuil, out.width="100%"}
+
+cap_locaties_ankerkuil <- 
+  "De met ankerkuil bemonsterde locaties in het Zeeschelde estuarium sinds 2012."
+
+knitr::include_graphics(paste0(pad_figuren, "locaties_ankerkuil.jpg"))
+
+```
+
+<br/>
+
+### Fuikvisserij
+
+Voor de fuikvangsten worden dubbele schietfuiken gebruikt.
+Een schietfuik bestaat uit twee fuiken van 7,7 m lengte, waartussen een net van 11 m gespannen is.
+Dat net is bovenaan voorzien van vlotters.
+Onderaan bevindt zich een loodlijn.
+Vissen die tegen het overlangse net zwemmen, worden naar één van de fuiken geleid.
+De twee fuiken (type 120/90) zijn opgebouwd uit een reeks hoepels waarrond een net (maaswijdte 1 cm) bevestigd is.
+Aan de ingang van de fuik staat de grootste hoepel (hoogte 90 cm).
+Deze is onderaan afgeplat (120 cm breed) zodat de hele fuik recht blijft staan.
+Naar achter toe worden de hoepels kleiner.
+Aan het uiteinde is de maaswijdte 8 mm.
+In de fuik bevinden zich een aantal trechtervormige netten waarvan het smalle uiteinde naar achter is bevestigd.
+Eenmaal de vissen een trechter gepasseerd zijn, kunnen ze niet meer terug.
+Om de vissen uit de fuik te halen wordt deze helemaal achteraan geopend en leeggemaakt.
+
+De bemonsterde locaties in de periode 2009-2022 zijn weergegeven in Figuur \@ref(fig:090-figuur-locaties-fuiken).
+Vanaf het najaar van 2015 werd de locatie Zandvliet niet meer bemonsterd maar vervangen door het Paardenschor als nieuwe locatie in de mesohaliene zone (Figuur 2).
+Bij de bespreking van de resultaten wordt Zandvliet niet expliciet vermeld maar wordt er verwezen naar Paardenschor.
+De Lambert coördinaten van de locaties zijn: Zandvliet: 139864; 228413, Paardenschor: 142882; 225713, Antwerpen: 150050; 210800, Steendorp: 142520; 201050, Kastel: 137450; 193480, Appels: 128997; 193213 en Overbeke: 114823; 188235.
+
+Bij iedere campagne (voorjaar (mrt-apr), zomer (juni-augustus) en najaar (sept-okt)) werden per locatie twee dubbele schietfuiken geplaatst op de laagwaterlijn.
+Tot en met 2021 stonden de fuiken 48 uur op locatie en werden ze om de 24 uur leeggemaakt.
+De gevangen vissen worden ter plaatse geïdentificeerd, geteld, gemeten, gewogen en vervolgens teruggezet.
+Het aantal individuen en de biomassa gevangen met fuiken worden omgerekend naar aantallen en biomassa per fuikdag.
+Deze getransformeerde data worden gebruikt in de verdere analyse.
+Om de totale visinspanning op de Zeeschelde te rationaliseren staan de fuiken sinds 2022 slechts 24 u op locatie en worden ze maar één keer leeggemaakt.
+De gemiddelde aantallen en biomassa per fuikdag zullen hierdoor weinig veranderen maar de tweede fuikdag voegde in het verleden gemiddeld 2 extra soorten toe (berekening op basis van 144 campagnes).
+Deze strategiewijziging zal dus een sprong in de tijdreeks voor soortenrijkdom veroorzaken.
+
+```{r 090-figuur-locaties-fuiken, fig.cap=cap_locaties_fuiken, out.width="100%"}
+
+cap_locaties_fuiken <- 
+  "De met fuiken bemonsterde locaties in het regulier meetnet in het Zeeschelde estuarium sinds 2009."
+
+knitr::include_graphics(paste0(pad_figuren, "locaties_fuiken_historisch.jpg"))
+
+```
+
+<br/>
+
+### EMSE evaluatie
+
+De resultaten van ankerkuil- en fuikvangsten worden gerapporteerd volgens EMSE (Evaluatie Methodiek Schelde Estuarium; EMSE 2021).
+De waargenomen soorten worden onderverdeeld in zogenaamde functionele groepen op basis van estuarien habitatgebruik en dieetvoorkeur.
+
+De indeling qua habitatgebruik is als volgt:
+
+-   Estuariene soorten en mariene migranten. Estuariene soorten brengen hun hele levenscyclus in het estuarium door. Mariene migranten (juvenielen, seizoensgasten, dwaalgasten) kunnen hun levenscyclus op zee vervolledigen maar ze komen de gunstiger condities in het estuarium opzoeken vb. om op te groeien.
+-   Diadrome soorten moeten zich tussen zoet- en zoutwater verplaatsen om zich voort te planten en zo hun levenscyclus te vervolledigen.
+-   Zoetwatersoorten die ook in het estuarium hun levenscyclus kunnen vervolledigen.
+
+De indeling qua dieetvoorkeur is als volgt:
+
+-   Benthivoor
+-   Piscivoor
+-   Omnivoor
+-   Planktivoor
+
+De functionele groep omnivore estuariene soorten en mariene migranten is niet opgenomen in de EMSE indeling (zie EMSE 2021).
+Omdat van deze groep, althans volgens de EMSE dieetvoorkeur per soort, toch redelijke aantallen voorkomen in de Zeeschelde wordt deze echter wel opgenomen in de MONEOS rapportage.
+Sommige combinaties van habitatgebruik en dieetvoorkeur komen niet voor in de data.
+Om een overzichtelijke vaste structuur te behouden worden ze wel telkens mee opgenomen in de figuren.
+
+Een overzicht van soorten die sinds 2012 in de Zeeschelde werden gevangen, met aanduiding van EMSE habitatgebruik en dieetvoorkeur wordt gegeven in Tabel \@ref(tab:093-tabel-zeeschelde-soorten) in bijlage.
+Er werden in die periode `r aantal_soorten` soorten gevangen waarvan `r aantal_soorten_beide` soorten in zowel ankerkuil als fuiken, `r aantal_soorten_enkel_ankerkuil` soorten enkel met de ankerkuil en `r aantal_soorten_enkel_fuiken` soorten enkel met de dubbele schietfuiken.
+
+Voor elk van de EMSE functionele groepen worden per jaar en per vangstmethode het totaal aantal gevangen individuen en de totale biomassa per vangsteenheid (1000m³ bemonsterd water voor ankerkuil, 1 fuikdag voor fuikvangsten) alsook het aantal soorten en de Shannon diversiteit gerapporteerd.
+Dit per scheldezone (EMSE niveau 3) en gemiddeld over de bemonsterde seizoenen (voorjaar, zomer, najaar).
+
+De Shannon diversiteit *D* wordt berekend als:
+
+$$
+D = exp \left( -\sum^S_i p_i ln (p_i) \right)
+$$
+
+waarbij *S* het aantal gevangen soorten in de functionele groep is en *p~i~* de relatieve abundantie van soort *i*.
+*D* neemt een waarde aan tussen 1 en *S*, afhankelijk van de gelijkheid (evenness) in abundantie van de soorten.
+Indien *D* = *S* hebben alle soorten in de groep een gelijke abundantie.
+
+Naast de algemene trends per functionele groep wordt er ook gekeken naar de trends van een aantal sleutelsoorten.
+Deze soorten zijn zo geselecteerd dat ze een goede vertegenwoordiging geven van de verschillende saliniteits- en dieetvoorkeuren (zie bijlage Tabel \@ref(tab:093-tabel-zeeschelde-soorten)) en zijn belangrijke indicatoren voor het ecologisch functioneren van het systeem.
+Daarnaast zijn ook de europees beschermde soorten opgenomen in de sleutelsoortenlijst.
+
+
+### Bepalen van de visindex
+
+De gegevens van de fuikvangsten in de Zeeschelde worden gebruikt om de visindex per KRW waterlichaam te berekenen volgens de zone-specifieke estuariene index voor biotische integriteit (Breine et al., 2010).
+De Index wordt berekend op basis van de jaargegevens en is zodoende robuuster dan de brakwater index die gebaseerd is op dagvangsten (Breine et al., 2007).
+De index score per waterlichaam integreert de beoordeling van een aantal metrieken, wordt vertaald naar een ecologische kwaliteitsratio (EQR) tussen 0 en 1 en ondergebracht in één van de ecologische kwaliteitsklassen, variërend van 'slecht' over 'onvoldoende', 'matig', 'goed ecologisch potentieel' (GEP) tot 'maximaal ecologisch potentieel' (MEP).
+Elke gebruikte metriek staat voor een bepaalde functie van het ecosysteem voor de visgemeenschap.
+De betekenis van de gebruikte metrieken is weergegeven in Tabel \@ref(tab:090-tabel-metrieken-visindex).
+Voor elke metriek wordt een score bepaald in functie van een vastgelegde referentietoestand.
+In elke saliniteitszone gelden andere metrieken en grenswaarden (Breine et al., 2010).
+
+
+```{r 090-tabel-metrieken-visindex}
+
+tabel_metrieken <-
+  read_excel(paste0(maak_pad(hoofdstuk, "tabellen"), "visindexreeks.xlsx"),
+             sheet = "toelichting metrieken",
+             col_names = FALSE)
+
+cap_metrieken <-
+  "Toelichting van de metrieken gebruikt in de visindex."
+
+tabel_metrieken %>% 
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
+  mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
+  knitr::kable(booktabs = TRUE,
+               caption = cap_metrieken,
+               col.names = NULL,
+               escape = FALSE) %>%
+  kable_styling("striped",
+                latex_options = c("striped"))
+
+```
+
+<br/>
+
