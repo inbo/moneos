@@ -1,0 +1,112 @@
+---
+params:
+  hoofdstuk: "130_sedimentatie_erosie"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "tabel vaste MONEOS raaien"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(janitor)
+library(readxl)
+library(writexl)
+library(INBOtheme)
+library(rprojroot)
+
+library(DBI)
+
+conflicted::conflicts_prefer(dplyr::filter)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r ophalen tabel uit databank}
+
+conn <- 
+  dbConnect(odbc::odbc(),
+            Driver = "Microsoft Access Driver (*.mdb, *.accdb)",
+            DBQ = str_c("Z:/", "Topografie/slikschorprofiel/Databank/SlikSchorProfiel_data"))
+
+tbl_vaste_raaien <- 
+  tbl(conn, "cdeRaai") %>% 
+  filter(Campagne == "MONEOS") %>% 
+  select(REEKSCODE, Gebied, afstand_grens = `Afstand tot de BNLgrens`, X = Xcoordin, Y = Ycoordin, Salzone, Omes, Rivier, periodiciteit = `slik/schorrand`) %>% 
+  collect() %>%
+  clean_names() %>% 
+  rename(X = x, Y = y, OMES = omes, `afstand grens` = afstand_grens)
+  
+dbDisconnect(conn)
+
+tbl_vaste_raaien <- 
+  tbl_vaste_raaien %>% 
+  mutate(`afstand grens` =
+           case_when(
+             rivier == "Durme" ~ `afstand grens` + 50.75,
+             rivier == "Rupel" ~ `afstand grens` + 39.9,
+             TRUE ~ `afstand grens`
+           ))
+
+```
+
+
+```{r}
+
+# tbl_vaste_raaien <-
+#   read_xlsx(path = str_c(pad_tabellen, "tbl_vaste_raaien_MONEOS.xlsx"))
+
+tbl_vaste_raaien <-
+  tbl_vaste_raaien %>% 
+  mutate(rivier = 
+           case_when(
+             OMES %in% 9:13 ~ "Beneden Zeeschelde",
+             !(OMES %in% 9:13) & rivier == "Zeeschelde" ~ "Boven Zeeschelde",
+             TRUE ~ rivier 
+           ),
+         rivier = 
+           case_when(
+             rivier == "Zijrivieren" ~ gebied,
+             TRUE ~ rivier
+           ),
+         OMES = factor(OMES, levels = c(9:19, "19  trGM", "Durme", "Rupel", ""))) %>% 
+  arrange(OMES, rivier, `afstand grens`)
+
+```
+
+
+```{r wegschrijven gegevens}
+
+tbl_vaste_raaien %>% 
+  write_xlsx(path = str_c(pad_tabellen, "tbl_vaste_raaien_MONEOS.xlsx"))
+
+```
+
