@@ -1,0 +1,140 @@
+
+\mainmatter
+
+
+```{r 010-hoofdstuk, include=FALSE}
+
+hoofdstuk <- "010_inleiding"
+
+```
+
+```{r 010-setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+knitr::opts_knit$set(eval.after = "fig.cap")
+
+```
+
+```{r 010-libraries}
+
+library(tidyverse)
+library(readxl)
+library(kableExtra)
+library(rprojroot) ## workaround pad
+```
+
+```{r 010-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+
+```
+
+ 
+# Inleiding
+
+MONEOS (= MONitoring Effecten OntwikkelingsSchets 2010) (Meire & Maris, 2008) zorgt voor de aanlevering van basisdata voor de evaluatierapporten over de effecten van de verruiming (MT) en voor de evaluatie van de evolutie van het systeem (EMSE, 2021).
+De voorliggende datarapportage omvat een toelichting en eerstelijnsanalyse van de onderdelen van de geïntegreerde systeemmonitoring van het Schelde-estuarium, kortweg MONEOS, uitgevoerd door het INBO in 2021 en/of 2022 afhankelijk van het thema.
+
+Het onderzoeksteam Estuaria van het INBO staat, voor wat de Zeeschelde betreft, reeds geruime tijd in voor de monitoring van diverse onderdelen die vallen onder de hoofdstukken Morfodynamiek, Diversiteit soorten en Diversiteit Habitats.
+Het onderzoeksteam Monitoring en herstel Aquatische fauna van het INBO staat in voor de vismonitoring.
+
+Het INBO levert data aan voor volgende thema's en indicatoren:
+
+Thema Leefomgeving
+
+-   Overzicht Estuariene Natuurontwikkelingsprojecten
+-   Sedimentkenmerken
+-   Geomorfologie, Fysiotopen, Ecotopen
+-   Vegetatiekartering
+-   Sedimentatie en erosie op punten en raaien
+
+Thema diversiteit soorten en thema Ecologisch Functioneren
+
+-   Hogere planten
+-   Macrozoöbenthos
+-   Hyperbenthos
+-   Vissen
+-   Watervogels
+-   Broedvogels
+-   Zoogdieren
+
+De aangeleverde data omvatten enkel gegevens van de Zeeschelde en getijgebonden zijrivieren.
+Tenzij anders vermeld kunnen ze gebruikt worden tot op niveau 3 van de Evaluatiemethodiek wat overeenkomt met de saliniteitszones aangevuld met de getijdenzijrivieren (Durme, Netes, Dijle, Zenne en Nete (Tabel \@ref(tab:010-tabel-indeling-schelde-estuarium).
+Deze indeling valt samen met de indeling in waterlichamen van de Kaderrichtlijn Water (KRW) (Figuur \@ref(fig:010-figuur-waterlichamen)).
+
+Bij elk hoofdstuk is er een verwijzing naar de datafiches waarin de metadata beschreven zijn.
+Zie hiervoor op ([https://rshiny.scheldemonitor.org/datafiches/)](https://rshiny.scheldemonitor.org/datafiches/)).
+
+Deze INBO MONEOS data is ook de basis voor de ecologische toestandsbepaling van de Zeeschelde in het kader van de Kaderrichtlijn Water ((KRW) hydromorfology, macrozoöbenthos, vis en macrofyten) en voor de vaststelling van staat van Instandhouding en de evaluatie van de Instandhoudingsdoelstellingen van de relevante Natura 2000 gebieden.
+
+```{r 010-tabel-indeling-schelde-estuarium}
+
+tabel_indeling_schelde_estuarium <- read_excel(paste0(pad_tabellen, "010_Inleiding_tabellen.xlsx"),
+    sheet = "indeling-schelde-estuarium2", .name_repair = "minimal") %>%
+  mutate_all(~replace_na(., "")) %>% 
+  select(-`Model-eenheid`)
+
+cap_indeling_schelde_estuarium <- "Ruimtelijke indeling van het Schelde-estuarium volgens de Evaluatie methodiek (EM), KRW en saliniteitszones."
+
+footnote_text <- "n.v.t. : Deel van Zeeschelde niet beschouwd in Evaluatiemethodiek. Zou onderdeel kunnen worden van Z7. Ook wordt het traject Tijarm Merelbeke-Zwijnaarde (getijde Zeeschelde) niet gerekend tot Zeeschelde I in de KRW indeling. Dit zou beter wel deel worden van deze zone."
+
+tabel_indeling_schelde_estuarium %>%
+  mutate_all(~replace_na(., "")) %>% 
+  mutate_all(~cell_spec(., color = "black")) %>% 
+  {.[nrow(.)-1,c(1,2,3)] <- map(.[nrow(.)-1,c(1,2,3)],
+                                ~paste0(.x, footnote_marker_symbol(1)))
+  .} %>%
+  {.[nrow(.),c(1,2,3,5)] <- map(.[nrow(.),c(1,2,3,5)],
+                                ~paste0(.x, footnote_marker_symbol(1)))
+  .} %>%
+  knitr::kable(# "latex",
+    escape = FALSE,
+    booktabs = T,
+    caption = cap_indeling_schelde_estuarium) %>%
+  kable_styling(latex_options = c("scale_down"),
+                font_size = 15) %>%
+  # column_spec(1:3,width = "1in") %>%
+  collapse_rows(columns = 1:6, latex_hline = "full", valign = "middle") %>%
+  footnote(symbol = footnote_text,
+           # %>%
+             # cell_spec(color = "black"),
+           escape = FALSE,
+           threeparttable = TRUE)
+
+```
+
+<br/>
+
+\newpage
+
+```{=tex}
+\begin{landscape}
+```
+```{r 010-figuur-waterlichamen, fig.cap = "Overzicht van de deelzones (niveau 3) en de estuariene Sigmagebieden."}
+
+knitr::include_graphics(paste0(pad_figuren, "010_kaart_gebiedsindeling.png"))
+```
+
+```{=tex}
+\end{landscape}
+```
+\newpage
+
+## Referenties
+
+EMSE (2021).
+Evaluatiemethodiek Schelde-estuarium: Update 2021.
+Antea, Bureau Waardenburg, Deltares, UAntwerpen, UGent, INBO en NIOZ.
+
+Meire, P., and T.
+Maris.
+(2008).
+MONEOS: Geïntegreerde monitoring van het Schelde-estuarium.
