@@ -1,0 +1,239 @@
+---
+params:
+  hoofdstuk: "090_vissen"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "visdata ankerkuil controle EMSE"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, cache = FALSE)
+
+```
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+library(forcats)
+library(readxl)
+
+library(inbodb)
+
+library(rprojroot) ## workaround pad
+
+```
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r data}
+
+filename <- 
+  list.files(path = pad_data,
+             pattern = "ankerkuil_Zeeschelde_VLIZ")
+
+ankerkuil_aantal <- 
+  read_xlsx(str_c(pad_data, filename),
+            sheet = "campagnes") %>% 
+  select(ID_afvissing, locatie, datum, jaar, seizoen, uren, volume) %>% 
+  left_join(read_xlsx(str_c(pad_data, filename),
+                      sheet = "locaties") %>% 
+              select(locatie, OMES, EMSE_niveau3)) %>% 
+  left_join(read_xlsx(str_c(pad_data, filename),
+                      sheet = "aantallen")) %>% 
+  select(-ID_afvissing) %>% 
+  select(locatie, OMES, EMSE_niveau3, datum, jaar, seizoen, everything())
+
+
+soorten <- 
+  read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"))
+
+ankerkuil_aantal_long <-
+  ankerkuil_aantal %>%
+  pivot_longer(cols = -(locatie:volume),
+               names_to = "soort",
+               values_to = "aantal") %>%
+  filter(!str_detect(soort, "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat")) %>%
+  group_by(soort) %>% 
+  mutate(anyN = any(aantal > 0)) %>% 
+  ungroup() %>% 
+  filter(anyN) %>% 
+  left_join(soorten)
+
+```
+
+
+#### controle EMSE
+
+```{r EMSE}
+
+nieuwe_soorten <-
+  ankerkuil_aantal_long %>% 
+  filter(is.na(ankerkuil)) %>% 
+  distinct(soort, fuiken, ankerkuil)
+
+voorkomen <-
+  ankerkuil_aantal_long %>% 
+  group_by(jaar, seizoen, locatie, soort, inEMSE) %>%
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(soort, inEMSE) %>%
+  summarise(`N>0` = sum(aantal > 0, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(`N>0` > 0) %>%
+  arrange(`N>0`, soort)
+  
+soorten <- 
+  soorten %>% 
+  left_join(voorkomen %>% 
+              select(soort, `N>0`))
+
+```
+
+
+```{r figuren vergelijking EMSE}
+
+ankerkuil_aantal_long %>%
+  group_by(jaar, seizoen, locatie, soort, inEMSE) %>%
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(soort, inEMSE) %>%
+  summarise(`N>0` = sum(aantal > 0, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(`N>0` > 0) %>%
+  arrange(`N>0`, soort) %>%
+  ggplot(aes(fct_inorder(soort), `N>0`+0.1, fill = inEMSE)) +
+  geom_col() +
+  scale_y_log10() +
+  labs(x = "soort",
+       y = "aantal afvissingen waarbij N>0") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+aantal_long %>%
+  group_by(soort, inEMSE) %>%
+  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
+  mutate(N_crit = any(aantal > 1)) %>%
+  ungroup() %>%
+  # filter(N_crit) %>%
+  group_by(soort, inEMSE) %>%
+  summarise(aantal = mean(aantal/uren, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(aantal > 0) %>%
+  arrange(aantal, soort) %>%
+  ggplot(aes(fct_inorder(soort), aantal, fill = inEMSE)) +
+  geom_col() +
+  scale_y_log10() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+aantal_long %>%
+  group_by(soort, inEMSE) %>%
+  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
+  mutate(N_crit = any(aantal > 1)) %>%
+  ungroup() %>%
+  filter(N_crit) %>%
+  group_by(soort, inEMSE) %>%
+  summarise(aantal = mean(aantal/uren, na.rm = TRUE)) %>%
+  ungroup() %>%
+  # filter(aantal >= 0.1) %>%
+  arrange(aantal, soort) %>%
+  ggplot(aes(fct_inorder(soort), aantal, fill = inEMSE)) +
+  geom_col() +
+  scale_y_log10() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+aantal_long %>%
+  group_by(soort, inEMSE) %>%
+  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
+  mutate(N_crit = any(aantal > 1)) %>%
+  ungroup() %>%
+  filter(N_crit) %>%
+  group_by(soort, inEMSE, jaar) %>%
+  summarise(aantal = mean(aantal/uren, na.rm = TRUE)) %>%
+  ungroup() %>%
+  # filter(aantal >= 0.1) %>%
+  arrange(aantal, soort) %>%
+  ggplot(aes(fct_inorder(soort), aantal, fill = inEMSE)) +
+  geom_col() +
+  scale_y_log10() +
+  facet_wrap("jaar", ncol = 1) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+
+gewicht_long %>%
+  group_by(soort, inEMSE) %>%
+  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
+  mutate(N_crit = any(gewicht > 1)) %>%
+  ungroup() %>%
+  # filter(N_crit) %>%
+  group_by(soort, inEMSE) %>%
+  summarise(gewicht = mean(gewicht/uren, na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(gewicht > 0) %>%
+  arrange(gewicht, soort) %>%
+  ggplot(aes(fct_inorder(soort), gewicht, fill = inEMSE)) +
+  geom_col() +
+  scale_y_log10() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+gewicht_long %>%
+  group_by(soort, inEMSE) %>%
+  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
+  mutate(N_crit = any(gewicht > 1)) %>%
+  ungroup() %>%
+  filter(N_crit) %>%
+  group_by(soort, inEMSE) %>%
+  summarise(gewicht = mean(gewicht/uren, na.rm = TRUE)) %>%
+  ungroup() %>%
+  # filter(gewicht >= 0.1) %>%
+  arrange(gewicht, soort) %>%
+  ggplot(aes(fct_inorder(soort), gewicht, fill = inEMSE)) +
+  geom_col() +
+  scale_y_log10() +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+gewicht_long %>%
+  group_by(soort, inEMSE) %>%
+  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
+  mutate(N_crit = any(gewicht > 1)) %>%
+  ungroup() %>%
+  filter(N_crit) %>%
+  group_by(soort, inEMSE, jaar) %>%
+  summarise(gewicht = mean(gewicht/uren, na.rm = TRUE)) %>%
+  ungroup() %>%
+  # filter(gewicht >= 0.1) %>%
+  arrange(gewicht, soort) %>%
+  ggplot(aes(fct_inorder(soort), gewicht, fill = inEMSE)) +
+  geom_col() +
+  scale_y_log10() +
+  facet_wrap("jaar", ncol = 1) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+
+```
+
