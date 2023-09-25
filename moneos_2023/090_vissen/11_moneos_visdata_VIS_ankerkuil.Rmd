@@ -1,0 +1,292 @@
+---
+params:
+  hoofdstuk: "090_vissen"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
+                          )})
+
+title: "visdata fuiken"
+output:
+  bookdown::word_document2: default
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(tidyjson)
+library(lubridate)
+library(readxl)
+library(writexl)
+library(inbodb)
+
+library(rprojroot) ## workaround pad
+
+```
+
+
+```{r, pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+run_pad <- function() {
+  
+  source(find_root_file("../pad.R", criterion = is_rstudio_project))
+  
+  pad_data <- maak_pad(params$hoofdstuk, "data")
+  pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+  pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+  
+  # print(ls())
+  
+  sapply(ls(), function(x) assign(x, get(x), .GlobalEnv))
+  
+}
+
+run_pad()
+
+```
+
+
+```{r, variabelen}
+
+run_variabelen <- 
+  function() {
+
+    jaren <- 2022
+    vangstmethode <- c('Ankerkuil', 'Ankerkuil-vloed', 'Ankerkuil-eb')
+    
+    # Zeeschelde vissen
+    locaties_name <- "ankerkuil_Zeeschelde_locaties"
+    metadata_name <- "ankerkuil_Zeeschelde_metadata"
+    filename <- "ankerkuil_Zeeschelde"
+    
+    # zijrivieren vissen
+    # locaties_name <- "fuikvangsten_zijrivieren_locaties"
+    # metadata_name <- "fuikvangsten_zijrivieren_metadata"
+    # filename <- "fuikdata_zijrivieren"
+    
+    locaties <-
+      read_xlsx(str_c(pad_data, "metadata VLIZ/", locaties_name, ".xlsx"))
+    locatie_nrs <- locaties$locatiecode %>% as.character()
+    locatie_namen <- locaties$locatie
+
+    # print(ls())
+
+    sapply(ls(), function(x) assign(x, get(x), .GlobalEnv))
+    
+  }
+
+run_variabelen()
+
+```
+
+
+```{r connectie met databank}
+
+VIS2 <- connect_inbo_dbase("D0147_00_Vis2")
+VIS <- connect_inbo_dbase("W0001_00_Vis")
+
+```
+
+
+```{r bevragen databank}
+
+FactMeting_Pivot <- 
+    tbl(VIS, "FactMeting_Pivot")
+DimWaarneming <- 
+    tbl(VIS, "DimWaarneming")
+DimGebied <- 
+    tbl(VIS, "DimGebied")
+DimGebiedInfo <- 
+    tbl(VIS, "DimGebiedInfo")
+DimTaxon <- 
+    tbl(VIS, "DimTaxon")
+DimVisindexTaxon <- 
+    tbl(VIS, "DimVisindexTaxon")
+DimMethode <- 
+    tbl(VIS, "DimMethode")
+DimDate <- 
+    tbl(VIS, "DimDate")
+
+
+# Vispunten <- 
+#     tbl(VIS2, "Vispunten")
+# VHAVispunten <- 
+#     tbl(VIS2, "VHAVispunten")
+AbiotischeMeting <- 
+    tbl(VIS2, "AbiotischeMeting")
+Waarneming <- 
+    tbl(VIS2, "Waarneming")
+Methode <- 
+    tbl(VIS2, "Methode")
+Meting <-
+    tbl(VIS2, "Meting")
+
+# informatie ivm met berekening en eenheid voor catch per unit effort zijn te vinden in VIS2 tabel 'Methode' (en 'MethodeCpueParameter')
+  
+
+tbl_campagnes <-
+  DimWaarneming %>% 
+  inner_join(DimGebied, 
+             by = "GebiedKey") %>% 
+  inner_join(DimDate, by = c("BeginDatumKey" = "DateKey")) %>% 
+  inner_join(DimMethode, by = "MethodeKey") %>% 
+  filter(Year %in% jaren,
+         Gebiedcode %in% locatie_nrs,
+         Methodenaam %in% vangstmethode) %>% 
+  select(WaarnemingKey, WaarnemingID, GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, Begindatum, Month, Year, MethodeKey, Methodenaam, Methodegroepcode)
+
+
+tbl_data <-
+  FactMeting_Pivot %>% 
+  right_join(DimWaarneming %>% 
+               inner_join(DimGebied, 
+                          by = "GebiedKey") %>% 
+               inner_join(DimDate, by = c("BeginDatumKey" = "DateKey")),
+             by = "WaarnemingKey") %>% 
+  inner_join(DimTaxon %>% 
+               left_join(DimVisindexTaxon %>% select(TaxonKey, Exoot)), 
+             by = "TaxonKey") %>% 
+  inner_join(DimMethode, by = "MethodeKey") %>% 
+  select(MetingPivotKey, WaarnemingKey, MetingID, WaarnemingID, GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, Begindatum, Month, Year, MethodeKey, Methodenaam, Methodegroepcode, TaxonKey, Soort, Exoot, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN, TEMPERATUUR, ZUURSTOF, TURBIDITEIT, CONDUCTIVITEIT, PH) %>% 
+  filter(Year %in% jaren,
+         Gebiedcode %in% locatie_nrs,
+         Methodenaam %in% vangstmethode)
+
+(gebied_codes <-
+  tbl_data %>% 
+  distinct(Gebiedcode) %>% 
+  collect() %>% 
+  pull())
+
+waarneming_IDs <- 
+  tbl_data %>% 
+  distinct(WaarnemingID) %>% 
+  collect() %>% 
+  pull()
+
+meting_IDs <- 
+  tbl_data %>% 
+  distinct(MetingID) %>% 
+  collect() %>% 
+  pull()
+
+tbl_abiotiek <- 
+  AbiotischeMeting %>% 
+  select(ABME_WRNG_ID, ABME_ZUURSTOF, ABME_ZUURSTOFPROCENT, ABME_TEMPERATUUR, ABME_PH, ABME_CONDUCTIVITEIT, ABME_TURBIDITEIT, ABME_SALINITEIT_PRM) %>% 
+  filter(ABME_WRNG_ID %in% waarneming_IDs)
+
+tbl_volume <- 
+  Waarneming %>% 
+  select(WRNG_ID, WRNG_WGST_CDE, WRNG_METH_CDE, WRNG_OCR, WRNG_CPUE_PARAMETERS) %>% 
+  filter(WRNG_ID %in% waarneming_IDs)
+
+tbl_verdunning <-
+  Meting %>% 
+  select(METI_ID, METI_WRNG_ID, METI_DILUTION_FACTOR) %>% 
+  filter(METI_ID %in% meting_IDs)
+
+volume <-
+  tbl_volume %>% 
+  collect() %>% 
+  bind_cols(., .$WRNG_CPUE_PARAMETERS %>% 
+              spread_all() %>% 
+              select(AantalUrenStuurboord, AantalUrenBakboord, AfgevistVolumeStuurboord, AfgevistVolumeBakboord) %>%
+              as_tibble()) %>% 
+  replace_na(list(AantalUrenStuurboord = 0, AantalUrenBakboord = 0,
+                  AfgevistVolumeStuurboord = 0, AfgevistVolumeBakboord = 0)) %>% 
+  mutate(uren = AantalUrenStuurboord + AantalUrenBakboord,
+         volume = AfgevistVolumeStuurboord + AfgevistVolumeBakboord)
+
+
+data <-
+  tbl_data %>% 
+  collect() %>% 
+  # left_join(tbl_locatie_gegevens %>% collect(), by = c("Gebiedcode" = "VIP_CDE")) %>% 
+  left_join(volume %>% select(WRNG_ID, uren, volume), by = c("WaarnemingID" = "WRNG_ID")) %>% 
+  left_join(tbl_verdunning %>% collect(), by = c("MetingID" = "METI_ID", "WaarnemingID" = "METI_WRNG_ID")) %>% 
+  left_join(tbl_abiotiek %>% collect(), by = c("WaarnemingID" = "ABME_WRNG_ID"))
+
+campagnes <-
+  tbl_campagnes %>% 
+  collect() %>% 
+  # left_join(tbl_locatie_gegevens %>% collect(), by = c("Gebiedcode" = "VIP_CDE")) %>% 
+  left_join(volume %>% select(WRNG_ID, uren, volume), by = c("WaarnemingID" = "WRNG_ID")) %>% 
+  left_join(tbl_abiotiek %>% collect(), by = c("WaarnemingID" = "ABME_WRNG_ID"))
+
+```
+
+
+```{r sluiten databank}
+
+dbDisconnect(VIS)
+dbDisconnect(VIS2)
+
+```
+
+
+```{r hervariabel, ref.label=c('pad', 'variabelen')}
+
+rm(list = ls()[-which(ls() %in% c("data", "campagnes", "params", "run_pad", "run_variabelen"))])
+
+run_pad()
+run_variabelen()
+
+```
+
+
+```{r controle dubbel gewicht in ruwe data}
+
+dubbel_gewicht <-
+  data %>% 
+  filter(!is.na(TAXONGEW) & !is.na(TAXONTOTGEW))
+
+```
+
+
+```{r opslaan ruwe data ankerkuil}
+
+write_xlsx(list(campagnes = campagnes,
+                data = data),
+           path = str_c(pad_data, filename, "_ruw_VIS_", str_c(unique(range(jaren)), collapse = "_"), ".xlsx"))
+
+```
+
+
+```{r check campagnes, eval=FALSE}
+
+campagnes <- 
+  read_xlsx(sheet = "campagnes",
+            path = str_c(pad_data, filename, "_ruw_VIS_", str_c(unique(range(jaren)), collapse = "_"), ".xlsx"))
+
+data <- 
+  read_xlsx(sheet = "data",
+            path = str_c(pad_data, filename, "_ruw_VIS_", str_c(unique(range(jaren)), collapse = "_"), ".xlsx"))
+
+campagnes_dstnct <-
+  campagnes %>% 
+  distinct(Gebiedcode, Gebiednaam, Begindatum, Month, Year, Methodenaam)
+
+campagnes_dstnct2 <-
+  data %>% 
+  distinct(Gebiedcode, Gebiednaam, Begindatum, Month, Year, Methodenaam)
+
+campagnes_dstnct %>% 
+  distinct(Gebiedcode, Gebiednaam)
+
+```
+
