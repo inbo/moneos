@@ -1,0 +1,407 @@
+---
+params:
+  hoofdstuk: "130_sedimentatie_erosie"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "figuren historiek MONEOS raaien"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(readxl)
+library(INBOtheme)
+library(rprojroot)
+
+conflicted::conflicts_prefer(dplyr::filter)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r data}
+
+dpi <- 150
+
+jaar <- 2023
+campagne <- "C2022"
+
+tabel_raaien_vast <- 
+  read_excel(paste0(pad_tabellen, "tbl_vaste_raaien_MONEOS.xlsx")) %>% 
+  mutate_all(~replace_na(., "")) %>% 
+  mutate(OMES = factor(OMES, levels = c(9:19, "19  trGM", "Durme", "Rupel", ""))) %>% 
+  mutate(rivier = 
+           case_when(
+             rivier == "Zijrivieren" ~ gebied,
+             TRUE ~ rivier
+           ),
+         sal_kort = 
+           case_when(
+             salzone == "Mesohalien" ~ "MH",
+             salzone == "Zone grote saliniteitsgradiënt" ~ "SG",
+             salzone == "Oligohalien" ~ "OH",
+             salzone == "Zoet lange verblijftijd" ~ "ZL",
+             salzone == "Zoet korte verblijftijd" ~ "ZK",
+             salzone == "Durme" ~ "DU",
+             salzone == "Rupel" ~ "RU",
+             rivier == "Dijle" ~ "DL",
+             rivier == "Nete" ~ "NE",
+             rivier == "Zenne" ~ "ZN"
+           ),
+         raai_sal = str_c(reekscode, " (", sal_kort, ")")) %>%
+  arrange(OMES, rivier, `afstand grens`)
+
+data_MONEOS <- 
+  read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_2023.xlsx"),
+            sheet = "TOPOdata_MONEOSRAAIEN_INBO")
+data_NA <-
+  read_xlsx(path = str_c(pad_data, "toevoeging_NA_grafieken_2023.xlsx"))
+
+raai_campagne <- 
+  data_MONEOS %>% 
+  distinct(MeetCampagneJaar, Salzone, Omes, DATUM, REEKSCODE, Campagne)
+
+data_NA <-
+  data_NA %>% 
+  left_join(raai_campagne) %>% 
+  drop_na()
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  bind_rows(data_NA)
+ 
+year_colors <-
+  tibble(Year = unique(year(data_MONEOS$DATUM))) %>% 
+  arrange(Year) %>% 
+  mutate(Colour = c(rev(terrain.colors(n()+1))[c(-1,-2)], 'red'))
+
+```
+
+
+```{r selectie vaste MONEOS raaien met metingen in laatste jaar}
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  group_by(REEKSCODE) %>% 
+  mutate(meting = any(MeetCampagneJaar == campagne)) %>% 
+  ungroup() %>% 
+  filter(Campagne == "MONEOS",
+         meting == TRUE) %>% 
+  select(-meting)
+
+
+raaicodes <- 
+  data_MONEOS %>% 
+  distinct(REEKSCODE) %>% 
+  pull()
+
+```
+
+
+```{r ecotoopgrenzen}
+
+tbl_waterstanden <-
+  read_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  left_join(tbl_waterstanden)
+
+data_MONEOS <-
+  data_MONEOS %>%
+  group_by(REEKSCODE, DATUM) %>% 
+  mutate(habpres = any(!is.na(Habitat))) %>% 
+  ungroup() %>% 
+  mutate(ecotoop = 
+           case_when(
+             habpres ~ Habitat,
+             HOOGTE__MT > waterstand_HW85 ~ "schor",
+             HOOGTE__MT <= waterstand_HW85 ~ "slik")) %>%
+  mutate(ecotoop = 
+           case_when(
+            HOOGTE__MT < waterstand_LW30 ~ "subtidaal",
+            TRUE ~ ecotoop)) %>% 
+  select(-habpres)
+
+
+ecotoopgrenzen <-
+  data_MONEOS %>% 
+  group_by(REEKSCODE, afstand_grens, Salzone) %>% 
+  summarise(bovengrens = unique(afstand_begin),
+            bovengrens_meting = min(distance_prof[MeetCampagneJaar == campagne & distance_prof >= (bovengrens + 5)]) - 5,
+            bovengrens_schor = min(distance_prof[ecotoop == "schor"], na.rm = TRUE),
+            grens_schor = max(distance_prof[ecotoop == "schor" & MeetCampagneJaar == campagne], na.rm = TRUE),
+            grens_subtidaal = max(distance_prof[ecotoop == "slik" & MeetCampagneJaar == campagne], na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  select(REEKSCODE, afstand_grens, Salzone, 
+         bovengrens, bovengrens_meting, bovengrens_schor, grens_schor, grens_subtidaal) %>% 
+  mutate(across(everything(), ~ifelse(is.infinite(.), NA, .)))
+  
+```
+
+
+```{r}
+
+raaien <- 
+  data_MONEOS %>% 
+  distinct(REEKSCODE, afstand_grens, Salzone, Omes)
+
+```
+
+
+```{r selectie tot bovengrens}
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  filter(distance_prof >= afstand_begin)
+
+data_MONEOS %>% 
+  distinct(ecotoop)
+
+```
+
+
+```{r toevoegen combinatie raai - salzone}
+
+data_MONEOS <- 
+  data_MONEOS %>% 
+  left_join(tabel_raaien_vast %>% 
+              select(REEKSCODE = reekscode, sal_kort, raai_sal))
+
+```
+
+
+```{r selectie raaien voor slik figuur en schor figuur}
+
+raaien_sel_slik <-
+  data_MONEOS %>% 
+  filter(distance_prof >= afstand_slik) %>% 
+  group_by(REEKSCODE, MeetCampagneJaar) %>% 
+  mutate(aantal_year = length(unique(distance_prof[!is.na(HOOGTE__MT)])),
+         range_year = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
+         min_year = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
+         max_year = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  group_by(REEKSCODE) %>% 
+  mutate(aantal_dist = max(aantal_year, na.rm = TRUE),
+         range_dist = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
+         min_dist = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
+         max_dist = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
+  ungroup() %>%
+  filter(MeetCampagneJaar == campagne) %>% 
+  mutate(prop_aantal = aantal_year/aantal_dist,
+         prop_range = range_year/range_dist) %>% 
+  filter(aantal_dist >= 5,
+         aantal_year >= 3,
+         #prop_aantal >= 0.5,
+         prop_range >= 0.5) %>%
+  distinct(REEKSCODE) %>% 
+  pull()
+
+raaien_sel_schor <-
+  data_MONEOS %>% 
+  filter(distance_prof <= afstand_schor) %>% 
+  group_by(REEKSCODE, MeetCampagneJaar) %>% 
+  mutate(aantal_year = length(unique(distance_prof[!is.na(HOOGTE__MT)])),
+         range_year = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
+         min_year = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
+         max_year = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  group_by(REEKSCODE) %>% 
+  mutate(aantal_dist = max(aantal_year, na.rm = TRUE),
+         range_dist = diff(range(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)),
+         min_dist = min(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE),
+         max_dist = max(distance_prof[!is.na(HOOGTE__MT)], na.rm = TRUE)) %>% 
+  ungroup() %>%
+  filter(MeetCampagneJaar == campagne) %>%
+  mutate(prop_aantal = aantal_year/aantal_dist,
+         prop_range = range_year/range_dist) %>% 
+  filter(aantal_dist >= 5,
+         aantal_year >= 3,
+         #prop_aantal >= 0.5,
+         prop_range >= 0.5) %>%
+  distinct(REEKSCODE) %>% 
+  pull()
+
+raaien_sel_slik
+raaien_sel_schor
+
+```
+
+
+```{r functie figuren}
+
+# naam <- "APa"
+# dat_raai <-
+#   data_MONEOS %>% 
+#   filter(REEKSCODE == naam)
+
+fig_raai <- 
+  function(RKSC, dat_raai, ecotoop = "", subtidaal_grens = TRUE) {
+    
+    cat(str_c("raai: ", RKSC, "\n"))
+    
+    dat_raai <-
+      dat_raai %>% 
+      mutate(Year = year(DATUM),
+             Month = month(DATUM),
+             Datum = factor(DATUM)) %>% 
+      arrange(Datum, distance_prof)
+    # RKSC <-
+    #   unique(dat_raai$REEKSCODE)
+    naam <-
+      unique(dat_raai$raai_sal)
+    
+    # dat_last <-
+    #   dat %>%
+    #   filter(!is.na(Campagne) & Campagne == campagne)
+    colors <- 
+      dat_raai %>% 
+      distinct(Year, Datum) %>% 
+      arrange(Datum) %>% 
+      left_join(year_colors)
+    p <- 
+      ggplot(dat_raai, aes(distance_prof, HOOGTE__MT, group = Datum, colour = Datum))
+    if(subtidaal_grens) {
+      p <-
+        p +  
+        geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+                   aes(xintercept = grens_subtidaal),
+                   linetype = 2, color = "lightblue", linewidth = 2)
+    }
+    
+    p <-
+      p +  
+      # geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+      #            aes(xintercept = bovengrens),
+      #            linetype = 1, color = "grey50", linewidth = 2) +
+      # geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+      #            aes(xintercept = bovengrens_schor),
+      #            linetype = 2, color = "darkgreen", linewidth = 2) +
+      geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+                 aes(xintercept = grens_schor),
+                 linetype = 2, color = "darkgreen", linewidth = 2) +
+      # geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+      #            aes(xintercept = grens_laag_middelhoog),
+      #            linetype = 3, color = "grey50", linewidth = 1.5) +
+      # geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
+      #            aes(xintercept = grens_middelhoog_hoog),
+      #            linetype = 3, color = "grey50", linewidth = 1.5) +
+      geom_line(linewidth = 1) + 
+      geom_point(size = 2) + 
+      # geom_line(data = dat_last, size = 1) +
+      # geom_point(data = dat_last, size = 2) +
+      scale_x_continuous(breaks = pretty(dat_raai$distance_prof, 20)) +
+      scale_y_continuous(breaks = pretty(dat_raai$HOOGTE__MT, 5)) +
+      scale_colour_manual(values = colors$Colour) +
+      labs(title = ifelse(str_length(ecotoop) == 0, naam, str_c(naam, "  -  ", ecotoop)),
+           x = "Afstand tot de dijk (m)",
+           y = "Hoogte (m T.A.W.)") + 
+      theme_bw() + 
+      theme(plot.title = element_text(size = 20, hjust = 0.5),
+            axis.title = element_text(size = 18),
+            axis.text = element_text(size = 15),
+            legend.title = element_text(size = 20), 
+            legend.text = element_text(size = 14),
+            panel.border = element_blank(),
+            panel.grid.minor = element_blank(), 
+            panel.grid.major = element_line(colour = "grey")) 
+    
+    p
+  }
+
+```
+
+
+```{r figuren historiek}
+
+# data_fig <-
+#   Afst %>% 
+#   left_join(data_MONEOS,
+#             relationship = "many-to-many") %>% 
+#       filter(distance_prof >= Afstand_begin)
+# 
+# figuren_MONEOS <-
+#   data_fig %>% 
+#   # filter(REEKSCODE == "KPb") %>% 
+#   group_by(Naam) %>% 
+#   nest() %>% 
+#   mutate(fig = map2(Naam, data, ~fig_raai(.x, .y)))
+# 
+# walk2(str_c("Vast_", figuren_MONEOS$Naam), figuren_MONEOS$fig, 
+#       ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, "_", campagne, ".png"), 
+#               width=16, height=8, dpi = dpi))
+
+figuren_MONEOS <-
+  data_MONEOS %>% 
+  group_by(REEKSCODE) %>% 
+  nest() %>% 
+  mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y)))
+
+figuren_MONEOS$fig[[1]]
+
+walk2(figuren_MONEOS$REEKSCODE, figuren_MONEOS$fig, 
+      ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, ".png"), 
+              width=16, height=8, dpi = dpi))
+
+
+figuren_MONEOS_slik <-
+  data_MONEOS %>% 
+  filter(REEKSCODE %in% raaien_sel_slik,
+         distance_prof >= afstand_slik) %>% 
+  group_by(REEKSCODE) %>% 
+  nest() %>% 
+  mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y, ecotoop = "slik")))
+
+figuren_MONEOS_slik$fig[[1]]
+
+figuren_MONEOS_slik %>% 
+  {.; walk2(str_c(.$REEKSCODE, "_slik"), .$fig, 
+        ~ggsave(.y, file=str_c(pad_figuren, "vast/slik/", .x, ".png"), 
+                width=16, height=8, dpi = dpi))}
+
+
+figuren_MONEOS_schor <-
+  data_MONEOS %>% 
+  filter(REEKSCODE %in% raaien_sel_schor,
+         distance_prof <= afstand_schor) %>% 
+  group_by(REEKSCODE) %>% 
+  nest() %>% 
+  mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y, ecotoop = "schor", subtidaal_grens = FALSE)))
+
+figuren_MONEOS_schor$fig[[1]]
+
+figuren_MONEOS_schor %>% 
+  {.; walk2(str_c(.$REEKSCODE, "_schor"), .$fig, 
+        ~ggsave(.y, file=str_c(pad_figuren, "vast/schor/", .x, ".png"), 
+                width=16, height=8, dpi = dpi))}
+
+```
+
