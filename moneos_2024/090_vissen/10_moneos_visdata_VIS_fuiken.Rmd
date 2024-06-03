@@ -65,7 +65,7 @@ run_pad()
 run_variabelen <- 
   function() {
 
-    jaren <- 2022
+    jaren <- 2023
     vangstmethode <- c('Schietfuik')
     
     # Zeeschelde vissen
@@ -137,8 +137,10 @@ tbl_campagnes <-
   inner_join(DimDate, by = c("BeginDatumKey" = "DateKey")) %>% 
   inner_join(DimMethode, by = "MethodeKey") %>% 
   filter(Year %in% jaren,
-         Gebiedcode %in% locatie_nrs,
-         Methodenaam %in% vangstmethode) %>% 
+         Gebiedcode %in% locatie_nrs
+         # ,
+         # Methodenaam %in% vangstmethode
+         ) %>% 
   select(WaarnemingKey, WaarnemingID, GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, Begindatum, Month, Year, MethodeKey, Methodenaam, Methodegroepcode, AantalDagen, AantalFuiken)
 
 tbl_data <-
@@ -154,14 +156,16 @@ tbl_data <-
   inner_join(DimMethode, by = "MethodeKey") %>% 
   select(MetingPivotKey, WaarnemingKey, WaarnemingID, GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, Begindatum, Month, Year, MethodeKey, Methodenaam, Methodegroepcode, AantalDagen, AantalFuiken, TaxonKey, Soort, Exoot, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN, TEMPERATUUR, ZUURSTOF, TURBIDITEIT, CONDUCTIVITEIT, PH) %>% 
   filter(Year %in% jaren,
-         Gebiedcode %in% locatie_nrs,
-         Methodenaam %in% vangstmethode)
+         Gebiedcode %in% locatie_nrs
+         # ,
+         # Methodenaam %in% vangstmethode
+         )
 
-gebied_codes <-
+(gebied_codes <-
   tbl_data %>% 
   distinct(Gebiedcode) %>% 
   collect() %>% 
-  pull()
+  pull())
 
 waarneming_IDs <- 
   tbl_data %>% 

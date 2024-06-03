@@ -49,12 +49,12 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ```{r variabelen}
 
-laatste_jaar <- 2022
+laatste_jaar <- 2023
 pad_data_historisch <- str_c(pad_prj_schelde, pad_moneos, as.numeric(jaar_moneos)-1, "/", params$hoofdstuk, "/data/")
 
 locaties_name <- "fuikvangsten_Zeeschelde_locaties"
 metadata_name <- "fuikvangsten_Zeeschelde_metadata"
-filename <- "fuikdata_Zeeschelde"
+filename <- "fuikdata_Zeeschelde_VLIZ"
 
 locaties <-
   read_xlsx(str_c(pad_data, "metadata VLIZ/", locaties_name, ".xlsx")) %>% 
@@ -66,30 +66,30 @@ locaties <-
 ```{r inlezen historische data}
 
 campagnes_historisch <- 
-  read_xlsx(str_c(pad_data_historisch, str_c("fuikdata_Zeeschelde_2009_", 
+  read_xlsx(str_c(pad_data_historisch, str_c("fuikdata_Zeeschelde_VLIZ_2009_", 
                                               laatste_jaar - 1 ,
                                               ".xlsx")),
             sheet = "campagnes")
 
 # omzetten maand naar seizoen
-campagnes_historisch <-
-  campagnes_historisch %>%
-  mutate(seizoen =
-           case_when(
-             maand %in% 3:5 ~ "voorjaar",
-             maand %in% 6:8 ~ "zomer",
-             maand %in% 9:11 ~ "najaar",
-             maand %in% 12:2 ~ "winter")) %>%
-  select(ID_afvissing:jaar, seizoen, everything(), -maand)
+# campagnes_historisch <-
+#   campagnes_historisch %>%
+#   mutate(seizoen =
+#            case_when(
+#              maand %in% 3:5 ~ "voorjaar",
+#              maand %in% 6:8 ~ "zomer",
+#              maand %in% 9:11 ~ "najaar",
+#              maand %in% 12:2 ~ "winter")) %>%
+#   select(ID_afvissing:jaar, seizoen, everything(), -maand)
 
 aantal_historisch <- 
-  read_xlsx(str_c(pad_data_historisch, str_c("fuikdata_Zeeschelde_2009_", 
+  read_xlsx(str_c(pad_data_historisch, str_c("fuikdata_Zeeschelde_VLIZ_2009_", 
                                               laatste_jaar - 1 ,
                                               ".xlsx")),
             sheet = "aantallen")
 
 gewicht_historisch <- 
-  read_xlsx(str_c(pad_data_historisch, str_c("fuikdata_Zeeschelde_2009_", 
+  read_xlsx(str_c(pad_data_historisch, str_c("fuikdata_Zeeschelde_VLIZ_2009_", 
                                               laatste_jaar - 1 ,
                                               ".xlsx")),
             sheet = "gewicht")
@@ -201,13 +201,15 @@ if (length(soort_NA) > 0) {
            !is.na(TAXONLEN)) %>% 
     select(Soort, TAXONAANTAL, TAXONGEW, TAXONLEN)
   
-  data_lengte %>% 
+  p <-
+    data_lengte %>% 
     ggplot(aes(TAXONLEN, TAXONGEW)) +
     geom_point() +
     geom_smooth(method = "lm") +
     scale_x_log10() +
     scale_y_log10() +
     facet_wrap(~Soort)
+  print(p)
   
   regressie_lengte <-
     data_lengte %>% 
@@ -601,7 +603,7 @@ gewicht <-
 
 ```{r wegschrijven-data}
 
-filename <- "fuikdata_Zeeschelde_VLIZ"
+# filename <- "fuikdata_Zeeschelde_VLIZ"
 
 jaar_range <-
   campagnes %>% 
