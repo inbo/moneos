@@ -2624,11 +2624,16 @@ data_watervogels %>%
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(telseizoen, niveau3, nednaam) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
+  summarise(
+    aantal = mean(aantal, na.rm = TRUE),
+    # sd = sd(aantal, na.rm= TRUE)
+    ) %>% 
   ungroup() %>% 
   ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
   geom_point(aes(shape = niveau3)) +
   geom_line() +
+  # geom_errorbar(aes(ymin = aantal - sd, ymax = aantal + sd), 
+                # width = 0.2) +
   labs(x = "telseizoen", 
        y = "gemiddeld aantal") +
   facet_wrap(~nednaam, 
