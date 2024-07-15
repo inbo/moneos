@@ -125,7 +125,7 @@ gebiedsgroepen <-
 # #              delim = ";") %>% 
 # #    mutate(gebiedscode = as.character(gebiedscode))
 # 
-# ## vanaf rapportage 2024 gebruiken we de nieuwe gebiedsgroepenlijst
+# ## vergelijk imputatielijst met MONEOSlijst
 # 
 # gebiedsgroepenall_old <- 
 #   read_delim(paste0(pad_data, "Zeeschelde_gebiedsgroepen_corrWM.csv"),
@@ -165,7 +165,7 @@ gebiedsgroepen <-
 # 
 # print(differences_rows)
 # 
-# ### conclusie - exact dezelfde gebieden bevraagd dus we houden oude gebiedscodelijst aan voor MONEOS
+# ### conclusie - exact dezelfde gebieden bevraagd dus we houden oude gebiedscodelijst aan voor MONEOS 2024
 
 
 ```
@@ -365,96 +365,134 @@ WHERE 1=1
 
 ```{r checken details in databank}
 
-# con <- connect_inbo_dbase("W0004_00_Waterbirds")
-# 
-# q_WVgebiedenUitbergen <- "SELECT *
-#                      FROM DimLocationWV
-#                      WHERE LocationWVNaam LIKE '%UITBERGEN%'"
-# 
+con <- connect_inbo_dbase("W0004_00_Waterbirds")
+
+q_WVgebiedenHamme <- "SELECT *
+                     FROM DimLocationWV
+                     WHERE LocationWVNaam LIKE '%HAMME%'"
+
+q_WVgebiedenBriel <- "SELECT *
+                     FROM DimLocationWV
+                     WHERE LocationWVNaam LIKE '%Briel%'"
+
 # q_WVgebiedenNete <- "SELECT *
 #                      FROM DimLocationWV
 #                      WHERE LocationWVNaam LIKE '%Nete%'"
-# 
-# 
-# # Selectie gebieden in Lier
-# GebiedenUitbergen <-
-#   tbl(src = con, sql(q_WVgebiedenUitbergen)) %>%
-#   select(LocationWVCode, LocationWVNaam, IsStandardizedLocationWV) %>%
-#   collect()
-# 
+
+
+# Selectie gebieden
+GebiedenHamme <-
+  tbl(src = con, sql(q_WVgebiedenHamme)) %>%
+  select(LocationWVCode, LocationWVNaam, IsStandardizedLocationWV) %>%
+  collect()
+
+GebiedenBriel <-
+  tbl(src = con, sql(q_WVgebiedenBriel)) %>%
+  select(LocationWVCode, LocationWVNaam, IsStandardizedLocationWV) %>%
+  collect()
+
 # GebiedenNete <-
 #   tbl(src = con, sql(q_WVgebiedenNete)) %>%
 #   select(LocationWVCode, LocationWVNaam, IsStandardizedLocationWV) %>%
 #   collect()
-# 
-# # query midmaandelijkse tellingen
-# q_midmaandtellingen <-
-#   "SELECT SU.SurveyCode as ProjectCode
-# , SU.SurveyNaam as Project
-# , L.RegioWVCode as RegioCode
-# , L.RegioWVNaam as Regio
-# , L.LocationWVCode as GebiedsCode
-# , L.LocationWVNaam as Gebied
-# , SS.Seasonname as Telseizoen
-# , E.EventCode as TellingCode
-# , E.EventLabel as Telling
-# , E.SortOrder as TellingSortOrder
-# , S.sampleDate as Teldatum
-# --, S.IceCoverCode as Ijsbedekking
-# --, S.SnowCoverCode as Sneeuwbedekking
-# , S.CoverageCode as Telvolledigheid
-# , T.Commonname as NedNaam
-# , T.scientificname as WetNaam
-# , T.TaxonGroupCode
-# , F.Taxoncount as Aantal
-# FROM FactAnalyseSetOccurrence F
-# inner join DimSurvey SU on SU.surveykey = F.surveykey
-# inner join DimLocationWV L on L.locationwvkey = F.locationwvkey
-# inner join DimSeason SS on SS.Seasonkey = F.seasonkey
-# inner join DimEvent E on E.eventkey = F.eventkey
-# inner join DimSample S on F.samplekey = S.samplekey
-# inner join DimTaxonWV T on T.taxonwvkey = F.taxonwvkey
-# WHERE 1=1
-#   "
-# # Selectie midmaandelijkse tellingen in gebieden Lier
-# WaterbirdsUitbergen <-
-#   tbl(src = con,
-#       sql(q_midmaandtellingen)) %>%
-#   filter(GebiedsCode %in% !!GebiedenUitbergen$LocationWVCode) %>%
-#   collect()
-# 
+
+# query midmaandelijkse tellingen
+q_midmaandtellingen <-
+  "SELECT SU.SurveyCode as ProjectCode
+, SU.SurveyNaam as Project
+, L.RegioWVCode as RegioCode
+, L.RegioWVNaam as Regio
+, L.LocationWVCode as GebiedsCode
+, L.LocationWVNaam as Gebied
+, SS.Seasonname as Telseizoen
+, E.EventCode as TellingCode
+, E.EventLabel as Telling
+, E.SortOrder as TellingSortOrder
+, S.sampleDate as Teldatum
+--, S.IceCoverCode as Ijsbedekking
+--, S.SnowCoverCode as Sneeuwbedekking
+, S.CoverageCode as Telvolledigheid
+, T.Commonname as NedNaam
+, T.scientificname as WetNaam
+, T.TaxonGroupCode
+, F.Taxoncount as Aantal
+FROM FactAnalyseSetOccurrence F
+inner join DimSurvey SU on SU.surveykey = F.surveykey
+inner join DimLocationWV L on L.locationwvkey = F.locationwvkey
+inner join DimSeason SS on SS.Seasonkey = F.seasonkey
+inner join DimEvent E on E.eventkey = F.eventkey
+inner join DimSample S on F.samplekey = S.samplekey
+inner join DimTaxonWV T on T.taxonwvkey = F.taxonwvkey
+WHERE 1=1
+  "
+# Selectie midmaandelijkse tellingen in gebieden 
+
+WaterbirdsHamme <-
+  tbl(src = con,
+      sql(q_midmaandtellingen)) %>%
+  dplyr::filter(GebiedsCode %in% !!GebiedenHamme$LocationWVCode) %>%
+  collect()
+
+WaterbirdsBriel <-
+  tbl(src = con,
+      sql(q_midmaandtellingen)) %>%
+  dplyr::filter(GebiedsCode %in% !!GebiedenBriel$LocationWVCode) %>%
+  collect()
+
 # WaterbirdsNete <-
 #   tbl(src = con,
 #       sql(q_midmaandtellingen)) %>%
 #   filter(GebiedsCode %in% !!GebiedenNete$LocationWVCode) %>%
 #   collect()
-# 
-# dbDisconnect(con)
-# 
-# # Totalen per gebied per seizoen
-# Totaal_n_Watervogels_Gebied_seizoen_Uitbergen <-
-#   WaterbirdsUitbergen %>%
-#   group_by(Gebied, Telseizoen) %>%
-#   summarise(Totaal = sum(Aantal, na.rm = TRUE)) %>%
-#   spread(key = Gebied, value = Totaal)
-# 
+
+dbDisconnect(con)
+
+# Totalen per gebied per seizoen
+Totaal_n_Watervogels_Gebied_seizoen_Hamme <-
+  WaterbirdsHamme %>%
+  group_by(Gebied, Telseizoen) %>%
+  summarise(Totaal = sum(Aantal, na.rm = TRUE)) %>%
+  spread(key = Gebied, value = Totaal)
+
+Totaal_n_Watervogels_Gebied_seizoen_Briel <-
+  WaterbirdsBriel %>%
+  group_by(Gebied, Telseizoen) %>%
+  summarise(Totaal = sum(Aantal, na.rm = TRUE)) %>%
+  spread(key = Gebied, value = Totaal)
+
 # Totaal_n_Watervogels_Gebied_seizoen_Nete <-
 #   WaterbirdsNete %>%
 #   group_by(Gebied, Telseizoen) %>%
 #   summarise(Totaal = sum(Aantal, na.rm = TRUE)) %>%
 #   spread(key = Gebied, value = Totaal)
-# 
-# # 
+
+#trends in Grote Wal, Groot Schoor en bootteltraject Schelde St Amands - Oude Briel LO code 4143122 	
+
+
+datathvGrootschoor1 <- WaterbirdsHamme %>% 
+  dplyr::filter(Gebied == "Grote Wal HAMME" | Gebied == "Groot Schoor HAMME") %>% 
+  mutate(Analyseset = "SIGMA_MIDMA")
+
+datathvGrootschoor2 <- WaterbirdsBriel %>% 
+  dplyr::filter(Gebied == "Schelde St. Amands - Oude Briel (LO)")%>% 
+  mutate(Analyseset = "boottelling")
+
+datathvGrootschoor <- rbind(datathvGrootschoor1, datathvGrootschoor2)
+# datathvGrootschoor %>%
+#    write_delim(paste0(pad_data, "datathvGrootSchoorHamme.csv"),
+#                delim = ";")
+
+#
 # # sla op als spreadsheet
-# Totaal_n_Watervogels_Gebied_seizoen_Lier %>% 
+# Totaal_n_Watervogels_Gebied_seizoen_Lier %>%
 #   write_delim(paste0(pad_data, "Totalen_gebiedenLier.csv"),
 #               delim = ";")
 # 
-# Totaal_n_Watervogels_Gebied_seizoen_Nete %>% 
+# Totaal_n_Watervogels_Gebied_seizoen_Nete %>%
 #   write_delim(paste0(pad_data, "Totalen_gebiedenNete.csv"),
 #               delim = ";")
 # 
-# 
+
 
 
 ```
@@ -532,40 +570,40 @@ Waterbirds <-
 ```
 
 ```{r bevragen-warehouse-MIDMA-Sigma-analyseset}
-# 
-# ## alle sigmagebieden
-# telzones_sigma <- 
-#   gebiedsgroepenSigma %>% 
-#       pull(gebiedsnaam) 
-# 
-# 
-# telzones_query <-
-#   paste0("'", telzones_sigma, "'", collapse = ",") %>% 
-#   paste0("(", ., ")")
-# 
-# query <-
-#   paste0(str_sub(basis_query, end=-2),
-#          " AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/",
-#          " AND SS.seasonname in ",
-#          seizoenen_query,
-#          " AND L.LocationWVNaam in ",
-#          telzones_query,
-#          ";"
-#   )
-# 
-# con <- connect_inbo_dbase("W0004_00_Waterbirds")
-# waterbirds_sigma <- 
-#   dbGetQuery(con,
-#              query)
-# dbDisconnect(con)
-# 
-# waterbirds_sigma <- waterbirds_sigma %>% 
-#   mutate(Analyseset = "SIGMA_MIDMA") 
-# 
-# Waterbirds_bt_zr_sigma <-
-#   WaterbirdsBT_ZR %>% 
-#   bind_rows(waterbirds_sigma)
-# 
+
+## alle sigmagebieden
+telzones_sigma <-
+  gebiedsgroepenSigma %>%
+      pull(gebiedsnaam)
+
+
+telzones_query <-
+  paste0("'", telzones_sigma, "'", collapse = ",") %>%
+  paste0("(", ., ")")
+
+query <-
+  paste0(str_sub(basis_query, end=-2),
+         " AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/",
+         " AND SS.seasonname in ",
+         seizoenen_query,
+         " AND L.LocationWVNaam in ",
+         telzones_query,
+         ";"
+  )
+
+con <- connect_inbo_dbase("W0004_00_Waterbirds")
+waterbirds_sigma <-
+  dbGetQuery(con,
+             query)
+dbDisconnect(con)
+
+waterbirds_sigma <- waterbirds_sigma %>%
+  mutate(Analyseset = "SIGMA_MIDMA")
+
+Waterbirds_bt_zr_sigma <-
+  WaterbirdsBT_ZR %>%
+  bind_rows(waterbirds_sigma)
+
 
 
 
@@ -573,15 +611,48 @@ Waterbirds <-
 ```
 
 ```{r bevragen-warehouse-MIDMA-vallei-analyseset}
-# 
-# telzones_vallei <- 
-#   gebiedsgroepenVallei %>% 
-#       pull(gebiedsnaam) 
-# 
+
+telzones_vallei <-
+  gebiedsgroepenVallei %>%
+      pull(gebiedsnaam)
+
+telzones_query <-
+  paste0("'", telzones_vallei, "'", collapse = ",") %>%
+  paste0("(", ., ")")
+
+query <-
+  paste0(str_sub(basis_query, end=-2),
+         " AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/",
+         " AND SS.seasonname in ",
+         seizoenen_query,
+         " AND L.LocationWVNaam in ",
+         telzones_query,
+         ";"
+  )
+
+con <- connect_inbo_dbase("W0004_00_Waterbirds")
+waterbirds_vallei <-
+  dbGetQuery(con,
+             query)
+dbDisconnect(con)
+
+waterbirds_vallei <- waterbirds_vallei %>%
+  mutate(Analyseset = "VALLEI_MIDMA")
+
+Waterbirds_bt_zr_sigma_vallei <-
+  Waterbirds_bt_zr_sigma %>%
+  bind_rows(waterbirds_vallei)
+
+####
+
+# telzones_vallei_zeeschelde <-
+#   gebiedsgroepenVallei_zeeschelde %>%
+#       pull(gebiedsnaam)
+#
 # telzones_query <-
-#   paste0("'", telzones_vallei, "'", collapse = ",") %>% 
+#   paste0("'", telzones_vallei_zeeschelde, "'", collapse = ",") %>%
 #   paste0("(", ., ")")
-# 
+#
 # query <-
 #   paste0(str_sub(basis_query, end=-2),
 #          " AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/",
@@ -591,54 +662,21 @@ Waterbirds <-
 #          telzones_query,
 #          ";"
 #   )
-# 
+#
 # con <- connect_inbo_dbase("W0004_00_Waterbirds")
-# waterbirds_vallei <- 
+# waterbirds_vallei_zeeschelde <-
 #   dbGetQuery(con,
 #              query)
 # dbDisconnect(con)
-# 
-# waterbirds_vallei <- waterbirds_vallei %>% 
-#   mutate(Analyseset = "VALLEI_MIDMA") 
-# 
-# Waterbirds_bt_zr_sigma_vallei <-
-#   Waterbirds_bt_zr_sigma %>% 
-#   bind_rows(waterbirds_vallei)
-# 
-# ####
-# 
-# # telzones_vallei_zeeschelde <- 
-# #   gebiedsgroepenVallei_zeeschelde %>% 
-# #       pull(gebiedsnaam) 
-# # 
-# # telzones_query <-
-# #   paste0("'", telzones_vallei_zeeschelde, "'", collapse = ",") %>% 
-# #   paste0("(", ., ")")
-# # 
-# # query <-
-# #   paste0(str_sub(basis_query, end=-2),
-# #          " AND F.Analysesetkey in (2, 3, 4) /**alleen midmaandelijkse tellingen, i.e. uit MIDMA-analysesets**/",
-# #          " AND SS.seasonname in ",
-# #          seizoenen_query,
-# #          " AND L.LocationWVNaam in ",
-# #          telzones_query,
-# #          ";"
-# #   )
-# # 
-# # con <- connect_inbo_dbase("W0004_00_Waterbirds")
-# # waterbirds_vallei_zeeschelde <- 
-# #   dbGetQuery(con,
-# #              query)
-# # dbDisconnect(con)
-# # 
-# # waterbirds_vallei_zeeschelde <- waterbirds_vallei_zeeschelde %>% 
-# #   mutate(Analyseset = "VALLEI_ZSCH_MIDMA") 
-# # 
-# # Waterbirds_bt_zr_sigma_sigmazs_vallei_valleizs <-
-# #   Waterbirds_bt_zr_sigma_sigmazs_vallei %>% 
-# #   bind_rows(waterbirds_vallei_zeeschelde)
-# # 
-# Waterbirds <- Waterbirds_bt_zr_sigma_vallei
+#
+# waterbirds_vallei_zeeschelde <- waterbirds_vallei_zeeschelde %>%
+#   mutate(Analyseset = "VALLEI_ZSCH_MIDMA")
+#
+# Waterbirds_bt_zr_sigma_sigmazs_vallei_valleizs <-
+#   Waterbirds_bt_zr_sigma_sigmazs_vallei %>%
+#   bind_rows(waterbirds_vallei_zeeschelde)
+#
+Waterbirds <- Waterbirds_bt_zr_sigma_vallei
 
 ```
 
@@ -881,6 +919,108 @@ Waterbirds <-
 # # Enkel wintertellingen
 # WaterbirdsBTw <- WaterbirdsBT %>% filter(month(Teldatum) %in% c(10, 11, 12, 1, 2, 3))
 
+# Correctie Groot Schoor Hamme
+## boottelling Schelde St. Amands - Oude Briel (LO) bevat infeite de vogels die foerageren in ontpoldering Groot Schoor Hamme
+## voor 2022,2023,2024 houden we dezelfde aantallen als 2021 in teltraject
+## Sigmagebied wordt niet goed geteld; we rekenen de vogelaantallen voor de ontpoldering als deze geteld op Zeeschelde vermindert met baseline aantallen van 2021 in teltraject
+
+StAmandstotOudeBriel2020 <-
+  Waterbirds %>% 
+  dplyr::filter(GebiedsCode == 4143122) %>% 
+  dplyr::filter(Telseizoen == "2020/21") 
+
+years <- years(1) 
+StAmandstotOudeBriel2021false <-
+  StAmandstotOudeBriel2020 %>% 
+  mutate(Telseizoen = str_replace_all(Telseizoen, "2020/21", "2021/22")) %>% 
+  mutate(Teldatum = Teldatum +years)
+
+StAmandstotOudeBriel2022false <-
+  StAmandstotOudeBriel2021false %>% 
+  mutate(Telseizoen = str_replace_all(Telseizoen, "2021/22", "2022/23")) %>% 
+  mutate(Teldatum = Teldatum +years)
+
+StAmandstotOudeBriel2023false <-
+  StAmandstotOudeBriel2022false %>% 
+  mutate(Telseizoen = str_replace_all(Telseizoen, "2022/23", "2023/24")) %>% 
+  mutate(Teldatum = Teldatum +years)
+
+#GrootSchorberekend te gebruiken voor Sigma-estuarien ontpoldering Groot Schoor Hamme ipv landtelling
+#bergeenden zijn nu wel onderschatting
+
+#pas dit ook aan in Sigma dataset!
+
+GrootSchorberekend2021 <- 
+  Waterbirds %>% 
+  dplyr::filter(GebiedsCode == 4143122) %>% 
+  dplyr::filter(Telseizoen == "2021/22") %>% 
+  left_join(StAmandstotOudeBriel2020, by = c("NedNaam","Telling"), suffix = c("_winter2021", "_Baseline2020"),keep = TRUE) %>% 
+  mutate(across(c(Aantal_Baseline2020), ~replace_na(., 0))) %>% 
+  mutate(Aantal_diff = Aantal_winter2021 - Aantal_Baseline2020) %>% 
+  dplyr::filter(Aantal_diff >= 0) %>% 
+  select(ends_with("winter2021"), Aantal_diff) %>% 
+  select(-Aantal_winter2021) %>% 
+  rename_with(~ str_remove(.x, "_winter2021")) %>% 
+  rename(Aantal = Aantal_diff) %>% 
+  mutate(GebiedsCode = if_else(GebiedsCode == "4143122", "2091308", GebiedsCode)) %>% 
+  mutate(Gebied = if_else(Gebied == "Schelde St. Amands - Oude Briel (LO)", "Groot Schoor HAMME", Gebied)) %>% 
+  mutate(Analyseset = if_else(Analyseset == "boottelling", "SIGMA_MIDMA", Analyseset)) 
+
+GrootSchorberekend2022 <- 
+  Waterbirds %>% 
+  dplyr::filter(GebiedsCode == 4143122) %>% 
+  dplyr::filter(Telseizoen == "2022/23") %>% 
+  left_join(StAmandstotOudeBriel2020, by = c("NedNaam","Telling"), suffix = c("_winter2021", "_Baseline2020"),keep = TRUE) %>% 
+  mutate(across(c(Aantal_Baseline2020), ~replace_na(., 0))) %>% 
+  mutate(Aantal_diff = Aantal_winter2021 - Aantal_Baseline2020) %>% 
+  dplyr::filter(Aantal_diff >= 0) %>% 
+  select(ends_with("winter2021"), Aantal_diff) %>% 
+  select(-Aantal_winter2021) %>% 
+  rename_with(~ str_remove(.x, "_winter2021")) %>% 
+  rename(Aantal = Aantal_diff)%>% 
+  mutate(GebiedsCode = if_else(GebiedsCode == "4143122", "2091308", GebiedsCode)) %>% 
+  mutate(Gebied = if_else(Gebied == "Schelde St. Amands - Oude Briel (LO)", "Groot Schoor HAMME", Gebied)) %>% 
+  mutate(Analyseset = if_else(Analyseset == "boottelling", "SIGMA_MIDMA", Analyseset)) 
+
+GrootSchorberekend2023 <- 
+  Waterbirds %>% 
+  dplyr::filter(GebiedsCode == 4143122) %>% 
+  dplyr::filter(Telseizoen == "2023/24") %>% 
+  left_join(StAmandstotOudeBriel2020, by = c("NedNaam","Telling"), suffix = c("_winter2021", "_Baseline2020"),keep = TRUE) %>% 
+  mutate(across(c(Aantal_Baseline2020), ~replace_na(., 0))) %>% 
+  mutate(Aantal_diff = Aantal_winter2021 - Aantal_Baseline2020) %>% 
+  dplyr::filter(Aantal_diff >= 0) %>% 
+  select(ends_with("winter2021"), Aantal_diff) %>% 
+  select(-Aantal_winter2021) %>% 
+  rename_with(~ str_remove(.x, "_winter2021")) %>% 
+  rename(Aantal = Aantal_diff)%>% 
+  mutate(GebiedsCode = if_else(GebiedsCode == "4143122", "2091308", GebiedsCode)) %>% 
+  mutate(Gebied = if_else(Gebied == "Schelde St. Amands - Oude Briel (LO)", "Groot Schoor HAMME", Gebied)) %>% 
+  mutate(Analyseset = if_else(Analyseset == "boottelling", "SIGMA_MIDMA", Analyseset)) 
+
+
+datathvGrootschoor %>%
+  dplyr::filter(!(GebiedsCode == 2091308 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen == "2023/24"))) %>%
+  dplyr::filter(!(GebiedsCode == 4143122 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen == "2023/24"))) %>% 
+  bind_rows(GrootSchorberekend2021, GrootSchorberekend2022,GrootSchorberekend2023) %>%
+  bind_rows(StAmandstotOudeBriel2021false, StAmandstotOudeBriel2022false,StAmandstotOudeBriel2023false) %>% 
+    write_delim(paste0(pad_data, "datathvGrootSchoorHamme.csv"),
+                delim = ";")
+
+GrootSchoorHamme <- bind_rows(GrootSchorberekend2021, GrootSchorberekend2022,GrootSchorberekend2023) 
+
+Waterbirds <-
+  Waterbirds %>% 
+  dplyr::filter(!(GebiedsCode == 4143122 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen == "2023/24"))) %>% 
+  bind_rows(StAmandstotOudeBriel2021false, StAmandstotOudeBriel2022false,StAmandstotOudeBriel2023false) 
+  
+#### ook nog aanpassen in Sigmadataset voor rapportage!
+
+Waterbirds <-
+  Waterbirds %>% 
+  dplyr::filter(!(GebiedsCode == 2091308 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen ==   "2023/24"))) %>% 
+bind_rows(GrootSchoorHamme)
+
 ```
 
 ```{r telseizoen metadata}
@@ -983,7 +1123,7 @@ knitr::kable(Aantaltellingenpergebied)
 Aantaltellingenpergebied <- WaterbirdsBT %>% 
   rename_all(tolower) %>%
   dplyr::filter(analyseset =="SIGMA_MIDMA") %>% 
-  dplyr::filter(telseizoen == "2021/22") %>% 
+  dplyr::filter(telseizoen == "2023/24") %>% 
   distinct(gebiedscode, teldatum, telseizoen) %>% 
   count(gebiedscode, telseizoen) 
   
