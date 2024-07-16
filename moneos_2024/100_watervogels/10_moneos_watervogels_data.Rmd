@@ -876,7 +876,7 @@ overzicht_tellingen %>%
 
 overzicht_tellingen %>%
    dplyr::filter (telseizoen == "2023/24") %>% 
-  dplyr::filter (gebiedscode == "3153801") %>% 
+  dplyr::filter (gebiedscode == "3121003") %>% 
   select(projectcode, gebiedscode, gebied, teldatum) %>% #kijk alleen naar teldatum want telling en tellingsortorder kloppen niet in databank
   arrange(teldatum)
 
