@@ -66,7 +66,8 @@ run_pad()
 run_variabelen <- 
   function() {
 
-    jaren <- 2023
+    jaren <- as.numeric(jaar_moneos) - 1
+    # jaren <- 2015:2023
     vangstmethode <- c('Ankerkuil', 'Ankerkuil-vloed', 'Ankerkuil-eb')
     
     # Zeeschelde vissen
@@ -162,7 +163,9 @@ tbl_data <-
                left_join(DimVisindexTaxon %>% select(TaxonKey, Exoot)), 
              by = "TaxonKey") %>% 
   inner_join(DimMethode, by = "MethodeKey") %>% 
-  select(MetingPivotKey, WaarnemingKey, MetingID, WaarnemingID, GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, Begindatum, Month, Year, MethodeKey, Methodenaam, Methodegroepcode, TaxonKey, Soort, Exoot, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN, TEMPERATUUR, ZUURSTOF, TURBIDITEIT, CONDUCTIVITEIT, PH) %>% 
+  select(MetingPivotKey, WaarnemingKey, MetingID, WaarnemingID, GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, Begindatum, Month, Year, MethodeKey, Methodenaam, Methodegroepcode, TaxonKey, Soort,
+         # WetenschappelijkeNaam, 
+         Exoot, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN, TEMPERATUUR, ZUURSTOF, TURBIDITEIT, CONDUCTIVITEIT, PH) %>% 
   filter(Year %in% jaren,
          Gebiedcode %in% locatie_nrs,
          Methodenaam %in% vangstmethode)
@@ -285,7 +288,7 @@ campagnes_dstnct2 <-
   data %>% 
   distinct(Gebiedcode, Gebiednaam, Begindatum, Month, Year, Methodenaam)
 
-setdiff(campagnes_dstnct, campagnes_dstnct2)
+(df <- setdiff(campagnes_dstnct, campagnes_dstnct2))
 
 campagnes_dstnct %>% 
   distinct(Gebiedcode, Gebiednaam)

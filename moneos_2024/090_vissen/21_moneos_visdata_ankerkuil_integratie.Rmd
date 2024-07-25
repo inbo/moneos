@@ -49,8 +49,8 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ```{r variabelen}
 
-laatste_jaar <- 2022
-pad_data_historisch <- str_c(pad_prj_schelde, pad_moneos, as.numeric(jaar_moneos)-1, "/", params$hoofdstuk, "/data/")
+laatste_jaar <- as.numeric(jaar_moneos) - 1
+pad_data_historisch <- str_c(pad_prj_schelde, pad_moneos, as.numeric(jaar_moneos) - 1, "/", params$hoofdstuk, "/data/")
 
 locaties_name <- "ankerkuil_Zeeschelde_locaties"
 metadata_name <- "ankerkuil_Zeeschelde_metadata"
@@ -67,7 +67,7 @@ locaties <-
 
 filename_historisch <- 
   list.files(path = pad_data_historisch,
-             pattern = "ankerkuil_VLIZ")
+             pattern = "ankerkuil_Zeeschelde_VLIZ")
 
 campagnes_historisch <- 
   read_xlsx(str_c(pad_data_historisch, filename_historisch),
@@ -122,25 +122,28 @@ names(level_key) <- old_names
 
 ```{r correcties soortnamen}
 
+# rename_vector_historisch <-
+#   c("chinese wolhandkrab" = "wolhandkrab")
 rename_vector_historisch <-
-  c("chinese wolhandkrab" = "wolhandkrab")
+  c("gewone zwemkrab" = "zwemkrab")
 
 aantal_historisch <-
-  aantal_historisch %>% 
+  aantal_historisch %>%
   rename(!!!rename_vector_historisch)
 gewicht_historisch <-
-  gewicht_historisch %>% 
+  gewicht_historisch %>%
   rename(!!!rename_vector_historisch)
 
 
 data_recent <- 
   data_recent %>% 
-  mutate(Soort = recode(Soort, 
-                        blauwband = "blauwbandgrondel",
-                        zandspiering = "kleine zandspiering",
-                        `gewone steurgarnaal` = "steurgarnalen",
-                        `steurgarnaal` = "steurgarnalen",
-                        `grijze garnaal` = "grijze garnalen"))
+  mutate(Soort = case_match(Soort, 
+                            "blauwband" ~ "blauwbandgrondel",
+                            "zandspiering" ~ "kleine zandspiering",
+                            "gewone steurgarnaal" ~ "steurgarnalen",
+                            "steurgarnaal" ~ "steurgarnalen",
+                            "grijze garnaal" ~ "grijze garnalen",
+                            .default = Soort))
 
 ```
 
@@ -260,7 +263,7 @@ if (length(soort_NA) > 0) {
     data_recent %>% 
     filter(MetingPivotKey %in% keys)
   
-  for(k in keys) {
+  for (k in keys) {
     data_recent$TAXONGEW[data_recent$MetingPivotKey == k] <-
       gewicht_NA$gewicht_imputed[gewicht_NA$MetingPivotKey == k]
   }
@@ -485,11 +488,31 @@ soorten_totaal_aanwezig <-
             soorten_historisch_aanwezig) %>% 
     sort())
 
-haringachtigen <-
-  data_per_datum %>% 
-  filter(soort %in% c("haring", "sprot", "haringachtigen"))
+# haringachtigen <-
+#   data_per_datum %>% 
+#   filter(soort %in% c("haring", "sprot", "haringachtigen"))
+# 
+# grondel_sp <-
+#   data_per_datum %>% 
+#   filter(soort == "grondel sp")
+#   
+# zwemkrab <-
+#   data_per_datum %>% 
+#   filter(str_detect(soort, "zwemkrab"))
 
 ```
+
+
+<!-- ```{r correcties soortnamen recente data, eval=FALSE} -->
+
+<!-- data_per_datum <- -->
+<!--   data_per_datum %>%  -->
+<!--   mutate(soort =  -->
+<!--            case_match(soort, -->
+<!--                       "gewone zwemkrab" ~ "zwemkrab", -->
+<!--                       .default = soort)) -->
+
+<!-- ``` -->
 
 
 ```{r sheets finale data recent}

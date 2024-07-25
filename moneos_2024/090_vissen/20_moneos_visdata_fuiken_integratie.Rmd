@@ -49,7 +49,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ```{r variabelen}
 
-laatste_jaar <- 2023
+laatste_jaar <- as.numeric(jaar_moneos) - 1
 pad_data_historisch <- str_c(pad_prj_schelde, pad_moneos, as.numeric(jaar_moneos)-1, "/", params$hoofdstuk, "/data/")
 
 locaties_name <- "fuikvangsten_Zeeschelde_locaties"
@@ -139,7 +139,7 @@ names(level_key) <- old_names
 ```
 
 
-```{r correcties soortnamen}
+```{r correcties soortnamen historische data, eval=FALSE}
 
 rename_vector <-
   c("kleine koornaarvis" = "koornaarvis")
@@ -471,6 +471,18 @@ setdiff(data_per_datum %>%
     setdiff(soorten_recent_aanwezig, 
             soorten_historisch_aanwezig) %>% 
     sort())
+
+```
+
+
+```{r correcties soortnamen recente data, eval=FALSE}
+
+data_per_datum <-
+  data_per_datum %>% 
+  mutate(soort = 
+           case_match(soort,
+                      "blauwband" ~ "blauwbandgrondel",
+                      .default = soort))
 
 ```
 

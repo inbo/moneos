@@ -62,7 +62,7 @@ fuiken_aantal <-
   left_join(read_xlsx(str_c(pad_data, filename),
                       sheet = "aantallen")) %>% 
   select(-ID_afvissing) %>% 
-  select(locatie, OMES, EMSE_niveau3, datum, jaar, maand, everything())
+  select(locatie, OMES, EMSE_niveau3, datum, jaar, seizoen, everything())
 # %>%
 #   select(-datum, -jaar, -maand) %>%
 #   group_by(locatie, OMES, EMSE_niveau3) %>% 
@@ -99,7 +99,7 @@ nieuwe_soorten <-
 
 voorkomen <-
   fuiken_aantal_long %>%
-  group_by(jaar, maand, locatie, soort, inEMSE) %>%
+  group_by(jaar, seizoen, locatie, soort, inEMSE) %>%
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
   ungroup() %>%
   group_by(soort, inEMSE) %>%
@@ -118,7 +118,7 @@ soorten <-
 
 
 fuiken_aantal_long %>%
-  group_by(jaar, maand, locatie, soort, inEMSE) %>%
+  group_by(jaar, seizoen, locatie, soort, inEMSE) %>%
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
   ungroup() %>%
   group_by(soort, inEMSE) %>%
@@ -134,110 +134,57 @@ fuiken_aantal_long %>%
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
 
-fuiken_aantal_long %>%
-  group_by(soort, inEMSE) %>%
-  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
-  mutate(N_crit = any(aantal > 1)) %>%
-  ungroup() %>%
-  # filter(N_crit) %>%
-  group_by(soort, inEMSE) %>%
-  summarise(aantal = mean(aantal/uren, na.rm = TRUE)) %>%
-  ungroup() %>%
-  filter(aantal > 0) %>%
-  arrange(aantal, soort) %>%
-  ggplot(aes(fct_inorder(soort), aantal, fill = inEMSE)) +
-  geom_col() +
-  scale_y_log10() +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
-
-fuiken_aantal_long %>%
-  group_by(soort, inEMSE) %>%
-  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
-  mutate(N_crit = any(aantal > 1)) %>%
-  ungroup() %>%
-  filter(N_crit) %>%
-  group_by(soort, inEMSE) %>%
-  summarise(aantal = mean(aantal/uren, na.rm = TRUE)) %>%
-  ungroup() %>%
-  # filter(aantal >= 0.1) %>%
-  arrange(aantal, soort) %>%
-  ggplot(aes(fct_inorder(soort), aantal, fill = inEMSE)) +
-  geom_col() +
-  scale_y_log10() +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
-
-fuiken_aantal_long %>%
-  group_by(soort, inEMSE) %>%
-  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
-  mutate(N_crit = any(aantal > 1)) %>%
-  ungroup() %>%
-  filter(N_crit) %>%
-  group_by(soort, inEMSE, jaar) %>%
-  summarise(aantal = mean(aantal/uren, na.rm = TRUE)) %>%
-  ungroup() %>%
-  # filter(aantal >= 0.1) %>%
-  arrange(aantal, soort) %>%
-  ggplot(aes(fct_inorder(soort), aantal, fill = inEMSE)) +
-  geom_col() +
-  scale_y_log10() +
-  facet_wrap("jaar", ncol = 1) +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
-
-
-gewicht_long %>%
-  group_by(soort, inEMSE) %>%
-  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
-  mutate(N_crit = any(gewicht > 1)) %>%
-  ungroup() %>%
-  # filter(N_crit) %>%
-  group_by(soort, inEMSE) %>%
-  summarise(gewicht = mean(gewicht/uren, na.rm = TRUE)) %>%
-  ungroup() %>%
-  filter(gewicht > 0) %>%
-  arrange(gewicht, soort) %>%
-  ggplot(aes(fct_inorder(soort), gewicht, fill = inEMSE)) +
-  geom_col() +
-  scale_y_log10() +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
-
-gewicht_long %>%
-  group_by(soort, inEMSE) %>%
-  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
-  mutate(N_crit = any(gewicht > 1)) %>%
-  ungroup() %>%
-  filter(N_crit) %>%
-  group_by(soort, inEMSE) %>%
-  summarise(gewicht = mean(gewicht/uren, na.rm = TRUE)) %>%
-  ungroup() %>%
-  # filter(gewicht >= 0.1) %>%
-  arrange(gewicht, soort) %>%
-  ggplot(aes(fct_inorder(soort), gewicht, fill = inEMSE)) +
-  geom_col() +
-  scale_y_log10() +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
-
-gewicht_long %>%
-  group_by(soort, inEMSE) %>%
-  # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
-  mutate(N_crit = any(gewicht > 1)) %>%
-  ungroup() %>%
-  filter(N_crit) %>%
-  group_by(soort, inEMSE, jaar) %>%
-  summarise(gewicht = mean(gewicht/uren, na.rm = TRUE)) %>%
-  ungroup() %>%
-  # filter(gewicht >= 0.1) %>%
-  arrange(gewicht, soort) %>%
-  ggplot(aes(fct_inorder(soort), gewicht, fill = inEMSE)) +
-  geom_col() +
-  scale_y_log10() +
-  facet_wrap("jaar", ncol = 1) +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+# fuiken_aantal_long %>%
+#   group_by(soort, inEMSE) %>%
+#   # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
+#   mutate(N_crit = any(aantal > 1)) %>%
+#   ungroup() %>%
+#   # filter(N_crit) %>%
+#   group_by(soort, inEMSE) %>%
+#   summarise(aantal = mean(aantal/fuikdagen, na.rm = TRUE)) %>%
+#   ungroup() %>%
+#   filter(aantal > 0) %>%
+#   arrange(aantal, soort) %>%
+#   ggplot(aes(fct_inorder(soort), aantal, fill = inEMSE)) +
+#   geom_col() +
+#   scale_y_log10() +
+#   theme_bw() +
+#   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+# 
+# fuiken_aantal_long %>%
+#   group_by(soort, inEMSE) %>%
+#   # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
+#   mutate(N_crit = any(aantal > 1)) %>%
+#   ungroup() %>%
+#   filter(N_crit) %>%
+#   group_by(soort, inEMSE) %>%
+#   summarise(aantal = mean(aantal/fuikdagen, na.rm = TRUE)) %>%
+#   ungroup() %>%
+#   # filter(aantal >= 0.1) %>%
+#   arrange(aantal, soort) %>%
+#   ggplot(aes(fct_inorder(soort), aantal, fill = inEMSE)) +
+#   geom_col() +
+#   scale_y_log10() +
+#   theme_bw() +
+#   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
+# 
+# fuiken_aantal_long %>%
+#   group_by(soort, inEMSE) %>%
+#   # group_by(soort, inEMSE, jaar, seizoen, locatie) %>%
+#   mutate(N_crit = any(aantal > 1)) %>%
+#   ungroup() %>%
+#   filter(N_crit) %>%
+#   group_by(soort, inEMSE, jaar) %>%
+#   summarise(aantal = mean(aantal/fuikdagen, na.rm = TRUE)) %>%
+#   ungroup() %>%
+#   # filter(aantal >= 0.1) %>%
+#   arrange(aantal, soort) %>%
+#   ggplot(aes(fct_inorder(soort), aantal, fill = inEMSE)) +
+#   geom_col() +
+#   scale_y_log10() +
+#   facet_wrap("jaar", ncol = 1) +
+#   theme_bw() +
+#   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1))
 
 ```
 

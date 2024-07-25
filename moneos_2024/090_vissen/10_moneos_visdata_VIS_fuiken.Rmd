@@ -65,7 +65,7 @@ run_pad()
 run_variabelen <- 
   function() {
 
-    jaren <- 2023
+    jaren <- as.numeric(jaar_moneos) - 1
     vangstmethode <- c('Schietfuik')
     
     # Zeeschelde vissen
@@ -244,7 +244,7 @@ campagnes_dstnct2 <-
   data %>% 
   distinct(Gebiedcode, Gebiednaam, Begindatum, Month, Year, Methodenaam)
 
-setdiff(campagnes_dstnct, campagnes_dstnct2)
+(sd <- setdiff(campagnes_dstnct, campagnes_dstnct2))
 
 campagnes_dstnct %>% 
   distinct(Gebiedcode, Gebiednaam)
