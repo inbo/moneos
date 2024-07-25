@@ -1,0 +1,294 @@
+---
+params:
+  hoofdstuk: "130_sedimentatie_erosie"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "tabellen ecotoop grenzen MONEOS raaien"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(INBOtheme)
+library(rprojroot)
+
+library(DBI)
+
+conflicted::conflicts_prefer(dplyr::filter)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r data}
+
+jaar <- 2023
+campagne <- "C2022"
+
+data_MONEOS <- 
+  read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_2023.xlsx"),
+            sheet = "TOPOdata_MONEOSRAAIEN_INBO")
+
+```
+
+
+```{r selectie vaste MONEOS raaien met metingen in laatste jaar}
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  group_by(REEKSCODE) %>% 
+  mutate(meting = any(MeetCampagneJaar == campagne)) %>% 
+  ungroup() %>% 
+  filter(Campagne == "MONEOS",
+         meting == TRUE) %>% 
+  select(-meting)
+
+raaicodes <- 
+  data_MONEOS %>% 
+  distinct(REEKSCODE) %>% 
+  pull()
+
+```
+
+
+```{r grens schor en subtidaal}
+
+# source("Z:/R_functies/databanken/db_topodata.R")
+# 
+# raaien_EW <-
+#   read_topodata(jaren = campagne_jaren_EW,
+#                 raaien = raaicodes,
+#                 path = "Z:/")
+ 
+
+
+conn <- 
+  dbConnect(odbc::odbc(),
+            Driver = "Microsoft Access Driver (*.mdb, *.accdb)",
+            DBQ = str_c("Z:/", "Topografie/slikschorprofiel/Databank/SlikSchorProfiel_data"))
+
+# tblData_Dwarsprofiel <- 
+#   tbl(conn, "tblData_Dwarsprofiel")
+cdeRaai <- 
+  tbl(conn, "cdeRaai")
+
+tbl_afstand <-
+  cdeRaai %>% 
+  filter(REEKSCODE %in% raaicodes) %>% 
+  select(REEKSCODE, Rivier, afstand_grens = `Afstand tot de BNLgrens`) %>% 
+  collect()
+
+dbDisconnect(conn)
+
+
+conn <- 
+  dbConnect(odbc::odbc(),
+            Driver = "Microsoft Access Driver (*.mdb, *.accdb)",
+            DBQ = str_c("Z:/", "Ecotoop/Getij/verwerking/ApplModeltijdata.mdb"))
+
+HW85_Schelde <-
+  tbl(conn, "OFHWmod_Schelde_2018_2021_85proc") %>% 
+  collect()
+  
+HW85_Durme <-
+  tbl(conn, "OFHWmod_SCALDIS_Durme_2019_85proc") %>% 
+  collect()
+  
+HW85_Rupel <-
+  tbl(conn, "OFHWmod_SCALDIS_Rupel_2019_85proc") %>% 
+  collect()
+  
+HW85_Gentbrugge <-
+  tbl(conn, "OFHWmod_SCALDIS_Gentbrugge_2019_85proc") %>% 
+  collect()
+
+LW30_Schelde <-
+  tbl(conn, "OFLWmod_Schelde_2018_2021_30proc") %>% 
+  collect()
+  
+LW30_Durme <-
+  tbl(conn, "OFLWmod_SCALDIS_Durme_2019_30proc") %>% 
+  collect()
+  
+LW30_Rupel <-
+  tbl(conn, "OFLWmod_SCALDIS_Rupel_2019_30proc") %>% 
+  collect()
+  
+LW30_Gentbrugge <-
+  tbl(conn, "OFLWmod_SCALDIS_Gentbrugge_2019_30proc") %>% 
+  collect()
+
+dbDisconnect(conn)
+
+tbl_hoogte_HW85 <-
+  tbl_afstand %>% 
+  filter(Rivier == "Zeeschelde",
+         afstand_grens <= 100) %>% 
+  left_join(HW85_Schelde) %>% 
+  bind_rows(tbl_afstand %>% 
+              filter(Rivier == "Zeeschelde",
+                     afstand_grens > 100) %>% 
+              left_join(HW85_Gentbrugge)) %>% 
+  bind_rows(tbl_afstand %>% 
+              filter(Rivier == "Durme") %>% 
+              mutate(afstand_grens = afstand_grens + 50.75) %>% 
+              left_join(HW85_Durme)) %>% 
+  bind_rows(tbl_afstand %>% 
+              filter(Rivier == "Rupel") %>% 
+              mutate(afstand_grens = afstand_grens + 39.9) %>% 
+              left_join(HW85_Rupel)) %>% 
+  select(REEKSCODE, afstand_grens, waterstand_HW85 = waterstand)
+
+tbl_hoogte_LW30 <-
+  tbl_afstand %>% 
+  filter(Rivier == "Zeeschelde",
+         afstand_grens <= 100) %>% 
+  left_join(LW30_Schelde) %>% 
+  bind_rows(tbl_afstand %>% 
+              filter(Rivier == "Zeeschelde",
+                     afstand_grens > 100) %>% 
+              left_join(LW30_Gentbrugge)) %>% 
+  bind_rows(tbl_afstand %>% 
+              filter(Rivier == "Durme") %>% 
+              mutate(afstand_grens = afstand_grens + 50.75) %>% 
+              left_join(LW30_Durme)) %>% 
+  bind_rows(tbl_afstand %>% 
+              filter(Rivier == "Rupel") %>% 
+              mutate(afstand_grens = afstand_grens + 39.9) %>% 
+              left_join(LW30_Rupel)) %>% 
+  select(REEKSCODE, afstand_grens, waterstand_LW30 = waterstand)
+
+```
+
+
+```{r droogvalduur grens laag - middelhoog slik}
+
+conn <- 
+  dbConnect(odbc::odbc(),
+            Driver = "Microsoft Access Driver (*.mdb, *.accdb)",
+            DBQ = str_c("Z:/", "Ecotoop/Getij/verwerking/ApplModeltijdata.mdb"))
+
+DD_Schelde <-
+  tbl(conn, "DDmod_Schelde_2018_2021") %>% 
+  filter(DD %in% c(25, 35, 60, 75)) %>% 
+  collect()
+  
+DD_Durme <-
+  tbl(conn, "DDmod_SCALDIS_Durme_2019") %>% 
+  filter(DD %in% c(25, 35, 60, 75)) %>% 
+  collect()
+  
+DD_Rupel <-
+  tbl(conn, "DDmod_SCALDIS_Rupel_2019") %>% 
+  filter(DD %in% c(25, 35, 60, 75)) %>% 
+  collect()
+  
+DD_Gentbrugge <-
+  tbl(conn, "DDmod_SCALDIS_Gentbrugge_2019") %>% 
+  filter(DD %in% c(25, 35, 60, 75)) %>% 
+  collect()
+
+dbDisconnect(conn)
+
+tbl_hoogte_DD <-
+  tbl_afstand %>% 
+  filter(Rivier == "Zeeschelde",
+         afstand_grens <= 100) %>% 
+  left_join(DD_Schelde) %>% 
+  bind_rows(tbl_afstand %>% 
+              filter(Rivier == "Zeeschelde",
+                     afstand_grens > 100) %>% 
+              left_join(DD_Gentbrugge)) %>% 
+  bind_rows(tbl_afstand %>% 
+              filter(Rivier == "Durme") %>% 
+              mutate(afstand_grens = afstand_grens + 50.75) %>% 
+              left_join(DD_Durme)) %>% 
+  bind_rows(tbl_afstand %>% 
+              filter(Rivier == "Rupel") %>% 
+              mutate(afstand_grens = afstand_grens + 39.9) %>% 
+              left_join(DD_Rupel)) %>% 
+  select(REEKSCODE, afstand_grens, DD, waterstand) %>% 
+  pivot_wider(names_from = DD, 
+              values_from = waterstand,
+              names_prefix = "waterstand_DD_")
+
+```
+
+
+```{r grens rapportage raai}
+
+start_raai <- 
+  data.frame(REEKSCODE = c("GBSa","GBSb","ODa","DO","GSb","GSc","LH","LP","KPb","KPe","GW",
+                           "HO","KV","NOTb","NOTc","BAL","TB",
+                           "WE","BR","DU","PD","MK","GSHb","KRb","GBa","ZLa",
+                           "APa","APc","PA","BM","HEUc","HEUf"), 
+             afstand_begin = c(25,25,40,15,10,10,5,10,10,18,1,
+                               5,5,5,0,5,4,
+                               5,5,2,5,2,6,5,2,5,
+                               2,0,5,10,10,5), 
+             afstand_slik = c(125,80,270,250,140,210,45,215,10,100,50,
+                              17,70,135,20,120,45,
+                              150,75,15,60,130,122,30,45,130,
+                              38,10,45,550,105,120), 
+             afstand_schor = c(190,130,300,300,175,235,65,240,20,140,70,
+                               25,85,160,35,150,60,
+                               170,110,25,85,145,135,40,55,135,
+                               50,23,55,570,107,135))
+
+```
+
+
+```{r wegschrijven gegevens}
+
+tbl_ecotoopgrenzen <-
+  tbl_hoogte_HW85 %>% 
+  left_join(tbl_hoogte_LW30) %>% 
+  left_join(tbl_hoogte_DD)
+
+# tbl_ecotoopgrenzen <-
+#   tbl_waterstanden %>%
+#   select(-afstand_begin)
+
+tbl_ecotoopgrenzen$REEKSCODE %>% 
+  setdiff(start_raai$REEKSCODE)
+start_raai$REEKSCODE %>% 
+  setdiff(tbl_ecotoopgrenzen$REEKSCODE)
+
+tbl_ecotoopgrenzen <-
+  tbl_ecotoopgrenzen %>% 
+  left_join(start_raai)
+
+tbl_ecotoopgrenzen %>% 
+  write_xlsx(path = str_c(pad_data, "ecotoopgrenzen.xlsx"))
+
+```
+
