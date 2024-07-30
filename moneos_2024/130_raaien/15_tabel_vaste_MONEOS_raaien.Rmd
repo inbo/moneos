@@ -55,7 +55,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 conn <- 
   dbConnect(odbc::odbc(),
             Driver = "Microsoft Access Driver (*.mdb, *.accdb)",
-            DBQ = str_c("Z:/", "Topografie/slikschorprofiel/Databank/SlikSchorProfiel_data"))
+            DBQ = str_c("Q:/Projects/PRJ_Schelde/", "Topografie/slikschorprofiel/Databank/SlikSchorProfiel_data"))
 
 tbl_vaste_raaien <- 
   tbl(conn, "cdeRaai") %>% 

@@ -62,9 +62,9 @@ sheets_figuren <- NULL
 
 dpi <- 150
 
-jaar <- 2023
-campagne <- "C2022"
-campagne_jaren_EW <- 2018:2023
+jaar <- 2024
+campagne <- "C2023"
+campagne_jaren_EW <- 2019:2024
 campagnes_EW <- str_c("C", campagne_jaren_EW-1)
 
 year_colors <-
@@ -99,7 +99,7 @@ tabel_raaien_vast <-
 
 
 data_MONEOS <- 
-  read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_2023.xlsx"),
+  read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_", jaar, ".xlsx"),
             sheet = "TOPOdata_MONEOSRAAIEN_INBO")
 
 raai_campagne <- 
@@ -107,7 +107,7 @@ raai_campagne <-
   distinct(MeetCampagneJaar, Salzone, Omes, DATUM, REEKSCODE, Campagne)
 
 data_NA <-
-  read_xlsx(path = str_c(pad_data, "toevoeging_NA_grafieken_2023.xlsx"))
+  read_xlsx(path = str_c(pad_data, "toevoeging_NA_grafieken_", jaar, ".xlsx"))
 
 data_NA <-
   data_NA %>% 

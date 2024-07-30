@@ -50,8 +50,8 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 dpi <- 150
 
-jaar <- 2023
-campagne <- "C2022"
+jaar <- 2024
+campagne <- "C2023"
 
 tabel_raaien_vast <- 
   read_excel(paste0(pad_tabellen, "tbl_vaste_raaien_MONEOS.xlsx")) %>% 
@@ -79,10 +79,10 @@ tabel_raaien_vast <-
   arrange(OMES, rivier, `afstand grens`)
 
 data_MONEOS <- 
-  read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_2023.xlsx"),
+  read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_", jaar, ".xlsx"),
             sheet = "TOPOdata_MONEOSRAAIEN_INBO")
 data_NA <-
-  read_xlsx(path = str_c(pad_data, "toevoeging_NA_grafieken_2023.xlsx"))
+  read_xlsx(path = str_c(pad_data, "toevoeging_NA_grafieken_", jaar, ".xlsx"))
 
 raai_campagne <- 
   data_MONEOS %>% 
