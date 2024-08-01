@@ -163,9 +163,13 @@ tbl_data <-
                left_join(DimVisindexTaxon %>% select(TaxonKey, Exoot)), 
              by = "TaxonKey") %>% 
   inner_join(DimMethode, by = "MethodeKey") %>% 
-  select(MetingPivotKey, WaarnemingKey, MetingID, WaarnemingID, GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, Begindatum, Month, Year, MethodeKey, Methodenaam, Methodegroepcode, TaxonKey, Soort,
-         # WetenschappelijkeNaam, 
-         Exoot, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN, TEMPERATUUR, ZUURSTOF, TURBIDITEIT, CONDUCTIVITEIT, PH) %>% 
+  select(MetingPivotKey, WaarnemingKey, MetingID, WaarnemingID, 
+         GebiedKey, Gebiedcode, LambertX, LambertY, Lat, Long, Gebiednaam, Gemeentenaam, 
+         Begindatum, Month, Year, 
+         MethodeKey, Methodenaam, Methodegroepcode, 
+         TaxonKey, Soort, WetenschappelijkeNaam, Exoot, 
+         TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN, 
+         TEMPERATUUR, ZUURSTOF, TURBIDITEIT, CONDUCTIVITEIT, PH) %>% 
   filter(Year %in% jaren,
          Gebiedcode %in% locatie_nrs,
          Methodenaam %in% vangstmethode)
@@ -231,6 +235,14 @@ campagnes <-
   left_join(volume %>% select(WRNG_ID, uren, volume), by = c("WaarnemingID" = "WRNG_ID")) %>% 
   left_join(tbl_abiotiek %>% collect(), by = c("WaarnemingID" = "ABME_WRNG_ID"))
 
+soorten <-
+  data %>% 
+  distinct(Soort, WetenschappelijkeNaam, Exoot)
+
+data <-
+  data %>% 
+  select(-WetenschappelijkeNaam)
+  
 ```
 
 
@@ -244,7 +256,7 @@ dbDisconnect(VIS2)
 
 ```{r hervariabel, ref.label=c('pad', 'variabelen')}
 
-rm(list = ls()[-which(ls() %in% c("data", "campagnes", "params", "run_pad", "run_variabelen"))])
+rm(list = ls()[-which(ls() %in% c("data", "campagnes", "soorten", "params", "run_pad", "run_variabelen"))])
 
 run_pad()
 run_variabelen()
@@ -264,6 +276,7 @@ dubbel_gewicht <-
 ```{r opslaan ruwe data ankerkuil}
 
 write_xlsx(list(campagnes = campagnes,
+                soorten = soorten,
                 data = data),
            path = str_c(pad_data, filename, "_ruw_VIS_", str_c(unique(range(jaren)), collapse = "_"), ".xlsx"))
 

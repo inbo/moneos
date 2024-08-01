@@ -376,6 +376,14 @@ data_ankerkuil <-
 ```
 
 
+```{r verschil soorten fuiken - ankerkuil}
+
+setdiff(soorten_vis_fuiken, soorten_vis_ankerkuil)
+setdiff(soorten_vis_ankerkuil, soorten_vis_fuiken)
+
+```
+
+
 ```{r aantal-en-gewicht-per-fuikdag}
 
 data_fuiken <- 
@@ -499,7 +507,7 @@ indeling_EMSE_missing <-
 
 relatief_aantal_fuiken <- 
   data_fuiken %>% 
-  filter(jaar == 2022) %>% 
+  filter(jaar == 2023) %>% 
   group_by(seizoen, locatie) %>%
   mutate(relatief_aantal = aantal/sum(aantal),
          relatief_gewicht = gewicht/sum(gewicht)) %>% 
@@ -557,7 +565,7 @@ relatieve_aantallen_EMSE_fuiken <-
 
 relatief_aantal_ankerkuil <- 
   data_ankerkuil %>% 
-  filter(jaar == 2022) %>% 
+  filter(jaar == 2023) %>% 
   group_by(seizoen, locatie) %>%
   mutate(relatief_aantal_laatste_jaar = aantal/sum(aantal),
          relatief_gewicht_laatste_jaar = gewicht/sum(gewicht)) %>% 
@@ -621,7 +629,7 @@ relatieve_aantallen_EMSE_ankerkuil <-
 
 relatief_aantal_fuiken <- 
   data_fuiken %>% 
-  filter(jaar == 2022) %>% 
+  filter(jaar == 2023) %>% 
   group_by(seizoen, locatie) %>%
   mutate(relatief_aantal = aantal/sum(aantal),
          relatief_gewicht = gewicht/sum(gewicht)) %>% 
@@ -671,7 +679,7 @@ relatieve_aantallen_EMSE_fuiken <-
 
 relatief_aantal_ankerkuil <- 
   data_ankerkuil %>% 
-  filter(jaar == 2022) %>% 
+  filter(jaar == 2023) %>% 
   group_by(seizoen, locatie) %>%
   mutate(relatief_aantal = aantal/sum(aantal),
          relatief_gewicht = gewicht/sum(gewicht)) %>% 
@@ -760,7 +768,7 @@ save(soorten_indeling_kleur, file = str_c(pad_data, "soorten_kleur.RData"))
 
 relatief_aantal_fuiken <- 
   data_fuiken %>% 
-  filter(jaar == 2022) %>% 
+  filter(jaar == 2023) %>% 
   group_by(seizoen, locatie) %>%
   mutate(relatief_aantal = aantal/sum(aantal),
          relatief_gewicht = gewicht/sum(gewicht)) %>% 
@@ -783,6 +791,20 @@ relatief_aantal_fuiken <-
                           c(., "rest")),
          locatie = factor(locatie, levels = levels_locatie_fuiken))
 
+
+library(Polychrome)
+swatch(kelly.colors(50))
+swatch(glasbey.colors(50))
+swatch(green.armytage.colors(50))
+swatch(palette36.colors(50))
+swatch(alphabet.colors(50))
+swatch(light.colors(50))
+swatch(dark.colors(50))
+swatch(sky.colors(50))
+
+seed <- c("#ff0000", "#00ff00", "#0000ff")
+mycolors <- createPalette(50, seed, prefix="mine")
+swatch(mycolors)
 
 # n <- 3
 # seq(1,by=n,length.out=n_kleur)%%n_kleur+1
@@ -818,20 +840,26 @@ for(s in 14:25) {
   
   
   sq <- seq(1,by=s,length.out=n_kleur)%%(n_kleur+1)
-  lm <- 52-((s-1)%%(s))
+  lm <- n_kleur-((s-1)%%(s))
   sq[sq<=lm] <- sq[sq<=lm] + 1
   # sort(sq)
   
   soorten_indeling_kleur$pos <- sq
   
   
+  seed <- c("#ff6000", "#0a6f00", "#000fff")
   soorten_indeling_kleur$kleur <- 
-    wes_palette("Darjeeling1", 
-                type = "continuous", 
-                n = n_kleur) %>% 
-    unname() %>% 
-    .[soorten_indeling_kleur$pos]
+    # wes_palette("Darjeeling1", 
+    #             type = "continuous", 
+    #             n = n_kleur) %>% 
+    # scales::pal_hue()(n_kleur) %>% 
+    createPalette(n_kleur, seed) 
+  # %>% 
+    # unname()
+  # %>% 
+  #   .[soorten_indeling_kleur$pos]
   
+  # swatch(createPalette(n_kleur, seed))
   
   # my_pal_wes <- 
   #   c(wes_palette("Darjeeling1", 
@@ -900,7 +928,7 @@ for(s in 76) {
     my_pal_wes[names(my_pal_wes) %in% unique(relatief_aantal_ankerkuil$soort)]
   
   pl <-
-    relatief_aantal_ankerkuil %>% 
+    relatief_aantal_fuiken %>% 
     mutate(aantal = if_else(aantal == 0, NA_real_, aantal)) %>% 
     ggplot(aes(x ="", y = aantal, fill = soort)) +
     geom_col(position = "fill") +

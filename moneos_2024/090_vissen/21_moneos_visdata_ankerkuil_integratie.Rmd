@@ -84,7 +84,7 @@ gewicht_historisch <-
 ```
 
 
-```{r inlezen recent data}
+```{r inlezen recente data}
 
 data_recent <- 
     read_xlsx(str_c(pad_data, "ankerkuil_Zeeschelde_ruw_VIS_",
@@ -140,6 +140,7 @@ data_recent <-
   mutate(Soort = case_match(Soort, 
                             "blauwband" ~ "blauwbandgrondel",
                             "zandspiering" ~ "kleine zandspiering",
+                            "klein zeepaardje" ~ "langsnuitzeepaardje",
                             "gewone steurgarnaal" ~ "steurgarnalen",
                             "steurgarnaal" ~ "steurgarnalen",
                             "grijze garnaal" ~ "grijze garnalen",
@@ -642,7 +643,7 @@ gewicht <-
 ```
 
 
-```{r wegschrijven-data}
+```{r wegschrijven data}
 
 filename <- "ankerkuil_Zeeschelde_VLIZ"
 
