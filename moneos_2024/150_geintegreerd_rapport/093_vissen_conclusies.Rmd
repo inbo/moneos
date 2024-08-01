@@ -36,6 +36,7 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 ```
 
 ```{r 093-table_from_figure-function}
+
 figtab <- 
   function(label, image_file, caption=NULL) {
     txt <- sprintf('\\begin{table}[H]\n\\caption{%s}\n\\label{tab:%s}\n\\includegraphics{%s}\n\\end{table}', 
@@ -45,6 +46,7 @@ figtab <-
     magick::image_read(image_file) %>% magick::image_ggplot() %>% print()
     writeLines(txt)
   }
+
 ```
 
 ```{r 093-meta-data}
@@ -52,7 +54,7 @@ figtab <-
 meta_data <- 
   read_delim(paste0(pad_data, "vissen_meta_data.csv"),
              delim = ";")
-  
+
 for(i in 1:nrow(meta_data)){
   ##first extract the object value
   tempobj=meta_data$waarde[i]
@@ -118,7 +120,10 @@ In deze rapportage kwamen echter nog opvallende verschillen aan bod:
     Voor haring waren dat 2022 en 2021 respectievelijk.
 
 Hieruit kunnen we enerzijds afleiden dat het omzetten van vangstaantallen naar aantal per volume eenheid niet zo evident is.
-Anderzijds zijn plaats en tijdstip zeer bepalend voor het beeld dat we ons vormen van de visgemeenschap. Concluderend is er een noodzaak om met innovatieve monitoring (bijvoorbeeld met echosounding) continue data te verzamelen over de visgemeenschap op de besproken vislocaties. Dit onderzoek moet helpen om de variaties in de vispopulaties in ruimte en tijd te verklaren. Omgekeerd levert de klassieke monitoring informatie over de aanwezige soorten.   
+Anderzijds zijn plaats en tijdstip zeer bepalend voor het beeld dat we ons vormen van de visgemeenschap.
+Concluderend is er een noodzaak om met innovatieve monitoring (bijvoorbeeld met echosounding) continue data te verzamelen over de visgemeenschap op de besproken vislocaties.
+Dit onderzoek moet helpen om de variaties in de vispopulaties in ruimte en tijd te verklaren.
+Omgekeerd levert de klassieke monitoring informatie over de aanwezige soorten.
 
 ### EMSE methodiek
 

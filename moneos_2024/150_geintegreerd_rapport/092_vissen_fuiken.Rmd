@@ -36,6 +36,7 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen/fuiken")
 ```
 
 ```{r 092-table_from_figure-function}
+
 figtab <- 
   function(label, image_file, caption=NULL) {
     txt <- sprintf('\\begin{table}[H]\n\\caption{%s}\n\\label{tab:%s}\n\\includegraphics{%s}\n\\end{table}', 
@@ -45,6 +46,7 @@ figtab <-
     magick::image_read(image_file) %>% magick::image_ggplot() %>% print()
     writeLines(txt)
   }
+
 ```
 
 ```{r 092-meta-data}
@@ -209,7 +211,7 @@ knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_gevangen_individ
 In de hieronder volgende figuren voor aantallen en biomassa worden de bijdragen van de meest abundante soorten per functionele groep met individuele kleurcodes weergegeven.
 Soorten die binnen een functionele groep minder dan 10% van zowel de aantallen als de biomassa uitmaken worden telkens samengenomen als 'rest'.
 
-[Estuariene soorten en mariene migranten]{.underline}
+***Estuariene soorten en mariene migranten***
 
 Figuur \@ref(fig:092-figuur-aantallen-marien-EMSE) en Figuur \@ref(fig:092-figuur-biomassa-marien-EMSE) geven per saliniteitszone (EMSE niveau 3) en dieetvoorkeur respectievelijk de aantallen en biomassa weer voor de gevangen estuariene soorten en mariene migranten.
 
@@ -275,7 +277,7 @@ knitr::include_graphics(paste0(pad_figuren, "diversiteit_S_D_EMSE_marien.jpg"))
 
 <br/>
 
-[Diadrome soorten]{.underline}
+***Diadrome soorten***
 
 Er zijn geen diadrome benthivore vissoorten in de Zeeschelde.
 De twee zogenaamd piscivore soorten, de zeeprik en de rivierprik zijn eigenlijk parasitaire soorten waarvan slechts sporadisch een enkel groter exemplaar met de fuik gevangen wordt.
@@ -326,7 +328,7 @@ knitr::include_graphics(paste0(pad_figuren, "diversiteit_S_D_EMSE_diadroom.jpg")
 
 <br/>
 
-[Zoetwater soorten]{.underline}
+***Zoetwater soorten***
 
 Bij de zoetwater soorten zijn omnivoren het meest talrijk en vertegenwoordigen ze de grootste biomassa, gevolgd door benthivoren en vervolgens piscivoren (Figuur \@ref(fig:092-figuur-aantallen-zoetwater-EMSE), Figuur \@ref(fig:092-figuur-biomassa-zoetwater-EMSE)).
 
@@ -398,7 +400,7 @@ Slechts een aantal soorten komen echter in relatief hoge aantallen voor.
 
 <!--# enkel figuren voor aantallen worden getoond. Figuren voor biomassa zijn wel terug te vinden onder PRJ_SCHELDE\VNSC\Rapportage_INBO\2022\090_vissen\figuren -->
 
-[Estuariene soorten en mariene migranten]{.underline}
+***Estuariene soorten en mariene migranten***
 
 Van de estuariene en mariene soorten komen brakwatergrondel, dikkopje, haring en zeebaars vrij frequent voor (\> 30 per fuikdag, Figuur \@ref(fig:092-figuur-mariene-sleutelsoorten)).
 De overige soorten komen slechts in zeer kleine aantallen voor.
@@ -428,7 +430,7 @@ knitr::include_graphics(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marie
 
 <br/>
 
-[Diadrome soorten]{.underline}
+***Diadrome soorten***
 
 De meest voorkomende diadrome sleutelsoorten (\> 15 individuen per fuikdag) zijn bot, paling en vooral spiering (Figuur \@ref(fig:092-figuur-diadrome-sleutelsoorten)).
 
@@ -459,7 +461,7 @@ knitr::include_graphics(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadr
 
 <br/>
 
-[Zoetwater soorten]{.underline}
+***Zoetwater soorten***
 
 De meest voorkomende sleutelsoorten qua aantallen/biomassa voor de zoetwatersoorten zijn blankvoorn, brasem en snoekbaars (Figuur \@ref(fig:092-figuur-zoetwater-sleutelsoorten)).
 
@@ -624,8 +626,8 @@ In de periode 2011-2020 was deze indicator redelijk stabiel in vergelijking tot 
 De laatste twee jaren daalde de EQR van de zoete zone echter van GEP in 2020 over matig in 2021 naar ontoereikend 2022.
 De beide andere zones haalden nog nooit de goede ecologische toestand maar scoren wel matig in 2022.
 
-Figuur \@ref(fig:092-figuur-spindiagram) geeft voor elke zone een indicatie van de ecologische aspecten die minder en beter scoren in 2022. Zie Tabel \@ref(tab:090-tabel-metrieken-visindex) voor verklaring van de afkortingen.
-
+Figuur \@ref(fig:092-figuur-spindiagram) geeft voor elke zone een indicatie van de ecologische aspecten die minder en beter scoren in 2022.
+Zie Tabel \@ref(tab:090-tabel-metrieken-visindex) voor verklaring van de afkortingen.
 
 ```{r 092-tabel-visindex}
 

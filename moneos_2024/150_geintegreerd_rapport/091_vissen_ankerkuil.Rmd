@@ -36,6 +36,7 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen/ankerkuil")
 ```
 
 ```{r 091-table_from_figure-function}
+
 figtab <- 
   function(label, image_file, caption=NULL) {
     txt <- sprintf('\\begin{table}[H]\n\\caption{%s}\n\\label{tab:%s}\n\\includegraphics{%s}\n\\end{table}', 
@@ -45,6 +46,7 @@ figtab <-
     magick::image_read(image_file) %>% magick::image_ggplot() %>% print()
     writeLines(txt)
   }
+
 ```
 
 ```{r 091-meta-data}
@@ -65,6 +67,8 @@ for(i in 1:nrow(meta_data)){
 ## Resultaten
 
 ### Ankerkuil
+
+<!--# XXXeen aantal stalen met 'grondel sp' dus grondel niet op soort gebracht. Daarom werd 'Grondel sp' werd niet meegenomen in de analyses. -->
 
 #### Soortenrijkdom in `r laatste_jaar`
 
@@ -189,7 +193,7 @@ knitr::include_graphics(paste0(pad_figuren, "relatieve_biomassa_gevangen_individ
 In de hieronder volgende figuren voor aantallen en biomassa worden de bijdragen van de meest abundante soorten per functionele groep met individuele kleurcodes weergegeven.
 Soorten die binnen een functionele groep minder dan 10% van zowel de aantallen als de biomassa uitmaken worden telkens samengenomen als 'rest'.
 
-[Estuariene soorten en mariene migranten]{.underline}
+***Estuariene soorten en mariene migranten***
 
 Figuur \@ref(fig:091-figuur-aantallen-marien-EMSE) geeft per saliniteitszone (EMSE niveau 3) en dieetvoorkeur de aantallen weer voor de gevangen estuariene soorten en mariene migranten.
 
@@ -254,7 +258,7 @@ knitr::include_graphics(paste0(pad_figuren, "diversiteit_S_D_EMSE_marien.jpg"))
 
 <br/>
 
-[Diadrome soorten]{.underline}
+***Diadrome soorten***
 
 Volgens de EMSE indeling zijn er geen diadrome benthivore en planktivore vissoorten in de Zeeschelde.
 De twee zogenaamd piscivore soorten, de zeeprik en de rivierprik zijn eigenlijk parasitaire soorten waarvan er telkens maar enkele gevangen worden.
@@ -308,7 +312,7 @@ knitr::include_graphics(paste0(pad_figuren, "diversiteit_S_D_EMSE_diadroom.jpg")
 
 <br/>
 
-[Zoetwater soorten]{.underline}
+***Zoetwater soorten***
 
 Zoetwater soorten zijn meest talrijk in de zoetwaterzone waar de aantallen en biomassa vanaf 2016 algemeen toenemen (Figuur \@ref(fig:091-figuur-aantallen-zoetwater-EMSE), Figuur \@ref(fig:091-figuur-biomassa-zoetwater-EMSE)).
 
@@ -377,7 +381,7 @@ Slechts een aantal soorten komen echter in relatief hoge aantallen voor.
 
 <!--# enkel figuren voor aantallen worden getoond. Figuren voor biomassa zijn wel terug te vinden onder PRJ_SCHELDE\VNSC\Rapportage_INBO\2022\090_vissen\figuren -->
 
-[Estuariene soorten en mariene migranten]{.underline}
+***Estuariene soorten en mariene migranten***
 
 Van de estuariene en mariene sleutelsoorten komen brakwatergrondel, dikkopje, haring en zeebaars vrij frequent voor (\> 1 individu per 1000m³, Figuur \@ref(fig:091-figuur-mariene-sleutelsoorten)).
 De overige soorten komen slechts in zeer kleine aantallen voor.
@@ -407,7 +411,7 @@ knitr::include_graphics(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marie
 
 <br/>
 
-[Diadrome soorten]{.underline}
+***Diadrome soorten***
 
 De meest voorkomende diadrome sleutelsoorten (\> 1 individu per 1000m³) zijn bot, fint en vooral spiering (Figuur \@ref(fig:091-figuur-diadrome-sleutelsoorten)).
 Paling wordt slechts in kleine aantallen gevangen, maar is qua biomassa toch vrij belangrijk.
@@ -439,7 +443,7 @@ knitr::include_graphics(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadr
 
 <br/>
 
-[Zoetwater soorten]{.underline}
+***Zoetwater soorten***
 
 De meest voorkomende sleutelsoorten qua aantallen/biomassa voor de zoetwatersoorten zijn blankvoorn, brasem en snoekbaars (Figuur \@ref(fig:091-figuur-zoetwater-sleutelsoorten)).
 

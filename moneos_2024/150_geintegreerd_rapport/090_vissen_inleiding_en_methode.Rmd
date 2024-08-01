@@ -38,6 +38,7 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 ```
 
 ```{r 090-table_from_figure-function}
+
 figtab <- 
   function(label, image_file, caption=NULL) {
     txt <- sprintf('\\begin{table}[H]\n\\caption{%s}\n\\label{tab:%s}\n\\includegraphics{%s}\n\\end{table}', 
@@ -47,11 +48,21 @@ figtab <-
     magick::image_read(image_file) %>% magick::image_ggplot() %>% print()
     writeLines(txt)
   }
+
 ```
 
 ```{r 090-meta-data}
 
-laatste_jaar <- 2022 
+meta_data <- 
+  read_delim(paste0(pad_data, "vissen_meta_data.csv"),
+             delim = ";")
+
+for(i in 1:nrow(meta_data)){
+  ##first extract the object value
+  tempobj=meta_data$waarde[i]
+  ##now create a new variable with the original name of the list item
+  eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+}
 
 soortenlijst <- 
   read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"), 
@@ -135,8 +146,7 @@ INBO fuikvangst- en ankerkuilgegevens zijn beschikbaar via de V.I.S. databank ([
 Vrijwilligersdata worden afzonderlijk opgeslagen.
 
 In de huidige rapportage worden ankerkuil data en fuikgegevens van de Zeeschelde besproken.
-Gegevens van de zijrivieren worden later verwerkt en gerapporteerd.
-Ankerkuildata en fuikdata van het reguliere Zeeschelde meetnet worden aangeleverd als xlsx-bestanden aan de Scheldemonitor.
+***XXXGegevens van de zijrivieren worden later verwerkt en gerapporteerd.XXX*** Ankerkuildata en fuikdata van het reguliere Zeeschelde meetnet worden aangeleverd als xlsx-bestanden aan de Scheldemonitor.
 
 ```{r 090-tabel-visinspanning, results="asis", fig.show='hide', out.width="100%"}
 caption_tab <- "Historisch overzicht van de visinspanning  met schietfuiken (groen) en ankerkuil (blauw) in de verschillende zones van de Zeeschelde."
@@ -275,7 +285,6 @@ Naast de algemene trends per functionele groep wordt er ook gekeken naar de tren
 Deze soorten zijn zo geselecteerd dat ze een goede vertegenwoordiging geven van de verschillende saliniteits- en dieetvoorkeuren (zie bijlage Tabel \@ref(tab:093-tabel-zeeschelde-soorten)) en zijn belangrijke indicatoren voor het ecologisch functioneren van het systeem.
 Daarnaast zijn ook de europees beschermde soorten opgenomen in de sleutelsoortenlijst.
 
-
 ### Bepalen van de visindex
 
 De gegevens van de fuikvangsten in de Zeeschelde worden gebruikt om de visindex per KRW waterlichaam te berekenen volgens de zone-specifieke estuariene index voor biotische integriteit (Breine et al., 2010).
@@ -285,7 +294,6 @@ Elke gebruikte metriek staat voor een bepaalde functie van het ecosysteem voor d
 De betekenis van de gebruikte metrieken is weergegeven in Tabel \@ref(tab:090-tabel-metrieken-visindex).
 Voor elke metriek wordt een score bepaald in functie van een vastgelegde referentietoestand.
 In elke saliniteitszone gelden andere metrieken en grenswaarden (Breine et al., 2010).
-
 
 ```{r 090-tabel-metrieken-visindex}
 
@@ -310,4 +318,3 @@ tabel_metrieken %>%
 ```
 
 <br/>
-
