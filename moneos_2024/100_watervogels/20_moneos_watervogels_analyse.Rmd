@@ -1187,7 +1187,7 @@ Waterbirds_sigma_estuarien %>%
 SeizMax <- function(data, type){
   data %>% 
     mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
-    dplyr::filter(telseizoen1 %in% c(1991:2022)) %>%  
+    dplyr::filter(telseizoen1 %in% c(1991:2023)) %>%  
     dplyr::filter(taxongroepcode != "MS") %>% # geen meeuwen of sternen  # geen meeuwen of sternen
     dplyr::filter(maand %in% c(10:12, 1:3)) %>%
     group_by(telseizoen1, maand) %>% 
@@ -1317,10 +1317,14 @@ mav_ZschSigma_estuarien_wetland <- Wmax_Zsch_Sigma_estuarien_wetland %>% mav_wm(
 ##voor natuurindicator
 mav_Zsc_ZR <- Wmax_Zsch_ZR %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 
-mav_Zsc_ZR %>%   write_delim(paste0(pad_tabellen, "mav_Zsc_ZR.csv", row.names=FALSE, delim = ";"))
+mav_Zsc_ZR %>%   
+  write_csv(paste0(pad_tabellen, "mav_Zsc_ZR.csv"))
 mav_Zsc_ZR %>%   write_tsv(paste0(pad_tabellen, "mav_Zsc_ZR.tsv"))
 mav_Zsc_ZR_Sigma <- Wmax_Zsch_ZR_Sigma %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 mav_Zsc_ZR_Sigma %>%   write_tsv(paste0(pad_tabellen, "mav_Zsc_ZR_Sigma.tsv"))
+
+mav_Zsc_ZR_Sigma %>%
+  write_csv(paste0(pad_tabellen, "mav_Zsc_ZR_Sigma.csv"))
 
 # mav_ZscZRSigmaVallei <- Wmax_ZschZRSigmaVallei %>% mav_wm(.$telseizoen1, .$Wmax, 5)
 # mav_ZscSigma <- Wmax_Zsch_Sigma %>% mav_wm(.$telseizoen1, .$Wmax, 5)
@@ -1425,7 +1429,7 @@ plot_mav <- function(data){
       geom_line(aes(y=m), color="blue") +
       # geom_hline(yintercept = 40000, linetype = 2, size = 1.4) +
       labs(y = "Wintermaximum") +
-      scale_x_continuous(breaks = seq(1990, 2021, by = 5)) + 
+      scale_x_continuous(breaks = seq(1990, 2022, by = 5)) + 
       scale_y_continuous(breaks = seq(0, 85000, by = 20000),
                          limits = c(0, 85000)) +
       theme(axis.title.x = element_blank()) 
@@ -1437,7 +1441,7 @@ plot_mav <- function(data){
       geom_line(aes(y=m, color = type)) +
       # geom_hline(yintercept = 40000, linetype = 2, size = 1.4) +
       labs(y = "Wintermaximum") +
-      scale_x_continuous(breaks = seq(1990, 2021, by = 5)) + 
+      scale_x_continuous(breaks = seq(1990, 2022, by = 5)) + 
       scale_y_continuous(breaks = seq(0, 85000, by = 20000),
                          limits = c(0, 85000)) +
       theme(axis.title.x = element_blank()) +
@@ -1452,7 +1456,7 @@ plot_mav <- function(data){
       geom_line(aes(y=m, color = type)) +
       # geom_hline(yintercept = 40000, linetype = 2, size = 1.4) +
       labs(y = "Wintermaximum") +
-      scale_x_continuous(breaks = seq(1990, 2021, by = 5)) + 
+      scale_x_continuous(breaks = seq(1990, 2022, by = 5)) + 
       scale_y_continuous(breaks = seq(0, 85000, by = 20000),
                          limits = c(0, 85000)) +
       theme(axis.title.x = element_blank()) +
@@ -1485,7 +1489,7 @@ mav_Zsc_ZR %>%   plot_mav()
 mav_Zsc_ZR %>% bind_rows(mav_Zsc_ZR_Sigma)  %>% 
   plot_mav()
 
-ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_website2022.png"), width = 30, height = 15, units = "cm")
+ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_website2023.png"), width = 30, height = 15, units = "cm")
 
 mav_Zsc %>% bind_rows(mav_ZschSigma_estuarien) %>% bind_rows(mav_ZschSigma_estuarien_wetland) %>% plot_mav()
 ggsave(paste0(pad_figuren, "100_figuur_Natuurindicator_ZeescheldeSS_estuarien_Wetland.png"), width = 30, height = 15, units = "cm")
