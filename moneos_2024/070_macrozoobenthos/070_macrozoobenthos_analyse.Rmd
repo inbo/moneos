@@ -50,6 +50,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/Function_CalculateShannonIndex.R")
 ```
+
 # Wormendeterminatiejaar - alleen uit te voeren als er OID zijn verwerkt
 ```{r 070-Wormendeterminatiejaar - alleen uit te voeren als er OID zijn verwerkt}
 # determinaties omzetten naar densiteit en biomassa door ze te verdelen over de Oligochaeta sp (waarvoor deze wel bekend zijn, voor de determinaties w geen biomassa of densiteit bepaald)
@@ -117,16 +118,17 @@ write_xlsx(list(macrobenthos = data_mzboidvervang),
 
 # Basis data file import
 ```{r 070-data}
-
+#GEEN OID jaar, dus trends zonder soortniveau Oligochaeta
 krwdatMZB <- 
-  read_excel(paste0(pad_data, "macrobenthos_data_2008_2021NIETAANTELEVEREN.xlsx"), sheet = "macrobenthos") %>% 
-  dplyr::distinct(locatie, waterlichaam, waterloop, waterloop2, systeem, tidaal)
+  read_excel(paste0(pad_data, "macrobenthos_data_2008_2022NIETAANTELEVEREN.xlsx"), sheet = "macrobenthos")
   
-krwdatMZB
+ts<- arrange(as.data.frame((unique(krwdatMZB$soort))))
 
 
 data_macrobenthos <- 
-  read_excel(paste0(pad_data, "macrobenthos_data_2008_2021_OID.xlsx")) %>% 
+  read_excel(paste0(pad_data, "macrobenthos_data_2008_2022_OID.xlsx")) 
+
+%>% 
   #mutate(tidaal = recode(tidaal, "sub" = "subtidaal", "Intertidaal" = "intertidaal", "inter" = "intertidaal"),
   left_join(krwdatMZB, by ="locatie") %>% 
   dplyr::mutate(tidaal = factor(tidaal, 
