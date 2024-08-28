@@ -284,10 +284,81 @@ B22 %>%
 
 ```{r inlezen-historische-data}
 
-data_macrobenthos_historisch <- 
+##Probleem: geen complete oude dataset met alle OID erin! (foutje in 2023)
+data_macrobenthos_2020gnOID <- 
   read_excel(paste0(pad_data, "macrobenthos_data_2008_2021NIETAANTELEVEREN.xlsx"),
-             sheet = "macrobenthos")
+             sheet = "macrobenthos") %>% 
+  dplyr::filter(jaar == 2020) %>% 
+  dplyr::distinct(locatie, jaar, waterlichaam, waterloop, waterloop2, systeem, tidaal, fysiotoop)
 
+#data met OID voor 2020
+data_macrobenthos_2020OID <- 
+  read_excel(paste0(pad_data, "macrobenthos_data_2008_2021_OID.xlsx"),
+             sheet = "macrobenthos") %>% 
+dplyr::filter(jaar == 2020) %>% 
+  dplyr::select(!Staaltype) %>% 
+  left_join(data_macrobenthos_2020gnOID) %>% 
+  dplyr::select(jaar, waterlichaam, waterloop, waterloop2, systeem, tidaal, fysiotoop, locatie, soort, densiteit, biomassa, Taxa_groep)
+
+#data met metadata, maar geen OID voor 2020. Daarom 2020 weg en vervangen door OID
+data_macrobenthos_historisch.1 <- 
+  read_excel(paste0(pad_data, "macrobenthos_data_2008_2021NIETAANTELEVEREN.xlsx"),
+             sheet = "macrobenthos") %>% 
+  dplyr::filter(jaar != 2020) %>% 
+  dplyr::select(!locatie_oud) %>% 
+  rbind(data_macrobenthos_2020OID)
+# soortnamen zijn een boeltje. Opkuisenen orig file vervangen
+
+soortlijsthist <- data_macrobenthos_historisch.2 %>% 
+  dplyr::select(soort) %>% 
+  dplyr::distinct() %>%
+  dplyr::filter(soort !="stuk") %>% 
+  arrange(desc(soort))
+
+controlelijst <- read_excel(paste0(pad_data, "Soortenlijst_macrozoobenthos_2008_2022.xlsx"),
+             sheet = "Blad1")  %>% 
+  dplyr::mutate(Naam_correct = "YES")
+
+checksoort <- soortlijsthist %>% 
+  left_join(controlelijst, by = "soort")
+
+data_macrobenthos_historisch.2 <- data_macrobenthos_historisch.1 %>%
+  dplyr::filter(soort !="stuk") %>% 
+  dplyr::mutate(soort = recode(soort, "Oligochaeta sp" = "Oligochaeta",
+                               "quistadrilus multisetosus" = "Quistadrilus multisetosus",
+                               	"paranais litoralis" = 	"Paranais litoralis",
+                               "heteromastus filiformis" = "Heteromastus filiformis", 
+                               "Muscidae sp" = "Muscidae",
+                               	"Microturbellaria sp" = "Microturbellaria",
+                               	"Lymnaeidae sp" = "Lymnaeidae",
+                               "Limnodrilus spec" = "Limnodrilus sp",
+                               "Limnodrilus claparedeianus" = "Limnodrilus claparedianus",
+                               	"Limecola balthica" = "Macoma balthica",
+                               "Hypereteone sp." = "Hypereteone sp",
+                               "Geen" = "geen",
+                               "Ephemeroptera sp" = "Ephemeroptera",
+                               "Chloropidae sp" = "Chloropidae",
+                               "Coleoptera sp" = "Coleoptera")) %>% 
+  dplyr::mutate(densiteit = ifelse(soort == "geen", NA, round(densiteit,0))) %>% 
+  dplyr::mutate(biomassa = ifelse(soort == "geen", NA, biomassa)) %>% 
+  dplyr::mutate(densiteit = ifelse(soort !="geen" & densiteit == 0, round(629/2, 0), densiteit)) %>% 
+  dplyr::mutate(biomassa = ifelse(soort !="geen" & biomassa == 0, 0.0629/2, biomassa))
+
+
+#indien soort densiteit != 0 maar wel biomassa == 0, dan wellicht onder detectielimiet. Daarom wordt dan helft van detectielimiet toegekend, tenzij densiteit echt groot (dan ontbrekende data wellicht). ALs densiteit == 0, dan ook helft toekennen. Als soort == "geen", dan is biomassa en densiteit NA
+geenbiom <- data_macrobenthos_historisch.2 %>% 
+  dplyr::filter(biomassa < 0.1)
+
+soortrat <-  data_macrobenthos_historisch.2 %>%
+  dplyr::filter(biomassa != 0) %>% 
+  dplyr::group_by(soort) %>% 
+  dplyr::reframe(rat = mean(na.omit(densiteit/biomassa))) %>% 
+  dplyr::ungroup()
+  
+
+
+#########ungroup()##########################biomassa#############################
+#locaties sheet
 data_macrobenthos_historisch_locaties <- 
   read_excel(paste0(pad_data, "macrobenthos_data_2008_2021NIETAANTELEVEREN.xlsx"), 
              sheet = "locaties")
@@ -300,11 +371,11 @@ data_macrobenthos_historisch_locaties <-
 
 ```{r biomassa-vs-densiteit_historisch, fig.height=4, fig.width=6}
 
-data_macrobenthos_historisch %>% 
+data_macrobenthos_historisch.2 %>% 
   ggplot(aes(densiteit, biomassa)) +
   geom_point()
 
-data_macrobenthos_historisch %>% 
+data_macrobenthos_historisch.2 %>% 
   ggplot(aes(densiteit + 1, biomassa + min(biomassa[biomassa > 0], na.rm = TRUE))) +
   geom_point() +
   scale_x_log10() +
@@ -317,18 +388,18 @@ zero_densiteit_nonzero_biomassa <-
   select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
 
 zero_biomassa_nonzero_densiteit <-
-  data_macrobenthos_historisch %>% 
+  data_macrobenthos_historisch.2 %>% 
   filter(densiteit != 0,
          biomassa == 0) %>% 
   select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
 
 negatieve_biomassa <-
-  data_macrobenthos_historisch %>%
+  data_macrobenthos_historisch.2 %>%
   filter(biomassa < 0) %>%
   select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
   
 extreme_biomassa <-
-  data_macrobenthos_historisch %>%
+  data_macrobenthos_historisch.2 %>%
   filter(biomassa > 200) %>%
   select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
 
@@ -358,11 +429,31 @@ extreme_biomassa <-
 ```{r samenvoegen recent-historisch}
 
 
-data_macrobenthos2008_2022 <-
-  data_macrobenthos_historisch %>% 
+data_macrobenthos2008_2022.0 <-
+  data_macrobenthos_historisch.2 %>% 
   bind_rows(sheetmacrobenthos2022) %>% 
-  dplyr::mutate(tidaal = recode(tidaal, "inter" = "intertidaal", "sub"= "subtidaal", "subtidaal" = "subtidaal", "Intertidaal" = "intertidaal")) 
+  dplyr::mutate(tidaal = recode(tidaal, "inter" = "intertidaal", "sub"= "subtidaal", "subtidaal" = "subtidaal", "Intertidaal" = "intertidaal")) %>% 
+  dplyr::mutate(densiteit = round(densiteit,0)) %>% 
+  dplyr::distinct()
                              
+# in sommige jaren is er "geen" behouden ook al zijn er andere soorten in het staal gevonden (vaak doordat geen op fractieniveau is toegekend en nadien bij een summarize behouden is) -> wegfilteren
+FALSEgeen <- data_macrobenthos2008_2022.0 %>%
+  dplyr::distinct() %>% 
+  dplyr::group_by(locatie) %>% 
+  dplyr::mutate(Nspecs = length(soort)) %>%
+  dplyr::ungroup() %>% 
+  dplyr::mutate(teveel = ifelse(soort == "geen" & Nspecs > 1, "Y", "N")) %>% 
+  dplyr::select(locatie, teveel) %>% 
+  dplyr::distinct() %>%
+  dplyr::group_by(locatie) %>% 
+  dplyr::mutate(dubbels = length(locatie)) %>% 
+  dplyr::filter(!(dubbels == 2 & teveel == "N"))
+  
+
+data_macrobenthos2008_2022 <- data_macrobenthos2008_2022.0 %>% 
+  left_join(FALSEgeen, by = "locatie") %>% 
+  dplyr::filter(!(soort == "geen" & teveel == "Y"))
+
 
 data_macrobenthos_locaties <- 
   data_macrobenthos_historisch_locaties %>% 
@@ -396,7 +487,7 @@ jaar_range <-
 ```{r filenames}
 
 file_name <-
-  paste0(pad_data, "macrobenthos_data_", paste(jaar_range, collapse = "_"), "NIETAANTELEVEREN", ".xlsx")
+  paste0(paste0(pad_data, "/Nieuwe_datafile/"), "macrobenthos_data_", paste(jaar_range, collapse = "_"), "NIETAANTELEVEREN", ".xlsx")
 
 ```
 

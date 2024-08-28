@@ -49,6 +49,9 @@ pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/Function_CalculateShannonIndex.R")
+
+controlelijst <- read_excel(paste0(pad_data, "Soortenlijst_macrozoobenthos_2008_2022.xlsx"),
+             sheet = "Blad1")
 ```
 
 # Wormendeterminatiejaar - alleen uit te voeren als er OID zijn verwerkt
@@ -119,20 +122,8 @@ write_xlsx(list(macrobenthos = data_mzboidvervang),
 # Basis data file import
 ```{r 070-data}
 #GEEN OID jaar, dus trends zonder soortniveau Oligochaeta
-krwdatMZB <- 
-  read_excel(paste0(pad_data, "macrobenthos_data_2008_2022NIETAANTELEVEREN.xlsx"), sheet = "macrobenthos")
-  
-ts<- arrange(as.data.frame((unique(krwdatMZB$soort))))
-
-
 data_macrobenthos <- 
-  read_excel(paste0(pad_data, "macrobenthos_data_2008_2022_OID.xlsx")) 
-
-%>% 
-  #mutate(tidaal = recode(tidaal, "sub" = "subtidaal", "Intertidaal" = "intertidaal", "inter" = "intertidaal"),
-  left_join(krwdatMZB, by ="locatie") %>% 
-  dplyr::mutate(tidaal = factor(tidaal, 
-                         levels = c("subtidaal", "intertidaal"))) %>% 
+  read_excel(paste0(paste0(pad_data, "/Nieuwe_datafile/"), "macrobenthos_data_2008_2022NIETAANTELEVEREN.xlsx"), sheet = "macrobenthos") %>% 
   dplyr::mutate(niveau3_hybr = recode(waterloop2, "Zeeschelde IV"= "Saliniteitsgradient", "Zeeschelde III"= "Oligohalien", "Zeeschelde II"= "Zoet lang verblijf", "Zeeschelde I"= "Zoet kort verblijf")) %>% 
   dplyr::mutate(fysiotoop = case_when(
     fysiotoop %in% c("diep subtidaal") ~ "diep subtidaal",
@@ -145,9 +136,7 @@ data_macrobenthos <-
     fysiotoop %in% c("nog te bepalen - inter", "onbepaald", "slik", "slik onbepaald") ~ "intertidaal indet.",
     TRUE ~ fysiotoop)) %>%
   dplyr::filter(!is.na(tidaal)) %>%
-  dplyr::filter(!soort == "stuk") %>% 
-  dplyr::mutate(soort = recode(soort, "paranais litoralis"= "Paranais litoralis", "Limnodrilus spec" = "Limnodrilus sp", "Limnodrilus claparedeianus" = "Limnodrilus claparedianus", "quistadrilus multisetosus" = "Quistadrilus multisetosus" )) %>% 
-  dplyr::mutate(densiteit = if_else(soort != "geen" & densiteit == 0, 628, densiteit)) ## probleem van soorten waarvoor densiteit = 0, wrsch doordat geen hele ex gevonden zijn of invoerfouten. Dit geeft probleem oa bij Shannon index dus hier waarden invullen met laagste waarde. Om toch onderscheid te maken met die soorten waarvoor wel een 1 genoteerd werd wordt 628 gebruikt (cijfers na de komma niet, wel bij andere cf opp van steekbuis)
+  dplyr::mutate(densiteit = if_else(soort != "geen" & densiteit == 0, 314, densiteit)) ## probleem van soorten waarvoor densiteit = 0, wrsch doordat geen hele ex gevonden zijn of invoerfouten. Dit geeft probleem oa bij Shannon index dus hier waarden invullen met helft laagste waarde. Om toch onderscheid te maken met die soorten waarvoor wel een 1 genoteerd werd wordt 628 gebruikt (cijfers na de komma niet, wel bij andere cf opp van steekbuis)
 
 
 
@@ -193,7 +182,7 @@ loc_systdata <- data_macrobenthos %>%
   dplyr::select(locatie, jaar, fysiotoop, waterlichaam, waterloop, niveau3_hybr, systeem, tidaal) %>% 
   dplyr::distinct()
 
-#groeperen per tax groep maar om later gemiddelde juist te berekenen nu ook mising cases toevoegen
+#groeperen per Taxa_groep maar om later gemiddelde juist te berekenen nu ook missing cases toevoegen
 data_macrobenthos_totaalTAX <-
   data_macrobenthos %>% 
   complete(locatie, Taxa_groep, fill = list(densiteit = 0, biomassa =0)) %>% 
@@ -209,7 +198,7 @@ data_macrobenthos_totaalBIV <-
   data_macrobenthos %>%
   dplyr::select(!Taxa_groep) %>% 
   complete(locatie, soort, fill = list(densiteit = 0, biomassa =0)) %>%
-  dplyr::left_join(taxalijst, by = "soort") %>% 
+  dplyr::left_join(controlelijst, by = "soort") %>% 
   dplyr::select(! c(jaar, fysiotoop, waterlichaam, waterloop, niveau3_hybr, systeem, tidaal)) %>% # anders deze vars dubbel
   left_join(loc_systdata, by = "locatie") %>%
   dplyr::filter(Taxa_groep == "Bivalvia") %>% 
@@ -307,7 +296,7 @@ bxp_ZS <-
   labs(x = xlb,
        y = ylb) +
   facet_wrap(~tidaal)
-# bxp_ZS
+#bxp_ZS
 
 bxp_ZR <- data_macrobenthos_totaal %>% 
   dplyr::filter(niveau3_hybr %in% c("Rupel", "Durme", "Nete", "Dijle", "Zenne")) %>%
@@ -814,8 +803,7 @@ waterlopen_order
          fysiotoop != "hard substraat") %>% 
   dplyr::mutate(is_soort = if_else(soort == "geen", 0, 1)) %>%
   distinct() %>% 
-  dplyr::group_by(jaar, tidaal, niveau3_hybr) 
-%>% 
+  dplyr::group_by(jaar, tidaal, niveau3_hybr) %>% 
   dplyr::summarise(n = sum(is_soort)) %>% 
   ungroup() %>% 
   mutate(jaar = ordered(jaar), 
@@ -944,19 +932,23 @@ oppsruw <- read_delim(paste0(pad_data, "SpatialEcotopenOpp_INBO_2021.csv")) %>% 
   # oppervlakten en biotagegevens
   dplyr::mutate(ecotoop = recode(ecotoop, "hoog intertidaal"= "middelhoog/hoog intertidaal", "middelhoog intertidaal" = "middelhoog/hoog intertidaal")) %>% 
   rename(fysiotoop = ecotoop, opp1 = SomVanShape_Area) %>% 
-  dplyr::mutate(opp1 = opp1/100000000000000)# geen ieee waarom bij import er plots een veel hoger getal genomen wordt?
+  dplyr::mutate(opp1 = opp1/100000000000000) %>% # geen ieee waarom bij import er plots een veel hoger getal genomen wordt?%>% 
+    dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf", "Tijarm" = "Zeeschelde I tijarm Zwijnaarde")) %>% 
+    dplyr::mutate(waterloop = ifelse(Omessegmen == "19 trGM", "Zeeschelde I trj_Ml_Gb", waterloop))
+
 
 
   # segmenten optellen
   opps <- oppsruw %>% 
     dplyr::group_by(jaar, waterloop, tidaal, fysiotoop) %>% 
-    dplyr::summarise(opp =sum(na.omit(opp1)))
+    dplyr::summarise(opp =sum(na.omit(opp1))) %>% 
+    dplyr::ungroup()
     
   opps_intertidaalfys <- opps %>% 
     dplyr::filter(tidaal == "intertidaal") %>% ## Enkel intertidaal
-    mutate (kaartjaar = jaar) %>% 
-    mutate (fysiotoop = (if_else(waterloop == "Durme" & fysiotoop != "intertidaal indet.", "intertidaal indet.", fysiotoop))) %>% 
-    mutate(waterloop = recode(waterloop, "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf"))
+    dplyr::mutate (kaartjaar = jaar) %>% 
+    dplyr::mutate (fysiotoop = (if_else(waterloop == "Durme" & fysiotoop != "intertidaal indet.", "intertidaal indet.", fysiotoop))) %>% 
+    dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde III + Rupel" = "Oligohalien"))
 
   
   opps_SUBfys <- opps %>% 
@@ -965,12 +957,13 @@ oppsruw <- read_delim(paste0(pad_data, "SpatialEcotopenOpp_INBO_2021.csv")) %>% 
     mutate(waterloop = recode(waterloop, "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf"))  
   
   
-  data_macrobenthos_intertidaalfys <-
+data_macrobenthos_intertidaalfys <-
   data_macrobenthos_totaal %>%
+    dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde I trj_Ml_Gb\n" = "Zeeschelde I trj_Ml_Gb",  "Zeeschelde I tijarm Zwijnaarde\n" = "Zeeschelde I tijarm Zwijnaarde" , "Beneden_Dijle" = "Dijle", "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf")) %>% 
   dplyr::filter(tidaal == "intertidaal") %>% 
   dplyr::filter(fysiotoop != "hard substraat") %>% 
   mutate (fysiotoop = (if_else(waterloop == "Durme" & fysiotoop != "intertidaal indet.", "intertidaal indet.", fysiotoop))) %>%  
-  group_by(jaar, waterlichaam, niveau3_hybr, systeem, fysiotoop) %>% 
+  group_by(jaar, waterloop, niveau3_hybr, systeem, fysiotoop) %>% 
   summarise_at(vars(densiteit, biomassa), 
                list(mean = ~max(0, mean(., na.rm = TRUE)),
                     med = ~max(0, median(., na.rm = TRUE)),
@@ -980,37 +973,44 @@ oppsruw <- read_delim(paste0(pad_data, "SpatialEcotopenOpp_INBO_2021.csv")) %>% 
                     upr2 = ~max(0, quantile(., 0.95, na.rm = TRUE)))) %>% 
   ungroup() %>% 
   dplyr::mutate (kaartjaar = jaar) %>% #jaar van de beste oppervlaktematch toevoegen - we kiezen de kaartjaren van totale Zeeschelde-ecotopenkaarten
-  dplyr::mutate (kaartjaar = if_else(jaar < 2012, 2010,kaartjaar)) %>% 
+  dplyr::mutate (kaartjaar = if_else(jaar < 2012 & !waterloop %in% c("Nete", "Zenne", "Dijle"), 2010, ifelse(waterloop %in% c("Nete", "Zenne", "Dijle"), 2013, kaartjaar))) %>% 
   dplyr::mutate (kaartjaar = if_else(jaar > 2011 & jaar < 2015, 2013, kaartjaar)) %>% 
-  dplyr::mutate (kaartjaar = if_else(jaar > 2014 & jaar < 2018, 2016, kaartjaar)) %>%
-  dplyr::mutate (kaartjaar = if_else(jaar > 2017, 2019, kaartjaar)) %>% 
-  rename (waterloop = niveau3_hybr) 
+  dplyr::mutate (kaartjaar = if_else(jaar > 2014 & jaar < 2018 & !waterloop %in% c("Nete", "Zenne", "Dijle"), 2016, ifelse(waterloop %in% c("Nete", "Zenne", "Dijle"), 2013, kaartjaar))) %>%
+  dplyr::mutate (kaartjaar = if_else(jaar > 2017 & !waterloop %in% c("Nete", "Zenne", "Dijle"), 2019, ifelse(waterloop %in% c("Nete", "Zenne", "Dijle"), 2013, kaartjaar))) 
   
-  data_macrobenthos_OPP <- data_macrobenthos_intertidaalfys %>% 
+#Opps voor Zenne, Nete, Dijle enkel in 2013, dus steeds link met 2013 maken  
+  
+#  %>% 
+ # rename (waterloop = niveau3_hybr) 
+
+sort(unique(data_macrobenthos_intertidaalfys$waterloop))  
+sort(unique(opps_intertidaalfys$waterloop)) 
+    
+data_macrobenthos_OPP <- data_macrobenthos_intertidaalfys %>% 
   left_join(opps_intertidaalfys, by = c("kaartjaar", "fysiotoop","waterloop")) %>%
   mutate(biomassa_fys = (biomassa_mean * opp*10000)/1000000) #ton benthos, maar opp te groot?
     
 ## samenvatten per waterloop en bereken totaal
   
-  data_macrobenthos_OPPWL <- data_macrobenthos_OPP %>%
+data_macrobenthos_OPPWL <- data_macrobenthos_OPP %>%
     rename(jaar = jaar.x) %>%
-    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Zoet kort verblijf", "Zoet lang verblijf", "Oligohalien", "Durme", "Rupel")) %>% 
+    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Zoet kort verblijf", "Zoet lang verblijf", "Oligohalien", "Durme", "Rupel", "Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb")) %>% 
     dplyr::group_by(waterloop, jaar) %>% 
     dplyr::summarise(biomass_waterloop = sum(na.omit(biomassa_fys))) %>% 
     dplyr::ungroup() 
   
-  totaal  <-data_macrobenthos_OPPWL %>% 
+totaal  <-data_macrobenthos_OPPWL %>% 
     dplyr::group_by(jaar) %>% 
-    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Zoet kort verblijf", "Zoet lang verblijf", "Oligohalien")) %>% ## som totale Zeeschelde dus ZONDER Rupel en Durme
+    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Zoet kort verblijf", "Zoet lang verblijf", "Oligohalien", "Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb")) %>% ## som totale Zeeschelde dus ZONDER Rupel en Durme
     dplyr::summarise(biomass_waterloop = sum(na.omit(biomass_waterloop))) %>% 
     dplyr::mutate (waterloop = "totaal_Zeeschelde")
   
-  data_macrobenthos_OPPWL <- data_macrobenthos_OPPWL %>% 
+data_macrobenthos_OPPWL <- data_macrobenthos_OPPWL %>% 
      bind_rows(totaal) 
   
-  data_macrobenthos_OPPWL$waterloop <- factor(data_macrobenthos_OPPWL$waterloop, levels=c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf","Rupel","Durme","totaal_Zeeschelde"))       
+data_macrobenthos_OPPWL$waterloop <- factor(data_macrobenthos_OPPWL$waterloop, levels=c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf","Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb", "Rupel","Durme","totaal_Zeeschelde"))       
   
-  data_macrobenthos_OPPWL %>% 
+data_macrobenthos_OPPWL %>% 
     ggplot(aes(x = as.factor(jaar), y = biomass_waterloop))+
     geom_hline(yintercept = 30, linetype=2, colour = "deeppink3", size = 1.2) +
     geom_hline(yintercept = 14.2, linetype=2, colour = "darkolivegreen4", size = 1.2) +
@@ -1023,10 +1023,11 @@ oppsruw <- read_delim(paste0(pad_data, "SpatialEcotopenOpp_INBO_2021.csv")) %>% 
 ggsave(paste0(pad_figuren, "070-figuur-intertidalesysteembiomassa.jpg"), height=5, width=8)  
   
 ## gewogen biomassa per m² per waterloop
-  data_macrobenthos_OPP$waterloop <- factor(data_macrobenthos_OPP$waterloop, levels=c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf","Rupel","Durme","totaal_Zeeschelde"))
-  data_macrobenthos_OPP %>%
+  data_macrobenthos_OPP$waterloop <- factor(data_macrobenthos_OPP$waterloop, levels=c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf","Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb", "Rupel","Durme","totaal_Zeeschelde"))
+  
+data_macrobenthos_OPP %>%
     rename(jaar = jaar.x) %>%
-    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf","Rupel","Durme","totaal_Zeeschelde")) %>% 
+    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf","Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb","Rupel","Durme","totaal_Zeeschelde")) %>% 
     dplyr::group_by(waterloop, jaar) %>% 
     dplyr::summarise(weightedbiomass_waterloop = weighted.mean(biomassa_mean, opp)) %>%
   ggplot(aes(x = as.factor(jaar), y = weightedbiomass_waterloop))+
@@ -1038,7 +1039,7 @@ ggsave(paste0(pad_figuren, "070-figuur-intertidalesysteembiomassa.jpg"), height=
 ## Gemiddelde biomassa  
   data_macrobenthos_OPP %>%
     rename(jaar = jaar.x) %>%
-    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf","Rupel","Durme","totaal_Zeeschelde")) %>% 
+    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf","Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb","Rupel","Durme","totaal_Zeeschelde")) %>% 
     dplyr::group_by(waterloop, jaar) %>% 
     summarise(weightedbiomass_waterloop = mean(biomassa_mean)) %>%
   ggplot(aes(x = as.factor(jaar), y = weightedbiomass_waterloop))+
@@ -1047,14 +1048,14 @@ ggsave(paste0(pad_figuren, "070-figuur-intertidalesysteembiomassa.jpg"), height=
   
  sysbiomgew <- data_macrobenthos_OPP %>%
     rename(jaar = jaar.x) %>%
-    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf","Rupel","Durme","totaal_Zeeschelde")) %>% 
+    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf","Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb","Rupel","Durme","totaal_Zeeschelde")) %>% 
     group_by(waterloop, jaar) %>% 
     summarise(weightedbiomass_waterloop = mean(biomassa_mean))
    
 opps %>% 
   dplyr::group_by(waterloop, jaar) %>% 
   dplyr::summarise(oppt = sum(opp)) %>%
-  dplyr::filter(waterloop !="Tijarm") %>% 
+  #dplyr::filter(waterloop !="Tijarm") %>% 
   ggplot(aes(x=jaar, y=oppt))+
   geom_line(aes(colour=waterloop, group=waterloop), size=1.8)
   
@@ -1071,7 +1072,7 @@ selmb <- mb.sel.8sp$soort
 
 data_macrobenthos %>% 
   dplyr::filter(soort %in% selmb) %>% 
-  dplyr::filter(jaar %in% c(2016, 2017, 2018, 2019, 2020)) %>% 
+  dplyr::filter(jaar %in% c(2016, 2017, 2018, 2019, 2020, 2021, 2022)) %>% 
   dplyr::filter(waterlichaam == "Zeeschelde IV") %>% 
   dplyr::group_by(soort, jaar) %>% 
   dplyr::summarize(bm = sum(biomassa)) %>% 
@@ -1085,10 +1086,11 @@ data_macrobenthos %>%
 data_macrobenthos_intertidaalfysTAX <-
   data_macrobenthos_totaalTAX %>%
   dplyr::filter(tidaal == "intertidaal") %>%
-  dplyr::filter(fysiotoop != "hard substraat") %>% 
+  dplyr::filter(fysiotoop != "hard substraat") %>%
+  dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde I trj_Ml_Gb\n" = "Zeeschelde I trj_Ml_Gb",  "Zeeschelde I tijarm Zwijnaarde\n" = "Zeeschelde I tijarm Zwijnaarde" , "Beneden_Dijle" = "Dijle", "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf")) %>% 
   dplyr::mutate (fysiotoop = (if_else(waterloop == "Durme" & fysiotoop != "intertidaal indet.", "intertidaal indet.", fysiotoop))) %>%
     dplyr::filter(systeem == "Zeeschelde") %>%  
-  dplyr::group_by(jaar, Taxa_groep, waterlichaam, niveau3_hybr, systeem, fysiotoop) %>% 
+  dplyr::group_by(jaar, Taxa_groep, waterloop, niveau3_hybr, systeem, fysiotoop) %>% 
   summarise_at(vars(densiteit, biomassa), 
                list(mean = ~max(0, mean(., na.rm = TRUE)),
                     med = ~max(0, median(., na.rm = TRUE)),
@@ -1101,8 +1103,7 @@ data_macrobenthos_intertidaalfysTAX <-
   dplyr::mutate (kaartjaar = if_else(jaar < 2012, 2010, kaartjaar)) %>% 
   dplyr::mutate (kaartjaar = if_else(jaar > 2011 & jaar < 2015, 2013, kaartjaar)) %>% 
   dplyr::mutate (kaartjaar = if_else(jaar > 2014 & jaar < 2018, 2016, kaartjaar)) %>%
-  dplyr::mutate (kaartjaar = if_else(jaar > 2017, 2019, kaartjaar)) %>% 
-  rename(waterloop = niveau3_hybr) 
+  dplyr::mutate (kaartjaar = if_else(jaar > 2017, 2019, kaartjaar)) 
 
 
 data_macrobenthos_OPPTAX <- data_macrobenthos_intertidaalfysTAX %>% 
@@ -1133,10 +1134,11 @@ ggsave(filename = paste0(pad_figuren, "PopTaxgroep_ZS", ".jpg"), height=5, width
 data_macrobenthos_intertidaalfysTAX <-
   data_macrobenthos_totaalTAX %>%
   dplyr::filter(tidaal == "intertidaal") %>%
-  dplyr::filter(fysiotoop != "hard substraat") %>% 
+  dplyr::filter(fysiotoop != "hard substraat") %>%
+    dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde I trj_Ml_Gb\n" = "Zeeschelde I trj_Ml_Gb",  "Zeeschelde I tijarm Zwijnaarde\n" = "Zeeschelde I tijarm Zwijnaarde" , "Beneden_Dijle" = "Dijle", "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf")) %>% 
   dplyr::mutate (fysiotoop = (if_else(waterloop == "Durme" & fysiotoop != "intertidaal indet.", "intertidaal indet.", fysiotoop))) %>%
-    dplyr::filter(niveau3_hybr == "Saliniteitsgradient") %>% 
-  dplyr::group_by(jaar, Taxa_groep, waterlichaam, niveau3_hybr, systeem, fysiotoop) %>% 
+    dplyr::filter(waterloop == "Saliniteitsgradient") %>% 
+  dplyr::group_by(jaar, Taxa_groep, waterloop, niveau3_hybr, systeem, fysiotoop) %>% 
   summarise_at(vars(densiteit, biomassa), 
                list(mean = ~max(0, mean(., na.rm = TRUE)),
                     med = ~max(0, median(., na.rm = TRUE)),
@@ -1149,8 +1151,7 @@ data_macrobenthos_intertidaalfysTAX <-
   dplyr::mutate (kaartjaar = if_else(jaar < 2012, 2010, kaartjaar)) %>% 
   dplyr::mutate (kaartjaar = if_else(jaar > 2011 & jaar < 2015, 2013, kaartjaar)) %>% 
   dplyr::mutate (kaartjaar = if_else(jaar > 2014 & jaar < 2018, 2016, kaartjaar)) %>%
-  dplyr::mutate (kaartjaar = if_else(jaar > 2017, 2019, kaartjaar)) %>% 
-  rename(waterloop = niveau3_hybr) 
+  dplyr::mutate (kaartjaar = if_else(jaar > 2017, 2019, kaartjaar)) 
 
 
 data_macrobenthos_OPPTAX <- data_macrobenthos_intertidaalfysTAX %>% 
@@ -1183,10 +1184,11 @@ ggsave(filename = paste0(pad_figuren, "PopTaxgroep_Salgradient", ".jpg"), height
 data_macrobenthos_intertidaalfysBIV <-
   data_macrobenthos_totaalBIV %>%
   dplyr::filter(tidaal == "intertidaal") %>% # hier kan ook subtidaal ingevuld worden; dan moet data_macrobenthos_OPPBIV wel een join krijgen met opps_SUBfys  (zie hieronder)
-  dplyr::filter(fysiotoop != "hard substraat") %>% 
+  dplyr::filter(fysiotoop != "hard substraat") %>%
+    dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde I trj_Ml_Gb\n" = "Zeeschelde I trj_Ml_Gb",  "Zeeschelde I tijarm Zwijnaarde\n" = "Zeeschelde I tijarm Zwijnaarde" , "Beneden_Dijle" = "Dijle", "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf")) %>%   
   dplyr::mutate (fysiotoop = (if_else(waterloop == "Durme" & fysiotoop != "intertidaal indet.", "intertidaal indet.", fysiotoop))) %>%
     dplyr::filter(systeem == "Zeeschelde") %>%  
-  dplyr::group_by(jaar, soort, waterlichaam, niveau3_hybr, systeem, fysiotoop) %>% 
+  dplyr::group_by(jaar, soort, waterloop, niveau3_hybr, systeem, fysiotoop) %>% 
   summarise_at(vars(densiteit, biomassa), 
                list(mean = ~max(0, mean(., na.rm = TRUE)),
                     med = ~max(0, median(., na.rm = TRUE)),
@@ -1199,8 +1201,7 @@ data_macrobenthos_intertidaalfysBIV <-
   dplyr::mutate (kaartjaar = if_else(jaar < 2012, 2010, kaartjaar)) %>% 
   dplyr::mutate (kaartjaar = if_else(jaar > 2011 & jaar < 2015, 2013, kaartjaar)) %>% 
   dplyr::mutate (kaartjaar = if_else(jaar > 2014 & jaar < 2018, 2016, kaartjaar)) %>%
-  dplyr::mutate (kaartjaar = if_else(jaar > 2017, 2019, kaartjaar)) %>% 
-  rename(waterloop = niveau3_hybr) 
+  dplyr::mutate (kaartjaar = if_else(jaar > 2017, 2019, kaartjaar)) 
 
 
 data_macrobenthos_OPPBIV <- data_macrobenthos_intertidaalfysBIV %>% 
