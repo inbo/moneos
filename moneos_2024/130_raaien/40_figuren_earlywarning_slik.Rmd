@@ -55,8 +55,8 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 dpi <- 150
 
 jaar <- 2024
-campagne <- "C2023"
-campagne_jaren_EW <- 2019:2024
+campagne <- str_c("C", jaar-1)
+campagne_jaren_EW <- (jaar-5):jaar
 campagnes_EW <- str_c("C", campagne_jaren_EW-1)
 
 year_colors <-

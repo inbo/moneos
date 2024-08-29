@@ -58,6 +58,9 @@ data_MONEOS <-
   read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_2024.xlsx"),
             sheet = "TOPOdata_MONEOSRAAIEN_INBO")
 
+# drive <- "Z:/"
+drive <- "Q:/Projects/PRJ_Schelde/"
+
 ```
 
 
@@ -94,7 +97,7 @@ raaicodes <-
 conn <- 
   dbConnect(odbc::odbc(),
             Driver = "Microsoft Access Driver (*.mdb, *.accdb)",
-            DBQ = str_c("Z:/", "Topografie/slikschorprofiel/Databank/SlikSchorProfiel_data"))
+            DBQ = str_c(drive, "Topografie/slikschorprofiel/Databank/SlikSchorProfiel_data"))
 
 # tblData_Dwarsprofiel <- 
 #   tbl(conn, "tblData_Dwarsprofiel")
@@ -113,10 +116,10 @@ dbDisconnect(conn)
 conn <- 
   dbConnect(odbc::odbc(),
             Driver = "Microsoft Access Driver (*.mdb, *.accdb)",
-            DBQ = str_c("Z:/", "Ecotoop/Getij/verwerking/ApplModeltijdata.mdb"))
+            DBQ = str_c(drive, "Ecotoop/Getij/verwerking/ApplModeltijdata.mdb"))
 
 HW85_Schelde <-
-  tbl(conn, "OFHWmod_Schelde_2018_2021_85proc") %>% 
+  tbl(conn, "OFHWmod_Schelde_2019_2022_85proc") %>% 
   collect()
   
 HW85_Durme <-
@@ -132,7 +135,7 @@ HW85_Gentbrugge <-
   collect()
 
 LW30_Schelde <-
-  tbl(conn, "OFLWmod_Schelde_2018_2021_30proc") %>% 
+  tbl(conn, "OFLWmod_Schelde_2019_2022_30proc") %>% 
   collect()
   
 LW30_Durme <-
@@ -195,10 +198,10 @@ tbl_hoogte_LW30 <-
 conn <- 
   dbConnect(odbc::odbc(),
             Driver = "Microsoft Access Driver (*.mdb, *.accdb)",
-            DBQ = str_c("Z:/", "Ecotoop/Getij/verwerking/ApplModeltijdata.mdb"))
+            DBQ = str_c(drive, "Ecotoop/Getij/verwerking/ApplModeltijdata.mdb"))
 
 DD_Schelde <-
-  tbl(conn, "DDmod_Schelde_2018_2021") %>% 
+  tbl(conn, "DDmod_Schelde_2019_2022") %>% 
   filter(DD %in% c(25, 35, 60, 75)) %>% 
   collect()
   
