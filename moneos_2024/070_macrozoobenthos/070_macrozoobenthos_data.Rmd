@@ -452,7 +452,9 @@ FALSEgeen <- data_macrobenthos2008_2022.0 %>%
 
 data_macrobenthos2008_2022 <- data_macrobenthos2008_2022.0 %>% 
   left_join(FALSEgeen, by = "locatie") %>% 
-  dplyr::filter(!(soort == "geen" & teveel == "Y"))
+  dplyr::filter(!(soort == "geen" & teveel == "Y")) %>% 
+  dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde I trj_Ml_Gb\n" = "Zeeschelde I trj_Ml_Gb",  "Zeeschelde I tijarm Zwijnaarde\n" = "Zeeschelde I tijarm Zwijnaarde" )) %>% 
+  dplyr::select(!c("teveel", "dubbels"))
 
 
 data_macrobenthos_locaties <- 
