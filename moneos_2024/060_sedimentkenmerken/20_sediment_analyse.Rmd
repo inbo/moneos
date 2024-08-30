@@ -28,6 +28,10 @@ library(readxl)
 library(rprojroot)
 library(scales)
 library(INBOtheme)
+library(dplyr)
+library(purrr)
+library(ggplot2)
+library(broom)
 
 ```
 
@@ -104,6 +108,88 @@ write_xlsx(list(jaar_waarden = tabel_jaar_waarden),
 ```
 
 
+```{r meta-data}
+
+meta_data <- 
+  enframe(c(vroegste_jaar = vroegste_jaar, 
+            recentste_jaar = recentste_jaar, 
+            metingen = nrow(sediment_data)),
+          name = "naam", value = "waarde")
+
+meta_data %>% 
+  write_delim(paste0(pad_data, "meta_data.csv"),
+              delim = ";")
+
+```
+
+```{r voorbereiding dataset}
+
+table(sediment_data$tidaal)
+sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "intertidaal"
+sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "Intertidaal"
+sediment_data$tidaal[sediment_data$tidaal=="sub"] <- "subtidaal"
+
+table(sediment_data$waterloop)
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde I_up"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde I_up"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb\r\n"] <- "Zeeschelde I_up"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde"] <- "Zeeschelde I_up"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde\r\n"] <- "Zeeschelde I-up"
+  sediment_data$waterloop[sediment_data$waterloop=="Beneden_Dijle"] <- "Dijle"
+  # 
+  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde I"
+  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde I"
+  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb\r\n"] <- "Zeeschelde I"
+  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde"] <- "Zeeschelde I"
+  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde\r\n"] <- "Zeeschelde I"
+  # 
+    table(sediment_data$waterloop)
+  sediment_data$waterloop <- factor(sediment_data$waterloop, 
+                                    levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up","Rupel","Durme","Nete","Dijle","Zenne"))
+  
+  # sediment_data$waterloop <- factor(sediment_data$waterloop, 
+  #                                   levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up","Rupel","Durme","Nete","Dijle","Zenne"))
+
+  
+    table(sediment_data$fysiotoop)
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="diep subtidaal"] <- "diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoge slikzone"] <- "hoog"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoog slik"] <- "hoog"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="lage slikzone"] <- "laag"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laag intertidaal"] <- "laag"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laag slik"] <- "laag"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="matig diep subtidaal"] <- "matig diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch matig diep subtidaal"] <- "matig diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch matig diep subtidaal"] <- "matig diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoge slikzone"] <- "midden"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoog slik"] <- "midden"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="nog te bepalen - sub"] <- "sub indet."
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="subtidaal"] <- "sub indet."
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="ondiep subtidaal"] <- "ondiep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch ondiep subtidaal"] <- "ondiep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch ondiep subtidaal"] <- "ondiep"
+   sediment_data$fysiotoop[sediment_data$fysiotoop=="slik onbepaald"] <- "inter indet."
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch diep subtidaal"] <- "diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch diep subtidaal"] <- "diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch zeer diep subtidaal"] <- "diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hard antropogeen"] <- "hard substraat"
+  
+  unique(sediment_data$fysiotoop)
+  
+  fyzzers <- c("hoog","midden","laag",
+               "hard substraat","inter indet.","ondiep",
+               "matig diep","diep", "sub indet.","onbepaald")
+  sediment_data$fysiotoop <- factor(sediment_data$fysiotoop, levels = fyzzers)
+  
+  hoofd <- c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up" )
+  # hoofd <- c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I")
+  zij <- c("Rupel","Durme","Nete","Dijle","Zenne")
+  inter <- c("inter indet.","laag", "hoog", "midden")
+  sub <- c("diep","matig diep","ondiep","sub indet.")
+  intersubZS <- c("laag", "hoog", "midden", "diep","matig diep","ondiep")
+  
+```
+
 # figuur regressie
 
 ```{r 000-figuur-regressie, fig.height=5, fig.width=8}
@@ -125,22 +211,6 @@ ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) 
 test <- sediment_data %>%
   pivot_wider(names_from = variabele, values_from = waarde)
 
-
-test %>%
-  ggplot(aes(slib, mediaan)) +
-  geom_point() +
-  geom_smooth(method = "lm", color = "red")
-# ggsave(paste0(pad_figuren, "000_figuur_regressie.jpg"))
-
-test %>%
-  ggplot(aes(slib, OM)) +
-  geom_point() +
-  geom_smooth(method = "lm",color = "red")
-
-test %>%
-  ggplot(aes(mediaan, OM)) +
-  geom_point() +
-  geom_smooth(method = "lm",color = "red")
 
 fit1 <- lm(OM ~ mediaan, data = test)
 ggplotRegression(fit1)
@@ -164,67 +234,166 @@ ggplotRegression(fit5)
 fit6 <- lm(mediaan ~ slib, data = testslib)
 ggplotRegression(fit6)
 
+fit6 <- lm(mediaan ~ jaar, data = testslib)
+ggplotRegression(fit6)
+
+####testjes 
+
+nested_data <- test %>%
+  # dplyr::filter(waterloop == "Zeeschelde II") %>% 
+  group_by(waterloop,fysiotoop) %>% 
+  nest()
+
+#### model: mediane korrelgrootte
+fit_lm <- function(df) {
+  lm(mediaan ~ jaar, data = df)
+}
+
+# Apply the function to each nested data frame
+models <- nested_data %>%
+  mutate(model = map(data, fit_lm))
+
+models
+
+# Extract the model coefficients and fitted values
+models <- models %>%
+  mutate(tidy_model = map(model, tidy),
+         augment_model = map(model, augment))
+
+# Unnest the augmented data for plotting
+augmented_data <- models %>%
+  select(fysiotoop, waterloop, augment_model) %>%
+  unnest(augment_model)
+
+# Plot the models
+ggplot(augmented_data, aes(x = jaar, y = mediaan)) +
+  geom_point() +
+  geom_line(aes(y = .fitted), linetype = "dashed") +
+  facet_wrap(~ fysiotoop+waterloop) +
+  labs(title = "Linear Regression Fits by fysiotoop in Zeeschelde II",
+       x = "Year",
+       y = "Median") 
+
+ggsave(file=paste0(pad_figuren,"060_figuur_regressieZSII_median.jpg"))
+
+# Extract the model coefficients and p-values
+model_summaries <- models %>%
+  mutate(tidy_model = map(model, tidy)) %>%
+  unnest(tidy_model) %>%
+  dplyr::filter(term == "jaar") %>%
+  select(waterloop,fysiotoop, estimate, p.value)
+
+# Identify significant models (e.g., p-value < 0.05)
+significant_models <- model_summaries %>%
+  dplyr::filter(p.value < 0.05)
+
+significant_models
+
+write_xlsx(list(modeloutput = significant_models),
+           paste0(pad_tabellen, "modeloutput.xlsx"))
+
+####################
+# linear model: slib
+####################
+fit_lm <- function(df) {
+  lm(slib ~ jaar, data = df)
+}
+
+# Apply the function to each nested data frame
+models <- nested_data %>%
+  mutate(model = map(data, fit_lm))
+
+models
+
+# Extract the model coefficients and fitted values
+models <- models %>%
+  mutate(tidy_model = map(model, tidy),
+         augment_model = map(model, augment))
+
+# Unnest the augmented data for plotting
+augmented_data <- models %>%
+  select(fysiotoop, waterloop, augment_model) %>%
+  unnest(augment_model)
+
+# Plot the models
+ggplot(augmented_data, aes(x = jaar, y = slib)) +
+  geom_point() +
+  geom_line(aes(y = .fitted), linetype = "dashed") +
+  facet_wrap(~ fysiotoop+waterloop) +
+  labs(title = "Linear Regression Fits by fysiotoop",
+       x = "Year",
+       y = "Mud") 
+
+# ggsave(file=paste0(pad_figuren,"060_figuur_regressie_mud.jpg"))
+
+# Extract the model coefficients and p-values
+model_summaries <- models %>%
+  mutate(tidy_model = map(model, tidy)) %>%
+  unnest(tidy_model) %>%
+  dplyr::filter(term == "jaar") %>%
+  select(waterloop,fysiotoop, estimate, p.value)
+
+# Identify significant models (e.g., p-value < 0.05)
+significant_models <- model_summaries %>%
+  dplyr::filter(p.value < 0.05)
+
+significant_models
+
+write_xlsx(list(modeloutput = significant_models),
+           paste0(pad_tabellen, "modeloutput_slib.xlsx"))
+######################
+##### linear model: OM
+######################
+
+fit_lm <- function(df) {
+  lm(OM ~ jaar, data = df)
+}
+
+# Apply the function to each nested data frame
+models <- nested_data %>%
+  mutate(model = map(data, fit_lm))
+
+models
+
+# Extract the model coefficients and fitted values
+models <- models %>%
+  mutate(tidy_model = map(model, tidy),
+         augment_model = map(model, augment))
+
+# Unnest the augmented data for plotting
+augmented_data <- models %>%
+  select(fysiotoop, waterloop, augment_model) %>%
+  unnest(augment_model)
+
+# Plot the models
+ggplot(augmented_data, aes(x = jaar, y = OM)) +
+  geom_point() +
+  geom_line(aes(y = .fitted), linetype = "dashed") +
+  facet_wrap(~ fysiotoop+waterloop) +
+  labs(title = "Linear Regression Fits by fysiotoop",
+       x = "Year",
+       y = "OM") 
+
+# ggsave(file=paste0(pad_figuren,"060_figuur_regressie_OM.jpg"))
+
+# Extract the model coefficients and p-values
+model_summaries <- models %>%
+  mutate(tidy_model = map(model, tidy)) %>%
+  unnest(tidy_model) %>%
+  dplyr::filter(term == "jaar") %>%
+  select(waterloop,fysiotoop, estimate, p.value)
+
+# Identify significant models (e.g., p-value < 0.05)
+significant_models <- model_summaries %>%
+  dplyr::filter(p.value < 0.05)
+
+significant_models
+
+write_xlsx(list(modeloutput = significant_models),
+           paste0(pad_tabellen, "modeloutput_OM.xlsx"))
 
 ```
 
-
-```{r meta-data}
-
-meta_data <- 
-  enframe(c(vroegste_jaar = vroegste_jaar, 
-            recentste_jaar = recentste_jaar, 
-            metingen = nrow(sediment_data)),
-          name = "naam", value = "waarde")
-
-meta_data %>% 
-  write_delim(paste0(pad_data, "meta_data.csv"),
-              delim = ";")
-
-```
-
-```{r voorbereiding dataset}
-
-table(sediment_data$tidaal)
-sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "intertidaal"
-sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "Intertidaal"
-sediment_data$tidaal[sediment_data$tidaal=="sub"] <- "subtidaal"
-
-  table(sediment_data$waterloop)
-  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde I"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde I"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde"] <- "Zeeschelde I"
-  # sediment_data$waterloop[sediment_data$waterloop=="Beneden_Dijle"] <- "Dijle"
-  table(sediment_data$waterloop)
-  sediment_data$waterloop <- factor(sediment_data$waterloop, levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I",
-                                                    "Rupel","Durme","Nete","Dijle","Zenne"))
-  
-  table(sediment_data$fysiotoop)
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="diep subtidaal"] <- "diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoge slikzone"] <- "hoog"
-    sediment_data$fysiotoop[sediment_data$fysiotoop=="lage slikzone"] <- "laag"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laag intertidaal"] <- "laag"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laag slik"] <- "laag"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="matig diep subtidaal"] <- "matig diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoge slikzone"] <- "midden"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoog slik"] <- "midden"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="nog te bepalen - sub"] <- "sub indet."
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="ondiep subtidaal"] <- "ondiep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="slik onbepaald"] <- "inter indet."
-  
-  unique(sediment_data$fysiotoop)
-  
-  fyzzers <- c("supralitoraal","hoog","midden","laag",
-               "hard antropogeen","inter indet.","ondiep",
-               "matig diep","diep", "sub indet.","onbepaald")
-  sediment_data$fysiotoop <- factor(sediment_data$fysiotoop, levels = fyzzers)
-  
-  hoofd <- c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I")
-  zij <- c("Rupel","Durme","Nete","Dijle","Zenne")
-  inter <- c("inter indet.","laag", "hoog", "midden")
-  sub <- c("diep","matig diep","ondiep","sub indet.")
-  intersubZS <- c("laag", "hoog", "midden", "diep","matig diep","ondiep")
-  
-```
 
 ```{r Mediaan-Zeeschelde, fig.height=5, fig.width=8 }
 
@@ -249,6 +418,13 @@ var <- "mediaan"
     facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("mediane korrelgrootte (µm)")
   
   ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_","boxplotfysiotopen.jpg"))
+  
+  ggplot(data = subset(grafdat,!is.na(fysiotoop) & jaar == 2022), 
+         aes(x = factor(tidaal),y = waarde)) +
+    geom_boxplot(aes(fill = fysiotoop)) + 
+    scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("mediane korrelgrootte (µm)")
   
 ```
 
@@ -344,18 +520,28 @@ ggplot(grafdat,
 
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trend.jpg"))
 
-grafdat %>% 
+grafdat %>%
+  dplyr::filter(!is.na(fysiotoop)) %>% 
   dplyr::filter(jaar > 2016) %>% 
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("Mediane korrelgrootte (µm)") 
 
 grafdat %>% 
-  dplyr::filter(jaar > 2016) %>%
+  dplyr::filter(jaar < 2016) %>%
+  dplyr::filter(!is.na(fysiotoop)) %>%
   dplyr::filter(fysiotoop == "diep") %>% 
   ggplot(aes(x = waterloop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
-  xlab("") + ylab("Mediane korrelgrootte (µm)") 
+  xlab("") + ylab("Mediane korrelgrootte (µm)")+ labs(title = "sedimentdata 2008-2015")
+
+grafdat %>% 
+  dplyr::filter(jaar > 2016) %>%
+  dplyr::filter(!is.na(fysiotoop)) %>%
+  dplyr::filter(fysiotoop == "diep") %>% 
+  ggplot(aes(x = waterloop, y = waarde)) +
+  geom_boxplot((aes(color = fysiotoop))) +
+  xlab("") + ylab("Mediane korrelgrootte (µm)") + labs(title = "sedimentdata 2016-2023")
 
 ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"diep.jpg"))
 
@@ -487,7 +673,9 @@ var <- "slib"
   sediment_datab <- sediment_data[sediment_data$variabele == var,]
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
-  grafdat <- sediment_datab
+  grafdat <- sediment_datab %>% 
+    dplyr::filter(waterloop != "Zeeschelde I_up")
+  
   ggplot(grafdat, 
          aes(x=factor(jaar),y=waarde)) +
     geom_boxplot(aes(fill=fysiotoop)) + 
@@ -515,7 +703,15 @@ grafdat %>%
   ggplot(aes(x = fysiotoop, y = waarde)) +
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
-                 
+
+grafdat %>%
+  # dplyr::filter(waterloop == "Zeeschelde IV") %>% 
+ mutate(periode = factor(ifelse(jaar < 2015, "voor 2015", "2015 en later"), 
+                          levels = c("voor 2015", "2015 en later"))) %>%
+  ggplot(aes(x = fysiotoop, y = waarde, fill = periode)) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +
+  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") + labs(title= "slib% intertidaal")
+ ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"boxplotperiods.jpg"))                
 
 ```
 
@@ -605,6 +801,60 @@ grafdat %>%
                  
 
 ```
+
+
+```{r Slib-Zeeschelde-subtidaal,fig.height=5, fig.width=8 }
+
+var <- "slib"
+  partim <- hoofd
+  deel <- "Zeeschelde"
+  fysn <- sub
+  tidaal <- "subtidaal"
+  sediment_datab <- sediment_data[sediment_data$variabele == var,]
+  sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
+  sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
+  grafdat <- sediment_datab %>% 
+    dplyr::filter(waterloop != "Zeeschelde I_up")
+  
+  ggplot(grafdat, 
+         aes(x=factor(jaar),y=waarde)) +
+    geom_boxplot(aes(fill=fysiotoop)) + 
+    # scale_y_log10(breaks = c(0,63,125,250,500,1000)) +
+    # coord_trans(y="log") +
+    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %")
+
+ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"box.jpg"))
+
+
+
+ggplot(grafdat,
+         aes(x=jaar,y=waarde)) +
+    geom_point(aes(color=fysiotoop)) + 
+    geom_smooth(aes(color=fysiotoop)) +
+    facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") +
+    scale_x_continuous (name = "jaar",
+                      breaks = grafdat$jaar,
+                      labels = grafdat$jaar) 
+
+# ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"trendZSIV.jpg"))
+
+grafdat %>% 
+  dplyr::filter(jaar > 2016) %>% 
+  ggplot(aes(x = fysiotoop, y = waarde)) +
+  geom_boxplot((aes(color = fysiotoop))) +
+  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
+                 
+grafdat %>%
+  mutate(periode = factor(ifelse(jaar < 2015, "voor 2015", "2015 en later"), 
+                          levels = c("voor 2015", "2015 en later"))) %>%
+  ggplot(aes(x = fysiotoop, y = waarde, fill = periode)) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +
+  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") + labs(title= "slib% subtidaal")
+ ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"boxplotperiods.jpg"))                
+
+```
+
+
 
 
 ```{r Slib-Zeeschelde-intertidaal_zondertijarmen,fig.height=5, fig.width=8 }
@@ -703,7 +953,9 @@ var <- "slib"
   sediment_datab <- sediment_data[sediment_data$variabele == var,]
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
-  grafdat <- sediment_datab
+  grafdat <- sediment_datab %>% 
+    dplyr::filter(fysiotoop != "sub indet.")
+  
   ggplot(grafdat, 
          aes(x=factor(jaar),y=waarde)) +
     geom_boxplot(aes(fill=fysiotoop)) + 
@@ -732,6 +984,13 @@ grafdat %>%
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
                  
+grafdat %>%
+  mutate(periode = factor(ifelse(jaar < 2015, "voor 2015", "2015 en later"), 
+                          levels = c("voor 2015", "2015 en later"))) %>%
+  ggplot(aes(x = fysiotoop, y = waarde, fill = periode)) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +
+  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") + labs(title= "slib% subtidaal")
+ ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"boxplotperiods.jpg"))                
 
 ```
 
@@ -745,7 +1004,8 @@ var <- "slib"
   sediment_datab <- sediment_data[sediment_data$variabele == var,]
   sediment_datab <- sediment_datab[sediment_datab$waterloop %in% partim,]
   sediment_datab <- sediment_datab[sediment_datab$fysiotoop %in% fysn,]
-  grafdat <- sediment_datab
+  grafdat <- sediment_datab %>% 
+    dplyr::filter(fysiotoop !="inter indet.")
   ggplot(grafdat, 
          aes(x=factor(jaar),y=waarde)) +
     geom_boxplot(aes(fill=fysiotoop)) + 
@@ -774,6 +1034,13 @@ grafdat %>%
   geom_boxplot((aes(color = fysiotoop))) +
   facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") 
                  
+grafdat %>%
+  mutate(periode = factor(ifelse(jaar < 2015, "voor 2015", "2015 en later"), 
+                          levels = c("voor 2015", "2015 en later"))) %>%
+  ggplot(aes(x = fysiotoop, y = waarde, fill = periode)) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +
+  facet_wrap(~waterloop, ncol=1) + xlab("") + ylab("slib %") + labs(title= "slib% intertidaal")
+ ggsave(file=paste0(pad_figuren,"060_figuur_",var,"_",deel,"_",tidaal,"boxplotperiods.jpg"))                
 
 ```
 
