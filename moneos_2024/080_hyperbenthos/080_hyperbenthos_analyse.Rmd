@@ -1,0 +1,715 @@
+--- 
+params:
+  hoofdstuk: "080_hyperbenthos"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "Hyperbenthos data"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r 080-setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r 080-libraries}
+
+library(tidyverse)
+library(readxl)
+library(writexl)
+library(ggpubr)
+library(INBOtheme)
+library(rprojroot)
+library(lubridate)
+library(ggforce)
+library(grid)
+library(forcats)
+library(gghighlight)
+
+```
+
+
+```{r 080-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/Function_CalculateShannonIndex.R")
+```
+
+
+```{r 080-data}
+
+data_hyperbenthos <- 
+  read_excel(paste0(pad_data, "hyperbenthos_data_2013_2023.xlsx")) 
+
+
+data_hpb.gnexoot <- data_hyperbenthos %>% 
+  dplyr::filter(exoot == 0)
+
+vroegste_jaar <-
+  data_hyperbenthos %>% 
+  pull(Jaar) %>% 
+  min()
+
+laatste_jaar <-
+  data_hyperbenthos %>% 
+  pull(Jaar) %>% 
+  max()
+
+gebied_order <-
+  c("Paardenschor","St-Anna","Rupel", "Ballooi","Dendermonde","Brede Schoren")
+
+
+
+```
+
+
+```{r 080-totaal-over-soorten}
+# som alle soorten, geen exoten
+data_hyperbenthos_totaal <-
+  data_hpb.gnexoot %>% 
+  dplyr::group_by(Jaar, Maand, gebied) %>% 
+  dplyr::summarise_at(vars(n, AFDW), ~sum(.,na.rm=TRUE)) %>%
+  dplyr::mutate(zone = if_else(gebied == "Brede Schoren" | gebied == "Dendermonde", "Zoet", if_else(gebied == "Ballooi" | gebied == "Rupel", "Oligohalien", "Sterke Saliniteitsgradiënt"))) %>% 
+  ungroup()
+
+#som per soort, per jaar, ook exoten, en in percent. stomme INBOtheme kan maar 9 kleuren, dus selecteren van 8 grootste
+#eerst jaarsom om % te knn berekenen in volgende stap
+hpb.totsom <- data_hyperbenthos %>% 
+  dplyr::group_by(Jaar) %>% 
+  dplyr::summarise(totbiom = sum(na.omit(AFDW)),
+                   totdens = sum(na.omit(n)))
+
+data.h.b <- data_hyperbenthos %>% 
+  left_join(hpb.totsom, by = "Jaar") %>% 
+  dplyr::group_by(soort, Jaar) %>% 
+  dplyr::summarise(biom_perc = sum(AFDW)/totbiom) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  arrange(desc(biom_perc)) %>%
+  dplyr::group_by(Jaar) %>%
+  slice(1:8) %>% 
+  ungroup()
+#om negende fractie te krijgen
+tussenstap.1 <- data.h.b %>% 
+  group_by(Jaar) %>% 
+  summarise(biom_perct = 1- sum(biom_perc)) %>%
+  ungroup() %>% 
+  mutate(soort = "rest")
+#de hoogste 8 samenvoegen met de rest
+data.hpb.biomsoort<- tussenstap.1 %>% 
+  dplyr::select(soort, Jaar, biom_perct) %>%
+  rename(biom_perc = biom_perct) %>% 
+  rbind(data.h.b)
+
+
+## probleem blijft want je hebt over meerdee jaren 21 soorten, dus soorten krijgen versch kleuren in versch jaren. Daarom selectie van 9 meest abundante taxa maken, en die dan voor elk jaar plotten.
+
+
+  
+
+```
+
+```{r 080-soort trends}
+data.h.bsp <- data_hyperbenthos %>%
+    dplyr::mutate(zone = if_else(gebied == "Brede Schoren" | gebied == "Dendermonde", "Zoet", if_else(gebied == "Ballooi" | gebied == "Rupel", "Oligohalien", "Sterke Saliniteitsgradiënt"))) %>% 
+   mutate(zone = factor(zone,
+                             levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet"))) %>%
+    dplyr::mutate(soort = recode(soort, "Pomatoschistus minutus"="Pomatoschistus sp")) %>%
+  dplyr::group_by(soort, Jaar, zone) %>% 
+  dplyr::summarise(biom_sp = sum(na.omit(AFDW))) %>%
+  ungroup() %>% 
+    complete(soort, zone, Jaar, fill = list(biom_sp = 0)) %>% #geen Palaemons in 2023!!!
+  dplyr::filter(soort %in% c("Platichthys flesus",  "Crangon crangon", "Neomysis integer", "Pomatoschistus sp", "Palaemon longirostris", "Mesopodopsis slabberi")) #rest"Abramis brama",
+
+ggplot(data.h.bsp, aes(x=Jaar, y=biom_sp, color=soort))+
+  geom_line(aes(color=soort), linewidth=2)+
+    scale_x_continuous(labels = scales::number_format(accuracy = 1))+ 
+  ylab("Biomassa AFDW jaarsom 2 locaties")+
+    facet_grid(~zone)
+  
+ggsave(paste0(pad_figuren, "080-figuur-biomassa_soorten_jaren.jpg"), height=6, width=9)
+
+levels(ordered(data_hyperbenthos$soort))
+
+```
+
+
+
+```{r 080-taxa selectie 8}
+# selecteer 8 taxa met hoogste proc bijdrage aan biomassa overheen alle jaren. Keuze voor 8 omdat INBO_theme maar 9 kleur levels heeft
+hpb.sel.8sp<- data_hyperbenthos %>%
+  dplyr::filter(Maand %in% c(4:10)) %>%
+  left_join(hpb.totsom, by = "Jaar") %>% 
+  dplyr::group_by(soort, Jaar) %>% 
+  dplyr::reframe(biom_perc = sum(na.omit(AFDW))/totbiom*100) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::group_by(soort) %>%
+  dplyr::summarize(perc_biom = max(na.omit(biom_perc)))%>%
+  arrange(desc(perc_biom)) %>%
+  slice(1:8) %>%
+  ungroup() 
+sel <- hpb.sel.8sp$soort
+
+#dframe met alleen de 8 sp en hun perc_biom
+hpb.sel.8sp.biom<- data_hyperbenthos %>%
+  dplyr::filter(Maand %in% c(4:10)) %>%
+  left_join(hpb.totsom, by = "Jaar") %>% 
+  dplyr::group_by(soort, Jaar) %>% 
+  dplyr::reframe(biom_perc = sum(na.omit(AFDW))/totbiom*100) %>%
+  ungroup() %>%
+  complete(soort, Jaar, fill = list(biom_perc = 0)) %>% 
+  dplyr::filter(soort %in% sel) %>% 
+  distinct()
+
+# Nu berekenen wat biom proc is van rest voor elk jaar
+restbiom8sp <-data_hyperbenthos %>%
+  dplyr::filter(Maand %in% c(4:10)) %>%
+  dplyr::filter(soort %in% sel) %>% 
+  dplyr::group_by(Jaar) %>% 
+  dplyr::summarise(biom_8sp = sum(na.omit(AFDW))) %>% 
+  left_join(hpb.totsom, by ="Jaar") %>% 
+  dplyr::mutate(perc_biom = (totbiom-biom_8sp)/totbiom*100,
+                soort = "rest") %>% 
+  dplyr::select(soort, Jaar, perc_biom) %>% 
+  rename(biom_perc = perc_biom)
+
+hpb.sel.8sp.compl <- hpb.sel.8sp.biom %>% 
+  rbind(restbiom8sp)
+  
+
+
+```
+
+
+```{r 080-per-waterloop-en-tidaal}
+
+data_hyperbenthos_ZSmaand <-
+  data_hyperbenthos_totaal %>% 
+  group_by(Jaar, Maand) %>% 
+  summarise_at(vars(n, AFDW), 
+               list(mean = ~max(0, mean(., na.rm = TRUE)),
+                    med = ~max(0, median(., na.rm = TRUE)),
+                    lwr1 = ~max(0, quantile(., 0.25, na.rm = TRUE)),
+                    upr1 = ~max(0, quantile(., 0.75, na.rm = TRUE)),
+                    lwr2 = ~max(0, quantile(., 0.05, na.rm = TRUE)),
+                    upr2 = ~max(0, quantile(., 0.95, na.rm = TRUE)))) %>% 
+  ungroup()
+
+#jaartotalen voor ZS - som van 6 gebieden, alleen april-okt, 
+data_hyperbenthos_ZS <-
+  data_hyperbenthos_totaal %>% 
+  dplyr::filter(Maand %in% c(4:10), Jaar %in% c(2014:2020)) %>% 
+    dplyr::group_by(Jaar) %>% 
+  summarise_at(vars(n, AFDW), 
+               list(tot = ~sum(., na.rm = TRUE), mean = ~max(0, mean(., na.rm = TRUE)),
+                    med = ~max(0, median(., na.rm = TRUE)),
+                    lwr1 = ~max(0, quantile(., 0.25, na.rm = TRUE)),
+                    upr1 = ~max(0, quantile(., 0.75, na.rm = TRUE)),
+                    lwr2 = ~max(0, quantile(., 0.05, na.rm = TRUE)),
+                    upr2 = ~max(0, quantile(., 0.95, na.rm = TRUE)))) %>% 
+  ungroup()
+```
+
+
+```{r 080-figuur-densiteit-totaal-gebied-maandverloop-jaren}
+
+
+ylb <- expression(paste("densiteit ", "(ind/", '40', m^3, ")"))
+
+fnt <- 8
+
+
+bxp_hpbaprokt <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10)) %>% 
+  mutate(gebied = factor(gebied,
+                             levels = gebied_order),
+         Maand = ordered(Maand))  
+
+bxp_hpbaprokt23 <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10)) %>% 
+  mutate(gebied = factor(gebied,
+                             levels = gebied_order),
+         Maand = ordered(Maand))  %>%  
+  dplyr::filter(Jaar == 2023)
+
+bxp_hpb <- bxp_hpbaprokt %>% 
+  ggplot(aes(x=Maand, y= n, group=Jaar)) +
+  geom_line(aes(colour=Jaar), linewidth = 0.8) +
+  geom_line(data = bxp_hpbaprokt23, aes(x=Maand, y= n), linewidth = 3, colour = "lightblue") +
+  #gghighlight(Jaar == 2023,
+        #      unhighlighted_params = list(linewidth = 0.5, colour= NULL), keep_scales = TRUE)+
+  #geom_line(data = dplyr::filter(bxp_hpbaprokt, Jaar == 2023), linewidth = 2)+
+  scale_y_log10(breaks = c(0,10,1000,100000)+1, labels = c(0,10,1000,100000)) +
+  scale_color_continuous(label = function(x) sprintf("%.0f", x)) +
+  labs(x = "Maand",
+       y = ylb) 
+
+bxp_hpb1 <- bxp_hpb+
+ facet_grid_paginate(~gebied, ncol=3, nrow=1, page=1)
+  
+
+bxp_hpb2 <- bxp_hpb+
+   facet_grid_paginate(~gebied, ncol=3, nrow=1, page=2)
+
+
+ggarrange(bxp_hpb1 + rremove("xlab")+ font("xy.text", size = fnt), 
+          bxp_hpb2 +  font("xy.text", size = fnt), 
+          nrow = 2, common.legend = TRUE, legend = "right")+ bgcolor("White")  
+
+ggsave(paste0(pad_figuren, "080-figuur-densiteit_totaal-gebied-maandverloop_jaren.jpg"), height=6, width=9)
+
+```
+
+```{r 080-figuur-densiteit-totaal-ZS-maandverloop-jaren}
+ylb <- expression(paste("densiteit ", "(ind/", '40', m^3, ")"))
+
+fnt <- 8
+
+
+bxp_hpbZSaprokt <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10), Jaar !=2013) %>% 
+  mutate(Maand = ordered(Maand)) %>%
+  dplyr::group_by(Jaar, Maand) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)),
+                   AFDWZS = sum(na.omit(AFDW))) 
+
+bxp_hpbZSaprokt23 <- bxp_hpbZSaprokt %>% 
+  dplyr::filter(Jaar == 2023)
+
+bxp_hpbZS <- bxp_hpbZSaprokt %>% 
+  ggplot(aes(x=Maand, y= nZS, group=Jaar)) +
+  geom_line(aes(colour=Jaar), linewidth = 0.8) +
+  geom_line(data= bxp_hpbZSaprokt23, aes(x=Maand, y= nZS), linewidth = 3, colour= "lightblue") +
+  scale_y_log10(breaks = c(0,10,1000,10000)+1, labels = c(0,10,1000,10000)) +
+  labs(x = "Maand",
+       y = ylb)
+bxp_hpbZS
+
+ggsave(paste0(pad_figuren, "080-figuur-densiteit_totaal-ZS-maandverloop_jaren.jpg"), height=4, width=6)
+
+
+bxp_hpbZSj_ALL <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10), Jaar !=2013) %>%
+  dplyr::group_by(Jaar) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)/6),
+                   AFDWZS = sum(na.omit(AFDW))/6) %>%
+  ggplot(aes(x=Jaar, y= nZS)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(nZS, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+   labs(x = "", y="") +
+   #theme(axis.text.x = element_text(angle = 45))+
+  ylim(100,25000)+ ggtitle("Volledige Zeeschelde")+
+  theme(title =element_text(size=10))
+bxp_hpbZSj_ALL
+
+bxp_hpbZSj_SS <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10), Jaar !=2013, zone == "Sterke Saliniteitsgradiënt") %>%
+  dplyr::group_by(Jaar, zone) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)/2),
+                   AFDWZS = sum(na.omit(AFDW))/2) %>%
+  mutate(zone = factor(zone,
+                             levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet"))) %>%
+  ggplot(aes(x=Jaar, y= nZS)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(nZS, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+   labs(x = "", y="") +
+   #theme(axis.text.x = element_text(angle = 45))+
+  ylim(100,80000)+ ggtitle("Sterke Saliniteitsgradiënt")+
+  theme(title =element_text(size=10))
+
+bxp_hpbZSj_OL <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10), Jaar !=2013, zone == "Oligohalien") %>%
+  dplyr::group_by(Jaar, zone) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)/2),
+                   AFDWZS = sum(na.omit(AFDW))/2) %>%
+  mutate(zone = factor(zone,
+                             levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet"))) %>%
+  ggplot(aes(x=Jaar, y= nZS)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(nZS, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+   labs(x = "", y="") +
+   #theme(axis.text.x = element_text(angle = 45))+
+  ylim(100,3000)+ ggtitle("Oligohalien") +
+  theme(title =element_text(size=10))
+
+bxp_hpbZSj_ZO <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10), Jaar !=2013,zone == "Zoet") %>%
+  dplyr::group_by(Jaar, zone) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n))/2,
+                   AFDWZS = sum(na.omit(AFDW))/2) %>%
+  mutate(zone = factor(zone,
+                             levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet"))) %>%
+  ggplot(aes(x=Jaar, y= nZS)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(nZS, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+   labs(x = "", y="") +
+   #theme(axis.text.x = element_text(angle = 45))+
+  ylim(100,3000)+ ggtitle("Zoet")+
+  theme(title =element_text(size=10))
+
+t <-ggarrange(bxp_hpbZSj_SS  + font("xy.text", size = fnt), 
+          bxp_hpbZSj_OL  + font("xy.text", size = fnt),
+          bxp_hpbZSj_ZO + font("xy.text", size = fnt), 
+          bxp_hpbZSj_ALL + font("xy.text", size = fnt), ncol=2, nrow = 2) 
+annotate_figure(t, left=text_grob("Gemiddelde densiteit per jaar per zone", rot=90), bottom=text_grob("Jaar"))+ bgcolor("White")  
+
+
+ggsave(paste0(pad_figuren, "080-figuur-densiteit_ZS_jaarverloop_zones1.jpg"), height=4, width=6)
+
+
+
+bxp_hpbZSb <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10), Jaar !=2013) %>% 
+  mutate(Maand = ordered(Maand)) %>%
+  dplyr::group_by(Jaar, Maand) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)),
+                   AFDWZS = sum(na.omit(AFDW))) %>% 
+  ggplot(aes(x=Jaar, y= nZS, group=Maand)) +
+  geom_line(aes(colour=Maand), size = 0.8) +
+  scale_y_log10(breaks = c(0,10,1000,10000)+1, labels = c(0,10,1000,10000)) +
+  labs(x = "Maand",
+       y = ylb)
+bxp_hpbZSb
+
+
+```
+
+```{r 080-figuur-biomassa-totaal-ZS-maandverloop-jaren}
+ylbb <- expression(paste("biomassa ", "(g droge stof/", '40', m^3, ")"))
+
+fnt <- 8
+
+biom_hpbZSOA <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10), Jaar !=2013) %>% 
+  mutate(Maand = ordered(Maand)) %>%
+  dplyr::group_by(Jaar, Maand) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)),
+                   AFDWZS = sum(na.omit(AFDW))) %>% 
+  dplyr::ungroup()
+
+biom_hpbZSOA23 <- biom_hpbZSOA %>% 
+  dplyr::filter(Jaar == 2023)
+
+
+biom_hpbZS <- biom_hpbZSOA %>% 
+  ggplot(aes(x=Maand, y= AFDWZS, group=Jaar)) +
+  geom_line(aes(colour=Jaar), size = 0.8) +
+  geom_line(data= biom_hpbZSOA23, aes(x=Maand, y= AFDWZS), linewidth = 3, colour= "lightblue") +
+  scale_y_log10(breaks = c(0,10,100, 1000,10000)+1, labels = c(0,10,100,1000,10000)) +
+  labs(x = "Maand",
+       y = ylbb) +
+    scale_color_continuous(label = function(x) sprintf("%.0f", x)) +
+   theme(axis.text.x = element_text(angle = 45))
+biom_hpbZS
+
+ggsave(paste0(pad_figuren, "080-figuur-biomassa_totaal-ZS-maandverloop_jaren.jpg"), height=4, width=6)
+
+biom_hpbZSj_ALL <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10), Jaar !=2013) %>%
+  dplyr::group_by(Jaar) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)/6),
+                   AFDWZS = sum(na.omit(AFDW))/6) %>%
+  ggplot(aes(x=Jaar, y= AFDWZS)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(AFDWZS, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+   labs(x = "", y="")+
+  ylim(0,30)+ ggtitle("Gehele Zeeschelde")+
+  theme(title =element_text(size=10))
+biom_hpbZSj_ALL
+
+biom_hpbZSj_SS <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10), Jaar !=2013, zone == "Sterke Saliniteitsgradiënt") %>%
+  dplyr::group_by(Jaar, zone) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)/2),
+                   AFDWZS = sum(na.omit(AFDW))/2) %>%
+  mutate(zone = factor(zone,
+                             levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet"))) %>%
+  ggplot(aes(x=Jaar, y= AFDWZS)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(AFDWZS, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+   labs(x = "", y="")+
+  ylim(0,60)+ ggtitle("Sterke Saliniteitsgradiënt")+
+  theme(title =element_text(size=10))
+
+biom_hpbZSj_OL <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10), Jaar !=2013, zone == "Oligohalien") %>%
+  dplyr::group_by(Jaar, zone) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)/2),
+                   AFDWZS = sum(na.omit(AFDW))/2) %>%
+  mutate(zone = factor(zone,
+                             levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet"))) %>%
+  ggplot(aes(x=Jaar, y= AFDWZS)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(AFDWZS, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+   labs(x = "", y="")+
+  ylim(0,20)+ ggtitle("Oligohalien")+
+  theme(title =element_text(size=10))
+
+biom_hpbZSj_ZO <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10), Jaar !=2013, zone == "Zoet") %>%
+  dplyr::group_by(Jaar, zone) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)/2),
+                   AFDWZS = sum(na.omit(AFDW))/2) %>%
+  mutate(zone = factor(zone,
+                             levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet"))) %>%
+  ggplot(aes(x=Jaar, y= AFDWZS)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(AFDWZS, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+   labs(x = "", y="")+
+  ylim(0,40)+ ggtitle("Zoet")+
+  theme(title =element_text(size=10))
+
+q <-ggarrange(biom_hpbZSj_SS +  font("xy.text", size = fnt), 
+          biom_hpbZSj_OL +  font("xy.text", size = fnt),
+          biom_hpbZSj_ZO +  font("xy.text", size = fnt), 
+          biom_hpbZSj_ALL +  font("xy.text", size = fnt), ncol=2, nrow = 2) 
+annotate_figure(q, left=text_grob("Gemiddelde biomassa (2 locaties)", rot=90), bottom=text_grob("Jaar"))+ bgcolor("White")  
+
+
+
+ggsave(paste0(pad_figuren, "080-figuur-biomassa_ZS_jaarverloop_zones.jpg"), height=4, width=6)
+
+```
+
+
+```{r 080-figuur-biomassa-gebied-maandverloop-jaar}
+
+
+ylbb <- expression(paste("biomassa ", "(mg droge stof/", '40', m^3, ")"))
+
+fnt <- 8
+
+
+bxp_hpbbOA <- 
+  data_hyperbenthos_totaal %>%
+  dplyr::filter(Maand %in% c(4:10)) %>% 
+  mutate(gebied = factor(gebied,
+                             levels = gebied_order),
+         Maand = ordered(Maand)) 
+bxp_hpbbOA23 <- bxp_hpbbOA %>% 
+  dplyr::filter(Jaar == 2023)
+
+bxp_hpbb <- bxp_hpbbOA %>% 
+  ggplot(aes(x=Maand, y= AFDW+1, group=Jaar)) +
+  geom_line(aes(colour=Jaar)) +
+    geom_line(data= bxp_hpbbOA23, aes(x=Maand, y= AFDW+1), linewidth = 2, colour= "lightblue") +
+  scale_y_log10(breaks = c(0,10,1000,100000)+1, labels = c(0,10,1000,100000)) +
+  labs(x = "Maand",
+       y = ylbb) +
+    scale_color_continuous(label = function(x) sprintf("%.0f", x)) +
+   theme(axis.text.x = element_text(angle = 45))
+
+bxp_hpbb1 <- bxp_hpbb+
+ facet_grid_paginate(~gebied, ncol=3, nrow=1, page=1)
+
+bxp_hpbb2 <- bxp_hpbb+
+   facet_grid_paginate(~gebied, ncol=3, nrow=1, page=2)
+
+
+ggarrange(bxp_hpbb1 + rremove("xlab")+ font("xy.text", size = fnt), 
+          bxp_hpbb2 +  font("xy.text", size = fnt), 
+          nrow = 2, common.legend = TRUE, legend = "right")+ bgcolor("White")  
+ggsave(paste0(pad_figuren, "080_figuur_biomassa_gebied_maandverloop_jaar.jpg"), height=6, width=9)
+
+
+```
+
+
+```{r 080-figuur-biomassa-biomassa-perc-soorten-perjaar}
+
+pie_up <- hpb.sel.8sp.compl %>% 
+  ggplot(aes(x="", y=biom_perc, fill=soort)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+    theme_void() +
+ facet_grid_paginate(~Jaar, ncol=3, nrow=1, page=1)
+pie_middle<- hpb.sel.8sp.compl %>% 
+  ggplot(aes(x="", y=biom_perc, fill=soort)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+    theme_void() +
+ facet_grid_paginate(~Jaar, ncol=3, nrow=1, page=2)
+pie_bottom<- hpb.sel.8sp.compl %>% 
+  ggplot(aes(x="", y=biom_perc, fill=soort)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+    theme_void() +
+ facet_grid_paginate(~Jaar, ncol=3, nrow=1, page=3)
+pie_last<- hpb.sel.8sp.compl %>% 
+  ggplot(aes(x="", y=biom_perc, fill=soort)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar("y", start=0) +
+    theme_void() +
+ facet_grid_paginate(~Jaar, ncol=3, nrow=1, page=4)
+
+ggarrange(pie_up, pie_middle, pie_bottom, pie_last, 
+          nrow = 4, common.legend = TRUE, legend ="right")+ bgcolor("White")  
+
+ggsave(paste0(pad_figuren, "080_figuur_biomassa_biomassa_perc_soorten_perjaar.jpg"), height=4, width=6)
+
+```
+
+```{r 080-figuur-soortenrijkdomZS-perjaar}
+#In jaar 2013 niet volledig gesampled wat taxa rijkdom beinvloedt, dus die niet
+#met exoten
+hpb_specrich <- data_hyperbenthos %>%
+  dplyr::filter(Maand %in% c(4:10)) %>%
+  dplyr::filter(Jaar != 2013) %>% 
+  dplyr::group_by(Jaar) %>% 
+  dplyr::summarise(specrich = length(unique(soort))) %>% 
+  ungroup() 
+
+
+welex  <-ggplot(hpb_specrich, aes(Jaar, specrich)) +
+  geom_line(size=1)+
+    ylab("Taxa rijkdom")+
+    ylim(35,60)
+
+#zonder exoten
+hpb_specrichgnex <- data_hyperbenthos %>%
+  dplyr::filter(Maand %in% c(4:10)) %>%
+  dplyr::filter(exoot == 0, Jaar != 2013) %>% 
+  dplyr::group_by(Jaar) %>% 
+  dplyr::summarise(specrich = length(unique(soort))) %>% 
+  ungroup()
+gnex <-ggplot(hpb_specrichgnex, aes(Jaar, specrich)) +
+  geom_line(size=1)+
+    ylab("Taxa rijkdom zonder exoten")+
+    ylim(35,60)
+
+ggarrange(welex, gnex, 
+          nrow = 1)
+
+ggsave(paste0(pad_figuren, "080_figuur_soortenrijkdomZS_perjaar.jpg"), height=4, width=6)
+
+```
+
+```{r 080-figuur-soortenrijkdomZS-perjaargebied}
+#In jaar 2013 niet volledig gesampled wat taxa rijkdom beinvloedt, dus die niet
+#met exoten
+hpb_specrichzon <- data_hyperbenthos %>%
+  dplyr::mutate(zone = if_else(gebied == "Brede Schoren" | gebied == "Dendermonde", "Zoet", if_else(gebied == "Ballooi" | gebied == "Rupel", "Oligohalien", "Sterke Saliniteitsgradiënt"))) %>% 
+  mutate(zone = factor(zone,
+                             levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet"))) %>%
+  dplyr::filter(Maand %in% c(4:10)) %>%
+  dplyr::filter(Jaar != 2013) %>% 
+  dplyr::group_by(Jaar, zone) %>% 
+  dplyr::summarise(specrich = length(unique(soort))) %>% 
+  ungroup() 
+
+welexgeb  <-ggplot(hpb_specrichzon, aes(Jaar, specrich)) +
+  geom_line(size=1)+
+    ylab("Taxa rijkdom")+
+    ylim(0,50)+
+  facet_grid(~zone)+
+   theme(axis.text.x = element_text(angle = 45))+
+  theme(strip.text = element_text(size=14))
+welexgeb
+
+ggsave(paste0(pad_figuren, "080_figuur_soortenrijkdomZS_perjaarzon.jpg"), height=5, width=10)
+```
+
+
+```{r 080-figuur-Shannon-diversiteit}
+shannon_hpbZS <- data_hyperbenthos %>%
+  dplyr::group_by(soort, Jaar) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)),
+                   afdwZS = sum(na.omit(AFDW))) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::group_by(Jaar) %>% 
+  dplyr::summarise(shannon_afdw = calc_shannon_index(afdwZS),
+                   shannon_n = calc_shannon_index(nZS)) %>%
+  dplyr::ungroup() %>% 
+  dplyr::mutate(zone = "Gehele Zeeschelde")
+
+
+shannon_hpb <- data_hyperbenthos %>%
+   dplyr::mutate(zone = if_else(gebied == "Brede Schoren" | gebied == "Dendermonde", "Zoet", if_else(gebied == "Ballooi" | gebied == "Rupel", "Oligohalien", "Sterke Saliniteitsgradiënt"))) %>% 
+  ungroup() %>% 
+  dplyr::group_by(soort, zone, Jaar) %>% 
+  dplyr::summarise(nzone = sum(na.omit(n)),
+                   afdwzone = sum(na.omit(AFDW))) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::group_by(zone, Jaar) %>% 
+  dplyr::summarise(shannon_afdw = calc_shannon_index(afdwzone),
+                   shannon_n = calc_shannon_index(nzone)) %>%
+  dplyr::ungroup() %>% 
+  rbind(shannon_hpbZS)
+
+  shan_n <- ggplot(shannon_hpb, aes(x=Jaar, colour=zone))+
+  geom_line(aes(y=shannon_n),  size=1)+
+    ylab("Shannon diversiteit densiteit")+
+    xlab("Jaar")+
+  theme(legend.text = element_text(size=14))+
+      theme(legend.title = element_text(size=14))+
+    scale_x_continuous(labels = scales::number_format(accuracy = 1))     
+
+  
+shan_b <- ggplot(shannon_hpb, aes(x=Jaar, colour=zone))+
+  geom_line(aes(y=shannon_afdw),  size=1)+
+    ylab("Shannon diversiteit biomassa")+
+    xlab("Jaar")+
+  theme(legend.text = element_text(size=14))+
+      theme(legend.title = element_text(size=14))+
+    scale_x_continuous(labels = scales::number_format(accuracy = 1))
+  
+ggarrange(shan_n, shan_b, 
+          nrow = 1, common.legend=T)+ bgcolor("White")
+
+ggsave(paste0(pad_figuren, "080_figuur_shannon.jpg"), height=5, width=10)
+
+```
+
+
+
+```{r 080-meta-data}
+
+meta_data <- 
+  enframe(c(laatstejaar = laatste_jaar, 
+            vroegstejaar = vroegste_jaar,
+            aantal_stalen = n_staal),
+          name = "naam", value = "waarde")
+
+meta_data %>% 
+  write_delim(paste0(pad_data, "meta_data.csv"),
+              delim = ";")
+
+```
+
