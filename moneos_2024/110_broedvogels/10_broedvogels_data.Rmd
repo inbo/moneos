@@ -154,37 +154,66 @@ Gebieden <-
 unique(Terr_Sigma_AB_2021$Gebied)
 GebiedenAB <- 
   Gebieden %>% 
-  filter(Gebiedsnaam %in% Terr_Sigma_AB_2021$Gebied)
+  filter(Gebied %in% Terr_Sigma_AB_2021$Gebied)
 
 # selectie territoria algemene soorten 2021 tem 2023
 nieuwegebieden2024 <- c("Doelpolder-noord", "Prosperpolder-noord", 
                         "Prosperpolder-zuid", "Schor Ouden Doel")
-Terr_Sigma_AB_2023 <- 
+# Terr_Sigma_AB_2023 <- 
+#   data23 %>% 
+#   filter(Soort %in% c("Blauwborst", "Dodaars","Rietzanger","Scholekster", 
+#                       "Slobeend", "Zomertaling")) %>% 
+#   inner_join(GebiedenAB, by = c("Gebied" = "Gebied_f")) %>% 
+#   left_join(Soorten, by = c("Soort")) %>% 
+#   mutate(Aantal = ceiling(minimum + maximum)/2) %>% 
+#   select(c(Soort, Gebied, TypeGebied, Doel, Jaar, Aantal))
+
+(Terr_Sigma_AB_2023 <- 
   data23 %>% 
   filter(Soort %in% c("Blauwborst", "Dodaars","Rietzanger","Scholekster", 
                       "Slobeend", "Zomertaling")) %>% 
-  mutate(Gebied = case_when(Gebied %in% nieuwegebieden2024 ~ "NoordelijkGebied",
-                            TRUE ~ Gebied)) %>% 
-  filter(Gebied %in% GebiedenAB$Gebiedsnaam) %>% 
-  left_join(Gebieden, by = c("Gebied" = "Gebiedsnaam")) %>% 
+  inner_join(GebiedenAB, by = c("Gebied" = "Gebied_f")) %>% 
+  group_by(Jaar, Soort, Gebiedsnaam, TypeGebied) %>% 
+  summarise(minimum = sum(minimum), maximum = sum(maximum)) %>% 
   left_join(Soorten, by = c("Soort")) %>% 
   mutate(Aantal = ceiling(minimum + maximum)/2) %>% 
-  select(c(Soort, Gebied, TypeGebied, Doel, Jaar, Aantal))
-
+  select(c(Soort, Gebied = Gebiedsnaam, TypeGebied, Doel, Jaar, Aantal)))
 
 # Add 2021, 2022 and 2023
 
+
+a <- 
+  Gebieden %>% 
+  group_by(Gebied, Gebiedsnaam) %>% 
+  summarise()
 Terr_Sigma_AB <- 
   Terr_Sigma_AB_2021 %>% 
-  pivot_longer(cols = !c(SOORT, Gebied, TypeGebied, Doel),
+  left_join(a, relationship = 'many-to-many') %>% 
+  pivot_longer(cols = !c(SOORT, Gebied, Gebiedsnaam, TypeGebied, Doel),
                names_to = "Jaar",
                values_to = "Aantal") %>% 
+  mutate(Gebied = Gebiedsnaam) %>% 
+  select(-Gebiedsnaam) %>% 
   rename(Soort = SOORT) %>% 
   mutate(Jaar = as.numeric(Jaar)) %>% 
   bind_rows(Terr_Sigma_AB_2023) %>% 
   complete(Soort, Gebied, Jaar, fill = list(Aantal = 0)) %>% 
   group_by(Soort, Gebied, TypeGebied, Doel, Jaar) %>% 
   summarise(Aantal = sum(Aantal))
+
+
+# Terr_Sigma_AB <- 
+#   Terr_Sigma_AB_2021 %>% 
+#   left_join(Gebieden[,c(1,2)]) %>% 
+#   pivot_longer(cols = !c(SOORT, Gebied_f, TypeGebied, Doel),
+#                names_to = "Jaar",
+#                values_to = "Aantal") %>% 
+#   rename(Soort = SOORT) %>% 
+#   mutate(Jaar = as.numeric(Jaar)) %>% 
+#   bind_rows(Terr_Sigma_AB_2023) %>% 
+#   complete(Soort, Gebied, Jaar, fill = list(Aantal = 0)) %>% 
+#   group_by(Soort, Gebied, TypeGebied, Doel, Jaar) %>% 
+#   summarise(Aantal = sum(Aantal))
 ```
 
 ```{r check data}
