@@ -84,6 +84,8 @@ data23 %>%
   kbl(caption = "Eerste 10 records van Data_nieuwe_vorm.xlsx") %>% 
   kable_styling(full_width = FALSE)
 ```
+<br/>
+
 
 # Aanvullen basistabel  
 
@@ -144,27 +146,33 @@ unique(Terr_Sigma_AB_2021$Gebied)
 
 # tabel met gebieden voor link Terr_Sigma_AB_2021$Gebied  - data23$Gebied
 Gebieden <- 
-  read_csv(str_c(pad_data, "Gebieden.csv")) %>% 
+  read_csv(str_c(pad_data, "Gebieden2024.csv")) %>% 
   rename(Gebiedsnaam = Naam)
+# Sinds 2023 worden aantallen voor deelgebieden van Noordelijk gebied apart ingegeven. 
 
 # Selectie van gebieden waarop de analyse van de algmene soorten gebeurt
+unique(Terr_Sigma_AB_2021$Gebied)
 GebiedenAB <- 
   Gebieden %>% 
-  filter(Gebied %in% Terr_Sigma_AB_2021$Gebied)
+  filter(Gebiedsnaam %in% Terr_Sigma_AB_2021$Gebied)
 
 # selectie territoria algemene soorten 2021 tem 2023
+nieuwegebieden2024 <- c("Doelpolder-noord", "Prosperpolder-noord", 
+                        "Prosperpolder-zuid", "Schor Ouden Doel")
 Terr_Sigma_AB_2023 <- 
   data23 %>% 
   filter(Soort %in% c("Blauwborst", "Dodaars","Rietzanger","Scholekster", 
-                      "Slobeend", "Zomertaling"),
-         Gebied %in% GebiedenAB$Gebiedsnaam) %>% 
-  left_join(Gebieden, by = c("Gebied")) %>% 
+                      "Slobeend", "Zomertaling")) %>% 
+  mutate(Gebied = case_when(Gebied %in% nieuwegebieden2024 ~ "NoordelijkGebied",
+                            TRUE ~ Gebied)) %>% 
+  filter(Gebied %in% GebiedenAB$Gebiedsnaam) %>% 
+  left_join(Gebieden, by = c("Gebied" = "Gebiedsnaam")) %>% 
   left_join(Soorten, by = c("Soort")) %>% 
   mutate(Aantal = ceiling(minimum + maximum)/2) %>% 
   select(c(Soort, Gebied, TypeGebied, Doel, Jaar, Aantal))
 
 
-# Add 2021 and 2022 
+# Add 2021, 2022 and 2023
 
 Terr_Sigma_AB <- 
   Terr_Sigma_AB_2021 %>% 
