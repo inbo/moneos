@@ -1,0 +1,213 @@
+---
+params:
+  hoofdstuk: "110_broedvogels"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "MONEOS broedvogel data"
+date: '2024-09-05'
+# date: '`r Sys.Date()`'
+output: 
+  bookdown::html_document2:
+      df_print: paged
+      toc: yes
+      toc_float: yes
+      toc_depth: 2
+      number_sections: yes
+      language:
+        label:
+        fig: 'Figuur '
+        tab: 'Tabel '
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(rprojroot)
+library(readxl)
+library(lubridate)
+library(sf)
+library(kableExtra)
+conflicted::conflicts_prefer(dplyr::filter)
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+```{r read-data}
+# oude dataset met totalen voor het Sigmagebied
+Terr_Sigma_95_21 <- read_csv(str_c(pad_data, "dataSigma_sel2_2022.csv"), na = c("na")) %>% 
+  select(-c(Doel, Biotoop, Voedsel)) %>% 
+  pivot_longer(!Soort, names_to = "Jaar", values_to = "Aantal") %>% 
+  mutate(Jaar = as.integer(Jaar))
+
+# nieuwe dataset met aantallen per gebied
+data23 <- 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024_v2.xlsx"), range = "A1:G500") %>% 
+  filter(!is.na(Soort)) %>% 
+  filter(Jaar > 2020) # voor Zennegat is longfile aangevuld voor de hele periode, maar we gebruiken deze data nog niet.
+```
+
+# Omzetting broedvogeldata bestand in longfile.
+
+Twee jaar geleden werd een start gemaakt met de omzetting van het ingewikkelde excelbestand in één (eenvoudigere) long file. De data voor 2022 en 2023 zijn enkel toegevoegd  in dit long formaat. De bedoeling is om de volledige excel om te zetten, maar dit is, nog steeds, werk voor later. Het bestand Data_nieuwe_vorm_2024_v2.xlsx is aangevuld voor de jaren 2017 tot 2020 voor het gebied Zennegat. Voorlopig kunnen we deze data nog niet gebruiken. Dit alles brengt dus nog steeds een beetje hocuspocus met zich mee.
+
+In het nieuwe dataformaat wordt per Soort, Jaar en Gebied een minimum- en maximumaantal territoria en de bron van de data weergegeven. Voorlopig bevat deze file data voor de jaren 2021, 2022 en 2023. Het is de bedoeling om ook de vroegere jaren om te zetten in dit format.
+
+```{r }
+data23 %>% 
+  head(n = 10) %>% 
+  kbl(caption = "Eerste 10 records van Data_nieuwe_vorm.xlsx") %>% 
+  kable_styling(full_width = FALSE)
+```
+
+# Aanvullen basistabel  
+
+De basistabel met het aantal territoria voor de 21 doelsoorten tussen 1995 en 2021. De data van 2022 en 2023 zijn niet meer in deze tabel aangevuld. Deze wordt nu in een longfile bijgehouden ("Data_nieuwe_vorm_2024_v2.xlsx") met een complete dataset voor de periode 2021 tot en met 2023.
+
+*Aandachtspunt*: Vroeger werd steeds het hoogste aantal van elk gebied genomen voor de berekening van het totaal. In dit script wordt vanaf 2021 een sommatie gedaan van min en max en vervolgens hiervan het gemiddelde berekend.
+
+
+```{r data_totaal}
+# toe te voegen data
+(Data_21_23 <- 
+  data23 %>%  
+  group_by(Jaar, Soort) %>% 
+  summarise(Aantal = ceiling((sum(minimum) + sum(maximum))/2),
+            .groups = "drop")) # aantal is het naar boven afgerond gemiddelde van min en max
+
+# verwijder 2021 uit oude data en voeg samen
+str(Terr_Sigma_95_21)
+str(Data_21_23)
+Terr_Sigma <- 
+  Terr_Sigma_95_21 %>% 
+  filter(Jaar !=2021) %>% 
+  bind_rows(Data_21_23)
+```
+
+# Bijzondere broedvogels
+
+De dataset is verre van volledig voor de algemene soorten (niet elk gebied wordt elk jaar geteld). Voor de bijzondere broedvogels gaan we er van uit dat de gegevens volledig zijn. 
+We berekenen de totalen voor een set van 16 soorten. 
+
+```{r}
+(Terr_Sigma_BB <- 
+  Terr_Sigma %>% 
+  filter(Soort %in% c("Baardman", "Bruine kiekendief","Grote karekiet","Grutto", "Kluut", 
+                      "Kwak", "Kwartelkoning", "Lepelaar", "Paapje", "Porseleinhoen", 
+                      "Purperreiger", "Roerdomp", "Snor", "Tureluur", "Woudaap", "Zomertaling")) %>% 
+  complete(Soort, Jaar, fill = list(Aantal = 0))) # add zero's
+
+# add species data (IHD, Biotoop, Voedselregime)
+Soorten <- 
+  read_csv(str_c(pad_data, "Soort.csv"))
+
+Terr_Sigma_BB %>% 
+  left_join(Soorten, by = c("Soort")) %>% 
+  write_csv(str_c(pad_tabellen, "Terr_Sigma_BB.csv"))
+```
+
+
+# Algemene broedvogels
+
+```{r read data algemenesoorten}
+# algemene soorten tot 2020 (oud format)
+Terr_Sigma_AB_2021 <- 
+  read_csv(str_c(pad_data, "dataSigma_sel_algemenesoorten2021.csv"))
+
+# gebieden waarop de analyse van de algemene soorten is gebaseerd
+unique(Terr_Sigma_AB_2021$Gebied)
+
+# tabel met gebieden voor link Terr_Sigma_AB_2021$Gebied  - data23$Gebied
+Gebieden <- 
+  read_csv(str_c(pad_data, "Gebieden.csv")) %>% 
+  rename(Gebiedsnaam = Naam)
+
+# Selectie van gebieden waarop de analyse van de algmene soorten gebeurt
+GebiedenAB <- 
+  Gebieden %>% 
+  filter(Gebied %in% Terr_Sigma_AB_2021$Gebied)
+
+# selectie territoria algemene soorten 2021 tem 2023
+Terr_Sigma_AB_2023 <- 
+  data23 %>% 
+  filter(Soort %in% c("Blauwborst", "Dodaars","Rietzanger","Scholekster", 
+                      "Slobeend", "Zomertaling"),
+         Gebied %in% GebiedenAB$Gebiedsnaam) %>% 
+  left_join(Gebieden, by = c("Gebied")) %>% 
+  left_join(Soorten, by = c("Soort")) %>% 
+  mutate(Aantal = ceiling(minimum + maximum)/2) %>% 
+  select(c(Soort, Gebied, TypeGebied, Doel, Jaar, Aantal))
+
+
+# Add 2021 and 2022 
+
+Terr_Sigma_AB <- 
+  Terr_Sigma_AB_2021 %>% 
+  pivot_longer(cols = !c(SOORT, Gebied, TypeGebied, Doel),
+               names_to = "Jaar",
+               values_to = "Aantal") %>% 
+  rename(Soort = SOORT) %>% 
+  mutate(Jaar = as.numeric(Jaar)) %>% 
+  bind_rows(Terr_Sigma_AB_2023) %>% 
+  complete(Soort, Gebied, Jaar, fill = list(Aantal = 0)) %>% 
+  group_by(Soort, Gebied, TypeGebied, Doel, Jaar) %>% 
+  summarise(Aantal = sum(Aantal))
+```
+
+```{r check data}
+table(Terr_Sigma_AB$Gebied, Terr_Sigma_AB$Soort)
+
+```
+<br/>
+
+Voor alle soorten is er data voor 19 jaren, nulwaarnemingen zijn aangevuld.
+
+```{r check data2}
+table(Terr_Sigma_AB$Gebied, Terr_Sigma_AB$Jaar)
+```
+<br/>
+
+Voor de onderzochte gebieden zijn er voor elk jaar aantallen van 6 soorten (nulwaarnemingen).
+
+
+```{r check data3}
+table(Terr_Sigma_AB$Soort, Terr_Sigma_AB$Jaar)
+```
+
+Voor alle soorten zijn er gegevens van 19 gebieden tot en met 2020. 
+
+```{r save data}
+
+Terr_Sigma_AB %>% 
+  write_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
+```
+
+
+
+
+
