@@ -410,7 +410,7 @@ figtab(knitr::opts_current$get()$label,
 (ref:figff) Ecotopenkaart Zeeschelde 1.0 2021 Fort Filip vernieuwde zone (centraal onder), overzichtskaart met rode kader als indicator detailkaart (linksboven), ecotopenkaart 2020 Fort Filip tussentie fase (rechtsboven). Zie Figuur \@ref(fig:030-figuur-kaart-bez) voor legende.
 
 
-```{r 030-figuur-kaart-ff, fig.cap='(ref:figff)', out.width="100%"}
+```{r 030-figuur-kaart-ff, fig.cap='(ref:figff)', out.width="100%", eval=FALSE}
 
 # figuur_kaart_ff <- "Ecotopenkaart Zeeschelde 1.0 2021 Fort Filip vernieuwde zone (centraal onder), overzichtskaart met rode kader als indicator detailkaart (linksboven), ecotopenkaart 2020 Fort Filip tussentie fase (rechtsboven). Zie Figuur \\@ref(fig:030-figuur-kaart-bez) voor legende."
 
@@ -422,7 +422,7 @@ knitr::include_graphics(paste0(pad_figuren, "030_figuur_FortFilip_2021.png"))
 (ref:figbw) Ecotopenkaart Zeeschelde 1.0 2021 Burchtse Weel schoruitbreiding (centraal onder), overzichtskaart met rode kader als indicator detailkaart (linksboven), ecotopenkaart 2020 Burchtse Weel (rechtsboven). Zie Figuur \@ref(fig:030-figuur-kaart-bez) voor legende.
 
 
-```{r 030-figuur-kaart-bw, fig.cap='(ref:figbw)', out.width="100%"}
+```{r 030-figuur-kaart-bw, fig.cap='(ref:figbw)', out.width="100%", eval=FALSE}
 
 # figuur_kaart_bw <- "Ecotopenkaart Zeeschelde 1.0 2021 Burchtse Weel schoruitbreiding (centraal onder), overzichtskaart met rode kader als indicator detailkaart (linksboven), ecotopenkaart 2020 Burchtse Weel (rechtsboven). Zie Figuur \\@ref(fig:030-figuur-kaart-bez) voor legende."
 
@@ -461,7 +461,7 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-```{r 030-figuur-evolutie-bez, fig.cap=figuur_evolutie_bez, out.width="100%"}
+```{r 030-figuur-evolutie-bez, fig.cap=figuur_evolutie_bez, out.width="100%", eval=FALSE}
 
 figuur_evolutie_bez <- "Temporele evolutie van de oppervlakte van de ecologisch belangrijke ecotopen Zeeschelde 1.0 in de Beneden-Zeeschelde met en zonder NOP's (natuurontwikkelingsprojecten zoals ontpolderingen, GGG’s en dijkverleggingen)"
 
@@ -501,7 +501,7 @@ De overige 67% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad 
 
 <br/>
 
-```{r 030-tabel-oppervlakte-BEZ-2, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-oppervlakte-BEZ-2, results="asis", fig.show='hide', out.width="100%",eval=FALSE}
 
 caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen in de Beneden-Zeeschelde in ", laatste_jaar, " volgens de Zeeschelde ecotopen 2.0.")
 
@@ -513,7 +513,7 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-```{r 030-tabel-evolutie-BEZ-2, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-evolutie-BEZ-2, results="asis", fig.show='hide', out.width="100%",eval=FALSE}
 
 caption_tab <- str_c("Absolute verandering en procentuele verandering van de lange termijn evolutie (tussen 2019 en ", laatste_jaar, ") en de korte termijn evolutie (tussen ", laatste_jaar - 1, " en ", laatste_jaar, ") in de Beneden-Zeeschelde 2.0.")
 
@@ -525,7 +525,7 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-```{r 030-tabel-oppervlakte-helling-BEZ-2, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-oppervlakte-helling-BEZ-2, results="asis", eval=FALSE, fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Oppervlaktes en percentages van steile en vlakke slikken in de Beneden-Zeeschelde in ", laatste_jaar, ", volgens de Zeeschelde ecotopen 2.0.")
 
@@ -539,7 +539,7 @@ figtab(knitr::opts_current$get()$label,
 
 \newpage
 
-```{r 030-figuur-kaart-bez-2, fig.cap=figuur_ecotopenkaart_bez_2, out.width="100%"}
+```{r 030-figuur-kaart-bez-2, fig.cap=figuur_ecotopenkaart_bez_2, eval=FALSE, out.width="100%"}
 
 figuur_ecotopenkaart_bez_2 <- "Ecotopenkaart 2020 Beneden-Zeeschelde 2.0"
 
