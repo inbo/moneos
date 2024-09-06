@@ -66,10 +66,29 @@ Terr_Sigma_95_21 <- read_csv(str_c(pad_data, "dataSigma_sel2_2022.csv"), na = c(
   mutate(Jaar = as.integer(Jaar))
 
 # nieuwe dataset met aantallen per gebied
-data23 <- 
+# er staan twe tabellen: Data_nieuwe_vorm_2024.xlsx en Data_nieuwe_vorm_2024_v2.xlsx. 
+data2123 <- 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), range = "A1:G500") %>% 
+  filter(!is.na(Soort))
+data2123_v2 <- 
   read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024_v2.xlsx"), range = "A1:G500") %>% 
-  filter(!is.na(Soort)) %>% 
-  filter(Jaar > 2020) # voor Zennegat is longfile aangevuld voor de hele periode, maar we gebruiken deze data nog niet.
+  filter(!is.na(Soort))
+data2123 %>% 
+  group_by(Jaar) %>% 
+  summarise(n_records = n(), n_birdsmin = sum(minimum), 
+            nbirds_max = sum(maximum))
+data2123_v2 %>% 
+  group_by(Jaar) %>% 
+  summarise(n_records = n(), n_birdsmin = sum(minimum), 
+            nbirds_max = sum(maximum))
+# v2 is aangevuld met alle waarnemingen van Zennegat als start voor toekomstig bestand. We gebruiken dit voorlopig niet
+data2123 %>% 
+  count(Gebied)
+
+# tabel met data van 2021 tot 2023 die we zullen gebruiken
+data23 <- 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), range = "A1:G500") %>% 
+  filter(!is.na(Soort)) 
 ```
 
 # Omzetting broedvogeldata bestand in longfile.
@@ -139,86 +158,55 @@ Terr_Sigma_BB %>%
 ```{r read data algemenesoorten}
 # algemene soorten tot 2020 (oud format)
 Terr_Sigma_AB_2021 <- 
-  read_csv(str_c(pad_data, "dataSigma_sel_algemenesoorten2021.csv"))
+  read_csv(str_c(pad_data, "dataSigma_sel_algemenesoorten2021n.csv"))
 
 # gebieden waarop de analyse van de algemene soorten is gebaseerd
 unique(Terr_Sigma_AB_2021$Gebied)
 
-# tabel met gebieden voor link Terr_Sigma_AB_2021$Gebied  - data23$Gebied
 Gebieden <- 
-  read_csv(str_c(pad_data, "Gebieden2024.csv")) %>% 
-  rename(Gebiedsnaam = Naam)
-# Sinds 2023 worden aantallen voor deelgebieden van Noordelijk gebied apart ingegeven. 
+  read_xlsx(path = str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), sheet = "Gebieden")
+# In deze tabel zijn er 4 kolommen. Gebiedscode is wellicht overbodig nu. Gebieds_gr: sommige projectgebieden zijn na inrichting opgedeeld in deelgebieden, gebied_gr groepeert deze deelgebieden in de originele Sigmagebieden zoals ze geteld zijn tot in 2021.
+
+Soorten <- 
+  read_xlsx(path = str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), sheet = "Soorten")
 
 # Selectie van gebieden waarop de analyse van de algmene soorten gebeurt
-unique(Terr_Sigma_AB_2021$Gebied)
-GebiedenAB <- 
+(GebiedenAB <- 
   Gebieden %>% 
-  filter(Gebied %in% Terr_Sigma_AB_2021$Gebied)
-
-# selectie territoria algemene soorten 2021 tem 2023
-nieuwegebieden2024 <- c("Doelpolder-noord", "Prosperpolder-noord", 
-                        "Prosperpolder-zuid", "Schor Ouden Doel")
-# Terr_Sigma_AB_2023 <- 
-#   data23 %>% 
-#   filter(Soort %in% c("Blauwborst", "Dodaars","Rietzanger","Scholekster", 
-#                       "Slobeend", "Zomertaling")) %>% 
-#   inner_join(GebiedenAB, by = c("Gebied" = "Gebied_f")) %>% 
-#   left_join(Soorten, by = c("Soort")) %>% 
-#   mutate(Aantal = ceiling(minimum + maximum)/2) %>% 
-#   select(c(Soort, Gebied, TypeGebied, Doel, Jaar, Aantal))
+  filter(Gebied_gr %in% Terr_Sigma_AB_2021$Gebied)) 
 
 (Terr_Sigma_AB_2023 <- 
   data23 %>% 
   filter(Soort %in% c("Blauwborst", "Dodaars","Rietzanger","Scholekster", 
                       "Slobeend", "Zomertaling")) %>% 
-  inner_join(GebiedenAB, by = c("Gebied" = "Gebied_f")) %>% 
-  group_by(Jaar, Soort, Gebiedsnaam, TypeGebied) %>% 
-  summarise(minimum = sum(minimum), maximum = sum(maximum)) %>% 
-  left_join(Soorten, by = c("Soort")) %>% 
+  left_join(Gebieden) %>% 
+  filter(Gebied_gr %in% c(Terr_Sigma_AB_2021$Gebied)) %>% 
+  group_by(Jaar, Soort, Gebied) %>% 
+  summarise(minimum = sum(minimum), maximum = sum(maximum), 
+            .groups = "drop") %>% 
   mutate(Aantal = ceiling(minimum + maximum)/2) %>% 
-  select(c(Soort, Gebied = Gebiedsnaam, TypeGebied, Doel, Jaar, Aantal)))
+  select(-c(minimum, maximum))) 
 
 # Add 2021, 2022 and 2023
-
-
-a <- 
-  Gebieden %>% 
-  group_by(Gebied, Gebiedsnaam) %>% 
-  summarise()
 Terr_Sigma_AB <- 
   Terr_Sigma_AB_2021 %>% 
-  left_join(a, relationship = 'many-to-many') %>% 
-  pivot_longer(cols = !c(SOORT, Gebied, Gebiedsnaam, TypeGebied, Doel),
+  select(-c(TypeGebied, Doel)) %>% 
+  pivot_longer(cols = !c(SOORT, Gebied),
                names_to = "Jaar",
                values_to = "Aantal") %>% 
-  mutate(Gebied = Gebiedsnaam) %>% 
-  select(-Gebiedsnaam) %>% 
   rename(Soort = SOORT) %>% 
   mutate(Jaar = as.numeric(Jaar)) %>% 
   bind_rows(Terr_Sigma_AB_2023) %>% 
-  complete(Soort, Gebied, Jaar, fill = list(Aantal = 0)) %>% 
-  group_by(Soort, Gebied, TypeGebied, Doel, Jaar) %>% 
-  summarise(Aantal = sum(Aantal))
-
-
-# Terr_Sigma_AB <- 
-#   Terr_Sigma_AB_2021 %>% 
-#   left_join(Gebieden[,c(1,2)]) %>% 
-#   pivot_longer(cols = !c(SOORT, Gebied_f, TypeGebied, Doel),
-#                names_to = "Jaar",
-#                values_to = "Aantal") %>% 
-#   rename(Soort = SOORT) %>% 
-#   mutate(Jaar = as.numeric(Jaar)) %>% 
-#   bind_rows(Terr_Sigma_AB_2023) %>% 
-#   complete(Soort, Gebied, Jaar, fill = list(Aantal = 0)) %>% 
-#   group_by(Soort, Gebied, TypeGebied, Doel, Jaar) %>% 
-#   summarise(Aantal = sum(Aantal))
+  complete(Soort, Gebied, Jaar, fill = list(Aantal = 0)) %>%  
+  group_by(Soort, Gebied, Jaar) %>% 
+  summarise(Aantal = sum(Aantal), .groups = "drop") %>% 
+  left_join(Gebieden[,c(1,4)]) %>% # add TypeGebied
+  left_join(Soorten[,c(1,5)]) # add Doel
 ```
 
 ```{r check data}
 table(Terr_Sigma_AB$Gebied, Terr_Sigma_AB$Soort)
-
+table(Terr_Sigma_AB$TypeGebied, Terr_Sigma_AB$Soort)
 ```
 <br/>
 

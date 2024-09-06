@@ -28,6 +28,7 @@ library(INBOtheme)
 library(rprojroot)
 library(lubridate)
 library(kableExtra)
+library(readxl)
 conflicted::conflicts_prefer(dplyr::filter)
 
 ```
@@ -50,12 +51,12 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 
 ```{r data}
-Soort <- read_csv(str_c(pad_data, "Soort.csv"))
+Soorten <- read_xlsx(path = str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"),
+                   sheet = "Soorten")
 Terr_Sigma_BB <- 
   read_csv(str_c(pad_tabellen, "Terr_Sigma_BB.csv"))
 Terr_Sigma_AB <- 
   read_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
-
 ```
 
 
@@ -127,7 +128,7 @@ ggsave(filename = str_c(pad_figuren, "110_fig3.jpg"), height=8, width=7)
 
 ```{r soortgrafiek per Typegebied, include = FALSE}
 Terr_Sigma_AB %>% 
-  filter(Soort == "Zomertaling") %>%
+  filter(Soort == "Scholekster") %>%
   group_by(Soort, TypeGebied, Jaar) %>% 
   summarise(Aantal = sum(Aantal), .groups = "drop") %>% 
   ggplot() +
@@ -158,15 +159,15 @@ Terr_Sigma_AB %>%
 Voor het schrijven van het hoofdstuk kan het handig zijn een jaarlijks overzicht van broedlocaties van de soorten handig zijn.
 
 ```{r nested data 202122}
-data23 <- readxl::read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2023.xlsx"), 
-                            range = "A1:G350") %>% 
+data23 <- readxl::read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), 
+                            range = "A1:G500") %>% 
   filter(!is.na(Soort))
 # we nest data to make a table for each species-year by using a for loop
 # the result is a dataframe with columns Soort(chr), Jaar (num) en data(list). Eacht list item in data contains a dataframe with Gebied, minimum and maximum.
 data_nested <- 
   data23  %>% 
-  arrange(Soort) %>% 
-  nest(data = c(Gebiedsnaam, minimum, maximum), .by = c(Soort, Jaar))
+  arrange(Soort, Jaar) %>% 
+  nest(data = c(Gebied, minimum, maximum), .by = c(Soort, Jaar))
 # data_nested$data[1]
 # data_nested$data[data_nested$Soort == "Lepelaar"]
 # data_nested$data[data_nested$Soort == "Lepelaar" & data_nested$Jaar == 2021] %>% 
@@ -175,19 +176,17 @@ data_nested <-
 ```
 
 ```{r broedlocaties 2021, results='asis'}
-# The nested data ars used in a for loop to produce seperate table in de output html file, notice the use of results='asis' in the header! (witjout that kable does not work in a for loop)
+# The nested data are used in a for loop to produce seperate table in de output html file, notice the use of results='asis' in the header! (without that kable does not work in a for loop)
 for(x in data_nested$Soort){
-  a <- data_nested %>% filter(Soort == x)
+  a <- data_nested %>% filter(Soort == x) %>% slice(1)
   for(y in a$Jaar){
     cap <- str_c("Overzicht van broedlocaties en aantal broedkoppels van ",
                x, " in ", y)
     b <- data_nested$data[data_nested$Soort == x & data_nested$Jaar == y] %>% 
-      kable(caption = cap, align = "lcc") %>% 
-      kable_paper(full_width = TRUE, position = "left")
+      kable(caption = cap, align = "lcc")
     print(b)
-    cat("\n")
+    # cat("\n")
   }
-  
 }
 
 ```
