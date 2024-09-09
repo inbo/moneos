@@ -945,28 +945,35 @@ unique(data_macrobenthos_totaal$niveau3_hybr)
 #Soortenrijkdom
 ```{r 070-figuur-soortenrijkdom-Zeeschelde}
 
-data_macrobenthos %>% 
+data_macrobenthos %>%
+    dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde I trj_Ml_Gb\n" = "Zeeschelde I trj_Ml_Gb",  "Zeeschelde I tijarm Zwijnaarde\n" = "Zeeschelde I tijarm Zwijnaarde" , "Beneden_Dijle" = "Dijle", "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf")) %>%  
   dplyr::filter(#waterloop2 == "Zeeschelde I",
          fysiotoop %in% fysiotoop_order,
          fysiotoop != "hard substraat") %>% 
   dplyr::filter(!is.na(waterloop)) %>%
+    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf", "Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb")) %>%
+  dplyr::mutate(waterloop = factor(waterloop,
+                             levels = c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf", "Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb"))) %>%
   mutate(is_soort = if_else(soort == "geen", 0, 1)) %>% 
-  dplyr::group_by(jaar, tidaal, locatie, niveau3_hybr) %>% 
+  dplyr::group_by(jaar, tidaal, locatie, waterloop) %>% 
   dplyr::summarise(n = sum(is_soort)) %>% 
   ungroup() %>% 
-  dplyr::mutate(jaar = ordered(jaar), 
-         niveau3_hybr = factor(niveau3_hybr, levels = waterlopen_order2022)) %>% 
+  dplyr::mutate(jaar = ordered(jaar)) %>% 
   ggplot(aes(tidaal, n, fill = jaar)) +
   geom_boxplot() +
   ggsci::scale_fill_simpsons() +
   labs(y = "aantal soorten")+
   labs(x = "")+
-  facet_wrap(~niveau3_hybr)
+  facet_wrap(~waterloop)
 
 ggsave(paste0(pad_figuren, "070-figuur-soortenrijkdom-Zeeschelde.jpg"), height=5, width=8)
 waterlopen_order
 
 SR<- data_macrobenthos %>%
+    dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde I trj_Ml_Gb\n" = "Zeeschelde I trj_Ml_Gb",  "Zeeschelde I tijarm Zwijnaarde\n" = "Zeeschelde I tijarm Zwijnaarde" , "Beneden_Dijle" = "Dijle", "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf")) %>%
+    dplyr::filter(waterloop %in% c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf", "Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb")) %>%
+  dplyr::mutate(waterloop = factor(waterloop,
+                             levels = c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf", "Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb"))) %>% 
   dplyr::filter(!is.na(waterloop)) %>%
   select(!c(locatie, densiteit, biomassa)) %>% 
   dplyr::filter(fysiotoop %in% fysiotoop_order,
@@ -974,16 +981,15 @@ SR<- data_macrobenthos %>%
   dplyr::filter(soort !="geen") %>% 
   dplyr::mutate(is_soort = if_else(soort == "geen", 0, 1)) %>%
   distinct() %>% 
-  dplyr::group_by(jaar, tidaal, niveau3_hybr) %>% 
+  dplyr::group_by(jaar, tidaal, waterloop) %>% 
   dplyr::summarise(n = sum(is_soort)) %>% 
   ungroup() %>% 
-  mutate(jaar = ordered(jaar), 
-         niveau3_hybr = factor(niveau3_hybr, levels = waterlopen_order2022)) %>% 
+  mutate(jaar = ordered(jaar)) %>% 
   ggplot(aes(x=jaar,y = n, fill = tidaal)) +
   ylab("aantal taxa") +
   geom_line(aes(colour = tidaal, group = tidaal)) +
   theme(axis.text.x = element_text(angle = 90))+
-  facet_wrap(~niveau3_hybr)
+  facet_wrap(~waterloop)
 SR
 ggsave(paste0(pad_figuren, "070-figuur-soortenrijkdom-lijn-Zeeschelde.jpg"), height=5, width=8)
 
