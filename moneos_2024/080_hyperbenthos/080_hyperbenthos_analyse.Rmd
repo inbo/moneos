@@ -54,7 +54,9 @@ source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/VNSC
 ```{r 080-data}
 
 data_hyperbenthos <- 
-  read_excel(paste0(pad_data, "hyperbenthos_data_2013_2023.xlsx")) 
+  read_excel(paste0(pad_data, "hyperbenthos_data_2013_2023.xlsx")) %>% 
+  dplyr::filter(soort != "Potamocorbula amurensis")
+
 
 
 data_hpb.gnexoot <- data_hyperbenthos %>% 
@@ -117,7 +119,7 @@ data.hpb.biomsoort<- tussenstap.1 %>%
   rbind(data.h.b)
 
 
-## probleem blijft want je hebt over meerdee jaren 21 soorten, dus soorten krijgen versch kleuren in versch jaren. Daarom selectie van 9 meest abundante taxa maken, en die dan voor elk jaar plotten.
+## probleem blijft want je hebt over meerdere jaren 21 soorten, dus soorten krijgen versch kleuren in versch jaren. Daarom selectie van 9 meest abundante taxa maken, en die dan voor elk jaar plotten.
 
 
   
