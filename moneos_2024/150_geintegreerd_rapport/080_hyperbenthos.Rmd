@@ -65,7 +65,7 @@ Fichenummer: S-DS-V-003 - Hyperbenthos
 Onder hyperbenthos verstaan we alle kleine fauna (1 mm tot enkele cm) die op en net boven de bodem leeft.
 In de Zeeschelde betreft het vooral garnalen en krabben (Decapoda), aasgarnalen (Mysida) en juveniele vis.
 De monitoring van het hyperbenthos in de Zeeschelde op zes vaste locaties startte in 2013.
-Vóór die periode gebeurden op (sommige) van deze zes stations al vangsten met een andere frequentie (zie verder) aar dezelfde methode.
+Vóór die periode gebeurden op (sommige) van deze zes stations al vangsten met een andere frequentie (zie verder) maar dezelfde methode.
 Voor de volledigheid worden deze gegevens mee aangeleverd.
 
 De gegevens van 2008 tot en met 2023 worden geleverd in een Excel-bestand (S_DS_V_003_hyperbenthos_data2013-2023_rapportage2024.xlsx).
@@ -104,7 +104,7 @@ Als finale variabele voor analyse werden vroeger de getelde aantallen gestandaar
 Deze correctie is echter niet aangewezen voor organismen die op de bodem leven (epibenthische soorten, bijvoorbeeld veel garnalen), omdat hun aantallen en biomassa in relatie tot de lengte van het transect staan, en niet in relatie tot het bemonsterd watervolume.
 De vangstmethode zelf is bovendien zo opgesteld dat het watervolume bij elk vangbeurt zeer vergelijkbaar is: er wordt gevangen bij de tijkering met minimale stroming, en er wordt een gelijke lengte stroomop- en stroomaf gewandeld met het bongonet (zodat eventuele verschillen als gevolg van stroming elkaar opheffen).
 De stroomsnelheidsmeters geven bovendien een minder accuraat beeld wanneer het net zeer traag getrokken wordt of bij frequente stops (bij moeilijk bewandelbare bodems) en wanneer het net stroomafwaarts getrokken wordt (lage effectieve stroming door het net).
-In deze gevallen werden onderschattingen tot 30% van het bemonsterd watervolume opgemerkt (inbo, niet gepubliceerde gegevens).
+In deze gevallen werden onderschattingen tot 30% van het bemonsterd watervolume opgemerkt (INBO, niet gepubliceerde gegevens).
 Al deze argumenten samen leidden ons tot de conclusie dat het met de gebruikte vangstmethode en de grote vertegenwoordiging van epibenthische taxa wellicht correcter is om uit te gaan van een vast vangvolume van 40m³.
 In deze en volgende rapportages gebruiken we daarom de niet-gecorrigeerde vangstaantallen en biomassa (per 40m³).
 
@@ -119,7 +119,7 @@ Het seizoenaal patroon - hoewel inherent heel erratisch en afhankelijk van natuu
 DIt patroon werd ook gevolgd in 2023, al duurde de zomerdip in veel gebieden tot augustus.
 
 ```{r 080-figuur2-dens, fig.cap=caption_fig2dens, out.width="100%"}
-caption_fig2dens <- "Gemiddelde densiteit per 200m sleep (lijn) van hyperbenthos per maand (maandnummers), jaar en staalname station (opgelet: y-as heeft een log10-schaal)."
+caption_fig2dens <- "Gemiddelde densiteit per 200m sleep (lijn) van hyperbenthos per maand (maandnummers), jaar en staalname station (opgelet: y-as heeft een log10-schaal). Dikke lichtblauwe lijn is rapportagejaar"
 
 knitr::include_graphics(paste0(pad_figuren, "080-figuur-densiteit_totaal-gebied-maandverloop_jaren.jpg"))
 ```
@@ -127,7 +127,7 @@ knitr::include_graphics(paste0(pad_figuren, "080-figuur-densiteit_totaal-gebied-
 <br/>
 
 ```{r 080-figuur3-dens, fig.cap=caption_fig3dens, out.width="80%"}
-caption_fig3dens <- "Gemiddelde densiteit (per sleepvangst, lijn) aan hyperbenthos overheen alle sampling stations per maand (maandnummers) voor de verschillende monitoringsjaren (opgelet: y-as heeft een log10-schaal)."
+caption_fig3dens <- "Gemiddelde densiteit (per sleepvangst, lijn) aan hyperbenthos overheen alle sampling stations per maand (maandnummers) voor de verschillende monitoringsjaren (opgelet: y-as heeft een log10-schaal). Dikke lichtblauwe lijn is rapportagejaar"
 
 knitr::include_graphics(paste0(pad_figuren, "080-figuur-densiteit_totaal-ZS-maandverloop_jaren.jpg"))
 ```
@@ -144,7 +144,7 @@ Ook doorheen het jaar kunnen densiteiten plots veranderen vooral omwille van plo
 Hyperbenthos is dus inherent een volatiele groep in de Zeeschelde.
 Daarbij komt nog dat de monitoring voor de drie deelzones slechts gebaseerd is op 2 stations.
 Dit draagt verder bij tot de vrij grote variatie tussen opeenvolgende meetjaren en meetmaanden.
-Daar tegenonver staat dat herhaalde, en systeem wijde negatieve trends, wel duidelijke indicaties zijn voor kwaliteitsverlies.
+Daar tegenonver staat dat herhaalde, en systeemwijde negatieve trends, wel duidelijke indicaties zijn voor kwaliteitsverlies.
 
 ```{r 080-figuur4-dens, fig.cap=caption_fig4dens, out.width="100%"}
 caption_fig4dens <- "Gemiddelde jaarsom van densiteiten van het hyperbenthos per deelzone en voor de volledige Zeeschelde. Het lopend gemiddelde (overheen 3 jaren) wordt weergegeven door een rode lijn. Door enkele ontbrekende maandvangsten in 2013 wordt dit jaar niet getoond. Let op: de y-assen verschillen onderling. "
@@ -176,8 +176,8 @@ knitr::include_graphics(paste0(pad_figuren, "080_figuur_biomassa_gebied_maandver
 De evolutie van de gemiddelde jaarsom biomassa en het lopende gemiddelde overheen drie jaren per deelzone en voor de gehele Zeeschelde staat in Figuur \@ref(fig:080-figuur6-biom).
 Het lopend gemiddelde werd toegevoegd aan de standaard evaluatieparameter biomassa vanwege de grote verschillende tussen de jaren.
 Na een zeer goed 2018 voor alle zones stroomopwaarts van de Sterke Saliniteitsgradiënt noteerden we sindsdien normale tot eerder slechte jaren voor totale biomassa.
-Het lopende gemiddelde van de biomassa bleef doorgaans binnen de 25% variatie sinds 2015 (EMSE 2021), behalve voor de zoete zone waar - als gevolg van een zeer goed 2018 - er een tijdelijke toename was.
-De jaren met (lokaal) extreem hoge biomassa (2014, 2018) buiten beschouwing gelaten is het langjarig verloop van de biomassa doorheen de tijd eerder negatief.
+<!--# Hieronder is er sprake van uitzonderlijke biomassapercentage in de stalen van de brakwaterkorfschelp, ik zie dat hier niet in de grafiek? (wat ik goed vind, maar dan moet het hieronder ook weg) --> Het lopende gemiddelde van de biomassa bleef doorgaans binnen de 25% variatie sinds 2015 (EMSE 2021), behalve voor de zoete zone waar - als gevolg van een zeer goed 2018 - er een tijdelijke toename was.
+De jaren met (lokaal) extreem hoge biomassa (2014 <!--# eerder 2015?; redelijk eenvoudig te testen of er significante lineaire trends zijn -->, 2018) buiten beschouwing gelaten is het langjarig verloop van de biomassa doorheen de tijd eerder negatief.
 
 ```{r 080-figuur6-biom, fig.cap=caption_fig6biom, out.width="100%"}
 caption_fig6biom <- "De evolutie van de gemiddelde jaarsom biomassa (g droge stof per 40m³) per sleepvangst en haar lopend gemiddelde overheen drie jaren per deelzone en voor de gehele Zeeschelde."
@@ -190,16 +190,18 @@ De langneussteurgarnaal (*Palaemon longirostris*) was in 2018 en 2019 de belangr
 In 2020 was dit de aasgarnaal *Mesopodopsis slabberi*, een soort die haar optimum in de brakke zone van de Schelde heeft en maar net tot in de Zeeschelde voorkomt.
 Deze soort werd in 2020 één keer in uitzonderlijke aantallen gevangen in het Paardenschor.
 Het jaar 2021 was een uitzonderlijk jaar voor bot (*Platichthys flesus*) met meer dan een kwart van de totale biomassa.
-Dit hoge aandeel was echter ook te wijten een lage presentie van andere taxa.
+Dit hoge aandeel was echter ook te wijten aan een lage presentie van andere taxa.
 Voor 2022 valt een hoge biomassa op voor brasem *Abramis brama*.
 Verder valt op dat Spiering *Osmerus eperlanus* in de eerste drie monitoringsjaren vrij goed vertegenwoordigd was, maar sindsdien een veel kleinere bijdrage tot de systeembiomassa hyperbenthos levert.
 Het onderzoeksjaar 2023 was erg bijzonder.
-Ten eerste was er de volledige afwezigheid (op 1 exemplaar in de zone sterke Saliniteitsgradiënt na) van de langneussteurgarnaal.
+Teneerste was er de volledige afwezigheid (op 1 exemplaar in de zone sterke Saliniteitsgradiënt na) van de langneussteurgarnaal.
 Dit was nog niet eerder voorgevallen.
 Ten tweede was de meest dominante soort de brakwaterkorfschelp (*Potamocorbula amurensis*).
 Deze laatste is geen hyperbenthische soort, maar wordt vaak gevangen wanneer het bongonet de bodem raakt.
-Dit gebeurt geregeld en is moeilijk te vermijden, maar aangezien er sinds 2018 een explosieve toename van deze soort plaatsvindt (zie ook het hoofdstuk over macrozoöbenthos), resulteerde dit dit keer in een grote vangst van deze soort.
+<!--# is het voorkomen van deze soort dan niet eerder als een artefact te beschouwen en te rechtvaardigen om ze uit te sluiten van de hyperbenthosfractie? --> Dit gebeurt geregeld en is moeilijk te vermijden.
+Zo gebeurde het dit jaar dat we een grote vangst deden van deze explosief toegenomen soort (zie ook het hoofdstuk over macrozoöbenthos).
 Toch waren het vooral ook de afwezigheid of zeer lage aantallen van het reguliere hyperbenthos die mee de procentuele dominantie van brakwaterkorfschelp versterkten.
+<!--# ik zou 2022,2023 corrigeren zonder brakwaterkorfschelp, is echt geen hyperbenthos... -->
 
 ```{r 080-figuur7-biomspec, fig.cap=caption_fig7biomspec, out.width="100%"}
 caption_fig7biomspec <- "Procentuele bijdrage van de 8 belangrijkste soorten tot de totale biomassa in de Zeeschelde op basis van 6 staalname locaties. De overige taxa zitten vervat in de rest-groep."
@@ -214,7 +216,7 @@ Uit deze figuur blijkt dat in 2023 geen enkele taxon in grote biomassadichtheden
 Grijze garnaal is sinds 2018 sterk afgenomen maar handhaaft zich in de zone Saliniteitsgradiënt in matige densiteiten.
 In erg droge jaren met lage bovenafvoer verplaats het zwaartepunt van de verspreiding van deze soort meer naar het oligohalien.
 In 2023 waren zeer lage densiteiten aasgarnalen aanwezig, een belangrijk voedselitem voor vissoorten.
-De vissoorten Bot en Brakwatergrondel kwamen in vrij normale dichtheden voor maar meest opvallend is de eerder aangehaalde totale afwezigheid van één van de belangrijkste hyperbenthische soorten in de Zeeschelde - de langneussteurgarnaal.
+De vissoorten bot en brakwatergrondel kwamen in vrij normale dichtheden voor maar meest opvallend is de eerder aangehaalde totale afwezigheid van één van de belangrijkste hyperbenthische soorten in de Zeeschelde - de langneussteurgarnaal.
 
 (Figuur \@ref(fig:080-figuur6-biom)).
 
@@ -263,7 +265,7 @@ Enkele hyperbenthos soorten dringen in drogere jaren in grote aantallen verder s
 Het tijdelijk talrijk verschijnen van een soort heeft een disruptieve invloed op de Shannon index.
 Net doordat in 2023 geen enkele van de bulksoorten talrijk voorkwam, had dit een positieve invloed op de Shannon-diversiteit van densiteiten.
 Het meest opvallende patroon in de figuren is de toename van Shannon-diversiteit voor densiteiten en de sterke afname voor biomassa in de zone Saliniteitsgradiënt.
-Dit patroon verloopt parallel met de trend van de Shannon-diversiteiten bij macrozoöbenthos, en is het gevolg van de explosieve toename van de brakwaterkorfschelp, en het feit dat we die onbedoeld als bijvangst in het bongnet vinden.
+Dit patroon verloopt parallel met de trend van de Shannon-diversiteiten bij macrozoöbenthos, en is het gevolg van de explosieve toename van de brakwaterkorfschelp <!--# ik zou dat dus corrigeren zonder brakwaterkorfschelp, is echt geen hyperbenthos... -->, en het feit dat we die onbedoeld als bijvangst in het bongnet vinden.
 Net zoals bij het macrozoöbenthos heeft dit een effect op de diversiteitmaat voor de gehele Zeeschelde.
 
 ```{r 080-figuur10, fig.cap=caption_fig10, out.width="100%"}
@@ -285,7 +287,7 @@ De evolutie van densiteiten en biomassa overheen de monitoringsjaren is onderhev
 Het optreden van goede of slechte jaren kan soms gelinkt worden aan bovenafvoer en zoutgehalte, maar is ook vaak nog niet goed begrepen.
 Het onderzoeksjaar 2023 was opnieuw geen goed jaar voor hyperbenthos, met erg lage densiteiten van aasgarnalen, en een quasi afwezigheid van de doorgaans zeer talrijke langneussteurgarnaal.
 Het gevolg is dat de langjarige negatieve trend voor hyperbenthos densiteiten en vooral biomassa zich verder doorzette, en we de laagste waarde voor zowel de feitelijke jaarsom als voor het driejarig lopend gemiddelde noteerden.
-Dit patroon is bovendien nog een gunstige weergave van de toestand, doordat we grote aantallen en biomassa van de brakwaterkorfschelp vaststelden, een soort die strikt gezien niet tot het hyperbenthos behoort maar steeds talrijker voorkomt in de zone sterke Saliniteitsgradiënt.
+Dit patroon is bovendien nog een gunstige weergave van de toestand, doordat we grote aantallen en biomassa van de brakwaterkorfschelp vaststelden, een soort die strikt gezien niet tot het hyperbenthos behoort maar steeds talrijker voorkomt in de zone sterke Saliniteitsgradiënt <!--# ik zou dat dus corrigeren zonder brakwaterkorfschelp, is echt geen hyperbenthos... -->.
 
 **De soortenrijkdom**
 
@@ -300,11 +302,11 @@ De Shannon diversiteit is een nieuwe evaluatieparameter die in 2022 voor het eer
 Met de bovenstaande vaststellingen in het achterhoofd is het geen verrassing dat de Shannon diversiteit, zowel voor densiteiten als voor biomassa, sterke schommelingen vertoonde tussen jaren.
 Jaren waarin bepaalde hyperbenthische soorten uitzonderlijk talrijk zijn doen de Shannon diversiteit sterk dalen.
 Net daarom scoorde 2023 eerder goed voor wat betreft de diverseit, voor de meeste zones.
-Een uitzondering daarop is de zone sterke Saliniteitsgradiënt, waar de grote biomassa brakwaterkorfschelpen een sterk negatieve invloed had, die ook de systeemdiversiteit Zeeschelde negatief beïnvloedde.
+Een uitzondering daarop is de zone sterke Saliniteitsgradiënt, waar de grote biomassa brakwaterkorfschelpen een sterk negatieve invloed had, die ook de systeemdiversiteit Zeeschelde negatief beïnvloedde.<!--# ik zou dat dus corrigeren zonder brakwaterkorfschelp, is echt geen hyperbenthos... -->
 
 Het is waarschijnlijk deels eigen aan een opgroeigebied als de Zeeschelde dat er extreem succesvolle recruteringsjaren zijn waarin alle factoren mee zitten, en waarin één of enkele soorten de gemeenschap domineren.
 Anderzijds is meer ecologische kennis nodig over waarom soorten goede en slechte jaren afwisselen, en om natuurlijke en door de mens beïnvloede oorzaken te kunnen onderscheiden.
-Het steeds vaker uitblijven van goede jaren, of het frequenter optreden van zeer slechte jaren voor bepaalde soorten is een zorgerlijke trend.
+Het steeds vaker uitblijven van goede jaren, of het frequenter optreden van zeer slechte jaren voor bepaalde soorten is een verontrustende trend.
 
 ## Referenties
 
