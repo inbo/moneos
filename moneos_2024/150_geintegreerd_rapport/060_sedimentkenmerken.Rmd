@@ -2,6 +2,7 @@
 editor_options: 
   markdown: 
     wrap: sentence
+  chunk_output_type: inline
 ---
 
 ```{r 060-hoofdstuk, include=FALSE}
@@ -66,27 +67,27 @@ Fichenummer: S-MD-V004a – Sedimentkenmerken (in functie van benthos)
 
 ## Inleiding
 
-Op elke locatie waar monsters voor het macrozoöbenthos worden genomen (zie Hoofdstuk 7), wordt een begeleidend sedimentstaal genomen.
+Op elke locatie waar stalen voor het macrozoöbenthos worden genomen (zie Hoofdstuk 7), wordt een begeleidend sedimentstaal genomen.
 Van deze stalen worden de granulometrische karakteristieken bepaald door laserdiffractie (LDIF) en wordt het gehalte aan organisch materiaal (OM%) bepaald door verassing (LOI).
 De korrelgrootte en hoeveelheid organisch materiaal geven respectievelijk informatie over de fysische structuur van de bodem en de mogelijke voedselrijkdom in het sediment – rechtstreeks als voedsel of onrechtstreeks als proxy voor potentiële bacteriële activiteit.
-Hiermee zijn het interessante factoren voor het verklaren van trends in de bodemdierengemeenschappen en algemeen indicatief voor het functioneren van het bentisch ecosysteem als matrix voor bodemprocessen.
-De aangeleverde data omvat de outputvariabelen mediane korrelgrootte (D50), het slibgehalte (percentage van het staalvolume dat een korrelgrootte heeft die kleiner is dan 63µm) en organisch materiaal (percentage na verhitting tot 550°C).
+Hiermee zijn het interessante factoren voor het verklaren van trends in de bodemdierengemeenschappen en algemeen indicatief voor het functioneren van het benthisch ecosysteem als matrix voor bodemprocessen.
+De aangeleverde data omvatten de outputvariabelen mediane korrelgrootte (D50), het slibgehalte (percentage van het staalvolume dat een korrelgrootte heeft die kleiner is dan 63µm) en organisch materiaal (percentage van het droog staalgewicht, na verhitting tot 550°C).
 
 ## Materiaal en methode
 
-De data werden gegenereerd in R (R Core Team, 2019).
+De data werden geanalyseerd in R (R Core Team, 2019).
 
 Het aantal sedimentstalen per campagne is weergegeven in Tabel \@ref(tab:060-tabel-sediment).
 
-In het veld wordt net naast elk macrozoöbenthosstaal een sedimentstaal verzameld met een inox steekbuis (diameter 2cm) tot op 10 cm diepte.
+In het veld wordt net naast elk macrozoöbenthosstaal een sedimentstaal verzameld met een steekbuis (diameter 2cm) tot op 10 cm diepte.
 De jaarlijkse campagnes vallen steeds in september – oktober.
 Het organische stofgehalte van het sediment wordt bepaald door een hoeveelheid sediment te drogen (bij 105°C tot constante massa), te wegen en vervolgens gedurende 2 uur te verassen bij 550°C.
-Het bekomen verlies aan massa ten gevolge van het verbranden van de organische component, het asvrij drooggewicht, wordt uitgedrukt als percentage van de oorspronkelijke droge massa van het deelmonster.
+Het bekomen verlies aan massa ten gevolge van het verbranden van de organische component, het asvrij drooggewicht, wordt uitgedrukt als percentage van de oorspronkelijke droge massa van het deelstaal.
 In Van Ryckegem et al. (2017) wordt uitvoerig de analyseprocedure en de datacorrectie besproken naar aanleiding van veranderingen in protocol en meettoestellen.
 De geleverde data is de gecorrigeerde data.
 In 2015 en 2013 bleken de korrelgrootte analyses voor de intertidale batch Zeeschelde IV en in 2013 voor de subtidale batch Zeeschelde I onbetrouwbaar.
 Deze data werd niet aangeleverd en is buiten de analyse gelaten.
-In Van de Meutter et al. (2022 - in prep.) een uitgebreide kwaliteitscontrole gepresenteerd van de INBO analysemethode voor korrelgrootteverdeling (adhv een Coultern counter).
+In Van de Meutter et al. (2022 - in prep. <!--# waar verwijst die in prep. naar? Het rapport van 2022 is gepubliceerd -->) een uitgebreide kwaliteitscontrole gepresenteerd van de INBO analysemethode voor korrelgrootteverdeling (adhv een Coultern counter).
 De herhaalbaarheid van de metingen is hoog (mediaan verschil: ca. -1 tot 4µm; gemiddelde verschil: ca. -5 tot 7µm; standaarddeviatie (SD) \~ 15µm).
 Afwijkende metingen (\> 2 keer SD) kunnen voorkomen in circa 7% van de stalen.
 
@@ -114,10 +115,13 @@ tabel_x_waarden %>%
 
 <br/> <br/>
 
-Om de lange termijn trends te onderzoeken bepalen we welke lineaire regressiemodellen een significante trend tonen over de periode 2008-`r recentste_jaar` (p-waarde genomen \< 0.01).
+Om de lange termijn trends te onderzoeken bepalen we welke lineaire regressiemodellen <!--# kan je iets meer uitleggen wat voor modellen? Nu lijkt het alsof je heel veel aparte modellen test, waardoor er multiple testing optreedt. Anderzijds beschrijf je een design waarin alle data zitten, en genest worden? --> een significante trend tonen over de periode 2008-`r recentste_jaar` (p-waarde genomen \< 0.01).
 De dataset werd genest binnen fysiotoop en waterloop.
 Slibpercentage is de responsvariabele en jaar de predictorvariabele.
-De selectie van de meest significante modellen is weergegeven in Tabel \@ref(tab:060-tabel-modeloutput). De trendanalyses worden verduidelijkt door de data weer te geven met boxplots gegroepeerd in twee tijdsreeksen voor 2015 en 2015 en later. Deze opdeling is gebaseerd op de knikpunt analyse uitgevoerd door Meire et al. (2021). Deze auteurs vonden in 2014 een trendbreuk in de SPM concentraties in het opwaartse turbiditeitsmaximum (van Temse tot Dendermonde).
+De selectie van de meest significante modellen is weergegeven in Tabel \@ref(tab:060-tabel-modeloutput).
+De trendanalyses worden verduidelijkt door de data weer te geven met boxplots gegroepeerd in twee tijdsreeksen vóór 2015 en vanaf 2015.
+Deze opdeling is gebaseerd op de knikpunt analyse uitgevoerd door Meire et al. (2021).
+Deze auteurs vonden in 2014 een trendbreuk in de SPM concentraties in het opwaartse turbiditeitsmaximum (van Temse tot Dendermonde).
 
 ```{r 060-tabel-modeloutput}
 
@@ -148,11 +152,13 @@ tabel_x_waarden %>%
 ## Resultaten
 
 In deze eerstelijnsrapportage wordt de nadruk gelegd op de resultaten van de outputvariabele slibgehalte voor de periode 2008-`r recentste_jaar`.
-In slibrijke bodems (\> 25% slib) vertonen de drie beschouwde variabelen in de dataset (mediane korrelgrootte, slibgehalte en organisch mateiraal) een sterk onderling verband.
+In slibrijke bodems (\> 25% slib) vertonen de drie beschouwde variabelen in de dataset (mediane korrelgrootte, slibgehalte en organisch materiaal) een sterk onderling verband.
 Daarom beperken we de eerstelijnsbespreking tot het slibgehalte van de sedimenten.
 De andere metingen werden gevalideerd.
 
-Doorheen het estuarium is er een grotere spreiding op de metingen van het subtidale tegenover het intertidale gebied (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-boxplotfysiotopen)). In het intertidaal is er een consistent patroon van slibrijke (fijnere) bodems in het hoog slik fysiotoop naar minder slibrijke (grovere) sedimenten lager. Dit patroon zet zich globaal door in het subtidaal. 
+Doorheen het estuarium is er een grotere spreiding op de metingen van <!--# binnen? --> het subtidale tegenover <!--# in vergelijking met? --> het intertidale gebied (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-boxplotfysiotopen)).
+In het intertidaal is er een consistent patroon van slibrijke (fijnere) bodems in het hoog slik fysiotoop naar minder slibrijke (grovere) sedimenten lager.
+Dit patroon zet zich globaal door in het subtidaal.
 
 ```{r 060-figuur-slib-Zeeschelde-boxplotfysiotopen, fig.cap=slib_Zeeschelde_boxplotfysiotopen, out.width="80%"}
 
@@ -166,21 +172,32 @@ knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_boxplotf
 
 <br/>
 
-
-
+We stellen een aantal duidelijke veranderingen in sedimentsamenstelling vast in de Zeeschelde inclusief de zijrivieren.
 Het slibpercentage langsheen de Beneden-Nete neemt significant toe (Tabel \@ref(tab:060-tabel-modeloutput)).
 Deze trend kan mogelijk gelinkt worden aan de sterk verhoogde sedimentimport uit de Kleine Nete waar het rivierbed zandiger werd en er dus slibrijk materiaal uitspoelde naar afwaarts (Meire et al., 2021).
 De veranderingen in de Kleine Nete zijn mogelijk veroorzaakt door de activiteit van de Chinese wolhandkrab (Schoelynck et al., 2020).
 Hoewel niet alle modellen sterk significant zijn, is deze tendens tot verhoogde intertidale 'verslibbing' ook zichtbaar langs de andere zijrivieren (Zenne, Rupel, Dijle) en langs de Zeeschelde (Figuur \@ref(fig:060-figuur-slib-zijrivieren-intertidaalboxplotperiodes) en (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-intertidaalboxplotperiodes)).
 Er zijn andere factoren (naast Chinese wolhandkrab, die een stabiele trend toont in de monitoringperiode 2012-2017 - Van Ryckegem et al., 2018) die elk een ander gewicht kunnen hebben langsheen de estuariene gradiënt (zie Meire et al., 2021).
 Het aantal jaren met data in Nete, Zenne en Dijle is wel beperkt.
-In de periode 2015 en later zijn er enkel gegevens in 2015, 2016, 2017 en 2020. Hierdoor kunnen we voor de zijrivieren geen uitspraak kunnen doen over de recente trends.
+In de periode 2015 en later zijn er enkel gegevens in 2015, 2016, 2017 en 2020.
+Hierdoor kunnen we voor de zijrivieren geen uitspraak doen over de recente trends.
 
-Hoewel de significante trends zich tonen als toenemende slibpercentages in de intertidale zones van de Beneden-Zeeschelde (waar de variatie in korrelgrootte ook kleiner is dan subtidaal, zie boven) is het opvallend dat er zich een significante habitatwijziging voordoet (significant hoger slibpercentage en ook kleinere mediane korrelgrootte) van de diepe onderwaterbodems van de Beneden-Zeeschelde - Zeeschelde IV (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-subtidaalboxplotperiodes). 
+De hydrodynamica van de Zeeschelde zal de verhoogde slibfractie (als SPM) in de waterkolom in principe preferentieel sorteren en sedimenteren naar (de hogere delen van) het intertidaal.
+De significante toename van het slibpercentages in de intertidale zones van de Beneden-Zeeschelde liggen daarmee in de lijn der verwachtingen, maar het is het opvallend dat er zich ook een grote en significante habitatwijziging voordoet (significant hoger slibpercentage en ook kleinere mediane korrelgrootte) van de diepe onderwaterbodems van de Beneden-Zeeschelde - Zeeschelde IV (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-subtidaalboxplotperiodes).
+<!--# in principe zijn grote slibfracties niet op hun plaats in de diepe delen. Is dit een fluid-mud indicatie? Of zit er klei bij? of of of ... In de Livesheet wordt steeds een inschatting bijgeschreven door de veldmensen. Kan een idee zijn om uit die beschrijvingen wat meer info te halen -->
 
-De regressie analyse en databeschrijving wijst op geleidelijke habitatveranderingen die gaande zijn onder invloed van de verhoogde SPM gehaltes. Dit verhoogd slibgehalte wordt afgezet op de intertidale habitats én de onderwaterbodem. Er zijn duidelijke aanwijzingen dat dit gerelateerd is aan de toegenomen baggeractiviteit. Dit in combinatie met veranderingen in de debieten en het veranderde systeemvolume zorgt voor een toename van het opwaarts transport in droogteperiodes.  Deze sedimentpaketten worden bij hoge (winter) debieten opnieuw afwaarts getransporteerd (Meire et al., 2021). In Zeeschelde I is er een tendens tot het zandiger worden van het matig diep (maar niet significant in datareeks).
+De regressie analyse en databeschrijving wijst op geleidelijke habitatveranderingen die gaande zijn, waarschijnlijk onder invloed van de verhoogde SPM gehaltes.
+Dit verhoogd slibgehalte wordt afgezet op de intertidale habitats én de onderwaterbodem.
+Er zijn duidelijke aanwijzingen dat dit gerelateerd is aan de toegenomen baggeractiviteit.
+Dit in combinatie met veranderingen in de debieten en het veranderde systeemvolume zorgt voor een toename van het opwaarts transport in droogteperiodes.
+Deze sedimentpaketten worden bij hoge (winter) debieten opnieuw afwaarts getransporteerd (Meire et al., 2021).
+In Zeeschelde I is er een tendens tot het zandiger worden van het matig diep (maar niet significant in datareeks).
 
-In de gekozen ruimtelijke afbakening (KRW-zones) van deze verkennende analyse komen geen significante veranderingen in aan het licht in Zeeschelde III. Deze zone is sedimentologisch/morfologisch heterogeen, mogelijk loont het om ruimtelijk homogenere eenheden af te bakenen voor analyses (bv. stroomopwaarts en stroomafwaarts Rupel). Een diepgaandere analyse van de data is nodig om correlaties te zoeken met mogelijk verklarende factoren. De verandering in het slibgehalte (of de mediane korrelgrootte) is (vaak) subtiel in de absolute cijfers. Er zijn geen aanwijzingen dat het gehalte in organisch materiaal wijzigde (analyse niet getoond). Bijkomend onderzoek is nodig om de effecten op de bentische gemeenschap te duiden.
+In de gekozen ruimtelijke afbakening (KRW-zones) van deze verkennende analyse komen geen significante veranderingen aan het licht in Zeeschelde III. Deze zone is sedimentologisch/morfologisch heterogeen, mogelijk loont het om ruimtelijk homogenere eenheden af te bakenen voor analyses (bv. stroomopwaarts en stroomafwaarts Rupel).
+Een diepgaandere analyse van de data is nodig om correlaties te zoeken met mogelijk verklarende factoren.
+De verandering in het slibgehalte (of de mediane korrelgrootte) is (vaak) subtiel in de absolute cijfers.
+Er zijn geen aanwijzingen dat het gehalte in organisch materiaal wijzigde (analyse niet getoond).
+Bijkomend onderzoek is nodig om de effecten op de benthische gemeenschap te duiden.
 
 ```{r 060-figuur-slib-Zeeschelde-intertidaalboxplotperiodes, fig.cap=slib_Zeeschelde_intertidaal, out.width="80%"}
 
@@ -224,9 +241,11 @@ knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_zijrivieren_subtida
 
 ## Algemene conclusie
 
-In de Zeeschelde en zijrivieren worden de intertidale habitats (vaak significant) slibrijker. Dit verandert (geleidelijk) de leefgebieden van het macrozoöbenthos. Bijkomend onderzoek is nodig om de mogelijke effecten op de benthische gemeenschap te duiden. 
-In de diepere geul is de variatie groot en vaak zonder duidelijk patroon. Des te opvallend is dan ook de significante trend uit de random staalname dat de diepe geul van de Beneden-Zeeschelde slibrijker wordt. 
-
+In de Zeeschelde en zijrivieren worden de intertidale habitats (vaak significant) slibrijker.
+Dit verandert de leefgebieden van het macrozoöbenthos.
+Bijkomend onderzoek is nodig om de mogelijke effecten op de benthische gemeenschap te duiden.
+In de diepere geul is de variatie groot en vaak zonder duidelijk patroon.
+Des te opvallender is dan ook de significante trend uit de random staalname dat de diepe geul van de Beneden-Zeeschelde slibrijker wordt.
 
 ## Referenties
 
@@ -258,9 +277,10 @@ MONEOS – Geïntegreerd datarapport INBO: Toestand Zeeschelde 2016: monitorings
 Rapporten van het Instituut voor Natuur- en Bosonderzoek 2017 (37).
 Instituut voor Natuur- en Bosonderzoek, Brussel.
 
-Van Ryckegem G., Van Braeckel A., Elsen R., Speybroeck J., Vandevoorde B., Mertens W., Breine J., Spanoghe G.,
-Bezdenjesnji O., Buerms D., De Beukelaer J., De Regge N., Hessel K., Lefranc C., Soors J., Terrie T., Van Lierop F. & Van den
-Bergh E. (2018). MONEOS – Geïntegreerd datarapport INBO: Toestand Zeeschelde 2017: monitoringsoverzicht en 1ste
-lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten. Rapporten van het Instituut voor Natuur- en
-Bosonderzoek 2018 (74). Instituut voor Natuur- en Bosonderzoek, Brussel.
+Van Ryckegem G., Van Braeckel A., Elsen R., Speybroeck J., Vandevoorde B., Mertens W., Breine J., Spanoghe G., Bezdenjesnji O., Buerms D., De Beukelaer J., De Regge N., Hessel K., Lefranc C., Soors J., Terrie T., Van Lierop F.
+& Van den Bergh E.
+(2018).
+MONEOS – Geïntegreerd datarapport INBO: Toestand Zeeschelde 2017: monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek 2018 (74).
+Instituut voor Natuur- en Bosonderzoek, Brussel.
 DOI: doi.org/10.21436/inbor.15000892
