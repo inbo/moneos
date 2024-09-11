@@ -1181,6 +1181,157 @@ ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_zoet.jpg"), widt
 ```
 
 
+```{r alternatief 2}
+
+prop_lim_alt <- 0.2
+
+relatieve_aantallen_EMSE_alt <- 
+  data_fuiken %>% 
+  left_join(locatie_scheldezone) %>% 
+  filter(in_indeling) %>% 
+  filter(aantal > 0) %>% 
+  group_by(jaar, scheldezone, soort, salgroep, dieet, indeling) %>%
+  summarise(aantal_per_fuikdag = mean(aantal_per_fuikdag),
+            gewicht_per_fuikdag = mean(gewicht_per_fuikdag)) %>% 
+  ungroup() %>% 
+  group_by(jaar, scheldezone, salgroep, dieet, indeling) %>%
+  mutate(aantal_per_fuikdag_tot = sum(aantal_per_fuikdag),
+         gewicht_per_fuikdag_tot = sum(gewicht_per_fuikdag)) %>% 
+  ungroup() %>% 
+  mutate(relatief_aantal = aantal_per_fuikdag/aantal_per_fuikdag_tot,
+         relatief_gewicht = gewicht_per_fuikdag/gewicht_per_fuikdag_tot) %>% 
+  mutate(max_aantal = relatief_aantal >= prop_lim_alt,
+         max_gewicht = relatief_gewicht >= prop_lim_alt) %>%
+  group_by(soort) %>% 
+  mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
+  ungroup() %>% 
+  group_by(jaar, scheldezone, soort, salgroep, dieet, indeling) %>%
+  summarise(aantal_per_fuikdag_tot = mean(aantal_per_fuikdag_tot),
+            gewicht_per_fuikdag_tot = mean(gewicht_per_fuikdag_tot),
+            aantal_per_fuikdag = sum(aantal_per_fuikdag),
+            gewicht_per_fuikdag = sum(gewicht_per_fuikdag),
+            relatief_aantal = aantal_per_fuikdag/aantal_per_fuikdag_tot,
+            relatief_gewicht = gewicht_per_fuikdag/gewicht_per_fuikdag_tot) %>%
+  ungroup() %>% 
+  add_row(indeling_EMSE_missing %>% 
+            expand_grid(jaar = vroegste_jaar:laatste_jaar,
+                        scheldezone = unique(locatie_scheldezone$scheldezone))) %>%
+  mutate(indeling = factor(indeling, levels = levels_indeling),
+         scheldezone = factor(scheldezone, levels = levels_scheldezone),
+         scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full),
+         soort = factor(soort, 
+                        levels = unique(soort) %>% 
+                          sort() %>% 
+                          setdiff("rest") %>% 
+                          c(., "rest")))
+
+# relatieve_aantallen_EMSE %>% 
+#   filter(scheldezone == "saliniteitsgradient") %>% 
+#   ggplot(aes(jaar, aantal_per_fuikdag*mult_fuik, fill = soort, color = soort)) +
+#   geom_col(width = 0.7,
+#            alpha = 0.9,
+#            size = 0.1) +
+#   scale_x_continuous(breaks = seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
+#   scale_fill_manual(values = my_pal_wes, na.translate = F) +
+#   scale_color_manual(values = my_pal_wes, na.translate = F) +
+#   labs(title = "saliniteitsgradient",
+#        y = get_lab_aantal()) +
+#   guides(color = guide_legend(ncol=2),
+#          fill = guide_legend(ncol=2)) +
+#   facet_grid(dieet ~ salgroep, scales = "free_y") +
+#   theme(#legend.position = "none",
+#         axis.text = element_text(size = 8))
+
+
+data_split <-
+  relatieve_aantallen_EMSE_alt %>% 
+  mutate(soort = str_replace(soort, "grondel", "gr.")) %>% 
+  mutate(soort = str_replace(soort, "kleine", "kl.")) %>% 
+  mutate(soort = str_replace(soort, "grote", "gr.")) %>% 
+  mutate(soort = str_replace(soort, "driedoornige", "dried.")) %>% 
+  mutate(soort = str_replace(soort, "tiendoornige", "tiend.")) %>% 
+  mutate(soort = str_replace(soort, "steur", "st.")) %>% 
+  mutate(soort = str_replace(soort, "europese meerval", "meerval")) %>% 
+  group_by(indeling) %>% 
+  nest()
+
+
+
+my_pal_wes_kort <- my_pal_wes
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "grondel", "gr.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "kleine", "kl.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "grote", "gr.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "driedoornige", "dried.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "tiendoornige", "tiend.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "steur", "st.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "europese meerval", "meerval")
+
+data_split <-
+  data_split %>% 
+  mutate(legend = 
+           map2(indeling, data, 
+                function(ind, dat) {
+                  pal_split <- 
+                    my_pal_wes_kort[names(my_pal_wes_kort) %in% unique(dat$soort)]
+                  plt <-
+                    dat %>% 
+                    ggplot(aes(jaar, aantal_per_fuikdag*mult_fuik, fill = soort)) +
+                    geom_col(position = position_stack(),
+                             width = 0.7,
+                             alpha = 0.9) +
+                    scale_x_continuous(breaks = 
+                                         seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
+                    scale_fill_manual(breaks = names(pal_split), values = pal_split, na.translate = F) +
+                    labs(y = get_lab_aantal(),
+                         fill = ind) + 
+                    guides(fill=guide_legend(nrow=6)) +
+                    theme(legend.justification = c(0,1),
+                          legend.box.background = element_rect(fill = 'transparent', colour = NA_character_),
+                          legend.text = element_text(size = 8),
+                          legend.title = element_text(size = 9),
+                          legend.key.size = unit(0.8, "lines"))
+                  plt %>% 
+                    get_legend()
+                  }))
+
+ggp_all <-
+  relatieve_aantallen_EMSE_alt %>% 
+  filter(scheldezone == "saliniteitsgradient") %>% 
+  mutate(salgroep = factor(salgroep, levels = c("mariene en estuariene soorten", "diadrome soorten", "zoetwatersoorten"))) %>% 
+  ggplot(aes(jaar, aantal_per_fuikdag*mult_fuik, fill = soort, color = soort)) +
+  geom_col(width = 0.7,
+           alpha = 0.9,
+           size = 0.1) +
+  scale_x_continuous(breaks = seq(ifelse(vroegste_jaar %% 2 == 0, vroegste_jaar, vroegste_jaar + 1), laatste_jaar, 2)) +
+  scale_fill_manual(values = my_pal_wes, na.translate = F) +
+  scale_color_manual(values = my_pal_wes, na.translate = F) +
+  labs(title = "saliniteitsgradient",
+       y = get_lab_aantal()) +
+  # guides(color = guide_legend(ncol=2),
+  #        fill = guide_legend(ncol=2)) +
+  facet_grid(dieet ~ salgroep, scales = "free_y") +
+  theme(legend.position = "none",
+        axis.text = element_text(size = 8))
+
+
+plot_grid(ggp_all,
+          NULL,
+          plot_grid(NULL,
+                    plot_grid(plotlist = data_split$legend[sort.list(data_split$indeling)],
+                              byrow = FALSE
+                    #           ,
+                    # align = "v"
+                    , nrow = 4
+                    ),
+                    NULL,
+                    ncol = 1, rel_heights = c(0.11,1,0.07)),
+          ncol = 3, rel_widths = c(1.2,0.02,0.9))
+
+ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_saliniteitsgradient.jpg"), width = 14, height = 7, bg = "white")
+
+```
+
+
 ```{r relatie soortbiomassa vs totale biomassa}
 
 data_split <-
