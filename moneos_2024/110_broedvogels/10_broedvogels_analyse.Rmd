@@ -7,7 +7,7 @@ knit: (function(inputFile, encoding) {
                           output_dir = paste0(
                           rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
                            
-title: "MONEOS analyse - zoogdieren"
+title: "MONEOS analyse - broedvogels"
 output: html_document
 editor_options: 
   chunk_output_type: console
@@ -57,6 +57,8 @@ Terr_Sigma_BB <-
   read_csv(str_c(pad_tabellen, "Terr_Sigma_BB.csv"))
 Terr_Sigma_AB <- 
   read_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
+Terr_Sigma_AB_tot <- 
+  read_csv("Terr_Sigma_AB_tot.csv")
 ```
 
 
@@ -81,8 +83,9 @@ Terr_Sigma_BB %>%
   filter(Soort != "Purperreiger") %>% 
   ggplot() +
   geom_point(aes(x = Jaar, y = Aantal))+
-  geom_smooth(aes(x = Jaar, y = Aantal))+
+  geom_smooth(aes(x = Jaar, y = Aantal), span = 0.6)+
   geom_hline(aes(yintercept = Doel), size = 0.75, colour = "red") +
+  ylim(0, NA_integer_) +
   facet_wrap (~Soort, scales = "free", ncol=3) +
   labs(y = "Aantal territoria") +
   theme(
@@ -126,6 +129,32 @@ ggsave(filename = str_c(pad_figuren, "110_fig3.jpg"), height=8, width=7)
 
 ```
 
+
+```{r 110-plot-algemene-soorten-tot, fig.height=5, fig.width=6, out.width="100%", fig.cap = cap_algemene_soorten}
+
+cap_algemene_soorten <-
+  "Evoluties in de broedvogelaantallen (territoria) voor een selectie van algemenere soorten voor een beperkt aantal gebieden die frequent worden geteld (BD (Blokkersdijk), K (Ketenisse), Sigma (Kalkense Meersen, Wijmeers, Bergenmeersen, Paardeweide, Weijmeerbroek en Polder van Kruibeke), Sigma\\_LO (= Noordelijke gebied = Doelpolder + Prosperpolder + Paardenschor + Schor Ouden Doel)) tot en met 2020 en voor alle getelde gebieden sinds 2021. Rode horizontale lijn geeft de tot doel gestelde aantallen."
+
+Terr_Sigma_AB_tot %>% 
+  ggplot() +
+  geom_bar(aes(Jaar, weight = Aantal, fill = TypeGebied))+
+  geom_hline(aes(yintercept = Doel), size = 1, color = "red")+
+  facet_wrap (~Soort, scales = "free", ncol=2)+
+  scale_y_continuous(limits = c(0, NA))+
+  scale_x_continuous(breaks = c(2005,2010,2015, 2020)) +
+  labs(y = "Aantal territoria") + 
+  scale_fill_discrete(labels=c("Blokkersdijk", "Ketenisse", "Sigma", 
+                               "Sigma_Noordelijk gebied")) +
+  theme(
+    strip.text = element_text(size = 12),
+    axis.title = element_text(size = 11),
+    axis.title.x = element_blank(),
+    axis.text = element_text(size = 9),
+    legend.title = element_blank(),
+    legend.position = "bottom"
+  )
+
+
 ```{r soortgrafiek per Typegebied, include = FALSE}
 Terr_Sigma_AB %>% 
   filter(Soort == "Scholekster") %>%
@@ -154,6 +183,8 @@ Terr_Sigma_AB %>%
   summarise(Aantal = sum(Aantal), .groups = "drop")
 ```
 
+
+
 # Broedlocaties per soort
 
 Voor het schrijven van het hoofdstuk kan het handig zijn een jaarlijks overzicht van broedlocaties van de soorten handig zijn.
@@ -173,20 +204,32 @@ data_nested <-
 # data_nested$data[data_nested$Soort == "Lepelaar" & data_nested$Jaar == 2021] %>% 
 #   kable() %>% 
 #   kable_paper()
+
 ```
 
-```{r broedlocaties 2021, results='asis'}
+```{r broedlocaties, results='asis'}
 # The nested data are used in a for loop to produce seperate table in de output html file, notice the use of results='asis' in the header! (without that kable does not work in a for loop)
-for(x in data_nested$Soort){
-  a <- data_nested %>% filter(Soort == x) %>% slice(1)
+for(x in unique(data_nested$Soort)){
+  a <- data_nested %>% filter(Soort == x)
   for(y in a$Jaar){
-    cap <- str_c("Overzicht van broedlocaties en aantal broedkoppels van ",
-               x, " in ", y)
-    b <- data_nested$data[data_nested$Soort == x & data_nested$Jaar == y] %>% 
+    cap <- str_c(a$Soort[1], y, sep = " - ")
+    b <- 
+      a %>% filter(Jaar == y) %>% pull(data) %>% 
       kable(caption = cap, align = "lcc")
     print(b)
-    # cat("\n")
+    cat("\n")
   }
+}
+```
+
+
+```{r broedlocaties2, results='asis'}
+for(x in unique(data_nested$Soort)){
+  a <- data_nested %>% filter(Soort == x) %>% unnest %>% 
+    pivot_wider(id_cols = Gebied, names_from = Jaar, values_from = maximum) %>% 
+    kable(caption = x, align = "lcc")
+  print(a)
+  cat("\n")
 }
 
 ```

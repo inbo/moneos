@@ -71,7 +71,8 @@ data2123 <-
   read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), range = "A1:G500") %>% 
   filter(!is.na(Soort))
 data2123_v2 <- 
-  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024_v2.xlsx"), range = "A1:G500") %>% 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024_v2.xlsx"), 
+            sheet = "Data") %>% 
   filter(!is.na(Soort))
 data2123 %>% 
   group_by(Jaar) %>% 
@@ -87,7 +88,7 @@ data2123 %>%
 
 # tabel met data van 2021 tot 2023 die we zullen gebruiken
 data23 <- 
-  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), range = "A1:G500") %>% 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), sheet = "Data") %>% 
   filter(!is.na(Soort)) 
 ```
 
@@ -117,6 +118,7 @@ De basistabel met het aantal territoria voor de 21 doelsoorten tussen 1995 en 20
 # toe te voegen data
 (Data_21_23 <- 
   data23 %>%  
+  filter(Gebied != "AN_RO_inclusief Kuifeend") %>% 
   group_by(Jaar, Soort) %>% 
   summarise(Aantal = ceiling((sum(minimum) + sum(maximum))/2),
             .groups = "drop")) # aantal is het naar boven afgerond gemiddelde van min en max
@@ -141,11 +143,11 @@ We berekenen de totalen voor een set van 16 soorten.
   filter(Soort %in% c("Baardman", "Bruine kiekendief","Grote karekiet","Grutto", "Kluut", 
                       "Kwak", "Kwartelkoning", "Lepelaar", "Paapje", "Porseleinhoen", 
                       "Purperreiger", "Roerdomp", "Snor", "Tureluur", "Woudaap", "Zomertaling")) %>% 
-  complete(Soort, Jaar, fill = list(Aantal = 0))) # add zero's
-
+  # complete(Soort, Jaar, fill = list(Aantal = 0))) # add zero's, this is wrong, should be na
+  complete(Soort, Jaar, fill = list(Aantal = NA_integer_)))
 # add species data (IHD, Biotoop, Voedselregime)
 Soorten <- 
-  read_csv(str_c(pad_data, "Soort.csv"))
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), sheet = "Soorten")
 
 Terr_Sigma_BB %>% 
   left_join(Soorten, by = c("Soort")) %>% 
@@ -174,7 +176,7 @@ Soorten <-
 (GebiedenAB <- 
   Gebieden %>% 
   filter(Gebied_gr %in% Terr_Sigma_AB_2021$Gebied)) 
-
+# unique(Terr_Sigma_AB_2021$Gebied)
 (Terr_Sigma_AB_2023 <- 
   data23 %>% 
   filter(Soort %in% c("Blauwborst", "Dodaars","Rietzanger","Scholekster", 
@@ -233,6 +235,37 @@ Terr_Sigma_AB %>%
 ```
 
 
+```{r}
+(Terr_Sigma_AB_2023_tot <- 
+  data23 %>% 
+  filter(Soort %in% c("Blauwborst", "Dodaars","Rietzanger","Scholekster", 
+                      "Slobeend", "Zomertaling")) %>% 
+  filter(Gebied != "AN_RO_inclusief Kuifeend") %>% 
+  group_by(Jaar, Soort, Gebied) %>% 
+  summarise(minimum = sum(minimum), maximum = sum(maximum), 
+            .groups = "drop") %>% 
+  mutate(Aantal = ceiling(minimum + maximum)/2) %>% 
+  select(-c(minimum, maximum))) 
+
+# Add 2021, 2022 and 2023
+Terr_Sigma_AB_tot <- 
+  Terr_Sigma_AB_2021 %>% 
+  select(-c(TypeGebied, Doel)) %>% 
+  pivot_longer(cols = !c(SOORT, Gebied),
+               names_to = "Jaar",
+               values_to = "Aantal") %>% 
+  rename(Soort = SOORT) %>% 
+  mutate(Jaar = as.numeric(Jaar)) %>% 
+  bind_rows(Terr_Sigma_AB_2023_tot) %>% 
+  complete(Soort, Gebied, Jaar, fill = list(Aantal = 0)) %>%  
+  group_by(Soort, Gebied, Jaar) %>% 
+  summarise(Aantal = sum(Aantal), .groups = "drop") %>% 
+  left_join(Gebieden[,c(1,4)]) %>% # add TypeGebied
+  left_join(Soorten[,c(1,5)]) # add Doel
+getwd()
+Terr_Sigma_AB_tot %>% 
+  write_csv("Terr_Sigma_AB_tot.csv")
+```
 
 
 
