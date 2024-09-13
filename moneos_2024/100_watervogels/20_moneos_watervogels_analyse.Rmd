@@ -1176,6 +1176,7 @@ Waterbirds_sigma_estuarien %>%
   geom_line(aes(group = 1)) +
   # geom_point()+
   facet_wrap(~gebied, scales = "free")+
+  expand_limits(y=0)+
   theme(axis.text.x = element_text(angle = 90))
 
 
@@ -1195,6 +1196,7 @@ Waterbirds_sigma_estuarien %>%
   geom_line(aes(group = 1)) +
   # geom_point()+
   facet_wrap(~gebied, scales = "free")+
+  expand_limits(y=0)+
   theme(axis.text.x = element_text(angle = 90))
 
 ```
