@@ -287,12 +287,14 @@ cap_soortenlijst <-
 
 soortenlijst %>% 
   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
-  mutate(across(c(-`Nederlandse naam`), ~cell_spec(., color = "black"))) %>%
+  mutate(`Wetensch. naam` = str_to_sentence(`Wetensch. naam`)) %>% 
+  mutate(across(c(-`Nederlandse naam`, -`Wetensch. naam`), ~cell_spec(., color = "black"))) %>%
   # mutate(across(everything(), ~cell_spec(., , bold = TRUE, italic = TRUE, color = "black", background = "lightgreen"))) %>%
   mutate(`Nederlandse naam` =
            if_else(`Nederlandse naam` %in% sleutelsoorten_EMSE$soort,
                    cell_spec(`Nederlandse naam`, bold = TRUE, italic = TRUE, color = "black"),
                    cell_spec(`Nederlandse naam`, color = "black"))) %>%
+  mutate(`Wetensch. naam` = cell_spec(`Wetensch. naam`, italic = TRUE, color = "black")) %>% 
   knitr::kable(escape = FALSE,
                booktabs = TRUE,
                longtable = TRUE,
