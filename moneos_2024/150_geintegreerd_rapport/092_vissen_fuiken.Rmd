@@ -105,7 +105,8 @@ tabel_gevangen_soorten  %>%
                caption = cap_gevangen_soorten,
                align = c("l", rep("c", 12)),
                col.names = c("", rep(c("Paard.", "Antw.", "Steend.", "Kastel", "Appels", "Overb."), 3)),
-               escape = FALSE) %>%
+               escape = FALSE,
+               linesep = "") %>%
   add_header_above(c(" " = 1, "voorjaar" = 6, "zomer" = 6, "najaar" = 6)) %>%
   kable_styling("striped",
                 latex_options = c("striped", "scale_down"),
@@ -132,7 +133,8 @@ tabel_aantal_soorten  %>%
   knitr::kable(booktabs = TRUE,
                caption = cap_aantal_soorten,
                align = c("l", rep("c", 3)),
-               escape = FALSE) %>%
+               escape = FALSE,
+               linesep = "") %>%
   kable_styling("striped",
                 latex_options = c("striped"),
                 font_size = 10)
@@ -650,7 +652,8 @@ tabel_visindex  %>%
                caption = cap_visindex,
                # align = c("l", rep("c", 12)),
                col.names = rep(c("jaar", "EQR", "appreciatie"), 3),
-               escape = FALSE) %>%
+               escape = FALSE,
+               linesep = "") %>%
   add_header_above(c("Zoetwater zone" = 3, "Oligohaliene zone" = 3, "Mesohaliene zone" = 3)) %>%
   kable_styling("striped",
                 latex_options = c("striped"))

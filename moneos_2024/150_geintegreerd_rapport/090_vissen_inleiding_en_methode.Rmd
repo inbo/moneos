@@ -311,7 +311,8 @@ tabel_metrieken %>%
   knitr::kable(booktabs = TRUE,
                caption = cap_metrieken,
                col.names = NULL,
-               escape = FALSE) %>%
+               escape = FALSE,
+               linesep = "") %>%
   kable_styling("striped",
                 latex_options = c("striped"))
 

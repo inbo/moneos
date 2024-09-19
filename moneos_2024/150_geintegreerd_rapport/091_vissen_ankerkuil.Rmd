@@ -99,7 +99,8 @@ tabel_gevangen_soorten  %>%
                caption = cap_gevangen_soorten,
                align = c("l", rep("c", 12)),
                col.names = c("", rep(c("Doel", "Antw.", "Steend.", "Branst"), 3)),
-               escape = FALSE) %>%
+               escape = FALSE,
+               linesep = "") %>%
   add_header_above(c(" " = 1, "voorjaar" = 4, "zomer" = 4, "najaar" = 4)) %>%
   kable_styling("striped",
                 latex_options = c("striped", "scale_down"),
@@ -126,7 +127,8 @@ tabel_aantal_soorten  %>%
   knitr::kable(booktabs = TRUE,
                caption = cap_aantal_soorten,
                align = c("l", rep("c", 3)),
-               escape = FALSE) %>%
+               escape = FALSE,
+               linesep = "") %>%
   kable_styling("striped",
                 latex_options = c("striped"),
                 font_size = 10)
