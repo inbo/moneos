@@ -299,7 +299,8 @@ soortenlijst %>%
                booktabs = TRUE,
                longtable = TRUE,
                caption = cap_soortenlijst,
-               align = c(rep("l", 4), rep("c", 2))) %>%
+               align = c(rep("l", 4), rep("c", 2)),
+               linesep = "") %>%
   kable_styling(latex_options = c("striped", "scale_down"),
                 font_size = 9)
 
