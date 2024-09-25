@@ -78,6 +78,8 @@ tabel_natuurontwikkelingsprojecten[c(20),4] <- sapply(tabel_natuurontwikkelingsp
 tabel_natuurontwikkelingsprojecten[c(20),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(20),4], 
                                                        function(x) paste0(x, footnote_marker_number(4)))
 
+tabel_natuurontwikkelingsprojecten[c(20),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(20),4], 
+                                                       function(x) paste0(x, footnote_marker_number(5)))
 
 
 tabel_natuurontwikkelingsprojecten %>% 
@@ -90,7 +92,8 @@ tabel_natuurontwikkelingsprojecten %>%
   footnote(number = c("met koker verbonden (natuurlijk getijpatroon en dynamiek is beïnvloed)",
                       "in de loop van 2017 werd nog een grondstock opgeruimd en toegevoegd aan de ontpoldering (+ 2.2 ha)",
            "in de zomer van 2019 werd een geul gegraven in het westelijk deel van de Wijmeers en ging estuariene oppervlakte tijdelijk verloren door de aanleg van een zandstock",
-           "ontpoldering afgesloten voor getij tussen maart 2020 en april 2021 voor de aanleg van een vloedschaar in oostelijk deel"),
+           "ontpoldering afgesloten voor getij tussen maart 2020 en april 2021 voor de aanleg van een vloedschaar in oostelijk deel",
+           "oostelijke bres gedicht en voorzien van buis met terugslagklep."),
            threeparttable = TRUE)
 
 ```
