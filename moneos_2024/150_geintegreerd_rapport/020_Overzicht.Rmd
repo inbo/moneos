@@ -83,7 +83,7 @@ tabel_natuurontwikkelingsprojecten[c(20),4] <- sapply(tabel_natuurontwikkelingsp
 
 
 tabel_natuurontwikkelingsprojecten %>% 
-  knitr::kable(caption = "Overzicht van de uitgevoerde estuariene natuurontwikkelingsprojecten langsheen de Zeeschelde en zijrivieren. De gebieden staan gerangschikt van grens BE-NL stroomopwaarts. MWeA - Meest Wenselijk Alternatief - geactualiseerd Sigmaplan gebieden zijn geselecteerd (Synthesenota, 2005).",
+  knitr::kable(caption = "Overzicht van de uitgevoerde estuariene natuurontwikkelingsprojecten langsheen de Zeeschelde en zijrivieren. De gebieden staan gerangschikt van grens BE-NL stroomopwaarts. MWeA - Meest Wenselijk Alternatief - geactualiseerd Sigmaplan gebieden zijn geselecteerd (Synthesenota, 2005 inclusief KBR).",
              # "latex", 
              booktabs = T,
              escape = F) %>% 
@@ -93,7 +93,7 @@ tabel_natuurontwikkelingsprojecten %>%
                       "in de loop van 2017 werd nog een grondstock opgeruimd en toegevoegd aan de ontpoldering (+ 2.2 ha)",
            "in de zomer van 2019 werd een geul gegraven in het westelijk deel van de Wijmeers en ging estuariene oppervlakte tijdelijk verloren door de aanleg van een zandstock",
            "ontpoldering afgesloten voor getij tussen maart 2020 en april 2021 voor de aanleg van een vloedschaar in oostelijk deel",
-           "oostelijke bres gedicht en voorzien van buis met terugslagklep."),
+           "december 2023 oostelijke bres gedicht en voorzien van buis met terugslagklep, tijdelijke compartimenteringsdijk aangelegd om gebied te verdrogen (knijten)."),
            threeparttable = TRUE)
 
 ```
@@ -123,7 +123,7 @@ fig_natuurontwikkeling_opp$zone <- fig_natuurontwikkeling_opp$`Deelzone niveau 3
 
 fig_natuurontwikkeling_opp %>%
   mutate(date = lubridate::ym(Realisatie)) %>% 
-  dplyr::filter(Sigmaplan == 1) %>%
+  # dplyr::filter(Sigmaplan == 1) %>%
   dplyr::filter(zone != "Mesohalien") %>%
   arrange(Realisatie) %>% 
   mutate(cs = cumsum(Opp)) %>% 
@@ -137,12 +137,12 @@ fig_natuurontwikkeling_opp %>%
 ggsave(paste0(pad_figuren, "10_figuur_oppervlakte_estuariene_natuurontwikkeling.jpg"))
 
 rapport <- fig_natuurontwikkeling_opp %>%
-  dplyr::filter(Sigmaplan == 1) %>%
+  # dplyr::filter(Sigmaplan == 1) %>%
   dplyr::filter(zone != "Mesohalien") %>%
   arrange(Realisatie) %>% 
   mutate(cs = cumsum(Opp)) 
 
-cap_oppervlakte <- "Cumulatieve oppervlakte gerealiseerde estuariene natuurontwikkelingsgebieden in het kader van het Sigmaplan (MWeA) - exclusief Hedwige (NL)"
+cap_oppervlakte <- "Cumulatieve oppervlakte gerealiseerde estuariene natuurontwikkelingsgebieden, estuariene oppervlakte bepaald op basis van ecotopenkaarten indien beschikbaar - exclusief Hedwige (NL)"
 
 # knitr::include_graphics(paste0(pad_figuren, "10_figuur_oppervlakte_estuariene_natuurontwikkeling.jpg"))  
 ```
