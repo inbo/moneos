@@ -82,7 +82,7 @@ data2123_v2 %>%
   group_by(Jaar) %>% 
   summarise(n_records = n(), n_birdsmin = sum(minimum), 
             nbirds_max = sum(maximum))
-# v2 is aangevuld met alle waarnemingen van Zennegat als start voor toekomstig bestand. We gebruiken dit voorlopig niet
+# v2 is aangevuld maar nog niet volledig
 data2123 %>% 
   count(Gebied)
 
@@ -130,6 +130,9 @@ Terr_Sigma <-
   Terr_Sigma_95_21 %>% 
   filter(Jaar !=2021) %>% 
   bind_rows(Data_21_23)
+
+Terr_Sigma %>% 
+  write_csv(str_c(pad_data, "Territoria_totalen-1995_2023.csv"))
 ```
 
 # Bijzondere broedvogels
@@ -264,7 +267,7 @@ Terr_Sigma_AB_tot <-
   left_join(Soorten[,c(1,5)]) # add Doel
 getwd()
 Terr_Sigma_AB_tot %>% 
-  write_csv("Terr_Sigma_AB_tot.csv")
+  write_csv("C:/R/Projects/Broedvogels/data-output/Terr_Sigma_AB_tot.csv")
 ```
 
 

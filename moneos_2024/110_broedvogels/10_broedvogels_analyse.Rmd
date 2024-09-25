@@ -59,7 +59,7 @@ Terr_Sigma_BB <-
 Terr_Sigma_AB <- 
   read_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
 Terr_Sigma_AB_tot <- 
-  read_csv(str_c(pad_tabellen, "Terr_Sigma_AB_tot.csv"))
+  read_csv(str_c("C:/R/Projects/Broedvogels/data-output/Terr_Sigma_AB_tot.csv"))
 ```
 
 
@@ -95,7 +95,7 @@ Terr_Sigma_BB %>%
     axis.title.x = element_blank(),
     axis.text = element_text(size = 7))
 
-ggsave(filename = str_c(pad_figuren, "110_fig2.jpg"), height=8, width=6)
+ggsave(filename = str_c(pad_figuren, "110_fig3.jpg"), height=8, width=6)
 ```
 <br/>
 <br/>
@@ -126,7 +126,7 @@ Terr_Sigma_AB %>%
     legend.position = "bottom"
   )
 
-ggsave(filename = str_c(pad_figuren, "110_fig3.jpg"), height=8, width=7)
+ggsave(filename = str_c(pad_figuren, "110_fig4.jpg"), height=8, width=7)
 
 ```
 
@@ -238,42 +238,4 @@ for(x in unique(data_nested$Soort)){
 <br/>
 
 
-```{r}
-NOPzone <- 
-  st_read(dsn = )
-
-tmap_mode("view")
-
-ngi_wms_url <- "https://cartoweb.wms.ngi.be/service?service=WMS&version=1.1.1&request=GetMap&layers=topo&styles=&format=image/png&transparent=TRUE&srs=EPSG:4326"
-tm_shape(World) +
-  tm_basemap(leaflet::providers$CartoDB.Positron) +  # Optional basemap
-  tm_tiles(ngi_wms_url) +                           # Add the NGI WMS layer
-  tm_borders() +
-  tm_layout(title = "World Map with NGI CartoWeb WMS Layer")
-library(tmap)
-
-# Define the WMS URL and layer parameters
-wms_url <- "https://ows.terrestris.de/osm/service"
-wms_layer <- "OSM-WMS"
-
-# Use tm_basemap with a WMS server
-tm_shape(World) +
-  tm_basemap(
-    leaflet::providers$CartoDB.Positron,  # Use a standard basemap (optional)
-    server = wms_url,                     # WMS server URL
-    layer = wms_layer                     # WMS layer name
-  ) +
-  tm_borders() +
-  tm_layout(title = "World Map with WMS Layer")
-
-# Define the WMS URL and parameters in the URL query string
-wms_url <- "https://ows.terrestris.de/osm/service?service=WMS&version=1.1.1&request=GetMap&layers=OSM-WMS&styles=&format=image/png&transparent=TRUE&srs=EPSG:4326"
-
-# Use tm_basemap with a standard base layer and tm_tiles for the WMS layer
-tm_shape(World) +
-  # tm_basemap(leaflet::providers$CartoDB.Positron) +  # Optional basemap
-  tm_tiles(wms_url) +                               # Add the WMS layer directly
-  tm_borders() +
-  tm_layout(title = "World Map with WMS Layer")
-```
 
