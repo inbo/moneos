@@ -1,6 +1,6 @@
 ---
 params:
-hoofdstuk: "060_sedimentkenmerken"
+  hoofdstuk: "060_sedimentkenmerken"
 knit: (function(inputFile, ...) {
         rmarkdown::render(inputFile,
                           output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
@@ -319,7 +319,8 @@ augmented_data <- models %>%
 ggplot(augmented_data, aes(x = jaar, y = slib)) +
   geom_point() +
   geom_line(aes(y = .fitted), linetype = "dashed") +
-  facet_wrap(~ fysiotoop+waterloop) +
+  # facet_wrap(~ fysiotoop+waterloop) +
+  facet_grid(fysiotoop ~ waterloop) +
   labs(title = "Linear Regression Fits by fysiotoop",
        x = "Year",
        y = "Mud") 
