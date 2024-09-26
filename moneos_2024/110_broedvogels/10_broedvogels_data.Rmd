@@ -147,7 +147,11 @@ We berekenen de totalen voor een set van 16 soorten.
                       "Kwak", "Kwartelkoning", "Lepelaar", "Paapje", "Porseleinhoen", 
                       "Purperreiger", "Roerdomp", "Snor", "Tureluur", "Woudaap", "Zomertaling")) %>% 
   # complete(Soort, Jaar, fill = list(Aantal = 0))) # add zero's, this is wrong, should be na
-  complete(Soort, Jaar, fill = list(Aantal = NA_integer_)))
+  complete(Soort, Jaar, fill = list(Aantal = NA_integer_)) %>% 
+# volgende kunstgreep is nodig om laatste jaren voor KK en Paapje in grafiek te krijgen.
+  mutate(Aantal = case_when(
+     Soort %in% c("Kwartelkoning", "Paapje") & Jaar > 2020 ~ 0,
+     TRUE ~ Aantal)))
 # add species data (IHD, Biotoop, Voedselregime)
 Soorten <- 
   read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), sheet = "Soorten")
