@@ -118,7 +118,34 @@ tabel_x_waarden %>%
 Om de lange termijn trends te onderzoeken bepalen we welke lineaire regressiemodellen per waterloop en fysiotoop een significante trend tonen over de periode 2008-`r recentste_jaar` (p-waarde genomen \< 0.01).
 De dataset werd genest binnen fysiotoop en waterloop.
 Slibpercentage is de responsvariabele en jaar de predictorvariabele.
-De selectie van de meest significante modellen is weergegeven in Tabel \@ref(tab:060-tabel-modeloutput).
+
+
+## Resultaten
+
+In deze eerstelijnsrapportage wordt de nadruk gelegd op de resultaten van de outputvariabele slibgehalte voor de periode 2008-`r recentste_jaar`.
+In slibrijke bodems (\> 25% slib) vertonen de drie beschouwde variabelen in de dataset (mediane korrelgrootte, slibgehalte en organisch materiaal) een sterk onderling verband.
+Daarom beperken we de eerstelijnsbespreking tot het slibgehalte van de sedimenten.
+De andere metingen werden gevalideerd.
+
+Doorheen het estuarium is er een grotere spreiding op de metingen van slibgehalte binnen het subtidale in vergelijking met het intertidale gebied (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-boxplotfysiotopen)).
+In het intertidaal is er een consistent patroon van slibrijke (fijnere) bodems in het hoog slik fysiotoop naar minder slibrijke (grovere) sedimenten lager.
+Dit patroon zet zich globaal door in het subtidaal.
+
+```{r 060-figuur-slib-Zeeschelde-boxplotfysiotopen, fig.cap=slib_Zeeschelde_boxplotfysiotopen, out.width="80%"}
+
+slib_Zeeschelde_boxplotfysiotopen <- paste0("Boxplot van het slibpercentage per fysiotoop in het intertidaal en subtidaal van de Zeeschelde (data 2008-",recentste_jaar,").")
+
+
+
+knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_boxplotfysiotopen.jpg"))
+
+```
+
+<br/>
+
+We stellen een aantal duidelijke veranderingen in sedimentsamenstelling vast in de Zeeschelde inclusief de zijrivieren.
+
+De selectie van de meest significante modellen is weergegeven in Tabel \@ref(tab:060-tabel-modeloutput). De regressiefiguren worden getoond in 
 De trendanalyses worden verduidelijkt door de data weer te geven met boxplots gegroepeerd in twee tijdsreeksen vóór 2015 en vanaf 2015.
 Deze opdeling is gebaseerd op de knikpunt analyse uitgevoerd door Meire et al. (2021).
 Deze auteurs vonden in 2014 een trendbreuk in de SPM concentraties in het opwaartse turbiditeitsmaximum (van Temse tot Dendermonde).
@@ -149,33 +176,9 @@ tabel_x_waarden %>%
 
 <br/>
 
-## Resultaten
-
-In deze eerstelijnsrapportage wordt de nadruk gelegd op de resultaten van de outputvariabele slibgehalte voor de periode 2008-`r recentste_jaar`.
-In slibrijke bodems (\> 25% slib) vertonen de drie beschouwde variabelen in de dataset (mediane korrelgrootte, slibgehalte en organisch materiaal) een sterk onderling verband.
-Daarom beperken we de eerstelijnsbespreking tot het slibgehalte van de sedimenten.
-De andere metingen werden gevalideerd.
-
-Doorheen het estuarium is er een grotere spreiding op de metingen van slibgehalte binnen het subtidale in vergelijking met het intertidale gebied (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-boxplotfysiotopen)).
-In het intertidaal is er een consistent patroon van slibrijke (fijnere) bodems in het hoog slik fysiotoop naar minder slibrijke (grovere) sedimenten lager.
-Dit patroon zet zich globaal door in het subtidaal.
-
-```{r 060-figuur-slib-Zeeschelde-boxplotfysiotopen, fig.cap=slib_Zeeschelde_boxplotfysiotopen, out.width="80%"}
-
-slib_Zeeschelde_boxplotfysiotopen <- paste0("Boxplot van het slibpercentage per fysiotoop in het intertidaal en subtidaal van de Zeeschelde (data 2008-",recentste_jaar,").")
-
-
-
-knitr::include_graphics(paste0(pad_figuren, "060_figuur_slib_Zeeschelde_boxplotfysiotopen.jpg"))
-
-```
-
-<br/>
-
-We stellen een aantal duidelijke veranderingen in sedimentsamenstelling vast in de Zeeschelde inclusief de zijrivieren.
 Het slibpercentage langsheen de Beneden-Nete neemt significant toe (Tabel \@ref(tab:060-tabel-modeloutput)).
-Deze trend kan mogelijk gelinkt worden aan de sterk verhoogde sedimentimport uit de Kleine Nete waar het rivierbed zandiger werd en er dus slibrijk materiaal uitspoelde naar afwaarts (Meire et al., 2021).
-De veranderingen in de Kleine Nete zijn mogelijk veroorzaakt door de activiteit van de Chinese wolhandkrab (Schoelynck et al., 2020).
+Deze trend kan mogelijk gelinkt worden aan de sterk verhoogde sedimentimport uit de Grote Nete waar het rivierbed zandiger werd en er dus slibrijk materiaal uitspoelde naar afwaarts (Meire et al., 2021).
+De veranderingen in de Grote Nete zijn mogelijk veroorzaakt door de activiteit van de Chinese wolhandkrab (Schoelynck et al., 2020). Een lozing met het afsterven van de waterplanten tot gevolg is ook een hypothese.
 Hoewel niet alle modellen sterk significant zijn, is deze tendens tot verhoogde intertidale 'verslibbing' ook zichtbaar langs de andere zijrivieren (Zenne, Rupel, Dijle) en langs de Zeeschelde (Figuur \@ref(fig:060-figuur-slib-zijrivieren-intertidaalboxplotperiodes) en (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-intertidaalboxplotperiodes)).
 Er zijn andere factoren (naast Chinese wolhandkrab, die een stabiele trend toont in de monitoringperiode 2012-2017 - Van Ryckegem et al., 2018) die elk een ander gewicht kunnen hebben langsheen de estuariene gradiënt (zie Meire et al., 2021).
 Het aantal jaren met data in Nete, Zenne en Dijle is wel beperkt.
@@ -183,7 +186,7 @@ In de periode 2015 en later zijn er enkel gegevens in 2015, 2016, 2017 en 2020.
 Hierdoor kunnen we voor de zijrivieren geen uitspraak doen over de recente trends.
 
 De hydrodynamica van de Zeeschelde zal de verhoogde slibfractie (als SPM) in de waterkolom in principe preferentieel sorteren en sedimenteren naar (de hogere delen van) het intertidaal.
-De significante toename van het slibpercentages in de intertidale zones van de Beneden-Zeeschelde liggen daarmee in de lijn der verwachtingen, maar het is het opvallend dat er zich ook een grote en significante habitatwijziging voordoet (significant hoger slibpercentage en ook kleinere mediane korrelgrootte) van de diepe onderwaterbodems van de Beneden-Zeeschelde - Zeeschelde IV (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-subtidaalboxplotperiodes).
+De significante toename van het slibpercentages in de intertidale zones van de Beneden-Zeeschelde liggen daarmee in de lijn der verwachtingen, maar het is opvallend dat er zich ook een grote en significante habitatwijziging voordoet (significant hoger slibpercentage en ook kleinere mediane korrelgrootte) van de diepe onderwaterbodems van de Beneden-Zeeschelde - Zeeschelde IV (Figuur \@ref(fig:060-figuur-slib-Zeeschelde-subtidaalboxplotperiodes). Nadere analyse is wenselijk om te bekijken of deze toename indicatief is voor 'fluid mud' lagen in de diepe delen.
 <!--# in principe zijn grote slibfracties niet op hun plaats in de diepe delen. Is dit een fluid-mud indicatie? Of zit er klei bij? of of of ... In de Livesheet wordt steeds een inschatting bijgeschreven door de veldmensen. Kan een idee zijn om uit die beschrijvingen wat meer info te halen -->
 
 De regressie analyse en databeschrijving wijst op geleidelijke habitatveranderingen die gaande zijn, waarschijnlijk onder invloed van de verhoogde SPM gehaltes.
@@ -198,6 +201,29 @@ Een diepgaandere analyse van de data is nodig om correlaties te zoeken met mogel
 De verandering in het slibgehalte (of de mediane korrelgrootte) is (vaak) subtiel in de absolute cijfers.
 Er zijn geen aanwijzingen dat het gehalte in organisch materiaal wijzigde (analyse niet getoond).
 Bijkomend onderzoek is nodig om de effecten op de benthische gemeenschap te duiden.
+
+
+
+```{r 060-figuur-regressieZS-mud, fig.cap=slib_Zeeschelde_regressie, out.width="80%"}
+
+slib_Zeeschelde_regressie <- paste0("Lineaire regressiefits voor slibgehalte (\\%) – Zeeschelde. Data genest binnen Zeeschelde zones en fysiotopen.  (data 2008-",recentste_jaar,").")
+
+knitr::include_graphics(paste0(pad_figuren, "060_figuur_regressieZS_mud.jpg"))
+
+```
+
+<br/>
+
+
+```{r 060-figuur-regressie-zijrivier-mud, fig.cap=slib_zijrivier_regressie, out.width="80%"}
+
+slib_zijrivier_regressie <- paste0("Lineaire regressiefits voor slibgehalte (\\%) – Zijrivieren. Data genest binnen waterloop en fysiotopen.  (data 2008-",recentste_jaar,").")
+
+knitr::include_graphics(paste0(pad_figuren, "060_figuur_regressie_zijrivier_mud.jpg"))
+
+```
+
+<br/>
 
 ```{r 060-figuur-slib-Zeeschelde-intertidaalboxplotperiodes, fig.cap=slib_Zeeschelde_intertidaal, out.width="80%"}
 
