@@ -325,7 +325,33 @@ ggplot(augmented_data, aes(x = jaar, y = slib)) +
        x = "Year",
        y = "Mud") 
 
-# ggsave(file=paste0(pad_figuren,"060_figuur_regressie_mud.jpg"))
+partim <- hoofd
+  augmented_data_hoofd <- augmented_data[augmented_data$waterloop %in% partim,]
+ggplot(augmented_data_hoofd, aes(x = jaar, y = slib)) +
+  geom_point() +
+  geom_line(aes(y = .fitted), linetype = "dashed") +
+  # facet_wrap(~ fysiotoop+waterloop) +
+  facet_grid(fysiotoop ~ waterloop) +
+  labs(title = "Linear Regression Fits by fysiotoop",
+       x = "Year",
+       y = "Mud%") 
+
+ggsave(file=paste0(pad_figuren,"060_figuur_regressieZS_mud.jpg"))
+
+partim <- zij
+  augmented_data_zij <- augmented_data[augmented_data$waterloop %in% partim,]
+  augmented_data_zij <- augmented_data_zij[augmented_data_zij$fysiotoop != "onbepaald",]
+  
+ggplot(augmented_data_zij, aes(x = jaar, y = slib)) +
+  geom_point() +
+  geom_line(aes(y = .fitted), linetype = "dashed") +
+  # facet_wrap(~ fysiotoop+waterloop) +
+  facet_grid(fysiotoop ~ waterloop) +
+  labs(title = "Linear Regression Fits by fysiotoop",
+       x = "Year",
+       y = "Mud%") 
+
+ggsave(file=paste0(pad_figuren,"060_figuur_regressie_zijrivier_mud.jpg"))
 
 # Extract the model coefficients and p-values
 model_summaries <- models %>%
@@ -342,6 +368,8 @@ significant_models
 
 write_xlsx(list(modeloutput = significant_models),
            paste0(pad_tabellen, "modeloutput_slib.xlsx"))
+
+
 ######################
 ##### linear model: OM
 ######################
