@@ -76,13 +76,13 @@ Over de seizoenen werden met de fuiken het grootste aantal soorten gevangen in d
 
 Totaal over de beschouwde periode (`r vroegste_jaar` - `r laatste_jaar`) worden meest soorten gevangen in de zone met sterke saliniteitsgradiënt (Zandvliet/Paardenschor \> Antwerpen) (Figuur \@ref(fig:092-figuur-aantal-soorten-locatie-historisch)) en daalt de soortenrijkdom in stroomopwaartse richting, met iets minder soorten in de oligohaliene zone (Steendorp), en het laagst aantal soorten in de zoetwaterzone met lange (Kastel) en korte (Appels, Overbeke) verblijftijd.
 Vanaf 2017 worden in de zone met sterke saliniteitsgradiënt wel minder soorten gevangen.
-<!--# merk op dat dit bijna overeenkomt met de vervanging van Zandvliet door Paardenschor (in najaar 2015). Enkel 2016 vormt dus een uitzondering met staalname aan Paardenschor maar nog hoge aantallen. Maar ook in Antwerpen is het patroon zichtbaar, dus geen aandacht aan besteden?. --> <!--# Ik zie de afname in Antwerpen in aantal soorten, vooral duidlijk dit jaar, maar de toename in bovenstroomse gebieden vind ik niet zo duidelijk, ik haalde dat er voorlopig uit -->
+<!--# merk op dat dit bijna overeenkomt met de vervanging van Zandvliet door Paardenschor (in najaar 2015). Enkel 2016 vormt dus een uitzondering met staalname aan Paardenschor maar nog hoge aantallen. Maar ook in Antwerpen is het patroon zichtbaar, dus geen aandacht aan besteden?. --> <!--# Ik zie de afname in Antwerpen in aantal soorten, vooral duidlijk dit jaar, maar de toename in bovenstroomse gebieden vind ik niet zo duidelijk, ik haalde dat er voorlopig uit --> <!--# GVR: let op met interpretatie want sinds 2022 maar 1 fuikdag -->
 
 De soortensamenstelling op elke locatie kan sterk verschillen tussen de seizoenen, met een turnover van ongeveer één derde van de soorten.
 Het totaal aantal soorten jaarlijks gevangen met fuiken in de Zeeschelde (over alle locaties) in de periode `r vroegste_jaar` - `r laatste_jaar` varieert rond de 33 (Figuur \@ref(fig:092-figuur-aantal-soorten-locatie-historisch)).
 Tot een kwart van het aantal gevangen soorten kan verschillen tussen de locaties.
 Het aantal gevangen soorten per jaar vertoont meer variatie vanaf 2016.
-In 2022 zijn er met de fuiken beduidend minder soorten gevangen dan de jaren voorheen.
+In 2022 zijn er met de fuiken beduidend minder soorten gevangen dan de jaren voorheen.<!--# GVR: in 2023 lijkt het weer zoals 2020-2021 maar mogelijk is het eerder zelfs een herstel tot op soortaantal niveau van 2019... -->
 Dit heeft waarschijnlijk te maken met de halvering van het aantal fuikdagen per campagne van 2 naar 1 etmaal per locatie.
 Uit vergelijking tussen vangsten na eerste en tweede etmaal in 144 campagnes blijkt dat een tweede vangst 0 tot 6 extra soorten oplevert met een gemiddelde van 2 soorten.
 
@@ -625,7 +625,7 @@ We berekenden de indexwaarden voor alle beschikbare gegevens (Tabel \@ref(tab:09
 De evolutie van de visindex in de Zeeschelde is ook één van de INBO natuurindicatoren (<https://www.vlaanderen.be/inbo/indicatoren/trend-visindex-zeeschelde>)
 
 In de periode 2011-2020 was deze indicator redelijk stabiel in vergelijking tot het decennium dat daaraan voorafging: De zoete zone scoorde doorgaans beter dan de zone met sterke saliniteitsgradiënt en de oligohaliene zone had meestal de laagste score.
-De laatste twee jaren daalde de EQR van de zoete zone echter van GEP <!--# wat betekent 'GEP'? Uitleg nodig; ook in de legende van de tabel. --> in 2020 over matig in 2021 naar ontoereikend in 2022 en `r laatste_jaar`.
+De laatste twee jaren daalde de EQR van de zoete zone echter van goed ecologisch potentieel in 2020 over matig in 2021 naar ontoereikend in 2022 en `r laatste_jaar`.
 De beide andere zones haalden nog nooit de goede ecologische toestand en scoren beide ontoereikend in `r laatste_jaar`.
 
 Figuur \@ref(fig:092-figuur-spindiagram) geeft voor elke zone een indicatie van de ecologische aspecten die minder en beter scoren in `r laatste_jaar`.
@@ -676,7 +676,7 @@ knitr::include_graphics(str_c(maak_pad(hoofdstuk, "figuren/EQR"), "visindex_EQR.
 ```{r 092-figuur-spindiagram, fig.cap=cap_spindiagram, out.width="70%", fig.show="hold", fig.fullwidth=TRUE}
 
 cap_spindiagram <-
-  str_c("Metriek scores en EQR voor de verschillende saliniteitszones van de Zeeschelde in ",laatste_jaar,".")
+  str_c("Metriek scores en EQR voor de verschillende saliniteitszones van de Zeeschelde in ",laatste_jaar,". Zie tabel 1.2 voor betekenis metrieken")
 
 figs_spin <- 
   list.files(maak_pad(hoofdstuk, "figuren/EQR"), full.names = TRUE) %>% 
