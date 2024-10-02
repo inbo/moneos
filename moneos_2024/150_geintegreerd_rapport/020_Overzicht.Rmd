@@ -44,13 +44,11 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
 ## Overzicht
 
-In dit hoofdstuk wordt een overzicht gegeven van de natuurontwikkelingsprojecten die reeds uitgevoerd zijn in de Zeeschelde, met weergave van de voornaamste karakteristieken van het gebied.
-Onderstaande informatie is beschikbaar gemaakt via het online portaal <http://www.abpmer.net/omreg/>.
-Deze website omvat een databank met uitgevoerde estuariene natuurontwikkelingsprojecten.
+In dit hoofdstuk wordt een overzicht gegeven van de natuurontwikkelingsprojecten die reeds uitgevoerd zijn in de Zeeschelde (Tabel \@ref(tab:020-tabel-natuurontwikkelingsprojecten)).
 
 Voor details over de uitvoering en de initiele evoluties in de ontpolderingen wordt verwezen naar Van de Neucker et al., (2007) en Speybroeck et al. (2011).
-De evoluties in de GGG's[^overzicht-1] worden opgevolgd door Universiteit Antwerpen (Maris et al., 2019).
-In totaal werd er sinds 2003 ruim 750 ha aan estuariene natuurontwikkeling gerealiseerd (Tabel \@ref(tab:020-tabel-natuurontwikkelingsprojecten)).
+De evoluties in de GGG's[^overzicht-1] worden opgevolgd door Universiteit Antwerpen (Maris et al., 2023).
+Voor de gebieden waar ecotopenkaarten beschikbaar zijn, werd de oppervlakte estauriene natuur afgeleid uit de laatst beschikbare habitatkaart. Dit is exclusief de dijken of hoge zones die geen schor zijn (zie definities hoofdstuk ecotopen). Deze hogere zones kunnen eventueel wel nog een veiligheidsfunctie vervullen.
 
 [^overzicht-1]: Gecontroleerd Gereduceerd Getijdengebied
 
@@ -83,7 +81,7 @@ tabel_natuurontwikkelingsprojecten[c(20),4] <- sapply(tabel_natuurontwikkelingsp
 
 
 tabel_natuurontwikkelingsprojecten %>% 
-  knitr::kable(caption = "Overzicht van de uitgevoerde estuariene natuurontwikkelingsprojecten langsheen de Zeeschelde en zijrivieren. De gebieden staan gerangschikt van grens BE-NL stroomopwaarts. MWeA - Meest Wenselijk Alternatief - geactualiseerd Sigmaplan gebieden zijn geselecteerd (Synthesenota, 2005 inclusief KBR).",
+  knitr::kable(caption = "Overzicht van de uitgevoerde estuariene natuurontwikkelingsprojecten langsheen de Zeeschelde en zijrivieren. De gebieden staan gerangschikt van grens BE-NL stroomopwaarts. Gebieden opgenomen in het MWeA - Meest Wenselijk Alternatief (Synthesenota, 2005) inclusief KBR. Habitatoppervlakte bepaald op basis van de laatste ecotopenkaarten (indien reeds ecotopenkaart beschikbaar is voor gebied)",
              # "latex", 
              booktabs = T,
              escape = F) %>% 
@@ -147,20 +145,17 @@ cap_oppervlakte <- "Cumulatieve oppervlakte gerealiseerde estuariene natuurontwi
 # knitr::include_graphics(paste0(pad_figuren, "10_figuur_oppervlakte_estuariene_natuurontwikkeling.jpg"))  
 ```
 
+In totaal werd er sinds 2003 ruim 660 ha aan estuariene natuur (slik+schor) gerealiseerd. Hiervan werd 600 ha gerealiseerd in het kader van het MWeA (inclusief KBR). De doelstelling is om 2000 ha estuarien habitat (slik (500 ha) en schor (1500 ha)) te realiseren. Er zijn al grote stappen gezet maar voor het behalen van de doelstellingen is het nodig om extra estuariene natuur te ontwikkelen.
+
 ## Recente ontwikkelingen
 
 Sinds 2021 werden verschillende estuariene Sigmaprojecten opgeleverd.
-In juni 2021 werd de ontpoldering/dijkverlegging te Fort Filip gerealiseerd. Het Groot Schoor te Hamme werd als ontpoldering gerealiseerd in juli 2021. Het GGG Grote Vijver Noord langsheen de Beneden Nete trad in werking in maart 2022. Enkele maanden later in oktober 2022 werd definitief Prosper- en Hedwigepolder gebrest. Zo kwam er ruim 450 ha estuariene natuur in één klap bij. In het laatste monitoringsjaar werd het Klein Broek langsheen de Durme uitgevoerd. Dit resulteerde in ongeveer 35 ha extra estuariene natuur. In totaal werd tot nu toe 600 ha estuariene natuur gerealiseerd in het kader van het Sigmaplan (exclusief Hediwige).
+In juni 2021 werd de ontpoldering/dijkverlegging te Fort Filip gerealiseerd. Het Groot Schoor te Hamme werd als ontpoldering gerealiseerd in juli 2021. Het GGG Grote Vijver Noord langsheen de Beneden Nete trad in werking in maart 2022. Enkele maanden later in oktober 2022 werd definitief Prosper- en Hedwigepolder gebrest. Zo kwam er ruim 450 ha estuariene natuur in één klap bij. In het laatste monitoringsjaar werd het Klein Broek langsheen de Durme uitgevoerd. Dit resulteerde in ongeveer 35 ha extra estuariene natuur.
 
 
 ## Referenties
 
-Maris, T., S. Baeten, K. De Schamphelaere, T. Van den Neucker, T.
-van den Broeck & P.
-Meire (2019).
-Onderzoek naar de gevolgen van het Sigmaplan, baggeractiviteiten en havenuitbreiding in de Zeeschelde op het milieu.
-Geïntegreerd eindverslag van het onderzoek verricht in 2018, deelrapport Intergetijdengebieden.
-ECOBE 019-R245 Universiteit Antwerpen, Antwerpen.
+Maris T., Baeten S., Van den Neucker T., van den Broeck T., Oosterlee L. & Meire P. (2023). Onderzoek naar de gevolgen van het Sigmaplan, baggeractiviteiten en havenuitbreiding in de Zeeschelde op het milieu. Geïntegreerd eindverslag van het onderzoek verricht in 2022, deelrapport Intergetijdengebieden. ECOSPHERE 024-RES022 Universiteit Antwerpen, Antwerpen.
 
 Speybroeck J., Van Ryckegem G., Vandevoorde B.
 & Van de Bergh E.
