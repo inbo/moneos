@@ -1,0 +1,291 @@
+---
+editor_options:
+  markdown:
+    wrap: sentence
+---
+
+```{r 140-slik_schorrand, include=FALSE}
+
+hoofdstuk <- "140_slik_schorrand"
+
+```
+
+```{r 140-setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.pos="H")
+knitr::opts_knit$set(eval.after = "fig.cap")
+
+```
+
+```{r 140-libraries}
+
+library(tidyverse)
+library(readxl)
+library(kableExtra)
+library(INBOtheme)
+library(rprojroot) ## workaround pad
+
+```
+
+```{r 140-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+
+```
+
+```{r 140-meta_data}
+
+meta_data <- 
+  read_delim(paste0(pad_data, "meta_data.csv"),
+             delim = ";")
+  
+for(i in 1:nrow(meta_data)){
+  ##first extract the object value
+  tempobj=meta_data$waarde[i]
+  ##now create a new variable with the original name of the list item
+  eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+}
+
+```
+
+# Monitoring Slik en Schorrand
+
+**Gunther Van Ryckegem & Amber Mertens**
+
+## Inleiding
+
+In het voorjaar van 2021 werd door INBO een voorstel tot duurzaam oeverbeheer uitgewerkt voor de volledige Zeeschelde (Van Ryckegem et al., 2021).
+In de studie wordt een kader geschetst, geschematiseerd door een beslisboom, om de beheerder te helpen bij de keuze van het type oeververdediging indien zich erosie voordoet aan de schorrand of voorliggende slik.
+
+Naast ogen op het terrein kan een (desktop) monitoringsprotocol helpen bij het het vaststellen van erosieve oevers.
+Het monitoringsprotocol wordt 3-jaarlijks doorlopen.
+De hieronder gebruikte hulpmiddelen zijn:
+
+-   Schorranderosiekaarten
+-   Breuksteenverschilkaarten
+-   Hoogteverschilkaarten combigrids (schor, slik en ondiep water)
+-   Bathymetrische verschilkaarten (laag slik en ondiep water)
+
+Vastgestelde erosieve zones worden op terrein onderzocht en bij het vaststellen van sterke schorrand- of slikerosie kan voor die specifieke locaties het meest aangewezen type oeververdediging bepaald worden door de beslisboom te doorlopen of door de oeververdedigingsatlas te raadplegen.
+
+## Materiaal en methode
+
+De hulpmiddelen die gebruikt worden om de slik- en schorrand te monitoren worden hiërarchisch overlopen in een GISomgeving (Figuur \@ref(fig:140-figuur-stappenplan)).
+De focus ligt op de schorranderosiekaarten, die elke 3 jaar gemaakt worden.
+Vervolgens worden, ook 3-jaarlijks, breuksteenverschilkaarten onderzocht in combinatie met de combigrids.
+Indien er erosie is geweest waar geen breuksteen meer zichtbaar is, wijst dit op wegspoeling van breuksteen.
+Tenslotte worden ook jaarlijks de bathymetrische verschilkaarten gemaakt van het laag slik en ondiep water.
+Dit is eerder een 'early warning' kaart die informatie geeft over potentieel erosieve oevers indien de erosie zich doorzet op het hogere slik door terugschrijdende erosie van het ondiep water naar het slik.
+
+```{r 140-figuur-stappenplan, fig.cap=caption_stappenplan, out.width="50%"}
+
+caption_stappenplan <- "Stappenplan monitoringsprotocol slik- en schorrandbeheer."
+
+knitr::include_graphics(paste0(pad_figuren, "140_figuur_stappenplan.jpg"))
+
+```
+
+<br/>
+
+In Van Ryckegem et al. (2021) werden:
+
+-   schorrand verschilkaarten gemaakt tussen 2019 en 2016, 2019 en 2010, 2016 en 2010
+
+-   breuksteen verschilkaarten gemaakt tussen 2019, 2016 en 2013
+
+-   combigrid verschilkaarten gemaakt tussen 2019, 2016 en 2013.
+
+In Van Ryckegem et al. (2023) werden enkel bathymetrie verschilkaarten gemaakt tussen 2022, 2021 en 2020.
+
+Voor deze rapportage zijn sinds de rapportage in Van Ryckegem et al. (2023) nieuwe bathymetrische kaarten beschikbaar voor `r bathy_jaar`.
+
+De schorrand en breuksteen verschilkaarten van 2022, 2019 en 2016 zullen in de rapportage van 2025 besproken worden, samen met de gebiedsdekkende ecotopenkaart 2022 van de volledige Zeeschelde en de combigrid verschilkaarten tussen 2022, 2019 en 2016.
+
+### Bathymetrische verschilkaart
+
+Jaarlijks zijn volledige bathymetrische gegevens beschikbaar van de Zeeschelde.
+Deze zijn vooral bruikbaar voor de laagste oeverzone (laag slik en ondiep water).
+Verschilkaarten op basis van deze bathymetrische gegevens zijn aanvullend bij de interpretatie van erosie van hoger slik en schorrand.
+Gecombineerd geven ze een beeld van de volledige oever met een kleiner tijdsinterval.
+
+Voor deze rapportage werden verschilkaarten gemaakt tussen `r bathy_jaar` en `r bathy_jaar - 1`, `r bathy_jaar` en `r bathy_jaar - 2`, `r bathy_jaar` en `r bathy_jaar - 3`.
+Voor de inspectie werden de grids geklassificeerd op verschillen van meer of minder dan 50 cm (Van Ryckegem et al., 2021).
+Deze arbitraire keuze is ingegeven door de gemiddelde diameter van de stenen bij breuksteenstorting.
+Indien breuksteen verdwijnt door erosie, wegspoeling of inschuiving dan verwachten we deze hoogteverandering.
+Voor de zacht substraat zones werd deze hoogteverandering ook als significant beschouwd bij de inspectie.
+De focus ligt op laag slik en ondiep water, twee oever-ecotopen die nauwkeurig ingemeten worden.
+
+## Exploratieve Data-Analyse
+
+### Erosieve zones geïdentificeerd
+
+**Beneden-Zeeschelde**
+
+In de Beneden-Zeeschelde zijn enkele zones geïdentificeerd waar sterke erosie en/of sedimentatie voorkomt in de laagste oeverzone. In de kaarten wordt het aandachtsgebied steeds zwart omlijnd en de diepteklassen in het subtidaal worden weergegeven in grijstinten. 
+De volgende zones zijn naar voren gehaald om nader te bekijken:
+
+-   **Plaat Lillo stroomafwaarts** -- doorgaande erosieve zone (2017 - 2023): erosie in verschilkaart 2022-2023 zet zich door op de plaat van Lillo, voor het Galgeschoor tegenover Deurganckdok.
+-   **Zone Fort Filip** -- erosieve zone (2021 - 2023): erosieve zone ten noorden van de strekdam en op Parelplaat voor Fort Filip. Vooral kort na aanleg strekdam in de periode 2021 - 2022. Geen veranderingen groter dan de tolerantiegrens (0.5m) in de laatste verschilkaart.
+-   **Tussen Oosterweel en Noord Kasteel** (2021/2022 - 2023): strook van erosie op laag slik en ondiep subtidaal aan de rechteroever. Het ondiep water aan linkeroever, langs het Sint-Anna strand, sedimenteert. Dit staat in contract tot de problematiek van het wegspoelen van het intertidaal slikstrand zelf.
+-   **Galgenweel** -- erosie & sedimentatie (2021/2022 - 2023): erosieve zone voor Galgenweel tussen 2022 en 2023. Meer stroomopwaarts is een zone van sedimentatie tussen 2021 en 2023. Zowel de erosie als sedimentatie vinden plaats in een hoogdynamische zone van ondiep subtidaal.
+-   **Hoboken** -- erosieve zone (2022 - 2023): in de binnenbocht nabij Hoboken wordt opnieuw (net als in 2022) erosie waargenomen in het ondiep subtidaal. De slikhabitats komen op deze manier onder erosiedruk te staan. In 2020 - 2023 was er sedimentatie in de meer stroomafwaartse strook.
+
+<br/>
+
+```{r 140-figuur-lillo, fig.cap=caption_lillo, out.width="50%", echo=FALSE}
+
+caption_lillo <- "Plaat Lillo -- erosieve zone (2022 - 2023)"
+
+knitr::include_graphics(paste0(pad_figuren, "140_figuur_lillo_20202023.jpg"))
+
+```
+
+<br/>
+
+```{r 140-figuur-sintanna, fig.cap=caption_sintanna, out.width="50%", echo=FALSE}
+
+caption_sintanna <- "Sint-Anna strand -- erosieve strook (2020/21/22 - 2023)"
+
+knitr::include_graphics(paste0(pad_figuren, "140_figuur_SintAnna_20202023.jpg"))
+```
+
+<br/>
+
+```{r 140-figuur-galgenweel, fig.cap=caption_galgenweel, out.width="50%", echo=FALSE}
+
+caption_galgenweel <- "Galgenweel -- erosie en sedimentatie (2021/2022 - 2023)"
+
+knitr::include_graphics(paste0(pad_figuren, "140_figuur_Galgenweel_20222023.jpg"))
+```
+
+<br/>
+
+```{r 140-figuur-hoboken, fig.cap=caption_hoboken, out.width="50%", echo=FALSE}
+
+caption_hoboken <- "Hoboken -- erosieve zone (2022 - 2023)"
+
+knitr::include_graphics(paste0(pad_figuren, "140_figuur_Hoboken_20222023.jpg"))
+```
+
+<br/>
+
+**Boven-Zeeschelde**
+
+In de Boven-Zeeschelde zijn enkele zones geïdentificeerd waar sterke erosie en/of sedimentatie voorkomt in de laagste oeverzone.In de kaarten wordt het aandachtsgebied steeds zwart omlijnd en de diepteklassen in het subtidaal worden weergegeven in grijstinten. 
+De volgende zones zijn naar voren gehaald om nader te bekijken:
+
+-   Er zijn dynamische zones van wisselende erosie en sedimentatie terhoogte van de afwaartse kant van de Notelaarplaat en op linkeroever de Balooiplaat en opwaarts de Temsebrug op rechteroever (geen figuren opgenomen in rapportage).
+
+-   Tegenover de **Durmemonding - Weert** is minder erosie geweest aan de binnenbocht dan voorgaande jaren (geen figuur) - de bochtafsnijding is blijvend.
+
+-   **Plaat/Driegoten (Branst) -- erosie & sedimentatie (2022 - 2023)**: net als in vorige rapportage wordt er erosie waargenomen bij Plaat/Driegoten, ditmaal enkel in de meer stroomafwaartse binnenbocht.
+    In beide binnenbochten wordt er ook sedimentatie waargenomen net stroomafwaarts van de binnenbocht.
+
+-   **Sint-Amands -- erosie (2022 - 2023)**: de doorgang te Sint-Amands, opwaarts van de plaat ondervond erosie van ondiep water en laag slik.
+    Dit ook achter de steigers te Sint-Amands.
+    De plaat sedimenteerde aan de binnenbocht afwaarts.
+
+-   **Groot Schoor Hamme -- erosie & sedimentatie (2022-2023)**: Ook nabij Groot Schoor Hamme wordt opnieuw erosie en sedimentatie waargenomen in de binnenbocht op rechteroever ten noorden van het gebied.
+
+-   **Vlassenbroek** -- erosieve zone (2022 - 2023): Nabij Vlassenbroek wordt een strook erosie waargenomen in het ondiep subtidaal.
+
+-   **Bergenmeersen & Paardeweide -- erosieve zones (2022 - 2023)**: Net als in vorige rapportage wordt er in de binnenbocht nabij Bergenmeersen en Paardeweide aanhoudende erosie waargenomen in het ondiep subtidaal en gedeeltelijk in het laag slik.
+
+    <br/>
+
+```{r 140-figuur-plaatdriegoten, fig.cap=caption_plaatdriegoten, out.width="50%", echo=FALSE}
+
+caption_plaatdriegoten <- "Plaat/Driegoten (Branst) -- erosie en sedimentatie (2022 - 2023)"
+
+knitr::include_graphics(paste0(pad_figuren, "140_figuur_plaatdriegoten_20222023.jpg"))
+
+```
+
+<br/>
+
+```{r 140-figuur-mariekerke, fig.cap=caption_mariekerke, out.width="50%", echo=FALSE}
+
+caption_mariekerke <- "Mariekerke -- erosie (2022 - 2023)"
+
+knitr::include_graphics(paste0(pad_figuren, "140_figuur_Mariekerke_20222023.jpg"))
+
+```
+
+<br/>
+
+```{r 140-figuur-grootschoor, fig.cap=caption_grootschoor, out.width="50%", echo=FALSE}
+
+caption_grootschoor <- "Groot Schoor Hamme -- erosie en sedimentatie (2020/21/22 - 2023)"
+
+knitr::include_graphics(paste0(pad_figuren, "140_figuur_GrootSchoorHamme_20202023.jpg"))
+
+```
+
+<br/>
+
+```{r 140-figuur-vlassenbroek, fig.cap=caption_vlassenbroek, out.width="50%", echo=FALSE}
+
+caption_vlassenbroek <- "Vlassenbroek -- erosieve zone (2020/21/22 - 2023)"
+
+knitr::include_graphics(paste0(pad_figuren, "140_figuur_Vlassenbroek_20202023.jpg"))
+
+```
+
+<br/>
+
+```{r 140-figuur-bergenmeersen, fig.cap=caption_bergenmeersen, out.width="50%", echo=FALSE}
+
+caption_bergenmeersen <- "Bergenmeersen -- erosieve zone (2020/21/22 - 2023)"
+
+knitr::include_graphics(paste0(pad_figuren, "140_figuur_Bergenmeersen_20202023.jpg"))
+
+```
+
+<br/>
+
+### Conclusies exploratieve data-analyse
+
+In deze rapportage worden enkel de bathymetrische verschilkaart (2023 versus 2022, 2021 en 2020) besproken.
+Zoals vermeld in de methodologie dienen deze kaarten voornamelijk ter ondersteuning van de interpretatie van erosie van het hoger slik en schorrand, welke slechts 3-jaarlijks gekarteerd worden.
+Zowel in de Boven- als Beneden-Zeeschelde zijn dynamieken waargenomen in enkele zones.
+De waargenomen erosiezones vergen geen directe beheeringrepen, maar kunnen de voorbode zijn van toenemende erosieve druk en zijn zones van aandacht.
+In de Boven-Zeeschelde is het opvallend hoe vooral de ondiep waterzones in de binnenbochten eroderen.
+De bochtigheid van het systeem neemt hierdoor af.
+Dit is vanuit hydrodynamisch oogpunt ongewenst omdat de getij-indringing hierdoor sterker wordt.
+Ecologisch kan zich dat vertalen als toenemende vloeddynamiek, getijslag en salinisatie.
+
+## Referenties
+
+Van Ryckegem, G., & Mertens, A.
+(2022) Monitoring Slik en Schorrand *in* Van Ryckegem, G., Vanoverbeke, J., Van de Meutter, F., Vandevoorde, B., Mertens, W., Mertens, A., Van Braeckel, A., Smeekens, V., Thibau, K., Bezdenjesnji, O., Buerms, D., De Regge, N., Hessel, K., Lefranc, C., Soors, J., Van Lierop, F.
+(2022).
+MONEOS ‐ Geïntegreerd datarapport INBO: Toestand Zeeschelde 2021.
+Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
+Rapporten van het Instituut voor Natuur‐ en Bosonderzoek 2022 (Rapporten van het Instituut voor Natuur‐ en Bosonderzoek 2022 (26)).
+Instituut voor Natuur‐ en Bosonderzoek, Brussel.
+DOI: 10.21436/inbor.85928183
+
+Van Ryckegem G., Vanoverbeke J., Van Braeckel A., Van de Meutter F., Mertens W. Mertens A.
+& Breine J.
+(2021).
+MONEOS-Datarapport INBO: toestand Zeeschelde 2020.
+Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek 2021 (47).
+Instituut voor Natuur- en Bosonderzoek, Brussel.
+DOI: doi.org/10.21436/inbor.52484672
+
+Van Ryckegem G., Vanoverbeke J., Elsen R.
+& Van Braeckel A.(2021). Duurzaam beheer van schorrand en slikken langsheen de Zeeschelde.
+Een klimaatadaptief beheer na erosie van de Schelde oevers.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek 2021 (6).
+Instituut voor Natuur- en Bosonderzoek, Brussel.
+DOI: doi.org/10.21436/inbor.26162584
