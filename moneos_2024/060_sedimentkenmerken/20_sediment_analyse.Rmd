@@ -168,10 +168,12 @@ ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) 
                      " P =",signif(summary(fit)$coef[2,4], 5)))
 }
 
+#data_set regressie
 test <- sediment_data %>%
   pivot_wider(names_from = variabele, values_from = waarde)
 
 
+#relaties in dataset verkennen
 fit1 <- lm(OM ~ mediaan, data = test)
 ggplotRegression(fit1)
 
@@ -197,10 +199,11 @@ ggplotRegression(fit6)
 fit6 <- lm(mediaan ~ jaar, data = testslib)
 ggplotRegression(fit6)
 
-####testjes 
+####Dataset voor regressie
 
 nested_data <- test %>%
   # dplyr::filter(waterloop == "Zeeschelde II") %>% 
+  # dplyr::filter(jaar < 2023) %>% 
   group_by(waterloop,fysiotoop) %>% 
   nest()
 
