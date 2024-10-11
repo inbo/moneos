@@ -146,6 +146,8 @@ sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "intertidaal"
 sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "Intertidaal"
 sediment_data$tidaal[sediment_data$tidaal=="sub"] <- "subtidaal"
 
+  unique(sediment_data$tidaal)
+
 table(sediment_data$waterloop)
   sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde I_up"
   sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde I_up"
@@ -202,7 +204,7 @@ table(sediment_data$waterloop)
 
  file <- paste0(pad_data, "S_DS_V_004a_sediment_data2008_",(year(Sys.Date())-1),"_rapportage",year(Sys.Date()),".xlsx")
   
-  openxlsx::write.xlsx(data, file, rowNames = FALSE, overwrite = TRUE)
+  openxlsx::write.xlsx(sediment_data, file, rowNames = FALSE, overwrite = TRUE)
 
   sediment_data %>% 
   write_delim(paste0(pad_data, "sediment_data.csv"),
