@@ -122,27 +122,9 @@ meta_data %>%
 
 ```
 
-```{r voorbereiding dataset}
+```{r voorbereiding}
 
-table(sediment_data$tidaal)
-sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "intertidaal"
-sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "Intertidaal"
-sediment_data$tidaal[sediment_data$tidaal=="sub"] <- "subtidaal"
 
-table(sediment_data$waterloop)
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb\r\n"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde\r\n"] <- "Zeeschelde I-up"
-  sediment_data$waterloop[sediment_data$waterloop=="Beneden_Dijle"] <- "Dijle"
-  # 
-  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde I"
-  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde I"
-  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb\r\n"] <- "Zeeschelde I"
-  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde"] <- "Zeeschelde I"
-  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde\r\n"] <- "Zeeschelde I"
-  # 
     table(sediment_data$waterloop)
   sediment_data$waterloop <- factor(sediment_data$waterloop, 
                                     levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up","Rupel","Durme","Nete","Dijle","Zenne"))
@@ -151,29 +133,7 @@ table(sediment_data$waterloop)
   #                                   levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up","Rupel","Durme","Nete","Dijle","Zenne"))
 
   
-    table(sediment_data$fysiotoop)
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="diep subtidaal"] <- "diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoge slikzone"] <- "hoog"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoog slik"] <- "hoog"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="lage slikzone"] <- "laag"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laag intertidaal"] <- "laag"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laag slik"] <- "laag"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="matig diep subtidaal"] <- "matig diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch matig diep subtidaal"] <- "matig diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch matig diep subtidaal"] <- "matig diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoge slikzone"] <- "midden"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoog slik"] <- "midden"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="nog te bepalen - sub"] <- "sub indet."
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="subtidaal"] <- "sub indet."
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="ondiep subtidaal"] <- "ondiep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch ondiep subtidaal"] <- "ondiep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch ondiep subtidaal"] <- "ondiep"
-   sediment_data$fysiotoop[sediment_data$fysiotoop=="slik onbepaald"] <- "inter indet."
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch diep subtidaal"] <- "diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch diep subtidaal"] <- "diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch zeer diep subtidaal"] <- "diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hard antropogeen"] <- "hard substraat"
-  
+  table(sediment_data$fysiotoop)
   unique(sediment_data$fysiotoop)
   
   fyzzers <- c("hoog","midden","laag",
