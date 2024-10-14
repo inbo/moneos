@@ -122,67 +122,42 @@ meta_data %>%
 
 ```
 
-```{r voorbereiding dataset}
+```{r voorbereiding}
 
-table(sediment_data$tidaal)
-sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "intertidaal"
-sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "Intertidaal"
-sediment_data$tidaal[sediment_data$tidaal=="sub"] <- "subtidaal"
 
-table(sediment_data$waterloop)
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb\r\n"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde\r\n"] <- "Zeeschelde I-up"
-  sediment_data$waterloop[sediment_data$waterloop=="Beneden_Dijle"] <- "Dijle"
-  # 
-  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde I"
-  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde I"
-  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb\r\n"] <- "Zeeschelde I"
-  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde"] <- "Zeeschelde I"
-  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde\r\n"] <- "Zeeschelde I"
-  # 
-    table(sediment_data$waterloop)
-  sediment_data$waterloop <- factor(sediment_data$waterloop, 
-                                    levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up","Rupel","Durme","Nete","Dijle","Zenne"))
-  
-  # sediment_data$waterloop <- factor(sediment_data$waterloop, 
-  #                                   levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up","Rupel","Durme","Nete","Dijle","Zenne"))
+ table(sediment_data$waterloop)
 
+##Ruimtelijke indeling
+##Zeeschelde Ia = Scheldemeander Melle Gentbrugge
+##Zeeschelde Ib = Traject Zwijnaarde - ringvaart
+
+sediment_data$waterloop <- factor(sediment_data$waterloop, 
+                                    levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde Ia","Zeeschelde Ib", "Rupel","Durme","Nete","Dijle","Zenne"))
   
-    table(sediment_data$fysiotoop)
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="diep subtidaal"] <- "diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoge slikzone"] <- "hoog"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoog slik"] <- "hoog"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="lage slikzone"] <- "laag"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laag intertidaal"] <- "laag"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laag slik"] <- "laag"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="matig diep subtidaal"] <- "matig diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch matig diep subtidaal"] <- "matig diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch matig diep subtidaal"] <- "matig diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoge slikzone"] <- "midden"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoog slik"] <- "midden"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="nog te bepalen - sub"] <- "sub indet."
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="subtidaal"] <- "sub indet."
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="ondiep subtidaal"] <- "ondiep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch ondiep subtidaal"] <- "ondiep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch ondiep subtidaal"] <- "ondiep"
-   sediment_data$fysiotoop[sediment_data$fysiotoop=="slik onbepaald"] <- "inter indet."
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch diep subtidaal"] <- "diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch diep subtidaal"] <- "diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch zeer diep subtidaal"] <- "diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hard antropogeen"] <- "hard substraat"
-  
-  unique(sediment_data$fysiotoop)
-  
+
+
+##fysiotopen
+##data-analyse 2024 - laag en hoogdynamisch niet meegenomen in analyse
+
+table(sediment_data$fysiotoop)
+
+sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch matig diep"] <- "matig diep"
+sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch matig diep"] <- "matig diep"  
+sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch ondiep"] <- "ondiep"
+sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch ondiep"] <- "ondiep"
+sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch diep"] <- "diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch diep"] <- "diep"  
+sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch zeer diep"] <- "diep"
+
+unique(sediment_data$fysiotoop)
+
   fyzzers <- c("hoog","midden","laag",
                "hard substraat","inter indet.","ondiep",
                "matig diep","diep", "sub indet.","onbepaald")
   sediment_data$fysiotoop <- factor(sediment_data$fysiotoop, levels = fyzzers)
   
-  hoofd <- c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up" )
-  # hoofd <- c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I")
+  #hoofd <- c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde Ia", "Zeeschelde Ib")
+  hoofd <- c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I")
   zij <- c("Rupel","Durme","Nete","Dijle","Zenne")
   inter <- c("inter indet.","laag", "hoog", "midden")
   sub <- c("diep","matig diep","ondiep","sub indet.")
@@ -208,10 +183,12 @@ ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) 
                      " P =",signif(summary(fit)$coef[2,4], 5)))
 }
 
+#data_set regressie
 test <- sediment_data %>%
   pivot_wider(names_from = variabele, values_from = waarde)
 
 
+#relaties in dataset verkennen
 fit1 <- lm(OM ~ mediaan, data = test)
 ggplotRegression(fit1)
 
@@ -237,10 +214,11 @@ ggplotRegression(fit6)
 fit6 <- lm(mediaan ~ jaar, data = testslib)
 ggplotRegression(fit6)
 
-####testjes 
+####Dataset voor regressie
 
 nested_data <- test %>%
   # dplyr::filter(waterloop == "Zeeschelde II") %>% 
+  # dplyr::filter(jaar < 2023) %>% 
   group_by(waterloop,fysiotoop) %>% 
   nest()
 
