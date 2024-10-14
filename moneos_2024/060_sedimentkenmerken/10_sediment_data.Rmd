@@ -149,12 +149,19 @@ sediment_data$tidaal[sediment_data$tidaal=="sub"] <- "subtidaal"
   unique(sediment_data$tidaal)
 
 table(sediment_data$waterloop)
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb\r\n"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde"] <- "Zeeschelde I_up"
-  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde\r\n"] <- "Zeeschelde I-up"
+  
+## tijarm Zwijnaarde en Gentbrugge-Melle afzonderlijk aanleveren
+sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde Ia"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde Ia"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb\r\n"] <- "Zeeschelde Ia"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde"] <- "Zeeschelde Ib"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde\r\n"] <- "Zeeschelde Ib"
   sediment_data$waterloop[sediment_data$waterloop=="Beneden_Dijle"] <- "Dijle"
+
+sediment_data <- sediment_data %>%
+  mutate(waterloop = if_else(startsWith(locatie, "TZ"), "Zeeschelde Ib", waterloop))  
+sediment_data <- sediment_data %>%
+  mutate(waterloop = if_else(startsWith(locatie, "GM"), "Zeeschelde Ia", waterloop))  
   # 
   # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde I"
   # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde I"
@@ -164,10 +171,10 @@ table(sediment_data$waterloop)
   # 
     table(sediment_data$waterloop)
   sediment_data$waterloop <- factor(sediment_data$waterloop, 
-                                    levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up","Rupel","Durme","Nete","Dijle","Zenne"))
+                                    levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde Ia","Zeeschelde Ib", "Rupel","Durme","Nete","Dijle","Zenne"))
   
   # sediment_data$waterloop <- factor(sediment_data$waterloop, 
-  #                                   levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up","Rupel","Durme","Nete","Dijle","Zenne"))
+  #                                   levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde Ia","Zeeschelde Ib", "Rupel","Durme","Nete","Dijle","Zenne"))
 
   
     table(sediment_data$fysiotoop)
@@ -210,9 +217,9 @@ table(sediment_data$waterloop)
 ###voor data analyse 2024 heb ik geen hoog vs laagdynamisch meegenomen
 ###data wel aangeleverd met opdeling hoog vs laagdynamisch  
   
-  # sediment_data %>% 
-  # write_delim(paste0(pad_data, "sediment_data.csv"),
-  #              delim = ";")
+  sediment_data %>%
+  write_delim(paste0(pad_data, "sediment_data.csv"),
+               delim = ";")
 
 ```
 
