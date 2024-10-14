@@ -178,19 +178,19 @@ table(sediment_data$waterloop)
   sediment_data$fysiotoop[sediment_data$fysiotoop=="laag intertidaal"] <- "laag"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="laag slik"] <- "laag"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="matig diep subtidaal"] <- "matig diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch matig diep subtidaal"] <- "matig diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch matig diep subtidaal"] <- "matig diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch matig diep subtidaal"] <- "laagdynamisch matig diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch matig diep subtidaal"] <- "hoogdynamisch matig diep"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoge slikzone"] <- "midden"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoog slik"] <- "midden"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="nog te bepalen - sub"] <- "sub indet."
   sediment_data$fysiotoop[sediment_data$fysiotoop=="subtidaal"] <- "sub indet."
   sediment_data$fysiotoop[sediment_data$fysiotoop=="ondiep subtidaal"] <- "ondiep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch ondiep subtidaal"] <- "ondiep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch ondiep subtidaal"] <- "ondiep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch ondiep subtidaal"] <- "laagdynamisch ondiep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch ondiep subtidaal"] <- "hoogdynamisch ondiep"
    sediment_data$fysiotoop[sediment_data$fysiotoop=="slik onbepaald"] <- "inter indet."
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch diep subtidaal"] <- "diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch diep subtidaal"] <- "diep"
-  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch zeer diep subtidaal"] <- "diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch diep subtidaal"] <- "laagdynamisch diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch diep subtidaal"] <- "hoogdynamisch diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch zeer diep subtidaal"] <- "hoogdynamisch zeer diep"
   sediment_data$fysiotoop[sediment_data$fysiotoop=="hard antropogeen"] <- "hard substraat"
   
   unique(sediment_data$fysiotoop)
@@ -206,9 +206,13 @@ table(sediment_data$waterloop)
   
   openxlsx::write.xlsx(sediment_data, file, rowNames = FALSE, overwrite = TRUE)
 
-  sediment_data %>% 
-  write_delim(paste0(pad_data, "sediment_data.csv"),
-               delim = ";")
+  
+###voor data analyse 2024 heb ik geen hoog vs laagdynamisch meegenomen
+###data wel aangeleverd met opdeling hoog vs laagdynamisch  
+  
+  # sediment_data %>% 
+  # write_delim(paste0(pad_data, "sediment_data.csv"),
+  #              delim = ";")
 
 ```
 
