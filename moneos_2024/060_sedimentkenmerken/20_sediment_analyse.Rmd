@@ -125,24 +125,39 @@ meta_data %>%
 ```{r voorbereiding}
 
 
-    table(sediment_data$waterloop)
-  sediment_data$waterloop <- factor(sediment_data$waterloop, 
-                                    levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up","Rupel","Durme","Nete","Dijle","Zenne"))
-  
-  # sediment_data$waterloop <- factor(sediment_data$waterloop, 
-  #                                   levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up","Rupel","Durme","Nete","Dijle","Zenne"))
+ table(sediment_data$waterloop)
 
+##Ruimtelijke indeling
+##Zeeschelde Ia = Scheldemeander Melle Gentbrugge
+##Zeeschelde Ib = Traject Zwijnaarde - ringvaart
+
+sediment_data$waterloop <- factor(sediment_data$waterloop, 
+                                    levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde Ia","Zeeschelde Ib", "Rupel","Durme","Nete","Dijle","Zenne"))
   
-  table(sediment_data$fysiotoop)
-  unique(sediment_data$fysiotoop)
-  
+
+
+##fysiotopen
+##data-analyse 2024 - laag en hoogdynamisch niet meegenomen in analyse
+
+table(sediment_data$fysiotoop)
+
+sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch matig diep"] <- "matig diep"
+sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch matig diep"] <- "matig diep"  
+sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch ondiep"] <- "ondiep"
+sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch ondiep"] <- "ondiep"
+sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch diep"] <- "diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch diep"] <- "diep"  
+sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch zeer diep"] <- "diep"
+
+unique(sediment_data$fysiotoop)
+
   fyzzers <- c("hoog","midden","laag",
                "hard substraat","inter indet.","ondiep",
                "matig diep","diep", "sub indet.","onbepaald")
   sediment_data$fysiotoop <- factor(sediment_data$fysiotoop, levels = fyzzers)
   
-  hoofd <- c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde I_up" )
-  # hoofd <- c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I")
+  #hoofd <- c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde Ia", "Zeeschelde Ib")
+  hoofd <- c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I")
   zij <- c("Rupel","Durme","Nete","Dijle","Zenne")
   inter <- c("inter indet.","laag", "hoog", "midden")
   sub <- c("diep","matig diep","ondiep","sub indet.")
