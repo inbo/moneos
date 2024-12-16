@@ -374,6 +374,87 @@ knitr::include_graphics(paste0(pad_figuren, "070-figuur-Shannondiv-subt-Zeeschel
 
 <br/>
 
+#### Actueel: trends in de aanwezigheid van knijtenlarven (Ceratopogonidae) in de Zeeschelde
+
+**Aanleiding**
+
+Er is sinds enkele jaren grote publieke aandacht voor knijten langsheen de Schelde.
+Met name in de buurt van nieuwe estuariene Sigmagebieden, maar ook bijvoorbeeld langsheen het traject Gentbrugge-Melle, klagen of klaagden buurtbewoners over overlast door stekende knijten.
+Eerder onderzoek wees de soort *Culicoides riethi* als de (hoofd)schuldige aan.
+Larven van deze soort ontwikkelen zich in slikken langs de Schelde of in estuarien gebied naast de Schelde waar ze vermoedelijk leven van kleine algen die op en in het slik groeien (microfytobenthos).
+De volwassen insecten steken mensen en andere grote zoogdieren, en hun beten kunnen bij sommige mensen sterke, alergische reacties opwekken.
+De toename van overlast wordt in grote mate geweten aan de toename van estuariene natuur in Sigmagebieden.
+Hoewel in deze gebieden zeker grote concentraties aan knijten gezien worden, sluit dit niet uit dat er een algemene toename van knijten in het Zeeschelde ecosysteem gaande is.
+Om deze vraag te onderzoeken kan de MONEOS spatial dataset van inbo gebruikt worden.
+Hieronder proberen we de vraag te beantwoorden of knijtenlarven op slikken langs de Schelde, exclusief de nieuwe Sigmagebieden, een toenemende trend vertonen.
+
+**Beschrijving van trends en patronen in de data**
+
+We gebruiken voor dit onderzoek de MONEOS data van 2008 tot en met 2022.
+Voorafgaand aan 2008 was de Schelde over grote delen van haar loop nog zuurstofloos en waren de condities waarschijnlijk ongeschikt voor *Culicoides*.
+In het deel Zeeschelde I, vooral in het meest bovenstroomse deel tegen Gent aan, was er al vanaf 2003 een toename van het zuurstofgehalte in het water.
+Daardoor werden de condities gecreëerd waarbij knijten zich konden vestigen.
+Dit was waarschijnlijk het geval, wat kan afgeleid worden uit sporadische meldingen van overlast door knijten in die periode (Sohier et al. 2010).
+We hebben echter te weinig data uit die periode om de opkomst van knijtenlarven te detecteren.
+
+Van 2008 tot en met 2022 werden in 75 MONEOS spatial stalen in de Zeeschelde knijtenlarven aangetroffen, op een totaal van 1888 intertidale stalen (\@ref(fig:070-figuur18)).
+Deze locaties liggen gespreid over het ganse estuarium, van Gentbrugge tot in Ketenisse, en overheen de zijrivieren Durme, Rupel, Dijle en Zenne.
+Nazicht van de positieve stalen leert dat 15 van deze 75 punten in of op de rand van nieuw ontwikkeld estuarien gebied lagen.
+Deze records worden daarom uit de verdere analyse en bespreking gelaten.
+
+In het traject Gentbrugge-Melle zijn al van bij de eerste MONEOS SPATIAL staalname (2008) knijtenlarven gevonden.
+Zoals eerder aangehaald liep in dit bovendeel van de Zeeschelde de waterkwaliteitsverbetering enkele jaren voor op de verandering in de zone tussen de Dendermonding en Antwerpen.
+Heel waarschijnlijk waren hier voor 2008 al knijtenlarven aanwezig.
+Blijkbaar bleven ook na 2008 knijtenlarven lange tijd een lokaal fenomeen in de Zeeschelde, dat beperkt bleef tot het traject Gentbrugge-Melle.
+De eerste melding van knijtenlarven in de Zeeschelde tussen Melle en de Nederlandse grens is vastgesteld in 2016 bij Sint-Amands.
+Voordien was er wel een melding bij Hamme in 2009, maar dit was in de uitwatering van het Lippenbroek.
+In de zijrivieren (Rupel, Durme, Zenne, Dijle, Beneden-Nete) werd de eerste knijtenlarve, exclusief 1 vondst in 2010 in de Zenne, vastgesteld in de Rupel (2019).
+Nadien volgden waarnemingen in de Durme en de Zenne in 2020.
+Trends op basis van het aantal stalen met knijten per jaar voor de Zeeschelde tussen Melle en de Nederlandse grens, voor de centrale Zeeschelde (Zeeschelde II en III, zonder zijrivieren) en voor de zijrivieren Durme, Rupel, Dijle en Nete, staan in \@ref(fig:070-figuur19).
+De figuren lijken een toename te tonen van het aantal stalen met knijten dat jaarlijks wordt aangetroffen, met name sinds 2015.
+
+```{r 070-figuur18, fig.cap=caption_regressie18, out.width="100%"}
+caption_regressie18 <- "Situering van de 75 staalname punten van de SPATIAL campagne waarin tijdens de periode 2008–2022 knijten zijn aangetroffen."
+
+knitr::include_graphics(paste0(pad_figuren, "070-fig1_KnijtenZeeschelde.jpg"))
+```
+
+```{r 070-figuur19, fig.cap=caption_regressie19, out.width="100%"}
+caption_regressie19 <- "Aantal stalen met larven van knijten (Ceratopogonidae) in de periode 2008–2022 voor de Zeeschelde van Melle tot de Nederlandse grens (bovenaan) voor het centrale deel van de Zeeschelde (Zeeschelde II en III, exclusief zijrivieren) en voor de zijrivieren Dijle, Nete, Durme en Rupel (rechtsonder). Sinds 2017 werden de zijrivieren Dijle en Nete enkel nog in 2020 bemonsterd, en zijn de aantallen gebaseerd op enkel Durme en Rupel."
+
+knitr::include_graphics(paste0(pad_figuren, "070-fig2_KnijtenperZone.jpg"))
+```
+
+Het is belangrijk om deze visuele suggestie van een toename statistisch te onderbouwen, en waarbij rekening wordt gehouden met de vangstinspanning.
+We focussen daarbij op het middendeel van de Zeeschelde (Zeeschelde II en III) omdat hier recent de meeste overlast gemeld werd.
+Voor deze verkennende analyse gebruikten we een eenvoudige Chi-square test, waarbij we de het aantal knijtenvondsten ten opzichte van het totaal aantal onderzochte intertidale punten (zonder de punten op laag slik, aangezien hier in deze zone geen knijten zitten) vergelijken tussen twee periodes.
+We beschouwen enkel punten gelegen op middelhoog en hoog slik, omdat eerder onderzoek aantoonde dat hier op het lage slik weinig macrobenthos en geen knijtenlarven voorkomen.
+De gemelde overlast in deze zone startte ongeveer rond 2018-2019, wat suggereert dat er vanaf toen een toename was.
+We kozen er daarom voor om de laatste 5 onderzochte jaren (periode 2018-2022) te vergelijken met de periode voordien (2008-2017).
+Het resultaat van een tweezijdige test is duidelijk significant (X-squared = 11.074, df = 1, p-value = 0.00087).
+Omdat de vraagstelling is of er een toename is, en we dus niet geïnteresseerd zijn in een afname, is de gepaste test-statistiek eenzijdig, ofwel p=0.00044.
+Deze statistiek bevestigt en onderbouwt de eerdere suggestie dat op slikken langs de Zeeschelde, zonder dat we de nieuw ontwikkelde estuariene gebieden meetellen, een toename is gebeurd van knijtenlarven sinds 2018.
+
+Knijtenlarven zijn dan wel gevonden van Gent tot tegen de Nederlandse grens aan, er zijn duidelijk een aantal hotspots binnen de Zeeschelde te onderscheiden.
+In de eerste plaats is er het traject Gentbrugge-Melle, waar overheen de hele onderzoeksperiode knijtenlarven zijn aangetroffen (\@ref(fig:070-figuur20)).Daarnaast vinden we al sinds 2016 regelmatig knijten rondom de ebgeul van Sint-Amands (\@ref(fig:070-figuur21)).
+Vooral sinds ongeveer 2020 worden er ook op de Zenne, de Durme, en tussen de Durmemonding en Temse, langs de oevers knijtenlarven gevonden.
+
+<br/>
+
+```{r 070-figuur20, fig.cap=caption_regressie20, out.width="100%"}
+caption_regressie20 <- "Vindplaatsen van knijtenlarven op basis van de SPATIAL staalnames door INBO (2008-2022) in het bovendeel van het traject Gentbrugge-Melle. Het getal voor de underscore is het jaartal van de staalname."
+
+knitr::include_graphics(paste0(pad_figuren, "070-KnijtenGM2.jpg"))
+```
+
+```{r 070-figuur21, fig.cap=caption_regressie21, out.width="100%"}
+caption_regressie21 <- "Vindplaatsen van knijtenlarven op basis van de MONEOS spatial staalnames door INBO (2008-2022) op de Durme en de Zeeschelde van Sint-Amands tot Temse. Het getal voor de underscore verwijst naar het jaartal van de staalname."
+
+knitr::include_graphics(paste0(pad_figuren, "070-KnijtenZS2Durme.jpg"))
+```
+
+<br/>
+
 ## Algemene conclusie
 
 **De soortenrijkdom**
@@ -410,23 +491,29 @@ Een indicatie dat het om een sampling effect gaat, is dat in het subtidaal er we
 Om de impact van dit potentieel methodologisch artefact te verminderen, en de staalnamemethode aan te passen aan de nieuwe situatie waarin tweekleppigen talrijk voorkomen in de Zeeschelde, voegde INBO vanaf 2023 een extra staalname met grote steekbuis toe aan het moneos protocol voor de zone Saliniteistgradiënt.
 Bij de volgende rapportage in 2025 zullen de resultaten hiervan besproken worden, en zal met meer betrouwbare data kunnen beoordeeld worden hoe de systeembiomassa evolueert.
 
+**Veranderingen in de aantallen knijtenlarven in slikken langs de Schelde** Er is een toename van meldingen van overlast door stekende knijten langs de Zeeschelde, vaak in de buurt van nieuwe estuariene natuur in Sigmagebieden.
+Een analyse van de MONEOS spatial data in Zeeschelde II en III (de zone zoet lang en oligohalien), waarbij we enkel de slikken langs de Zeeschelde beschouwen, zonder dat we de nieuw ontwikkelde estuariene gebieden meetellen, toont een significante toename van het aantal stalen met knijtenlarven in slikken van de Schelde.
+Die toename lijkt ingezet rond 2015, terwijl voorheen knijtenlarven vooral beperkt waren tot het traject Gentbrugge–Melle.
+Er zijn een aantal hotspots, maar verder zijn knijtenlarven over een verrassend ruim gebied gevonden van Gentbrugge tot Ketenisse (recent ook in de Hedwigepolder), en ook in de meeste zijrivieren.
+De conclusie is dat de toename van knijten in Sigmagebieden past in een ruimere trend waarbij knijten significant toenemen in het hele Zeeschelde ecosysteem.
+
 ## Referenties
 
-Dumoulin E., & Langeraert W.
-(2020).
-De brakwaterkorfschelp *Potamocorbula amurensis* (Schrenck, 1861) (Bivalvia, Myida, Corbulidae), een nieuwkomer in het Schelde-estuarium; of het begin van een lang verhaal.
-Inleiding.
+Dumoulin E., & Langeraert W.(2020). De brakwaterkorfschelp *Potamocorbula amurensis* (Schrenck, 1861) (Bivalvia, Myida, Corbulidae), een nieuwkomer in het Schelde-estuarium; of het begin van een langverhaal.
 De Strandvlo 40: 113–172.
 
 Nichols F., Thompson J.
 & Schemel L.
-(1990).
-Remarkable invasion of San Francisco Bay (California, USA), by the Asian clam *Potamocorbula amurensis*.
+(1990).Remarkable invasion of San Francisco Bay (California, USA), by the Asian clam *Potamocorbula amurensis*.
 II, Displacement of a former community.
 Marine Ecology Progress Series 66: 95–101.
 
-Van Hoey G., Drent J.
-& Ysebaert T.
+Sohier C., Dekoninck W., Versteirt V., Van Damme S., Van den Bergh E.,Grootaert, P. (2010).
+Monitoring van de Culicoides-overlast ter hoogte van het stuwcomplex van de Zeeschelde te Gentbrugge.
+CULIMON project eindrapport.
+Gent, Waterwegen en Zeekanaal, 80 pp.
+
+Van Hoey G., Drent J.& Ysebaert T.
 (2007).
 The Benthic Ecosystem Quality Index (BEQI), intercalibration and assessment of Dutch coastal and transitional waters for the Water Framework Directive - Final Report.
 NIOO report 2007-02.

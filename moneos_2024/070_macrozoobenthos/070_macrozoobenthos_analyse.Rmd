@@ -123,7 +123,7 @@ write_xlsx(list(macrobenthos = data_mzboidvervang),
 ```{r 070-data}
 #GEEN OID jaar, dus trends zonder soortniveau Oligochaeta
 data_macrobenthos <- 
-  read_excel(paste0(paste0(pad_data, "/Nieuwe_datafile/"), "macrobenthos_data_2008_2022NIETAANTELEVEREN.xlsx"), sheet = "macrobenthos") %>% 
+  read_excel(paste0(paste0(pad_data), "macrobenthos_data_2008_2022NIETAANTELEVEREN.xlsx"), sheet = "macrobenthos") %>% 
   dplyr::mutate(niveau3_hybr = recode(waterloop2, "Zeeschelde IV"= "Saliniteitsgradient", "Zeeschelde III"= "Oligohalien", "Zeeschelde II"= "Zoet lang verblijf", "Zeeschelde I"= "Zoet kort verblijf")) %>% 
   dplyr::mutate(fysiotoop = case_when(
     fysiotoop %in% c("diep subtidaal") ~ "diep subtidaal",
@@ -1130,12 +1130,14 @@ opps_intertidaalfys <- opps %>%
     dplyr::mutate (fysiotoop = (if_else(waterloop == "Durme" & fysiotoop != "intertidaal indet.", "intertidaal indet.", fysiotoop))) %>% 
     dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde III + Rupel" = "Oligohalien"))
 
+write_xlsx(opps_intertidaalfys, paste0(pad_data,"opps_intertidaalfysiotoop.xlsx"))
   
 opps_SUBfys <- opps %>% 
     dplyr::filter(tidaal == "subtidaal") %>% 
     mutate (kaartjaar = jaar) %>% 
-    mutate(waterloop = recode(waterloop, "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf"))  
-  
+    mutate(waterloop = recode(waterloop, "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf")) 
+
+write_xlsx(opps_SUBfys, paste0(pad_data,"opps_subtidaalfysiotoop.xlsx"))  
   
 data_macrobenthos_intertidaalfys <-
   data_macrobenthos_totaal %>%
@@ -1158,6 +1160,8 @@ data_macrobenthos_intertidaalfys <-
   dplyr::mutate (kaartjaar = if_else(jaar > 2011 & jaar < 2015, 2013, kaartjaar)) %>% 
   dplyr::mutate (kaartjaar = if_else(jaar > 2014 & jaar < 2018 & !waterloop %in% c("Nete", "Zenne", "Dijle"), 2016, ifelse(waterloop %in% c("Nete", "Zenne", "Dijle"), 2013, kaartjaar))) %>%
   dplyr::mutate (kaartjaar = if_else(jaar > 2017 & !waterloop %in% c("Nete", "Zenne", "Dijle", "Oligohalien", "Saliniteitsgradient"), 2019, ifelse(waterloop %in% c("Nete", "Zenne", "Dijle"), 2013, ifelse(jaar > 2017 & waterloop %in% c("Oligohalien", "Saliniteitsgradient"), 2021, kaartjaar)))) 
+
+write_xlsx(data_macrobenthos_intertidaalfys, paste0(pad_data,"macrobenthos_per_fysiotoop.xlsx"))  
   
 #Opps voor Zenne, Nete, Dijle enkel in 2013, dus steeds link met 2013 maken  
   
@@ -1170,6 +1174,8 @@ sort(unique(opps_intertidaalfys$waterloop))
 data_macrobenthos_OPP <- data_macrobenthos_intertidaalfys %>% 
   left_join(opps_intertidaalfys, by = c("kaartjaar", "fysiotoop","waterloop")) %>%
   dplyr::mutate(biomassa_fys = (biomassa_mean * opp*10000)/1000000) #ton benthos, maar opp te groot?
+
+write_xlsx(data_macrobenthos_OPP, paste0(pad_data,"macrobenthos_per_fysiotoop_metOpps2.xlsx")) 
     
 ## samenvatten per waterloop en bereken totaal
   
@@ -1362,8 +1368,9 @@ ggsave(filename = paste0(pad_figuren, "PopTaxgroep_Salgradient", ".jpg"), height
   
 ```
 
+#bivalven
 ```{r 070-bijdrage van bivalv soorten aan Bivalvia doorheen de tijd}
-data_macrobenthos_intertidaalfysBIV <-
+data_macrobenthos_subtidaalfysBIV <-
   data_macrobenthos_totaalBIV %>%
   dplyr::filter(tidaal == "subtidaal") %>% # hier kan ook subtidaal ingevuld worden; dan moet data_macrobenthos_OPPBIV wel een join krijgen met opps_SUBfys  (zie hieronder)
   dplyr::filter(fysiotoop != "hard substraat") %>%
@@ -1385,11 +1392,42 @@ data_macrobenthos_intertidaalfysBIV <-
   dplyr::mutate (kaartjaar = if_else(jaar > 2014 & jaar < 2018, 2016, kaartjaar)) %>%
   dplyr::mutate (kaartjaar = if_else(jaar > 2017, 2019, kaartjaar)) 
 
+data_macrobenthos_intertidaalfysBIV <-
+  data_macrobenthos_totaalBIV %>%
+  dplyr::filter(tidaal == "intertidaal") %>% # hier kan ook subtidaal ingevuld worden; dan moet data_macrobenthos_OPPBIV wel een join krijgen met opps_SUBfys  (zie hieronder)
+  dplyr::filter(fysiotoop != "hard substraat") %>%
+    dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde I trj_Ml_Gb\n" = "Zeeschelde I trj_Ml_Gb",  "Zeeschelde I tijarm Zwijnaarde\n" = "Zeeschelde I tijarm Zwijnaarde" , "Beneden_Dijle" = "Dijle", "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III" = "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I" = "Zoet kort verblijf")) %>%   
+  dplyr::mutate (fysiotoop = (if_else(waterloop == "Durme" & fysiotoop != "intertidaal indet.", "intertidaal indet.", fysiotoop))) %>%
+    dplyr::filter(systeem == "Zeeschelde") %>%  
+  dplyr::group_by(jaar, soort, waterloop, niveau3_hybr, systeem, fysiotoop) %>% 
+  summarise_at(vars(densiteit, biomassa), 
+               list(mean = ~max(0, mean(., na.rm = TRUE)),
+                    med = ~max(0, median(., na.rm = TRUE)),
+                    lwr1 = ~max(0, quantile(., 0.25, na.rm = TRUE)),
+                    upr1 = ~max(0, quantile(., 0.75, na.rm = TRUE)),
+                    lwr2 = ~max(0, quantile(., 0.05, na.rm = TRUE)),
+                    upr2 = ~max(0, quantile(., 0.95, na.rm = TRUE)))) %>% 
+  ungroup() %>% 
+  dplyr::mutate (kaartjaar = jaar) %>% #jaar van de beste oppervlaktematch toevoegen - we kiezen de kaartjaren van totale Zeeschelde-ecotopenkaarten
+  dplyr::mutate (kaartjaar = if_else(jaar < 2012, 2010, kaartjaar)) %>% 
+  dplyr::mutate (kaartjaar = if_else(jaar > 2011 & jaar < 2015, 2013, kaartjaar)) %>% 
+  dplyr::mutate (kaartjaar = if_else(jaar > 2014 & jaar < 2018, 2016, kaartjaar)) %>%
+  dplyr::mutate (kaartjaar = if_else(jaar > 2017, 2019, kaartjaar)) 
 
-data_macrobenthos_OPPBIV <- data_macrobenthos_intertidaalfysBIV %>% 
+data_macrobenthos_OPPBIVsub <- data_macrobenthos_subtidaalfysBIV %>% 
   left_join(opps_SUBfys, by = c("kaartjaar", "fysiotoop","waterloop")) %>% # opps_SUBfys voor sub opps_intertidaalfys
   mutate(biomassa_fys = (biomassa_mean/1000000)*opp*10000) #ton benthos
   
+write_xlsx(data_macrobenthos_OPPBIV, paste0(pad_data,"Bivalv_per_fysio_metOppsSUB.xlsx")) 
+
+data_macrobenthos_OPPBIVinter <- data_macrobenthos_intertidaalfysBIV %>% 
+  left_join(opps_intertidaalfys, by = c("kaartjaar", "fysiotoop","waterloop")) %>% # opps_SUBfys voor sub opps_intertidaalfys
+  mutate(biomassa_fys = (biomassa_mean/1000000)*opp*10000) #ton benthos
+  
+write_xlsx(data_macrobenthos_OPPBIVinter, paste0(pad_data,"Bivalv_per_fysio_metOppsInter.xlsx"))
+
+
+
 
 data_macrobenthos_OPPWLBIVzs <- data_macrobenthos_OPPBIV %>%
     rename(jaar = jaar.x) %>%
