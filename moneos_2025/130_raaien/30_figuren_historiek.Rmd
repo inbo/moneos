@@ -50,8 +50,8 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 dpi <- 150
 
-jaar <- 2024
-campagne <- "C2023"
+jaar <- 2025
+campagne <- "C2024"
 
 tabel_raaien_vast <- 
   read_excel(paste0(pad_tabellen, "tbl_vaste_raaien_MONEOS.xlsx")) %>% 
@@ -369,7 +369,8 @@ figuren_MONEOS$fig[[1]]
 
 walk2(figuren_MONEOS$REEKSCODE, figuren_MONEOS$fig, 
       ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, ".png"), 
-              width=16, height=8, dpi = dpi))
+              width=16, height=8, dpi = dpi,
+              create.dir = TRUE))
 
 
 figuren_MONEOS_slik <-
@@ -384,8 +385,9 @@ figuren_MONEOS_slik$fig[[1]]
 
 figuren_MONEOS_slik %>% 
   {.; walk2(str_c(.$REEKSCODE, "_slik"), .$fig, 
-        ~ggsave(.y, file=str_c(pad_figuren, "vast/slik/", .x, ".png"), 
-                width=16, height=8, dpi = dpi))}
+            ~ggsave(.y, file=str_c(pad_figuren, "vast/slik/", .x, ".png"), 
+                    width=16, height=8, dpi = dpi,
+                    create.dir = TRUE))}
 
 
 figuren_MONEOS_schor <-
@@ -400,8 +402,9 @@ figuren_MONEOS_schor$fig[[1]]
 
 figuren_MONEOS_schor %>% 
   {.; walk2(str_c(.$REEKSCODE, "_schor"), .$fig, 
-        ~ggsave(.y, file=str_c(pad_figuren, "vast/schor/", .x, ".png"), 
-                width=16, height=8, dpi = dpi))}
+            ~ggsave(.y, file=str_c(pad_figuren, "vast/schor/", .x, ".png"), 
+                    width=16, height=8, dpi = dpi,
+                    create.dir = TRUE))}
 
 ```
 

@@ -62,9 +62,9 @@ sheets_figuren <- NULL
 
 dpi <- 150
 
-jaar <- 2024
-campagne <- "C2023"
-campagne_jaren_EW <- 2019:2024
+jaar <- 2025
+campagne <- str_c("C", jaar-1)
+campagne_jaren_EW <- (jaar-5):jaar
 campagnes_EW <- str_c("C", campagne_jaren_EW-1)
 
 year_colors <-
@@ -350,7 +350,8 @@ figuren_EW <-
 
 walk2(str_c("schor_profiel_EW_", figuren_EW$REEKSCODE), figuren_EW$fig, 
       ~ggsave(.y, file=str_c(pad_figuren, "early_warning/schor_profiel/", .x, ".png"), 
-              width=16, height=8, dpi = dpi))
+              width=16, height=8, dpi = dpi,
+              create.dir = TRUE))
 
 ```
 
@@ -660,7 +661,8 @@ p <-
 p
 
 ggsave(file=str_c(pad_figuren, "early_warning/early_warning_schor_BEZ.png"), 
-              width=18, height=10, dpi = dpi)
+              width=18, height=10, dpi = dpi,
+              create.dir = TRUE)
 
 
 p <-
@@ -669,7 +671,8 @@ p <-
 p
 
 ggsave(file=str_c(pad_figuren, "early_warning/early_warning_schor_BOZ.png"), 
-              width=18, height=10, dpi = dpi)
+              width=18, height=10, dpi = dpi,
+              create.dir = TRUE)
 
 
 p <-
@@ -678,7 +681,8 @@ p <-
 p
 
 ggsave(file=str_c(pad_figuren, "early_warning/early_warning_schor_ZIJ.png"), 
-              width=18, height=10, dpi = dpi)
+              width=18, height=10, dpi = dpi,
+              create.dir = TRUE)
 
 ```
 

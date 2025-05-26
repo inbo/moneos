@@ -51,11 +51,11 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ```{r data}
 
-jaar <- 2024
-campagne <- "C2023"
+jaar <- 2025
+campagne <- "C2024"
 
 data_MONEOS <- 
-  read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_2024.xlsx"),
+  read_xlsx(path = str_c(pad_data, "TOPOdata_MONEOSraai_INBO_", jaar, ".xlsx"),
             sheet = "TOPOdata_MONEOSRAAIEN_INBO")
 
 # drive <- "Z:/"
@@ -92,7 +92,12 @@ raaicodes <-
 #                 raaien = raaicodes,
 #                 path = "Z:/")
  
+ecotoop_jaar <- 2023
+SCALDIS_jaar <- 2022
 
+Gentbrugge_calc <- "SCALDIS"
+Rupel_calc <- "SCALDIS"
+Durme_calc <- "ecotoop"
 
 conn <- 
   dbConnect(odbc::odbc(),
@@ -122,14 +127,26 @@ HW85_Schelde <-
   tbl(conn, "OFHWmod_Schelde_2019_2022_85proc") %>% 
   collect()
   
+Durme_85_str <- 
+  if_else(Durme_calc == "SCALDIS",
+          str_c("OFHWmod_SCALDIS_Durme_", SCALDIS_jaar, "_85proc"),
+          str_c("OFHWmod_Durme_", SCALDIS_jaar - 3, "_", SCALDIS_jaar, "_85proc")) 
 HW85_Durme <-
-  tbl(conn, "OFHWmod_SCALDIS_Durme_2019_85proc") %>% 
+  tbl(conn, Durme_85_str) %>% 
   collect()
   
+Rupel_85_str <- 
+  if_else(Durme_calc == "SCALDIS",
+          str_c("OFHWmod_SCALDIS_Rupel_", SCALDIS_jaar, "_85proc"),
+          str_c("OFHWmod_Rupel_", SCALDIS_jaar - 3, "_", SCALDIS_jaar, "_85proc")) 
 HW85_Rupel <-
   tbl(conn, "OFHWmod_SCALDIS_Rupel_2019_85proc") %>% 
   collect()
   
+Gentbrugge_85_str <- 
+  if_else(Durme_calc == "SCALDIS",
+          str_c("OFHWmod_SCALDIS_Gentbrugge_", SCALDIS_jaar, "_85proc"),
+          str_c("OFHWmod_Gentbrugge_", SCALDIS_jaar - 3, "_", SCALDIS_jaar, "_85proc")) 
 HW85_Gentbrugge <-
   tbl(conn, "OFHWmod_SCALDIS_Gentbrugge_2019_85proc") %>% 
   collect()
@@ -138,16 +155,28 @@ LW30_Schelde <-
   tbl(conn, "OFLWmod_Schelde_2019_2022_30proc") %>% 
   collect()
   
+Durme_30_str <- 
+  if_else(Durme_calc == "SCALDIS",
+          str_c("OFLWmod_SCALDIS_Durme_", SCALDIS_jaar, "_30proc"),
+          str_c("OFLWmod_Durme_", SCALDIS_jaar - 3, "_", SCALDIS_jaar, "_30proc")) 
 LW30_Durme <-
-  tbl(conn, "OFLWmod_SCALDIS_Durme_2019_30proc") %>% 
+  tbl(conn, Durme_30_str) %>% 
   collect()
-  
+
+Rupel_30_str <- 
+  if_else(Rupel_calc == "SCALDIS",
+          str_c("OFLWmod_SCALDIS_Rupel_", SCALDIS_jaar, "_30proc"),
+          str_c("OFLWmod_Rupel_", SCALDIS_jaar - 3, "_", SCALDIS_jaar, "_30proc")) 
 LW30_Rupel <-
-  tbl(conn, "OFLWmod_SCALDIS_Rupel_2019_30proc") %>% 
+  tbl(conn, Rupel_30_str) %>% 
   collect()
   
+Gentbrugge_30_str <- 
+  if_else(Gentbrugge_calc == "SCALDIS",
+          str_c("OFLWmod_SCALDIS_Gentbrugge_", SCALDIS_jaar, "_30proc"),
+          str_c("OFLWmod_Gentbrugge_", SCALDIS_jaar - 3, "_", SCALDIS_jaar, "_30proc")) 
 LW30_Gentbrugge <-
-  tbl(conn, "OFLWmod_SCALDIS_Gentbrugge_2019_30proc") %>% 
+  tbl(conn, Gentbrugge_30_str) %>% 
   collect()
 
 dbDisconnect(conn)
@@ -205,16 +234,28 @@ DD_Schelde <-
   filter(DD %in% c(25, 35, 60, 75)) %>% 
   collect()
   
+Durme_DD_str <- 
+  if_else(Durme_calc == "SCALDIS",
+          str_c("DDmod_SCALDIS_Durme_", SCALDIS_jaar),
+          str_c("DDmod_Durme_", SCALDIS_jaar - 3, "_", SCALDIS_jaar)) 
 DD_Durme <-
   tbl(conn, "DDmod_SCALDIS_Durme_2019") %>% 
   filter(DD %in% c(25, 35, 60, 75)) %>% 
   collect()
   
+Rupel_DD_str <- 
+  if_else(Rupel_calc == "SCALDIS",
+          str_c("DDmod_SCALDIS_Rupel_", SCALDIS_jaar),
+          str_c("DDmod_Rupel_", SCALDIS_jaar - 3, "_", SCALDIS_jaar)) 
 DD_Rupel <-
   tbl(conn, "DDmod_SCALDIS_Rupel_2019") %>% 
   filter(DD %in% c(25, 35, 60, 75)) %>% 
   collect()
   
+Gentbrugge_DD_str <- 
+  if_else(Gentbrugge_calc == "SCALDIS",
+          str_c("DDmod_SCALDIS_Gentbrugge_", SCALDIS_jaar),
+          str_c("DDmod_Gentbrugge_", SCALDIS_jaar - 3, "_", SCALDIS_jaar)) 
 DD_Gentbrugge <-
   tbl(conn, "DDmod_SCALDIS_Gentbrugge_2019") %>% 
   filter(DD %in% c(25, 35, 60, 75)) %>% 
