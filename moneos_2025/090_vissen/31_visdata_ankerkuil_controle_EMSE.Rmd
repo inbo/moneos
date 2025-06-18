@@ -88,10 +88,10 @@ ankerkuil_aantal_long <-
 
 ```{r EMSE}
 
-nieuwe_soorten <-
+(nieuwe_soorten <-
   ankerkuil_aantal_long %>% 
   filter(is.na(ankerkuil)) %>% 
-  distinct(soort, fuiken, ankerkuil)
+  distinct(soort, fuiken, ankerkuil))
 
 voorkomen <-
   ankerkuil_aantal_long %>% 

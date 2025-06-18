@@ -139,17 +139,29 @@ names(level_key) <- old_names
 ```
 
 
+```{r correcties soortnamen recente data}
+
+data_recent <-
+  data_recent %>% 
+  mutate(Soort = 
+           case_match(Soort,
+                      "blauwband" ~ "blauwbandgrondel",
+                      .default = Soort))
+
+```
+
+
 ```{r correcties soortnamen historische data, eval=FALSE}
 
-rename_vector <-
-  c("kleine koornaarvis" = "koornaarvis")
-
-aantal_historisch <-
-  aantal_historisch %>% 
-  rename(!!!rename_vector)
-gewicht_historisch <-
-  gewicht_historisch %>% 
-  rename(!!!rename_vector)
+# rename_vector <-
+#   c("kleine koornaarvis" = "koornaarvis")
+# 
+# aantal_historisch <-
+#   aantal_historisch %>% 
+#   rename(!!!rename_vector)
+# gewicht_historisch <-
+#   gewicht_historisch %>% 
+#   rename(!!!rename_vector)
 
 ```
 
@@ -188,17 +200,19 @@ gewicht_NA_of_0_ruw <-
          "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN")
 
 
-soort_NA <-
+(soort_NA <-
   gewicht_NA_of_0_ruw %>% 
   filter(TAXONAANTAL == 1) %>% 
   pull(Soort) %>% 
-  unique()
+  unique())
+
 
 if (length(soort_NA) > 0) {
   data_lengte <-
     data_recent %>% 
     filter(Soort %in% soort_NA,
-           !is.na(TAXONLEN)) %>% 
+           !is.na(TAXONLEN),
+           !is.na(TAXONGEW)) %>% 
     select(Soort, TAXONAANTAL, TAXONGEW, TAXONLEN)
   
   p <-
@@ -240,11 +254,12 @@ if (length(soort_NA) > 0) {
     mutate(prop_aantal = TAXONAANTAL/aantal,
            gewicht_imputed = 
              case_when(
-               TAXONAANTAL > 1 ~ gewicht*prop_aantal,
-               TRUE ~ exp(int + slope*log(TAXONLEN))
-             ))
+               TAXONAANTAL == 1 & !is.na(TAXONLEN) ~ exp(int + slope*log(TAXONLEN)),
+               TRUE ~ gewicht*prop_aantal))
   
-  
+  if (!dir.exists(str_c(pad_data, "controle"))){
+    dir.create(str_c(pad_data, "controle"))
+  }
   write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
     # NA_aantal = aantal_NA_of_0_ruw,
     NA_gewicht = gewicht_NA),
@@ -472,17 +487,10 @@ setdiff(data_per_datum %>%
             soorten_historisch_aanwezig) %>% 
     sort())
 
-```
-
-
-```{r correcties soortnamen recente data, eval=FALSE}
-
-data_per_datum <-
-  data_per_datum %>% 
-  mutate(soort = 
-           case_match(soort,
-                      "blauwband" ~ "blauwbandgrondel",
-                      .default = soort))
+write_xlsx(list(nieuwe_soorten = 
+                  data_per_datum %>% 
+                  filter(soort %in% unieke_soorten_recent_aanwezig)),
+           path = str_c(pad_data, "nieuwe_soorten_fuiken.xlsx"))
 
 ```
 

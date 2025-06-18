@@ -54,6 +54,11 @@ pad_data <- maak_pad(params$hoofdstuk, "data")
 pad_figuren <- maak_pad(params$hoofdstuk, "figuren/fuiken")
 pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen/fuiken")
 
+if (!dir.exists(pad_data)) dir.create(pad_data) 
+if (!dir.exists(pad_figuren)) dir.create(pad_figuren) 
+if (!dir.exists(pad_tabellen)) dir.create(pad_tabellen) 
+
+
 ```
 
 
@@ -335,6 +340,19 @@ setdiff(soorten_vis, soorten_fuiken_sheet)
 ```
 
 
+```{r salgroep en dieet haringachtigen}
+
+soortenlijst %>% 
+  filter(soort %in% c("haring", "sprot"))
+
+data_fuiken <- 
+  data_fuiken %>% 
+  mutate(salgroep = if_else(soort == "haringachtigen", "mariene migranten", salgroep),
+         dieet = if_else(soort == "haringachtigen", "planktivoren", dieet))
+
+```
+
+
 ```{r aantal-en-gewicht-per-fuikdag}
 
 data_fuiken <- 
@@ -391,6 +409,18 @@ indeling_EMSE_missing <-
 
 ```
 
+
+```{r exclusie soorten}
+
+soorten_niet_in_aantal <-
+  c("grondel sp", "haringachtigen", "karperachtige")
+
+soorten_niet_in_funcgroep <-
+  c("grondel sp", "karperachtige")
+
+```
+
+
 #### relatie aantal - gewicht
 
 ```{r relatie-aantal-gewicht, eval = FALSE}
@@ -427,20 +457,24 @@ data_fuiken %>%
 aantal_soorten_seizoen_locatie <- 
   data_fuiken %>% 
   filter(aantal > 0) %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   distinct(jaar, seizoen, locatie, soort) %>% 
   count(jaar, seizoen, locatie, name = "soorten") %>% 
   bind_rows(data_fuiken %>% 
               filter(aantal > 0) %>% 
+              filter(!(soort %in% soorten_niet_in_aantal)) %>% 
               distinct(jaar, locatie, soort) %>% 
               count(jaar, locatie, name = "soorten") %>% 
               mutate(seizoen = "totaal over seizoenen")) %>% 
   bind_rows(data_fuiken %>% 
               filter(aantal > 0) %>% 
+              filter(!(soort %in% soorten_niet_in_aantal)) %>% 
               distinct(jaar, seizoen, soort) %>% 
               count(jaar, seizoen, name = "soorten") %>% 
               mutate(locatie = "totaal over locaties")) %>% 
   bind_rows(data_fuiken %>% 
               filter(aantal > 0) %>% 
+              filter(!(soort %in% soorten_niet_in_aantal)) %>% 
               distinct(jaar, soort) %>% 
               count(jaar, name = "soorten") %>% 
               mutate(seizoen = "totaal over seizoenen",
@@ -471,6 +505,7 @@ ggsave(paste0(pad_figuren, "aantal_soorten_seizoen_locatie.jpg"), width = 10, he
 aantal_soorten_seizoen <- 
   data_fuiken %>% 
   filter(aantal > 0) %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   distinct(jaar, seizoen, locatie, soort) %>% 
   count(jaar, seizoen, locatie, name = "soorten") %>% 
   group_by(jaar, seizoen) %>%
@@ -478,6 +513,7 @@ aantal_soorten_seizoen <-
   ungroup() %>% 
   bind_rows(data_fuiken %>% 
               filter(aantal > 0) %>% 
+              filter(!(soort %in% soorten_niet_in_aantal)) %>% 
               distinct(jaar, locatie, soort) %>% 
               count(jaar, locatie, name = "soorten") %>% 
               group_by(jaar) %>% 
@@ -504,6 +540,7 @@ ggsave(paste0(pad_figuren, "aantal_soorten_seizoen.jpg"), width = 10, height = 5
 aantal_soorten_locatie <- 
   data_fuiken %>% 
   filter(aantal > 0) %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   distinct(jaar, seizoen, locatie, soort) %>% 
   count(jaar, seizoen, locatie, name = "soorten") %>% 
   group_by(jaar, locatie) %>%
@@ -511,10 +548,12 @@ aantal_soorten_locatie <-
   ungroup() %>% 
   left_join(data_fuiken %>% 
               filter(aantal > 0) %>% 
+              filter(!(soort %in% soorten_niet_in_aantal)) %>% 
               distinct(jaar, locatie, soort) %>% 
               count(jaar, locatie, name = "soorten_tot")) %>% 
   bind_rows(data_fuiken %>% 
               filter(aantal > 0) %>% 
+              filter(!(soort %in% soorten_niet_in_aantal)) %>% 
               distinct(jaar, seizoen, soort) %>% 
               count(jaar, seizoen, name = "soorten") %>% 
               group_by(jaar) %>% 
@@ -523,6 +562,7 @@ aantal_soorten_locatie <-
               mutate(locatie = "totaal over locaties") %>% 
               left_join(data_fuiken %>% 
                           filter(aantal > 0) %>% 
+                          filter(!(soort %in% soorten_niet_in_aantal)) %>% 
                           distinct(jaar, soort) %>% 
                           count(jaar, name = "soorten_tot") %>% 
                           mutate(locatie = "totaal over locaties"))) %>% 
@@ -551,6 +591,7 @@ ggsave(paste0(pad_figuren, "aantal_soorten_locatie.jpg"), width = 12, height = 5
 aantal_soorten_totaal <- 
   data_fuiken %>% 
   filter(aantal > 0) %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   distinct(jaar, soort) %>% 
   count(jaar, name = "soorten")
 
@@ -601,23 +642,27 @@ sheets_figuren[["aantal_soorten_totaal"]] <-
 
 tabel_aantal_soorten <-
   data_fuiken %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   filter(jaar == laatste_jaar,
          aantal > 0) %>%
   distinct(seizoen, locatie, soort) %>% 
   count(seizoen, locatie, name = "soorten") %>% 
   bind_rows(data_fuiken %>% 
+              filter(!(soort %in% soorten_niet_in_aantal)) %>% 
               filter(jaar == laatste_jaar,
                      aantal > 0) %>% 
               distinct(locatie, soort) %>% 
               count(locatie, name = "soorten") %>% 
               mutate(seizoen = "totaal over seizoenen")) %>% 
   bind_rows(data_fuiken %>% 
+              filter(!(soort %in% soorten_niet_in_aantal)) %>% 
               filter(jaar == laatste_jaar,
                      aantal > 0) %>% 
               distinct(seizoen, soort) %>% 
               count(seizoen, name = "soorten") %>% 
               mutate(locatie = "totaal over locaties")) %>% 
   bind_rows(data_fuiken %>% 
+              filter(!(soort %in% soorten_niet_in_aantal)) %>% 
               filter(jaar == laatste_jaar,
                      aantal > 0) %>% 
               distinct(soort) %>% 
@@ -642,6 +687,7 @@ sheets[["aantal_soorten"]] <- tabel_aantal_soorten
 
 tabel_gevangen_soorten <-
   data_fuiken %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   filter(jaar == laatste_jaar,
          aantal > 0) %>% 
   mutate(seizoen_locatie = factor(paste(seizoen, locatie, sep = "_"),
@@ -666,6 +712,7 @@ sheets[["gevangen_soorten"]] <- tabel_gevangen_soorten
 
 (soorten_historisch <-
   data_fuiken %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   filter(jaar != laatste_jaar,
          aantal > 0) %>% 
   distinct(soort) %>% 
@@ -674,6 +721,7 @@ sheets[["gevangen_soorten"]] <- tabel_gevangen_soorten
 
 (soorten_recent <-
   data_fuiken %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   filter(jaar == laatste_jaar,
          aantal > 0) %>% 
   distinct(soort) %>% 
@@ -685,6 +733,7 @@ sheets[["gevangen_soorten"]] <- tabel_gevangen_soorten
 
 data_soorten_nieuw <-
   data_fuiken %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   left_join(locatie_scheldezone) %>% 
   filter(jaar == laatste_jaar,
          aantal > 0,
@@ -712,23 +761,23 @@ relatief_aantal_laatste_jaar <-
   data_fuiken %>% 
   filter(jaar == laatste_jaar) %>% 
   group_by(seizoen, locatie) %>%
-  mutate(relatief_aantal = aantal/sum(aantal),
-         relatief_gewicht = gewicht/sum(gewicht)) %>% 
+  mutate(relatief_aantal = aantal/sum(aantal, na.rm = TRUE),
+         relatief_gewicht = gewicht/sum(gewicht, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(soort) %>% 
   # mutate(soort2 = ifelse(any(relatief_aantal >= prop_lim | relatief_gewicht >= prop_lim), soort, "rest")) %>% 
   mutate(soort2 = 
            case_when(
-             any(relatief_aantal >= prop_lim | relatief_gewicht >= prop_lim) ~ soort,
+             any(relatief_aantal[!is.na(relatief_aantal)] >= prop_lim | relatief_gewicht[!is.na(relatief_gewicht)] >= prop_lim) ~ soort,
              TRUE ~ "rest"
            )) %>%
   ungroup() %>% 
   group_by(seizoen, locatie, soort2) %>% 
-  summarise(aantal = sum(aantal)) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(seizoen, locatie) %>% 
   mutate(soort2 = soort2,
-         aantal = round(aantal/sum(aantal)*100)) %>% 
+         aantal = round(aantal/sum(aantal, na.rm = TRUE)*100)) %>% 
   ungroup() %>% 
   rename(soort = soort2) %>% 
   mutate(soort = factor(soort, 
@@ -776,23 +825,23 @@ relatief_gewicht_laatste_jaar <-
   data_fuiken %>% 
   filter(jaar == laatste_jaar) %>% 
   group_by(seizoen, locatie) %>%
-  mutate(relatief_aantal = aantal/sum(aantal),
-         relatief_gewicht = gewicht/sum(gewicht)) %>% 
+  mutate(relatief_aantal = aantal/sum(aantal, na.rm = TRUE),
+         relatief_gewicht = gewicht/sum(gewicht, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(soort) %>% 
   # mutate(soort2 = ifelse(any(relatief_aantal >= prop_lim | relatief_gewicht >= prop_lim), soort, "rest")) %>% 
   mutate(soort2 = 
            case_when(
-             any(relatief_aantal >= prop_lim | relatief_gewicht >= prop_lim) ~ soort,
+             any(relatief_aantal[!is.na(relatief_aantal)] >= prop_lim | relatief_gewicht[!is.na(relatief_gewicht)] >= prop_lim) ~ soort,
              TRUE ~ "rest"
            )) %>%
   ungroup() %>% 
   group_by(seizoen, locatie, soort2) %>% 
-  summarise(gewicht = sum(gewicht)) %>% 
+  summarise(gewicht = sum(gewicht, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(seizoen, locatie) %>% 
   mutate(soort2 = soort2,
-         gewicht = round(gewicht/sum(gewicht)*100)) %>% 
+         gewicht = round(gewicht/sum(gewicht, na.rm = TRUE)*100)) %>% 
   ungroup() %>% 
   rename(soort = soort2) %>% 
   mutate(soort = factor(soort, 
@@ -855,6 +904,7 @@ sheets_figuren[["relatief_gewicht_laatste_jaar"]] <-
 
 gemiddeld_diversiteit_EMSE <- 
   data_fuiken %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   left_join(locatie_scheldezone) %>% 
   filter(in_indeling) %>% 
   filter(aantal > 0) %>% 
@@ -1688,6 +1738,7 @@ ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_zoet.jpg"), width = 6, 
 
 relatieve_aantallen_salgroep <- 
   data_fuiken %>% 
+  filter(!(soort %in% soorten_niet_in_funcgroep)) %>% 
   left_join(locatie_scheldezone) %>% 
   filter(aantal > 0) %>% 
   group_by(jaar, scheldezone, soort, salgroep) %>%
@@ -1787,7 +1838,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 15, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 15, height = 8, bg = "white",
+       create.dir = TRUE)
 
 
 ggp_all <-
@@ -1819,7 +1871,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 15, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 15, height = 8, bg = "white",
+       create.dir = TRUE)
 
 ```
 
@@ -1828,6 +1881,7 @@ ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_sal
 
 relatieve_aantallen_dieet <- 
   data_fuiken %>% 
+  filter(!(soort %in% soorten_niet_in_funcgroep)) %>% 
   left_join(locatie_scheldezone) %>% 
   filter(aantal > 0) %>% 
   group_by(jaar, scheldezone, soort, dieet) %>%
@@ -1863,10 +1917,32 @@ relatieve_aantallen_dieet <-
          dieet = factor(dieet, levels = c("benthivoren", "omnivoren", "piscivoren", "planktivoren")))
 
 
+# data_split <-
+#   relatieve_aantallen_dieet %>% 
+#   group_by(dieet) %>% 
+#   nest()
+
 data_split <-
   relatieve_aantallen_dieet %>% 
+  mutate(soort = str_replace(soort, "grondel", "gr.")) %>% 
+  mutate(soort = str_replace(soort, "kleine", "kl.")) %>% 
+  mutate(soort = str_replace(soort, "grote", "gr.")) %>% 
+  mutate(soort = str_replace(soort, "driedoornige", "dried.")) %>% 
+  mutate(soort = str_replace(soort, "tiendoornige", "tiend.")) %>% 
+  mutate(soort = str_replace(soort, "steur", "st.")) %>% 
+  mutate(soort = str_replace(soort, "europese meerval", "meerval")) %>% 
   group_by(dieet) %>% 
   nest()
+
+my_pal_wes_kort <- my_pal_wes
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "grondel", "gr.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "kleine", "kl.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "grote", "gr.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "driedoornige", "dried.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "tiendoornige", "tiend.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "steur", "st.")
+names(my_pal_wes_kort) <- str_replace(names(my_pal_wes_kort), "europese meerval", "meerval")
+
 
 data_split <-
   data_split %>% 
@@ -1874,7 +1950,8 @@ data_split <-
            map2(dieet, data, 
                 function(ind, dat) {
                   pal_split <- 
-                    my_pal_wes[names(my_pal_wes) %in% unique(dat$soort)]
+                    # my_pal_wes[names(my_pal_wes) %in% unique(dat$soort)]
+                    my_pal_wes_kort[names(my_pal_wes_kort) %in% unique(dat$soort)]
                   plt <-
                     dat %>% 
                     ggplot(aes(jaar, aantal_per_fuikdag*mult_fuik, fill = soort)) +
@@ -1927,7 +2004,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_dieet.jpg"), width = 14, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_dieet.jpg"), width = 14, height = 8, bg = "white",
+       create.dir = TRUE)
 
 
 ggp_all <-
@@ -1959,7 +2037,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 14, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 14, height = 8, bg = "white",
+       create.dir = TRUE)
 
 ```
 
@@ -1970,6 +2049,8 @@ ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_die
 
 gemiddeld_diversiteit_salgroep <- 
   data_fuiken %>% 
+  filter(!(soort %in% soorten_niet_in_funcgroep)) %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   left_join(locatie_scheldezone) %>% 
   filter(aantal > 0) %>% 
   group_by(jaar, scheldezone, soort, salgroep) %>%
@@ -2009,7 +2090,8 @@ gemiddeld_diversiteit_salgroep %>%
   theme(axis.text = element_text(size = 8),
         axis.text.x = element_text(angle = 90, vjust = 0.5))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_salgroep.jpg"), width = 10, height = 7)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_salgroep.jpg"), width = 10, height = 7,
+       create.dir = TRUE)
 
 ```
 
@@ -2018,6 +2100,8 @@ ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_salgroep.jpg"), wid
 
 gemiddeld_diversiteit_dieet <- 
   data_fuiken %>% 
+  filter(!(soort %in% soorten_niet_in_funcgroep)) %>% 
+  filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   left_join(locatie_scheldezone) %>% 
   filter(aantal > 0,
          !is.na(dieet)) %>% 
@@ -2058,7 +2142,8 @@ gemiddeld_diversiteit_dieet %>%
   theme(axis.text = element_text(size = 8),
         axis.text.x = element_text(angle = 90, vjust = 0.5))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_dieet.jpg"), width = 7, height = 6)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_dieet.jpg"), width = 7, height = 6,
+       create.dir = TRUE)
 
 ```
 
@@ -2108,12 +2193,14 @@ meta_data <-
             laatste_jaar = laatste_jaar,
             aantal_soorten = 
               data_fuiken %>% 
+              filter(!(soort %in% soorten_niet_in_aantal)) %>% 
               filter(!is.na(aantal),
                      aantal > 0) %>% 
               distinct(soort) %>% 
               nrow(),
             aantal_soorten_laatste_jaar = 
               data_fuiken %>% 
+              filter(!(soort %in% soorten_niet_in_aantal)) %>% 
               filter(!is.na(aantal),
                      aantal > 0,
                      jaar == laatste_jaar) %>% 

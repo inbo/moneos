@@ -124,15 +124,15 @@ names(level_key) <- old_names
 
 # rename_vector_historisch <-
 #   c("chinese wolhandkrab" = "wolhandkrab")
-rename_vector_historisch <-
-  c("gewone zwemkrab" = "zwemkrab")
-
-aantal_historisch <-
-  aantal_historisch %>%
-  rename(!!!rename_vector_historisch)
-gewicht_historisch <-
-  gewicht_historisch %>%
-  rename(!!!rename_vector_historisch)
+# rename_vector_historisch <-
+#   c("gewone zwemkrab" = "zwemkrab")
+# 
+# aantal_historisch <-
+#   aantal_historisch %>%
+#   rename(!!!rename_vector_historisch)
+# gewicht_historisch <-
+#   gewicht_historisch %>%
+#   rename(!!!rename_vector_historisch)
 
 
 data_recent <- 
@@ -145,6 +145,26 @@ data_recent <-
                             "steurgarnaal" ~ "steurgarnalen",
                             "grijze garnaal" ~ "grijze garnalen",
                             .default = Soort))
+
+```
+
+
+```{r controle verdunningfactor}
+
+dilution_NA <-
+  data_recent %>% 
+  filter(is.na(METI_DILUTION_FACTOR)) %>% 
+  select("MetingID", "WaarnemingID", "Gebiedcode", 
+         "Gebiednaam", 
+         "Begindatum", "Methodenaam", 
+         "Soort", 
+         "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN", "METI_DILUTION_FACTOR")
+
+dat_dil <-
+  data_recent %>% 
+  filter(Gebiedcode %in% dilution_NA$Gebiedcode,
+         WaarnemingID %in% dilution_NA$WaarnemingID)
+  
 
 ```
 
@@ -192,18 +212,21 @@ gewicht_NA_of_0_ruw <-
          "TaxonKey", "Soort", 
          "TAXONAANTAL", "TAXONGEW", "TAXONTOTGEW", "TAXONLEN", "METI_DILUTION_FACTOR")
 
-soort_NA <-
+(soort_NA <-
   gewicht_NA_of_0_ruw %>% 
-  filter(TAXONAANTAL == 1) %>% 
+  filter(round(TAXONAANTAL/METI_DILUTION_FACTOR) == 1) %>% 
   pull(Soort) %>% 
-  unique()
+  unique())
 
 if (length(soort_NA) > 0) {
   data_lengte <-
     data_recent %>% 
     filter(Soort %in% soort_NA,
-           !is.na(TAXONLEN)) %>% 
-    select(Soort, TAXONAANTAL, TAXONGEW, TAXONLEN)
+           !is.na(TAXONLEN),
+           !is.na(TAXONGEW)) %>% 
+    select(Soort, TAXONAANTAL, TAXONGEW, TAXONLEN, METI_DILUTION_FACTOR) %>% 
+    mutate(TAXONAANTAL = TAXONAANTAL/METI_DILUTION_FACTOR,
+           TAXONGEW = TAXONGEW/METI_DILUTION_FACTOR)
   
   data_lengte %>% 
     ggplot(aes(TAXONLEN, TAXONGEW)) +
@@ -219,37 +242,47 @@ if (length(soort_NA) > 0) {
     summarise(int = coef(lm(log(TAXONGEW)~log(TAXONLEN)))[1],
               slope = coef(lm(log(TAXONGEW)~log(TAXONLEN)))[2]) %>% 
     ungroup()
-
+  
   datum_soort <-
-  data_recent %>% 
-  mutate(gewicht = if_else(is.na(TAXONGEW), 
-                                  TAXONTOTGEW, TAXONGEW)) %>% 
-  select(Gebiedcode, Gebiednaam, Begindatum, Soort, aantal = TAXONAANTAL, gewicht) %>% 
-  filter(str_c(Gebiedcode, Begindatum, Soort) %in% unique(str_c(gewicht_NA_of_0_ruw$Gebiedcode, gewicht_NA_of_0_ruw$Begindatum, gewicht_NA_of_0_ruw$Soort))) %>% 
-  drop_na() %>% 
-  group_by(Gebiedcode, Gebiednaam, Begindatum, Soort) %>% 
-  summarise(across(everything(), sum)) %>% 
-  ungroup()
-
-
-gewicht_NA <-
-  gewicht_NA_of_0_ruw %>% 
-  select(MetingPivotKey, Gebiedcode, Gebiednaam, Begindatum, Month, Year, Methodenaam, 
-         TaxonKey, Soort, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN) %>% 
-  left_join(datum_soort) %>% 
-  left_join(regressie_lengte) %>% 
-  replace_na(list(aantal = 0, gewicht = 0)) %>% 
-  mutate(prop_aantal = TAXONAANTAL/aantal,
-         gewicht_imputed = 
-           case_when(
-             TAXONAANTAL > 1 ~ gewicht*prop_aantal,
-             TRUE ~ exp(int + slope*log(TAXONLEN))
-           ))
-
-write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
-                # NA_aantal = aantal_NA_of_0_ruw,
-                NA_gewicht = gewicht_NA),
-           path = str_c(pad_data, "controle/controle_NA_aantal_of_gewicht_ankerkuil.xlsx"))
+    data_recent %>% 
+    mutate(gewicht = if_else(is.na(TAXONGEW), 
+                             TAXONTOTGEW, TAXONGEW)) %>% 
+    select(Gebiedcode, Gebiednaam, Begindatum, Soort, aantal = TAXONAANTAL, gewicht) %>% 
+    filter(str_c(Gebiedcode, Begindatum, Soort) %in% unique(str_c(gewicht_NA_of_0_ruw$Gebiedcode, gewicht_NA_of_0_ruw$Begindatum, gewicht_NA_of_0_ruw$Soort))) %>% 
+    drop_na() %>% 
+    group_by(Gebiedcode, Gebiednaam, Begindatum, Soort) %>% 
+    summarise(across(everything(), sum)) %>% 
+    ungroup()
+  
+  
+  gewicht_NA <-
+    gewicht_NA_of_0_ruw %>% 
+    select(MetingPivotKey, Gebiedcode, Gebiednaam, Begindatum, Month, Year, Methodenaam, 
+           TaxonKey, Soort, TAXONAANTAL, TAXONGEW, TAXONTOTGEW, TAXONLEN, METI_DILUTION_FACTOR) %>% 
+    left_join(datum_soort) %>% 
+    left_join(regressie_lengte) %>% 
+    replace_na(list(aantal = 0, gewicht = 0)) %>% 
+    mutate(prop_aantal = TAXONAANTAL/aantal,
+           # gewicht_imputed =
+           #   case_when(
+           #     # round(TAXONAANTAL/METI_DILUTION_FACTOR) > 1 | is.na(TAXONLEN) ~ gewicht*prop_aantal,
+           #     TAXONAANTAL > 1 ~ gewicht*prop_aantal,
+           #     TRUE ~ exp(int + slope*log(TAXONLEN))
+           #   ),
+           gewicht_imputed = 
+             case_when(
+               (!is.na(METI_DILUTION_FACTOR) & round(TAXONAANTAL/METI_DILUTION_FACTOR)) > 1 | is.na(TAXONLEN) ~ gewicht*prop_aantal,
+               is.na(METI_DILUTION_FACTOR) & TAXONAANTAL == 1 ~ exp(int + slope*log(TAXONLEN)),
+               TRUE ~ exp(int + slope*log(TAXONLEN))*METI_DILUTION_FACTOR
+             ))
+  
+  if (!dir.exists(str_c(pad_data, "controle"))){
+    dir.create(str_c(pad_data, "controle"))
+  }
+  write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
+    # NA_aantal = aantal_NA_of_0_ruw,
+    NA_gewicht = gewicht_NA),
+    path = str_c(pad_data, "controle/controle_NA_aantal_of_gewicht_ankerkuil.xlsx"))
 }
 
 ```
@@ -317,6 +350,16 @@ dat_NA <-
   data_per_datum %>% 
   filter(is.na(aantal) | is.na(gewicht))
 
+# if (length(dat_NA) > 0) {
+#   if (!dir.exists(str_c(pad_data, "controle"))){
+#     dir.create(str_c(pad_data, "controle"))
+#   }
+#   write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
+#     # NA_aantal = aantal_NA_of_0_ruw,
+#     NA_impute = dat_NA),
+#     path = str_c(pad_data, "controle/controle_NA_na_imputation.xlsx"))
+# }
+
 ```
 
 
@@ -324,7 +367,7 @@ dat_NA <-
 
 campagnes <- 
   data_per_datum %>% 
-  select(locatie, jaar, maand, seizoen, getijde) %>% 
+  select(locatie, jaar, maand, seizoen, getijde, uren, volume) %>% 
   distinct()
 camp_tot <-
   campagnes %>% 
@@ -365,10 +408,12 @@ uniek_aantal_of_gewicht_inv <-
   filter(str_detect(str_to_lower(soort), "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat"))
 
 
+if (!dir.exists(str_c(pad_data, "controle"))){
+  dir.create(str_c(pad_data, "controle"))
+}
 write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
-                NA_aantal = aantal_NA_of_0_ruw,
-                NA_gewicht = gewicht_NA_of_0_ruw),
-           path = str_c(pad_data, "controle/controle_NA_aantal_of_gewicht_ankerkuil.xlsx"))
+                NA_impute = uniek_aantal_of_gewicht_vis),
+           path = str_c(pad_data, "controle/controle_NA_aantal_gewicht_na_imputation.xlsx"))
 
 
 (uniek_aantal_of_gewicht_historisch <-
@@ -500,6 +545,11 @@ soorten_totaal_aanwezig <-
 # zwemkrab <-
 #   data_per_datum %>% 
 #   filter(str_detect(soort, "zwemkrab"))
+
+write_xlsx(list(nieuwe_soorten = 
+                  data_per_datum %>% 
+                  filter(soort %in% unieke_soorten_recent_aanwezig)),
+           path = str_c(pad_data, "nieuwe_soorten_ankerkuil.xlsx"))
 
 ```
 

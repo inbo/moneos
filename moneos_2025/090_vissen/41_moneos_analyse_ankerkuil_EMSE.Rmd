@@ -473,7 +473,8 @@ aantal_soorten_seizoen_locatie %>%
   facet_grid(seizoen ~ locatie) +
   theme(strip.text = element_text(size = 12))
 
-ggsave(paste0(pad_figuren, "aantal_soorten_seizoen_locatie.jpg"), width = 10, height = 8)
+ggsave(paste0(pad_figuren, "aantal_soorten_seizoen_locatie.jpg"), width = 10, height = 8,
+       create.dir = TRUE)
 
 
 aantal_soorten_seizoen <- 
@@ -508,7 +509,8 @@ aantal_soorten_seizoen %>%
        fill = "jaar",
        color = "jaar")
 
-ggsave(paste0(pad_figuren, "aantal_soorten_seizoen.jpg"), width = 10, height = 5)
+ggsave(paste0(pad_figuren, "aantal_soorten_seizoen.jpg"), width = 10, height = 5,
+       create.dir = TRUE)
 
 
 aantal_soorten_locatie <- 
@@ -559,7 +561,8 @@ aantal_soorten_locatie %>%
        fill = "jaar",
        color = "jaar")
 
-ggsave(paste0(pad_figuren, "aantal_soorten_locatie.jpg"), width = 12, height = 5)
+ggsave(paste0(pad_figuren, "aantal_soorten_locatie.jpg"), width = 12, height = 5,
+       create.dir = TRUE)
 
 
 aantal_soorten_totaal <- 
@@ -584,7 +587,8 @@ aantal_soorten_totaal %>%
   guides(fill="none",
          color = "none")
 
-ggsave(paste0(pad_figuren, "aantal_soorten_totaal.jpg"), width = 6, height = 4)
+ggsave(paste0(pad_figuren, "aantal_soorten_totaal.jpg"), width = 6, height = 4,
+       create.dir = TRUE)
 
 
 sheets_figuren[["aantal_soorten_seizoen_locatie"]] <- 
@@ -737,18 +741,18 @@ relatief_aantal_laatste_jaar <-
   data_ankerkuil %>% 
   filter(jaar == laatste_jaar) %>% 
   group_by(seizoen, locatie) %>%
-  mutate(relatief_aantal_laatste_jaar = aantal/sum(aantal),
-         relatief_gewicht_laatste_jaar = gewicht/sum(gewicht)) %>% 
+  mutate(relatief_aantal_laatste_jaar = aantal/sum(aantal, na.rm = TRUE),
+         relatief_gewicht_laatste_jaar = gewicht/sum(gewicht, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(soort) %>% 
-  mutate(soort2 = ifelse(any(relatief_aantal_laatste_jaar >= prop_lim) | any(relatief_gewicht_laatste_jaar >= prop_lim), soort, "rest")) %>% 
+  mutate(soort2 = ifelse(any(relatief_aantal_laatste_jaar[!is.na(relatief_aantal_laatste_jaar)] >= prop_lim) | any(relatief_gewicht_laatste_jaar[!is.na(relatief_gewicht_laatste_jaar)] >= prop_lim), soort, "rest")) %>% 
   ungroup() %>% 
   group_by(seizoen, locatie, soort2) %>% 
-  summarise(aantal = sum(aantal)) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(seizoen, locatie) %>% 
   mutate(soort2 = soort2,
-         aantal = round(aantal/sum(aantal)*100)) %>% 
+         aantal = round(aantal/sum(aantal, na.rm = TRUE)*100)) %>% 
   ungroup() %>% 
   rename(soort = soort2) %>% 
   mutate(soort = factor(soort, 
@@ -790,7 +794,8 @@ relatief_aantal_laatste_jaar %>%
     # legend.position = "bottom",
         legend.title = element_blank())
 
-ggsave(paste0(pad_figuren, "relatief_aantal_gevangen_individuen.jpg"))
+ggsave(paste0(pad_figuren, "relatief_aantal_gevangen_individuen.jpg"),
+       create.dir = TRUE)
 
 ```
 
@@ -803,18 +808,18 @@ relatief_gewicht_laatste_jaar <-
   data_ankerkuil %>% 
   filter(jaar == laatste_jaar) %>% 
   group_by(seizoen, locatie) %>%
-  mutate(relatief_aantal_laatste_jaar = aantal/sum(aantal),
-         relatief_gewicht_laatste_jaar = gewicht/sum(gewicht)) %>% 
+  mutate(relatief_aantal_laatste_jaar = aantal/sum(aantal, na.rm = TRUE),
+         relatief_gewicht_laatste_jaar = gewicht/sum(gewicht, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(soort) %>% 
-  mutate(soort2 = ifelse(any(relatief_aantal_laatste_jaar >= prop_lim) | any(relatief_gewicht_laatste_jaar >= prop_lim), soort, "rest")) %>% 
+  mutate(soort2 = ifelse(any(relatief_aantal_laatste_jaar[!is.na(relatief_aantal_laatste_jaar)] >= prop_lim) | any(relatief_gewicht_laatste_jaar[!is.na(relatief_gewicht_laatste_jaar)] >= prop_lim), soort, "rest")) %>% 
   ungroup() %>% 
   group_by(seizoen, locatie, soort2) %>% 
-  summarise(gewicht = sum(gewicht)) %>% 
+  summarise(gewicht = sum(gewicht, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(seizoen, locatie) %>% 
   mutate(soort2 = soort2,
-         gewicht = round(gewicht/sum(gewicht)*100)) %>% 
+         gewicht = round(gewicht/sum(gewicht, na.rm = TRUE)*100)) %>% 
   ungroup() %>% 
   rename(soort = soort2) %>% 
   mutate(soort = factor(soort, 
@@ -856,7 +861,8 @@ relatief_gewicht_laatste_jaar %>%
     # legend.position = "bottom",
         legend.title = element_blank())
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_gevangen_individuen.jpg"))
+ggsave(paste0(pad_figuren, "relatieve_biomassa_gevangen_individuen.jpg"),
+       create.dir = TRUE)
 
 ```
 
@@ -889,10 +895,10 @@ gemiddeld_diversiteit_EMSE <-
   filter(in_indeling) %>% 
   filter(aantal > 0) %>% 
   group_by(jaar, scheldezone, soort, salgroep, dieet, indeling) %>%
-  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
+  summarise(aantal_per_kub = mean(aantal_per_kub, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(jaar, scheldezone, salgroep, dieet, indeling) %>%
-  mutate(relatief_aantal = aantal_per_kub/sum(aantal_per_kub)) %>% 
+  mutate(relatief_aantal = aantal_per_kub/sum(aantal_per_kub, na.rm = TRUE)) %>% 
   summarise(N = n(),
             H_sh = -sum(relatief_aantal*log(relatief_aantal)),
             H_gs = 1-sum(relatief_aantal^2),
@@ -928,7 +934,8 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_marien.jpg"), width = 10, height = 6)
+ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_marien.jpg"), width = 10, height = 6,
+       create.dir = TRUE)
 
 gemiddeld_diversiteit_EMSE %>% 
   filter(str_detect(salgroep, "diadr")) %>% 
@@ -951,7 +958,8 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_diadroom.jpg"), width = 10, height = 6)
+ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_diadroom.jpg"), width = 10, height = 6,
+       create.dir = TRUE)
 
 gemiddeld_diversiteit_EMSE %>% 
   filter(str_detect(salgroep, "zoet")) %>% 
@@ -974,7 +982,8 @@ gemiddeld_diversiteit_EMSE %>%
   facet_grid(indeling ~ scheldezone, scales = "free_y") +
   theme(axis.text = element_text(size = 8))
 
-ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_zoet.jpg"), width = 10, height = 6)
+ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_zoet.jpg"), width = 10, height = 6,
+       create.dir = TRUE)
 
 ```
 
@@ -989,12 +998,12 @@ relatieve_aantallen_EMSE <-
   filter(in_indeling) %>% 
   filter(aantal > 0) %>% 
   group_by(jaar, scheldezone, soort, salgroep, dieet, indeling) %>%
-  summarise(aantal_per_kub = mean(aantal_per_kub),
-            gewicht_per_kub = mean(gewicht_per_kub)) %>% 
+  summarise(aantal_per_kub = mean(aantal_per_kub, na.rm = TRUE),
+            gewicht_per_kub = mean(gewicht_per_kub, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(jaar, scheldezone, salgroep, dieet, indeling) %>%
-  mutate(aantal_per_kub_tot = sum(aantal_per_kub),
-         gewicht_per_kub_tot = sum(gewicht_per_kub)) %>% 
+  mutate(aantal_per_kub_tot = sum(aantal_per_kub, na.rm = TRUE),
+         gewicht_per_kub_tot = sum(gewicht_per_kub, na.rm = TRUE)) %>% 
   ungroup() %>% 
   mutate(relatief_aantal = aantal_per_kub/aantal_per_kub_tot,
          relatief_gewicht = gewicht_per_kub/gewicht_per_kub_tot) %>% 
@@ -1004,8 +1013,8 @@ relatieve_aantallen_EMSE <-
   mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
   ungroup() %>% 
   group_by(jaar, scheldezone, soort, salgroep, dieet, indeling) %>%
-  summarise(aantal_per_kub_tot = mean(aantal_per_kub_tot),
-            gewicht_per_kub_tot = mean(gewicht_per_kub_tot),
+  summarise(aantal_per_kub_tot = mean(aantal_per_kub_tot, na.rm = TRUE),
+            gewicht_per_kub_tot = mean(gewicht_per_kub_tot, na.rm = TRUE),
             aantal_per_kub = sum(aantal_per_kub),
             gewicht_per_kub = sum(gewicht_per_kub),
             relatief_aantal = aantal_per_kub/aantal_per_kub_tot,
@@ -1080,7 +1089,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_marien.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_marien.jpg"), width = 14, height = 7, bg = "white",
+       create.dir = TRUE)
 
 
 data_split <-
@@ -1139,7 +1149,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.1,1,0.05)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
  
-ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_diadroom.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_diadroom.jpg"), width = 14, height = 7, bg = "white",
+       create.dir = TRUE)
 
 
 data_split <-
@@ -1198,7 +1209,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_zoet.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_zoet.jpg"), width = 14, height = 7, bg = "white",
+       create.dir = TRUE)
 
 ```
 
@@ -1264,7 +1276,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_marien.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_marien.jpg"), width = 14, height = 7, bg = "white",
+       create.dir = TRUE)
 
 
 data_split <-
@@ -1324,7 +1337,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.1,1,0.05)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_diadroom.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_diadroom.jpg"), width = 14, height = 7, bg = "white",
+       create.dir = TRUE)
 
 
 data_split <-
@@ -1384,7 +1398,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_zoet.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_zoet.jpg"), width = 14, height = 7, bg = "white",
+       create.dir = TRUE)
 
 ```
 
@@ -1415,8 +1430,8 @@ data_sleutelsoorten_EMSE <-
   left_join(sleutelsoorten_EMSE %>% select(soort, scheldezone_rap = scheldezone)) %>%
   #  filter(map2_lgl(scheldezone_rap, scheldezone, ~str_detect(.x, .y))) %>% 
   group_by(jaar, soort, salgroep, scheldezone) %>% 
-  summarise(aantal_per_kub = mean(aantal_per_kub),
-            gewicht_per_kub = mean(gewicht_per_kub)) %>% 
+  summarise(aantal_per_kub = mean(aantal_per_kub, na.rm = TRUE),
+            gewicht_per_kub = mean(gewicht_per_kub, na.rm = TRUE)) %>% 
   ungroup() %>% 
   mutate(scheldezone = factor(scheldezone, levels = levels_scheldezone),
          scheldezone = recode_factor(scheldezone, !!!levels_scheldezone_full))
@@ -1445,7 +1460,8 @@ data_sleutelsoorten_EMSE %>%
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1),
         legend.position = "top")
 
-ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marien.jpg"), width = 6, height = 8)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marien.jpg"), width = 6, height = 8,
+       create.dir = TRUE)
 
 
 data_sleutelsoorten_EMSE %>% 
@@ -1464,7 +1480,8 @@ data_sleutelsoorten_EMSE %>%
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1),
         legend.position = "top")
 
-ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadroom.jpg"), width = 7, height = 7)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadroom.jpg"), width = 7, height = 7,
+       create.dir = TRUE)
 
 
 data_sleutelsoorten_EMSE %>% 
@@ -1484,7 +1501,8 @@ data_sleutelsoorten_EMSE %>%
   theme(axis.text.x = element_text(angle = 90, vjust = 0.25, hjust = 1),
         legend.position = "top")
 
-ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.jpg"), width = 6, height = 8)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.jpg"), width = 6, height = 8,
+       create.dir = TRUE)
 
 ```
 
@@ -1499,12 +1517,12 @@ relatieve_aantallen_salgroep <-
   filter(in_indeling) %>% 
   filter(aantal > 0) %>% 
   group_by(jaar, scheldezone, soort, salgroep) %>%
-  summarise(aantal_per_kub = mean(aantal_per_kub),
-            gewicht_per_kub = mean(gewicht_per_kub)) %>% 
+  summarise(aantal_per_kub = mean(aantal_per_kub, na.rm = TRUE),
+            gewicht_per_kub = mean(gewicht_per_kub, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(jaar, scheldezone, salgroep) %>%
-  mutate(aantal_per_kub_tot = sum(aantal_per_kub),
-         gewicht_per_kub_tot = sum(gewicht_per_kub)) %>% 
+  mutate(aantal_per_kub_tot = sum(aantal_per_kub, na.rm = TRUE),
+         gewicht_per_kub_tot = sum(gewicht_per_kub, na.rm = TRUE)) %>% 
   ungroup() %>% 
   mutate(relatief_aantal = aantal_per_kub/aantal_per_kub_tot,
          relatief_gewicht = gewicht_per_kub/gewicht_per_kub_tot) %>% 
@@ -1514,10 +1532,10 @@ relatieve_aantallen_salgroep <-
   mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
   ungroup() %>% 
   group_by(jaar, scheldezone, soort, salgroep) %>%
-  summarise(aantal_per_kub_tot = mean(aantal_per_kub_tot),
-            gewicht_per_kub_tot = mean(gewicht_per_kub_tot),
-            aantal_per_kub = sum(aantal_per_kub),
-            gewicht_per_kub = sum(gewicht_per_kub),
+  summarise(aantal_per_kub_tot = mean(aantal_per_kub_tot, na.rm = TRUE),
+            gewicht_per_kub_tot = mean(gewicht_per_kub_tot, na.rm = TRUE),
+            aantal_per_kub = sum(aantal_per_kub, na.rm = TRUE),
+            gewicht_per_kub = sum(gewicht_per_kub, na.rm = TRUE),
             relatief_aantal = aantal_per_kub/aantal_per_kub_tot,
             relatief_gewicht = gewicht_per_kub/gewicht_per_kub_tot) %>%
   ungroup() %>% 
@@ -1596,7 +1614,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 14, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 14, height = 8, bg = "white",
+       create.dir = TRUE)
 
 
 ggp_all <-
@@ -1628,7 +1647,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 14, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 14, height = 8, bg = "white",
+       create.dir = TRUE)
 
 ```
 
@@ -1641,12 +1661,12 @@ relatieve_aantallen_dieet <-
   filter(in_indeling) %>% 
   filter(aantal > 0) %>% 
   group_by(jaar, scheldezone, soort, dieet) %>%
-  summarise(aantal_per_kub = mean(aantal_per_kub),
-            gewicht_per_kub = mean(gewicht_per_kub)) %>% 
+  summarise(aantal_per_kub = mean(aantal_per_kub, na.rm = TRUE),
+            gewicht_per_kub = mean(gewicht_per_kub, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(jaar, scheldezone, dieet) %>%
-  mutate(aantal_per_kub_tot = sum(aantal_per_kub),
-         gewicht_per_kub_tot = sum(gewicht_per_kub)) %>% 
+  mutate(aantal_per_kub_tot = sum(aantal_per_kub, na.rm = TRUE),
+         gewicht_per_kub_tot = sum(gewicht_per_kub, na.rm = TRUE)) %>% 
   ungroup() %>% 
   mutate(relatief_aantal = aantal_per_kub/aantal_per_kub_tot,
          relatief_gewicht = gewicht_per_kub/gewicht_per_kub_tot) %>% 
@@ -1656,10 +1676,10 @@ relatieve_aantallen_dieet <-
   mutate(soort = ifelse(any(max_aantal) | any(max_gewicht), soort, "rest")) %>%
   ungroup() %>% 
   group_by(jaar, scheldezone, soort, dieet) %>%
-  summarise(aantal_per_kub_tot = mean(aantal_per_kub_tot),
-            gewicht_per_kub_tot = mean(gewicht_per_kub_tot),
-            aantal_per_kub = sum(aantal_per_kub),
-            gewicht_per_kub = sum(gewicht_per_kub),
+  summarise(aantal_per_kub_tot = mean(aantal_per_kub_tot, na.rm = TRUE),
+            gewicht_per_kub_tot = mean(gewicht_per_kub_tot, na.rm = TRUE),
+            aantal_per_kub = sum(aantal_per_kub, na.rm = TRUE),
+            gewicht_per_kub = sum(gewicht_per_kub, na.rm = TRUE),
             relatief_aantal = aantal_per_kub/aantal_per_kub_tot,
             relatief_gewicht = gewicht_per_kub/gewicht_per_kub_tot) %>%
   ungroup() %>% 
@@ -1770,7 +1790,8 @@ plot_grid(ggp_all,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 14, height = 8, bg = "white")
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 14, height = 8, bg = "white",
+       create.dir = TRUE)
 
 ```
 
@@ -1785,10 +1806,10 @@ gemiddeld_diversiteit_salgroep <-
   filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   filter(aantal > 0) %>% 
   group_by(jaar, scheldezone, soort, salgroep) %>%
-  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
+  summarise(aantal_per_kub = mean(aantal_per_kub, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(jaar, scheldezone, salgroep) %>%
-  mutate(relatief_aantal = aantal_per_kub/sum(aantal_per_kub)) %>% 
+  mutate(relatief_aantal = aantal_per_kub/sum(aantal_per_kub, na.rm = TRUE)) %>% 
   summarise(N = n(),
             H_sh = -sum(relatief_aantal*log(relatief_aantal)),
             H_gs = 1-sum(relatief_aantal^2),
@@ -1821,7 +1842,8 @@ gemiddeld_diversiteit_salgroep %>%
   theme(axis.text = element_text(size = 8),
         axis.text.x = element_text(angle = 90, vjust = 0.5))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_salgroep.jpg"), width = 10, height = 7)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_salgroep.jpg"), width = 10, height = 7,
+       create.dir = TRUE)
 
 ```
 
@@ -1835,10 +1857,10 @@ gemiddeld_diversiteit_dieet <-
   filter(aantal > 0,
          !is.na(dieet)) %>% 
   group_by(jaar, scheldezone, soort, dieet) %>%
-  summarise(aantal_per_kub = mean(aantal_per_kub)) %>% 
+  summarise(aantal_per_kub = mean(aantal_per_kub, na.rm = TRUE)) %>% 
   ungroup() %>% 
   group_by(jaar, scheldezone, dieet) %>%
-  mutate(relatief_aantal = aantal_per_kub/sum(aantal_per_kub)) %>% 
+  mutate(relatief_aantal = aantal_per_kub/sum(aantal_per_kub, na.rm = TRUE)) %>% 
   summarise(N = n(),
             H_sh = -sum(relatief_aantal*log(relatief_aantal)),
             H_gs = 1-sum(relatief_aantal^2),
@@ -1871,7 +1893,8 @@ gemiddeld_diversiteit_dieet %>%
   theme(axis.text = element_text(size = 8),
         axis.text.x = element_text(angle = 90, vjust = 0.5))
 
-ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_dieet.jpg"), width = 7, height = 6)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_dieet.jpg"), width = 7, height = 6,
+       create.dir = TRUE)
 
 ```
 
