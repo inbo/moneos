@@ -83,7 +83,7 @@ ontbrekendeZzijriv <- read_excel(paste0(pad_data, "RP_SP22_ecotoopgrenzen.xlsx")
   dplyr::select(LocatieCode = Staal, fysiotoop = BenthosEcotoop, Zvooraf = 'Z-waarde', POINT_X, POINT_Y) %>% 
   dplyr::mutate(LocatieCode = ifelse(nchar(LocatieCode) == 6, str_replace(LocatieCode, "_", "_0"), LocatieCode))
 
-taxa <- read_excel(paste0(pad_data, "Soortenlijst_macrozoobenthos_2008_2022.xlsx"), sheet = "Blad1")
+taxa <- read_excel(paste0(pad_data, "Soortenlijst_macrozoobenthos_2008_heden.xlsx"), sheet = "Blad1")
 
 B22 <- loc22 %>% 
   left_join(benthos22, by = "LocatieCode") %>% 
