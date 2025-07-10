@@ -1,0 +1,252 @@
+---
+params:
+  hoofdstuk: "080_hyperbenthos"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "Hyperbenthos data"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(rprojroot)
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(writexl)
+library(RODBC)
+library(ggpubr)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r data}
+#eerst recente kopie van op Amazon op G gezet
+MDB <- odbcConnectAccess2007("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/Benthos/HyperEpibenthos/DATA/HYPERBENTHOS_SCHELDEdec2024.accdb")
+
+# querry met mulitply (substaal nr) al gebruikt voor aantal, WW en AFDW, daardoor is AFDW niet meer DW-AW in uiteindelijke tabel!
+sqlCode <- "
+SELECT tblSample.campagne, tblStaalnameGebied.Naam AS gebied, tblSample.event_name, tblSample.datum, tblHyperBiot.fractie, tblTaxaList.hoger_taxon, tblHyperBiot.soort, tblTaxaList.vis_NL, tblTaxaList.exoot, Sum([aantal]*[multiply]) AS n, Sum([WW]*[multiply]) AS WWs, tblHyperBiot.DW, tblHyperBiot.AW, Sum([tblHyperBiot].[multiply]*([tblHyperBiot].[DW]-[tblHyperBiot].[AW])) AS AFDW, tblSample.materiaal, tblHyperBiot.Invoerder, tblHyperBiot.Aanmaakdatum, tblHyperBiot.[Laatst gewijzigd]
+FROM tblStaalnameGebied INNER JOIN (tblCampagne INNER JOIN (tblTaxaList INNER JOIN (tblSample INNER JOIN tblHyperBiot ON (tblSample.Id = tblHyperBiot.IdSample) AND (tblSample.repeat = tblHyperBiot.repeat)) ON tblTaxaList.soortnaam = tblHyperBiot.soort) ON tblCampagne.campagnecode = tblSample.campagne) ON tblStaalnameGebied.Id = tblSample.IdStaalnameGebied
+GROUP BY tblSample.campagne, tblStaalnameGebied.Naam, tblSample.event_name, tblSample.datum, tblHyperBiot.fractie, tblTaxaList.hoger_taxon, tblHyperBiot.soort, tblTaxaList.vis_NL, tblTaxaList.exoot, tblHyperBiot.WW, tblHyperBiot.DW, tblHyperBiot.AW, tblSample.materiaal, tblHyperBiot.Invoerder, tblHyperBiot.Aanmaakdatum, tblHyperBiot.[Laatst gewijzigd], tblTaxaList.taxonredux, tblSample.repeat, tblHyperBiot.contaminatie
+HAVING (((tblTaxaList.taxonredux)='in') AND ((tblSample.repeat)=1) AND ((tblHyperBiot.contaminatie) Is Null));
+"
+#, tblTaxaList.exoot tblTaxaList.exoot
+
+tel.0 <- sqlQuery(channel = MDB, sqlCode, stringsAsFactors=FALSE)
+moniloc <- c("Paardenschor","St-Anna","Ballooi","Dendermonde","Brede Schoren","Rupel")
+
+#data van BoVO campagnes, van 6 stations, dubbelcampagne van 2014 wegdoen
+tel <- tel.0 %>%
+  dplyr::mutate(Jaar = year(datum),
+                Maand= month(datum)) %>% 
+  dplyr::mutate(gebied = if_else(gebied == "Konkelschoor - KS" & Jaar == 2013, "Brede Schoren", gebied),
+                gebied = if_else(gebied == "Vlassenbroek" & Jaar == 2013, "Dendermonde", gebied)) %>% 
+  dplyr::filter(gebied %in% moniloc, str_detect(campagne, "BoVo")) %>%
+  dplyr::filter(!str_detect(campagne,"_1")) %>% 
+  dplyr::filter(Jaar!=2024) %>% 
+  rename(WW = WWs)
+
+
+jaarorder <- c("2013", "2014", "2015", "2016","2017","2018","2019", "2020", "2021", "2022", "2023")
+
+
+tel %>%
+  distinct(datum, gebied, Maand, Jaar) %>% 
+  count(gebied, Maand, Jaar) %>%
+  dplyr::mutate(Jaar = ordered(Jaar, levels=jaarorder)) %>% 
+  pivot_wider(names_from = Maand, values_from= n) %>% 
+  knitr::kable()
+
+
+```
+
+
+
+```{r}
+# Correcties via groepsregressies WW-AFDW en n-AFDW voor niet-outliers, etc
+tel.1  <- tel %>%
+  group_by(soort) %>%
+  mutate(
+    # Calculate WW/AFDW ratio
+    ratio_WW_AFDW = WW / AFDW,
+    
+    # Calculate species-level quantiles and IQR for WW/AFDW ratio
+    Q1_ratio = as.numeric(quantile(ratio_WW_AFDW, 0.25, na.rm = TRUE)),
+    Q3_ratio = as.numeric(quantile(ratio_WW_AFDW, 0.75, na.rm = TRUE)),
+    IQR_ratio = Q3_ratio - Q1_ratio,
+    lower_bound_ratio = Q1_ratio - 1.5 * IQR_ratio,
+    upper_bound_ratio = Q3_ratio + 1.5 * IQR_ratio,
+    
+    # Define outliers for WW/AFDW ratio
+    outlier_AFDW_WW = ifelse(
+      ratio_WW_AFDW < lower_bound_ratio | ratio_WW_AFDW > upper_bound_ratio, 
+      "Outlier", 
+      "Non-Outlier"
+    ),
+    
+    # Identify inliers for slope calculation
+    inlier_WW_AFDW = !is.na(ratio_WW_AFDW) & 
+      ratio_WW_AFDW >= lower_bound_ratio & 
+      ratio_WW_AFDW <= upper_bound_ratio
+  ) %>%
+  mutate(
+    # Fit linear model for inliers only and extract slope
+    slopeAFDW_WW = if (any(inlier_WW_AFDW, na.rm = TRUE)) {
+      as.numeric(coef(lm(AFDW ~ WW, data = cur_data()[inlier_WW_AFDW, , drop = FALSE]))[2])
+    } else {
+      NA_real_
+    }
+  ) %>%
+  ungroup() %>%
+  group_by(soort) %>%
+  mutate(
+    # Calculate AFDW/n
+    ratio_AFDW_n = AFDW / n,
+    
+    # Calculate species-level quantiles and IQR for AFDW/n
+    Q1_ratio_n = as.numeric(quantile(ratio_AFDW_n, 0.25, na.rm = TRUE)),
+    Q3_ratio_n = as.numeric(quantile(ratio_AFDW_n, 0.75, na.rm = TRUE)),
+    IQR_ratio_n = Q3_ratio_n - Q1_ratio_n,
+    lower_bound_ratio_n = Q1_ratio_n - 1.5 * IQR_ratio_n,
+    upper_bound_ratio_n = Q3_ratio_n + 1.5 * IQR_ratio_n,
+    
+    # Define outliers for AFDW/n ratio
+    outlier_AFDW_n = ifelse(
+      ratio_AFDW_n < lower_bound_ratio_n | ratio_AFDW_n > upper_bound_ratio_n, 
+      1,0),
+    inlier_AFDW_n = !is.na(ratio_AFDW_n) & 
+      ratio_AFDW_n >= lower_bound_ratio_n & 
+      ratio_AFDW_n <= upper_bound_ratio_n) %>%
+  
+  mutate(
+       slopeAFDW_n = if (any(inlier_AFDW_n, na.rm = TRUE)) {
+      as.numeric(coef(lm(AFDW ~ n, data = cur_data()[inlier_AFDW_n, , drop = FALSE]))[2])
+    } else {
+      NA_real_
+    }
+  ) %>% 
+  ungroup() %>% 
+  dplyr::mutate(AFDWcor.1 = dplyr::if_else(outlier_AFDW_WW == "Outlier" & outlier_AFDW_n == 1 & !is.na(WW) & WW !=0 & slopeAFDW_WW >0.1, WW*slopeAFDW_WW, dplyr::if_else(AFDW == 0 | AFDW<0 | is.na(AFDW) & WW !=0, WW*slopeAFDW_WW, AFDW))) %>%
+  dplyr::mutate(AFDWcor.2 = dplyr::if_else(is.na(AFDWcor.1) & WW !=0 & slopeAFDW_WW >0.1, WW*slopeAFDW_WW, AFDWcor.1)) %>% 
+  dplyr::mutate(AFDWcor.3 = dplyr::if_else(is.na(AFDWcor.2) & WW !=0 & is.na(slopeAFDW_WW), WW*0.17, AFDWcor.2)) %>% 
+  dplyr::mutate(AFDWcor.4 = dplyr::if_else(is.na(AFDWcor.3) & slopeAFDW_n>0 & n>0, n*slopeAFDW_n, AFDWcor.3)) %>%
+dplyr::mutate(AFDWcor.5 = dplyr::if_else(outlier_AFDW_WW == "Outlier" & soort == "Dicentrarchus labrax" & !is.na(WW) & !is.na(AFDW), WW*slopeAFDW_WW, AFDWcor.4)) %>% 
+  dplyr::mutate(AFDWcor.7 = dplyr::if_else(WW/AFDWcor.5 < 2 & slopeAFDW_WW > 0.1 & !is.na(slopeAFDW_WW) & !is.na(WW), WW*slopeAFDW_WW, AFDWcor.5)) %>%
+  dplyr::mutate(AFDWcor.8 = dplyr::if_else(WW/AFDWcor.7 > 15 & slopeAFDW_WW > 0.1 & !is.na(WW) & !is.na(slopeAFDW_WW) & outlier_AFDW_n == 0, WW*slopeAFDW_WW, AFDWcor.7)) %>%
+  dplyr::mutate(AFDWcor.9 = dplyr::if_else(WW < AFDWcor.8 & !is.na(WW) & !is.na(slopeAFDW_WW) & slopeAFDW_WW > 0.1, WW*slopeAFDW_WW, AFDWcor.8))
+    #relocate(c(AFDWcor.4, AFDWcor.5, AFDWcor.6, AFDWcor.7, AFDWcor.8, AFDWcor.9, soort, outlier_AFDW_WW, outlier_AFDW_n), .after = AFDW)
+
+telc.1 <- tel.1 %>%
+  dplyr::select(campagne, gebied, event_name, datum, fractie, hoger_taxon, soort, vis_NL, exoot, n, WW, DW, AW, AFDW = AFDWcor.9, materiaal, Invoerder, Aanmaakdatum, `Laatst gewijzigd`, Jaar, Maand) 
+```
+
+```{r check 2: dubbels, vreemde 0-en etc}
+#data die moeten w aangepast in hyperdatabase
+tel.2 <- tel.1 %>% 
+  dplyr::filter(AFDW != AFDWcor.9 | n == 0 | is.na(n)) %>% 
+  dplyr::select(campagne, gebied, datum, fractie, soort, n, WW, DW, AW, AFDW, AFDWcorrected = AFDWcor.9, materiaal, Invoerder, Aanmaakdatum)
+
+file_name1 <-
+  paste0(pad_data, "Hyperbenthos_records_NeedRevision", ".xlsx")
+
+
+write_xlsx(tel.2,
+           path = file_name1)
+
+```
+
+```{r om data te checken, figuren maken v ratio ww/afdw per soort}
+# Loop through each unique species and save a separate plot
+soort_lijst <- unique(tel.1$soort)
+
+for (soort in soort_lijst) {
+  # Subset data for the current species
+  soort_data <- tel.1[tel.1$soort == soort, ] 
+  
+  # Identify outliers using the 1.5 * IQR rule
+  soort_data$ratio <- soort_data$WW / soort_data$AFDWcor.9
+  Q1 <- quantile(soort_data$ratio, 0.25, na.rm = TRUE)
+  Q3 <- quantile(soort_data$ratio, 0.75, na.rm = TRUE)
+  IQR <- Q3 - Q1
+  lower_bound <- Q1 - 1.5 * IQR
+  upper_bound <- Q3 + 1.5 * IQR
+  soort_data$outlier <- ifelse(soort_data$ratio < lower_bound | soort_data$ratio > upper_bound, "Outlier", "Non-Outlier")
+  
+  # Create the plot
+  plot <- ggplot(soort_data, aes(x = WW, y = AFDWcor.9, color=outlier)) +
+    geom_point() + # Add points
+    scale_color_manual(values = c("Outlier" = "red", "Non-Outlier" = "blue")) + # Color mapping
+    geom_smooth(method = "lm", se = FALSE) + # Add linear smoother
+    stat_regline_equation(aes(label = ..eq.label..), label.x.npc = "left", label.y.npc = "top") + # Add equation
+    theme_minimal() + # Use a minimal theme
+    labs(
+      title = paste("WW vs AFDW for", soort),
+      x = "Wet Weight (WW)",
+      y = "Ash-Free Dry Weight (AFDW)"
+    )
+  
+  # Save the plot to a JPG file
+  filename <- paste0("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/VNSC/Rapportage_INBO/2024/080_hyperbenthos/data/ratio_figuren_ww_afdw", "/", soort, "_plotWW_AFDW.jpg") # Create a filename
+  ggsave(filename, plot = plot, width = 6, height = 4, dpi = 300) # Save the plot
+}
+
+```
+
+
+
+data gecreëerd op `r Sys.time()`
+
+data weggeschreven naar `r paste0(pad_data, "template_data.csv")`
+
+```{r jaren}
+
+jaren <-
+  telc.1 %>% 
+  distinct(Jaar) %>% 
+  pull(Jaar)
+
+jaar_range <-
+  range(jaren)
+
+```
+
+```{r wegschrijven-data}
+file_name <-
+  paste0(pad_data, "hyperbenthos_data_revised", paste(jaar_range, collapse = "_"), ".xlsx")
+
+
+write_xlsx(telc.1,
+           path = file_name)
+```
+
+
+
+
