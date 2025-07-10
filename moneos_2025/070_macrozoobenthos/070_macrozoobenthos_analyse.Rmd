@@ -48,82 +48,27 @@ pad_data <- maak_pad(params$hoofdstuk, "data")
 pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
-source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/Function_CalculateShannonIndex.R")
+source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/MONEOS_rapportage/2022/Function_CalculateShannonIndex.R")
 
-controlelijst <- read_excel(paste0(pad_data, "Soortenlijst_macrozoobenthos_2008_2022.xlsx"),
-             sheet = "Blad1")
+controlelijst <- read_excel(paste0(pad_data, "Soortenlijst_macrozoobenthos_2008_heden.xlsx"),
+             sheet = "lijst")
+
 ```
 
 # Wormendeterminatiejaar - alleen uit te voeren als er OID zijn verwerkt
 ```{r 070-Wormendeterminatiejaar - alleen uit te voeren als er OID zijn verwerkt}
 # determinaties omzetten naar densiteit en biomassa door ze te verdelen over de Oligochaeta sp (waarvoor deze wel bekend zijn, voor de determinaties w geen biomassa of densiteit bepaald)
 
-#staalcodes waarvoor een determinatie is gebeurd
-oli_loc <- 
-  read_excel(paste0(pad_data, "Determinaties oligochaeten spatial 2020.xlsx")) %>% 
-  dplyr::filter(RaaiofRandom == "random") %>% 
-  dplyr::select(locatie=staal) %>% 
-  dplyr::distinct() %>% 
-  dplyr::mutate(del = 1)
-
-#data van Oligochaeta sp in 2020 waarvoor een determinatie is gebeurd (om te matchen met de dets)
-oli2020 <- 
-  read_excel(paste0(pad_data, "macrobenthos_data_2008_2021OID.xlsx")) %>%
-  left_join(oli_loc, by = "locatie") %>% 
-  dplyr::filter(del == 1 & soort == "Oligochaeta sp") %>% 
-  rename(soortGNOID = soort)
-
-# aantallen per wormensoort per staal van de OID
-OID2020soortstaal <-
-  read_excel(paste0(pad_data, "Determinaties oligochaeten spatial 2020.xlsx")) %>%
-  dplyr::select(volgnr, RaaiofRandom, datum, staal, fractie, leeftijd, soort) %>%  
-  dplyr::filter(RaaiofRandom == "random") %>% 
-  dplyr::group_by(staal, soort) %>% 
-  dplyr::summarise(N = length(staal))
-
-#som van wormen per locatie in de OID
-OID2020staal <- 
-  read_excel(paste0(pad_data, "Determinaties oligochaeten spatial 2020.xlsx")) %>%
-  dplyr::select(volgnr, RaaiofRandom, datum, staal, fractie, leeftijd, soort) %>% 
-  dplyr::filter(RaaiofRandom == "random") %>% 
-  dplyr::group_by(staal) %>% 
-  dplyr::summarise(Nst = length(staal))
-
-# file met fractie per wormensoort van aandeel in het OID staal
-OID <- OID2020soortstaal %>% 
-  left_join(OID2020staal, by ="staal") %>% 
-  dplyr::mutate(soortfractie = N/Nst) %>% 
-  rename(locatie = staal) %>% 
-  left_join(oli2020, by = "locatie") %>% 
-  dplyr::mutate(Densiteit = soortfractie*densiteit,
-                Biomassa = soortfractie*biomassa) %>% 
-  dplyr::filter(!is.na(fysiotoop)) %>% 
-  dplyr::select(jaar, fysiotoop, locatie, soort, densiteit=Densiteit, biomassa=Biomassa, Taxa_groep, KRWzone, Staaltype) %>% 
-  dplyr::mutate(Staaltype = "OID") %>% 
-  dplyr::mutate(biomassa = if_else(biomassa == 0, 0.0001, biomassa))
-
-#data oli determinaties toevoegen en de voormalige Oligochaeta sp weglaten
-data_mzboidvervang <- 
-  read_excel(paste0(pad_data, "macrobenthos_data_2008_2021OID.xlsx")) %>%
-  left_join(oli_loc, by = "locatie") %>% 
-  dplyr::filter(!(del == 1 & jaar == 2020 & soort == "Oligochaeta sp")) %>% 
-  dplyr::select(jaar, fysiotoop, locatie, soort, densiteit, biomassa, Taxa_groep, KRWzone, Staaltype) %>% 
-  rbind(OID)
-
-file_nameoid <-
-  paste0(pad_data, "macrobenthos_data_2008_2021_OID", ".xlsx")
-
-write_xlsx(list(macrobenthos = data_mzboidvervang),
-           path = file_nameoid)
-
+#is gebeurd in eerdere fase zie G:\\PRJ_SCHELDE\Benthos\Wet weight biomassa en conversies\02-Data.Cleaning.Moneos
 
 ```
 
 # Basis data file import
 ```{r 070-data}
-#GEEN OID jaar, dus trends zonder soortniveau Oligochaeta
+#WEL OID jaar, dus trends met soortniveau Oligochaeta
+
 data_macrobenthos <- 
-  read_excel(paste0(paste0(pad_data), "macrobenthos_data_2008_2022NIETAANTELEVEREN.xlsx"), sheet = "macrobenthos") %>% 
+  read_excel(paste0(paste0(pad_data), "Macrobenthos2008_heden_2025_ANALYSE.xlsx"), sheet = "macrobenthos") %>% 
   dplyr::mutate(niveau3_hybr = recode(waterloop2, "Zeeschelde IV"= "Saliniteitsgradient", "Zeeschelde III"= "Oligohalien", "Zeeschelde II"= "Zoet lang verblijf", "Zeeschelde I"= "Zoet kort verblijf")) %>% 
   dplyr::mutate(fysiotoop = case_when(
     fysiotoop %in% c("diep subtidaal") ~ "diep subtidaal",
@@ -135,8 +80,7 @@ data_macrobenthos <-
     fysiotoop %in% c("hard substraat", "hard antropogeen") ~ "hard substraat",
     fysiotoop %in% c("nog te bepalen - inter", "onbepaald", "slik", "slik onbepaald") ~ "intertidaal indet.",
     TRUE ~ fysiotoop)) %>%
-  dplyr::filter(!is.na(tidaal)) %>%
-  dplyr::mutate(densiteit = if_else(soort != "geen" & densiteit == 0, 314, densiteit)) ## probleem van soorten waarvoor densiteit = 0, wrsch doordat geen hele ex gevonden zijn of invoerfouten. Dit geeft probleem oa bij Shannon index dus hier waarden invullen met helft laagste waarde. Om toch onderscheid te maken met die soorten waarvoor wel een 1 genoteerd werd wordt 628 gebruikt (cijfers na de komma niet, wel bij andere cf opp van steekbuis)
+  dplyr::filter(!is.na(tidaal)) 
 
 
 
@@ -235,8 +179,9 @@ tabel_staalnamelocaties <-
   dplyr::count(waterloop = niveau3_hybr, fysiotoop) %>% 
   pivot_wider(names_from = fysiotoop, 
               values_from = n,
-              values_fill = list(n = 0)) %>% 
-  dplyr::select(waterloop, `laag intertidaal`, `middelhoog/hoog intertidaal`, `diep subtidaal`, `matig diep subtidaal`, `ondiep subtidaal`,  `hard substraat`)# `subtidaal indet.`,
+              values_fill = list(n = 0)) 
+#%>% 
+#  dplyr::select(waterloop, `laag intertidaal`, `middelhoog/hoog intertidaal`, `diep subtidaal`, `matig #diep subtidaal`, `ondiep subtidaal`)# `subtidaal indet.`, ,  `hard substraat`
 
 aantal_stalen <- tabel_staalnamelocaties %>%
   dplyr::select(-waterloop) %>% 
@@ -1103,7 +1048,8 @@ ggsave(paste0(pad_figuren, "070-figuur-Shannondiv-subt-Zeeschelde.jpg"), height=
 ## koppelen met OPPS
 
 ```{r 070-oppervlakte koppelen}
-#Volledige jaren: 2001,2010, 2016, 2019, andere jaren niet voor OMES 14-19 dus niet gebruiken
+#Volledige jaren: 2001,2010, 2016, 2019, andere jaren geen ecotoop oppervlaktes voor OMES 14-19 dus niet gebruiken
+#vanaf 2023 ecotoopstelsel 2.0 dus in subtidaal laag en hoogdyn -- opletten bij koppelen want dit geeft problemen in de overgangsperiode -- NOG AAN TE PASSEN!!!
 
 oppsruw <- read_delim(paste0(pad_data, "SpatialEcotopenOpp_INBO_2021.csv")) %>%  #, sheet = "SpatialEcotopenOpp_INBO_2021") 
   dplyr::filter(waterloop != "SCHRAP", !is.na(tidaal)) %>% 
@@ -1303,8 +1249,7 @@ data_macrobenthos_OPPWLTAXzs <- data_macrobenthos_OPPTAX %>%
     dplyr::summarise(biomass_TAX = sum(na.omit(biomassa_fys))) %>%
     dplyr::ungroup() %>% 
   dplyr::mutate(Taxa_groep2 = if_else(Taxa_groep %in% c("Acari", "Collembola", "Cladocera", "Coleoptera", "Nematoda", "Microturbellaria", "Psychodidae", "Diptera", "Hirudinea", "Neuroptera", "Trichoptera", "Gastropoda", "Maxillopoda", "Ostracoda", "Copepoda", "Ephemeroptera", "Cnidaria"), "REST", Taxa_groep)) %>% 
-  dplyr::filter(!is.na(Taxa_groep2))
-                %>% 
+  dplyr::filter(!is.na(Taxa_groep2)) %>% 
     dplyr::filter(!is.na(Taxa_groep))
 
 unique(data_macrobenthos_OPPWLTAXzs$Taxa_groep)  
@@ -1418,18 +1363,18 @@ data_macrobenthos_OPPBIVsub <- data_macrobenthos_subtidaalfysBIV %>%
   left_join(opps_SUBfys, by = c("kaartjaar", "fysiotoop","waterloop")) %>% # opps_SUBfys voor sub opps_intertidaalfys
   mutate(biomassa_fys = (biomassa_mean/1000000)*opp*10000) #ton benthos
   
-write_xlsx(data_macrobenthos_OPPBIV, paste0(pad_data,"Bivalv_per_fysio_metOppsSUB.xlsx")) 
+#write_xlsx(data_macrobenthos_OPPBIVsub, paste0(pad_data,"Bivalv_per_fysio_metOppsSUB.xlsx")) 
 
 data_macrobenthos_OPPBIVinter <- data_macrobenthos_intertidaalfysBIV %>% 
   left_join(opps_intertidaalfys, by = c("kaartjaar", "fysiotoop","waterloop")) %>% # opps_SUBfys voor sub opps_intertidaalfys
   mutate(biomassa_fys = (biomassa_mean/1000000)*opp*10000) #ton benthos
   
-write_xlsx(data_macrobenthos_OPPBIVinter, paste0(pad_data,"Bivalv_per_fysio_metOppsInter.xlsx"))
+#write_xlsx(data_macrobenthos_OPPBIVinter, paste0(pad_data,"Bivalv_per_fysio_metOppsInter.xlsx"))
 
 
 
 
-data_macrobenthos_OPPWLBIVzs <- data_macrobenthos_OPPBIV %>%
+data_macrobenthos_OPPWLBIVzs <- data_macrobenthos_OPPBIVsub %>%
     rename(jaar = jaar.x) %>%
     dplyr::group_by(soort, jaar) %>% 
     dplyr::summarise(biomass_BIV = sum(na.omit(biomassa_fys))) %>%
@@ -1452,7 +1397,7 @@ data_macrobenthos_OPPWLBIVzs %>%
 
 
 data_macrobenthos_OPPWLBIVzs
-ggsave(filename = paste0(pad_figuren, "BIVsoortenSUB_ZS", ".jpg"), height=5, width=8)    
+#ggsave(filename = paste0(pad_figuren, "BIVsoortenSUB_ZS", ".jpg"), height=5, width=8)    
 
 
 ## Zelfde voor Saliniteitsgradient
