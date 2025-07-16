@@ -57,12 +57,13 @@ meta_data <-
   read_delim(paste0(pad_data, "vissen_meta_data.csv"),
              delim = ";")
 
-for(i in 1:nrow(meta_data)){
+ for(i in 1:nrow(meta_data)){
   ##first extract the object value
   tempobj=meta_data$waarde[i]
   ##now create a new variable with the original name of the list item
   eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
 }
+
 
 soortenlijst <- 
   read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"), 
@@ -110,7 +111,7 @@ aantal_soorten_enkel_ankerkuil <-
 
 Fichenummer: FICHE S-DS-V-004a -- Vissen (KRW)
 
-**Joost Vanoverbeke, Erika Van den Bergh, Gunther Van Ryckegem, Rhea Measle, Gerlinde Van Thuyne, Merlijn Jocque**
+**Joost Vanoverbeke, Gunther Van Ryckegem, Rhea Measle, Gerlinde Van Thuyne, Merlijn Jocque**
 
 ## Inleiding
 

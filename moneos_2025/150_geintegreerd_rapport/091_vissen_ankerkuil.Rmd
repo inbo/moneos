@@ -73,11 +73,13 @@ for(i in 1:nrow(meta_data)){
 #### Soortenrijkdom in `r laatste_jaar`
 
 We vingen `r aantal_soorten_laatste_jaar` vissoorten in `r laatste_jaar`.
+Dit is het laagste aantal tot zover in de opvolging van het visbestand.
 Een overzicht van de soorten gevangen in `r laatste_jaar` is weergegeven in Tabel \@ref(tab:091-tabel-overzicht-soorten).
-In de zone met sterke saliniteitsgradiënt (Doel en Antwerpen) werden er meer soorten gevangen dan in de oligohaliene (Steendorp) en zoetwater (Branst) zone (Tabel \@ref(tab:091-tabel-aantal-soorten)).
+In de zone met sterke saliniteitsgradiënt (Doel en Antwerpen) werden er gemiddeld gezien meer soorten gevangen dan in de oligohaliene (Steendorp) en zoetwater (Branst) zone (Tabel \@ref(tab:091-tabel-aantal-soorten)).
 Over de beschouwde periode (`r vroegste_jaar` - `r laatste_jaar`) worden er inderdaad systematisch meer soorten gevangen in deze zone dan in de oligohaliene en zoete zone (Figuur \@ref(fig:091-figuur-aantal-soorten-locatie-historisch)).
+In Antwerpen (zone met sterke saliniteitsgradiënt) werden er in `r laatste_jaar` opvallend weining soorten gevangen.
 De turnover van soorten tussen seizoenen op elke locatie bedraagt tot een derde van de gevangen soorten.
-Het totaal aantal soorten jaarlijks gevangen in de Zeeschelde (over alle locaties) in de periode `r vroegste_jaar`-`r laatste_jaar` varieert rond de 40, met een maximum (46) in 2017 en een minimum (36) in 2020.
+Het totaal aantal soorten jaarlijks gevangen in de Zeeschelde (over alle locaties) in de periode `r vroegste_jaar`-`r laatste_jaar` varieert rond de 40, met een maximum (46) in 2017 en een minimum (34) in 2024.
 De turnover in soorten tussen locaties bedraagt tot een kwart van het totaal aantal soorten.
 
 ```{r 091-tabel-overzicht-soorten}
@@ -154,19 +156,19 @@ We analyseren alle vangstgegevens van `r laatste_jaar`.
 Soorten met in alle seizoenen en locaties een relatieve bijdrage kleiner dan 10% voor zowel de aantallen als biomassa worden als 'rest' samengenomen.
 Juveniele haring en sprot werden samen geregistreerd als "haringachtigen" <!--# toch eens nagaan of dit methode is die gaat aangehouden worden in de komende jaren? -->.
 In de zomer was het overgrote deel van de haringachtigen haring, in het najaar werden in Doel een merendeel sprot gevangen.
+<!--# Rhea Klopt dit?  -->
 
 Uit deze analyse blijkt dat de relatieve abundantie van soorten zowel seizoenaal als ruimtelijk verschilt (Figuur \@ref(fig:091-figuur-relatief-aantal)).
-In Doel en Antwerpen (zone met sterke saliniteitsgradiënt) zijn haringachtigen dominant in alle seizoenen van `r laatste_jaar`.
-Ook in het voorjaar in Steendorp zijn haringachtigen dominant.
-Spiering is nog minder omnipresent dan in 2022 en enkel dominant in Steendorp in de zomer.
-In 2022 domineerden spieringen nog de vangstaantallen in drie afvissingen in Steendorp en Branst (zoetwater).
-In het najaar neemt brakwatergrondel het over in Steendorp, vergelijkbaar met vorig jaar.
-Brakwatergrondel is minder dominant aanwezig in vergelijking met 2022, vooral in Branst, waar bot in `r laatste_jaar` dominant aanwezig is in het voorjaar en dikkopje het overneemt in de zomer en het najaar.
+In de zone met sterke saliniteitsgradiënt zijn spiering (Doel) en brakwatergrondel (Antwerpen) dominant in het voorjaar van `r laatste_jaar`.
+In het najaar komt op deze locaties vooral sprot veel voor, met daarnaast een duidelijke aanwezigheid van spiering en haring.
+Spiering is alomtegenwoordig en dominant in Steendorp tjijdens het voorjaar en de zomer, en ook in Branst gedurende de zomer.
+In het najaar neemt brakwatergrondel het over in Steendorp en ook in Branst, vergelijkbaar met vorig jaar.
+Bot is dominant in Branst tijdens de zomer en duidelijk aanwezig in Steendorp en Antwerpen.
 
-Uitgedrukt in biomassa worden gelijkaardige patronen geobserveerd voor haringachtigen in Doel en Antwerpen.
-Spiering treedt meer op de voorgrond in Steendorp maar met toenemende aanwezigheid van brakwatergrondel en dikkopje in het najaar.
-In Branst staat fint in voor een groot deel van de biomassa in het voorjaar, spiering in de zomer en dikkopje in het najaar (Figuur \@ref(fig:091-figuur-relatieve-biomassa)).
-Ook snoekbaars is duidelijk aanwezig in de biomassa van voorjaar en zomer in Steendorp en Branst.
+Uitgedrukt in biomassa worden deze patronen versterkt en duidelijk zichtbaar met een bevestiging van de alomtegenwoordigheid van spiering in zowel de zone met sterke saliniteitsgradient (Doel, Antwerpen) als in de oligohaliene zone (Steendorp) in het voorjaar.
+De dominantie van spiering verschuift in het jaar bovenstrooms naar de oligohaliene (Steendorp) en zoete (Branst) zone tijdens de zomer en dan terug naar de polyhaliene (Antwerpen) en oligohaliene zone (Steendorp) in het najaar.
+De zomer en het najaar in de polyhaliene zone worden verder gedomineerd door haring sprot en haringachtigen.
+In Branst staat karper in voor een groot deel van de biomassa in het voorjaar (Figuur \@ref(fig:091-figuur-relatieve-biomassa)), en treedt brakwatergrondel op de voorgrond in het najaar.
 
 ```{r 091-figuur-relatief-aantal, fig.cap=cap_relatief_aantal, out.width="100%"}
 
@@ -204,20 +206,18 @@ Figuur \@ref(fig:091-figuur-aantallen-marien-EMSE) geeft per saliniteitszone (EM
 Benthivore soorten overheersen naar aantal en biomassa, vooral in de zoete zone.
 In de zone met sterke saliniteitsgradiënt overheersen planktivoren in `r laatste_jaar`.
 
-Dikkopje en brakwatergrondel zijn veruit de meest talrijke benthivore soorten in deze groep.
-De grootste aantallen vonden we in de zoetwaterzone in Branst (samen 600 individuen per 1000m³, sterk aanleunend bij de piek in 2018).
-Enkel in 2020 waren ze meest talrijk in het oligohalien.
+Brakwatergrondel is veruit de meest talrijke benthivore soort.
 
-Omnivore mariene en estuariene soorten worden qua aantallen in het verleden gedomineerd door kleine zeenaald in de zone met sterke saliniteitsgradiënt, maar in `r laatste_jaar` domineert steenbolk.
+Omnivore mariene en estuariene soorten worden qua aantallen in het verleden gedomineerd door kleine zeenaald in de zone met sterke saliniteitsgradiënt, maar in `r laatste_jaar` domineert zeebaars.
 In het oligohalien en zoetwater komt hoofdzakelijk juveniele zeebaars voor die daar komt opgroeien.
-De aantallen zijn beduidend lager dan voor de benthivore soorten van deze groep (\< 5 individuen per 1000m³).
-De laatste jaren wordt deze soortengroep minder gevangen dan in de periode voor 2018.
+De aantallen zijn beduidend lager dan voor de benthivore soorten van deze groep (\< 4 individuen per 1000m³), maar hoger dan vorig jaar.
 
-Piscivore estuariene en mariene soorten volgens de EMSE indeling komen in de Zeeschelde niet voor, de éénmalige vangst van een smelt uitgezonderd.
-In realiteit gedragen ook zeebaars, steenbolk en zeeforel zich hoofdzakelijk piscivoor in de Zeeschelde.
+Piscivore estuariene en mariene soorten volgens de EMSE indeling komen in de Zeeschelde niet voor, de éénmalige vangst van een smelt in 2021 uitgezonderd.
+In realiteit gedragen ook zeebaars en zeeforel zich hoofdzakelijk piscivoor in de Zeeschelde.
 
 Planktivore individuen van de groep estuarien residente en mariene migranten zijn meest talrijk in de zone met sterke saliniteitsgradiënt, met een uitschieter tot meer dan 200 individuen per 1000m³ in 2022, maar ze zijn toch ook tot in de zoete zone terug te vinden.
 Het gaat hier vooral om juveniele haring en sprot, mariene soorten die de luwte en voedselrijkdom van het estuarium opzoeken om op te groeien.
+In `r laatste_jaar` domineert sprot.
 
 De patronen voor biomassa vertonen grotendeels dezelfde verhoudingen tussen soortgroepen, saliniteitszones en soorten (Figuur \@ref(fig:091-figuur-biomassa-marien-EMSE)).
 De omnivore mariene en estuariene soorten vertonen echter wel een grotere soortendiversiteit qua biomassa dan qua aantallen in de zone met sterke saliniteitsgradiënt.
@@ -226,7 +226,8 @@ De dominatie van zeenaald in bepaalde jaren is een stuk minder uitgesproken in d
 De sterke dominantie van één of twee soorten qua aantallen binnen elke soortgroep is ook duidelijk zichtbaar in Figuur \@ref(fig:091-figuur-diversiteit-marien-EMSE).
 Zelfs als er in totaal (S) 5 of meer soorten voorkomen in een groep wordt deze meestal door slechts één of twee soorten gedomineerd (D).
 Enkel voor de omnivore mariene en estuariene soorten kan de diversiteit oplopen tot 4-6.
-Soortenaantal en diversiteit vertonen geen uitgesproken trends binnen de soortgroepen, maar zijn relatief stabiel.
+Over de jaren (sinds 2021) is de geleidelijke afname in zowel het aantal soorten als de soortendiversiteit van omnivore soorten in de zone met sterke saliniteitsgradiënt wel opvallend en dient nauwlettend opgevolgd te worden.
+Soortenaantal en diversiteit vertonen verder weinig uitgesproken trends binnen de soortgroepen, en zijn relatief stabiel.
 
 ```{r 091-figuur-aantallen-marien-EMSE, fig.cap=aantallen_marien_EMSE, out.width="110%"}
 
@@ -272,7 +273,7 @@ De diadrome soorten in de Zeeschelde zijn dus voornamelijk omnivoor en deze func
 Spieringen zijn meest talrijk in de oligohaliene en zoetwater zone met pieken tot 4000-6000 individuen per 1000m³ in 2014.
 In recente jaren zijn de aantallen een stuk lager (50-600 individuen per 1000m³).
 Met uitzondering van een dip rond 2016 was de biomassa (Figuur \@ref(fig:091-figuur-biomassa-diadroom-EMSE)) aan spiering in voorgaande jaren relatief stabiel.
-In 2022 en `r laatste_jaar` zijn de aantallen en biomassa aan gevangen spiering echter opvallend lager, vooral in de zoetwater zone.
+In 2022, 2023 en `r laatste_jaar` zijn de aantallen en biomassa aan gevangen spiering echter opvallend lager, vooral in de zoetwater zone.
 Vergelijking van aantallen en biomassa in de verschillende saliniteitszones doet vermoeden dat de spieringen gemiddeld het kleinst zijn in de zoete zone en het grootste in de zone met sterke saliniteitsgradiënt.
 Deze soort plant zich inderdaad voort stroomopwaarts in de zoete zone met korte verblijftijd, groeit op in het estuarium en trekt na enkele jaren naar zee.
 Om het rekruteringssucces te bepalen moet echter de grootteklasse verdeling per seizoen en per locatie geanalyseerd worden.
