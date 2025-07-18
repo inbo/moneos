@@ -85,12 +85,20 @@ con <- inbodb::connect_inbo_dbase("W0004_00_Waterbirds")
 #
 # meer detail over het MIDMA-deel:
 # - dit zijn de tellingen van de MIDMA-analysesets
-# - ik heb ik een extra join toegevoegd op een subquery "loc" waarmee de 
+# - hieronder extra join toegevoegd op een subquery "loc" waarmee de 
 #   locaties beperkt worden tot deze die relevant zijn voor Schelde/Sigma. Je 
 #   kan dat uiteraard ook achteraf in R zelf doen, maar hiermee wordt het aantal
 #   records dat binnengehaald wordt met 2/3 verkleind en gaat het ook veel 
 #   sneller. Als je extra locatiegroepen of -groeptypes wil toevoegen moet je 
-#   dat dus hier in de query zelf doen 
+#   dat dus hier in de query zelf doen (invoegen line 132)
+# #     inner join (select LocationWVKey
+# 				from [dbo].[FactLocationGroup]
+# 				where 1 = 1
+# 					AND IsDeleted = 0
+# 					AND (LocationGroupCode in ('ZS','ZR','ZSVAL','SEST','WETL','NOH', 'BW','DM','DU','KM','KBR','NG','OV','WZ')
+# 						OR LocationGroupTypeCode in ('SCLUS')))loc on loc.LocationWVKey = f.LocationWVKey
+# 
+# 
 # - bemerk dat ik de taxongroupcode ook heb toegevoegd aan de basisdataset
 # - de wintertellingen van de Zeeschelde worden ook beschouwd als 
 #   midmaandelijkse tellingen en leiden dus tot dubbels als we de data 
@@ -121,12 +129,7 @@ SELECT SU.SurveyCode as ProjectCode
     , T.scientificname as WetNaam
     , F.Taxoncount as Aantal
 FROM FactAnalyseSetOccurrence F
-    inner join (select LocationWVKey
-				from [dbo].[FactLocationGroup]
-				where 1 = 1
-					AND IsDeleted = 0
-					AND (LocationGroupCode in ('ZS','ZR','ZSVAL','SEST','WETL','NOH', 'BW','DM','DU','KM','KBR','NG','OV','WZ')
-						OR LocationGroupTypeCode in ('SCLUS')))loc on loc.LocationWVKey = f.LocationWVKey
+
     inner join DimSurvey SU on SU.surveykey = F.surveykey
     inner join DimLocationWV L on L.locationwvkey = F.locationwvkey
     inner join DimSeason SS on SS.Seasonkey = F.seasonkey
@@ -252,24 +255,24 @@ AND LocationGroupTypeNaam in ('KRW-zones Zeeschelde (analyse)')
 
 dbDisconnect(con)
 
+WV_DB <- WV_DB %>%
+  select(-((ncol(WV_DB)-2):ncol(WV_DB)))
 # 
 #### basisfiles opslaan
 
-# WV_DB <- WV_DB %>% 
-#   select(-((ncol(WV_DB)-2):ncol(WV_DB))) 
 # 
-# WV_DB %>% 
-#   write_delim(paste0(pad_data, "WV_DB_00.csv"),
-#               delim = ";")
-# Gebieden_ZS %>%
-#   write_delim(paste0(pad_data, "Gebieden_ZS_00.csv"),
-#               delim = ";")
-# Clusters_ZS %>%
-#   write_delim(paste0(pad_data, "Clusters_ZS_MONEOS_00.csv"),
-#               delim = ";")
-# Clusters_Sigma %>%
-#   write_delim(paste0(pad_data, "Clusters_Sigma_00.csv"),
-# delim = ";")
+WV_DB %>%
+  write_delim(paste0(pad_data, "WV_DB_00.csv"),
+              delim = ";")
+Gebieden_ZS %>%
+  write_delim(paste0(pad_data, "Gebieden_ZS_00.csv"),
+              delim = ";")
+Clusters_ZS %>%
+  write_delim(paste0(pad_data, "Clusters_ZS_MONEOS_00.csv"),
+              delim = ";")
+Clusters_Sigma %>%
+  write_delim(paste0(pad_data, "Clusters_Sigma_00.csv"),
+delim = ";")
 
 ### Basisfiles openen zonder databank   
 # 
@@ -297,8 +300,8 @@ WV_DB %>% group_by(Project) %>% summarise(N = n())
 
 scheldearm <- dplyr::filter(WV_DB, GebiedsCode == '2050810')
 
-verken <- dplyr::filter(WV_DB, GebiedsCode == "3151403" & 
-                          Telseizoen == "2010/11" &
+verken <- dplyr::filter(WV_DB, GebiedsCode == "3156629" & 
+                          Telseizoen == "2024/25" &
                           Telling == "Oktober")
 
 
@@ -342,7 +345,7 @@ WV_DB <-
 listspecies <- WV_DB %>%
   dplyr::filter(is.na(trofische_groep)) %>%
   distinct(NedNaam)
-##all rare species, not in high numbers present (of no influence for trophic trends)
+##all rare species for Scheldt, not in high numbers present (of no influence for trophic trends)
 
 ```
 
@@ -451,7 +454,7 @@ Clusters_ZS_MONEOS <- Clusters_ZS_MONEOS %>%
 ##samenvoegen van gebiedsinfo
 
 Gebieden_ZS <- Gebieden_ZS %>% 
-  left_join(Clusters_ZS_MONEOS) #suffix suffix = c("", "") betekent dat alle 'dubbele' kolommen worden weggelaten
+  left_join(Clusters_ZS_MONEOS) 
 
   
 
@@ -594,6 +597,29 @@ WV_DB <-
 # bind_rows(GrootSchoorHamme)
 
 ```
+
+
+```{r controle volledigheid}
+
+Aantaltellingenpergebied0 <- WV_DB %>%
+  rename_all(tolower) %>%
+  mutate(maand = month(teldatum)) %>%
+  dplyr::filter(!is.na(niveau3)) %>%
+  dplyr::filter(maand %in% c(10:12, 1:3)) %>%
+    dplyr::filter (telseizoen == "2023/24"|
+                   telseizoen == "2024/25") %>%
+  distinct(krwzone, gebiedscode, gebied, telseizoen, teldatum) %>% 
+  count(krwzone,gebiedscode, gebied, telseizoen)
+
+# aantal tellingen per telseizoen ingevoerd 
+
+
+knitr::kable(Aantaltellingenpergebied0)
+
+
+```
+
+
 
 ###datasets wegschrijven
 ```{r volledige dataset wegschrijven}
