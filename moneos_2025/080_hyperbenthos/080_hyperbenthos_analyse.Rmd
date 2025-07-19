@@ -41,20 +41,20 @@ library(gghighlight)
 # pad naar tabellen : pad_tabellen
 # pad naar figuren : pad_figuren
 
-source(find_root_file("../pad.R", criterion = is_rstudio_project))
+source(find_root_file("pad.R", criterion = is_rstudio_project)) #../
 
 pad_data <- maak_pad(params$hoofdstuk, "data")
 pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
-source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/MONEOS_rapportage/2022/Function_CalculateShannonIndex.R")
+source("G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2022/Function_CalculateShannonIndex.R")
 ```
 
 
 ```{r 080-data}
 
 data_hyperbenthos <- 
-  read_excel(paste0(pad_data, "hyperbenthos_data_2013_2023.xlsx")) %>% 
+  read_excel(paste0(pad_data, "hyperbenthos_data_revised2013_2024.xlsx")) %>% 
   dplyr::filter(soort != "Potamocorbula amurensis")
 
 
@@ -418,14 +418,14 @@ biom_hpbZSOA <-
                    AFDWZS = sum(na.omit(AFDW))) %>% 
   dplyr::ungroup()
 
-biom_hpbZSOA23 <- biom_hpbZSOA %>% 
-  dplyr::filter(Jaar == 2023)
+biom_hpbZSOA24 <- biom_hpbZSOA %>% 
+  dplyr::filter(Jaar == 2024)
 
 
 biom_hpbZS <- biom_hpbZSOA %>% 
   ggplot(aes(x=Maand, y= AFDWZS, group=Jaar)) +
   geom_line(aes(colour=Jaar), size = 0.8) +
-  geom_line(data= biom_hpbZSOA23, aes(x=Maand, y= AFDWZS), linewidth = 3, colour= "lightblue") +
+  geom_line(data= biom_hpbZSOA24, aes(x=Maand, y= AFDWZS), linewidth = 3, colour= "lightblue") +
   scale_y_log10(breaks = c(0,10,100, 1000,10000)+1, labels = c(0,10,100,1000,10000)) +
   labs(x = "Maand",
        y = ylbb) +
