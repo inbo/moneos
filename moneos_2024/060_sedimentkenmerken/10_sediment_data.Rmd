@@ -1,0 +1,228 @@
+---
+params:
+  hoofdstuk: "060_sedimentkenmerken"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "Sediment MONEOS data"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.showtext = TRUE, dpi = 300)
+
+```
+
+
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(INBOtheme)
+library(rprojroot)
+
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+# source("../pad.R")
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r data}
+
+# OPGELET!!!
+  # Dit script start met de afgewerkte data-aanlevering.
+  # Om te starten met extractie van de gegevens uit de databank zie script 2017
+  
+##datavoorbereiding 2024
+##koppelen van sedimentdata met locatiegegevens
+
+data2022loc <- read_excel(paste0(pad_data, "Locaties2022.xlsx"))
+data2022sed <- read_excel(paste0(pad_data, "Sediment2022_spatial.xlsx"))
+
+data2022loc <- data2022loc %>% 
+  dplyr::filter(CampagneCode == "Spatial2022") %>% 
+  rename_with(tolower) %>% 
+  rename(X = x) %>% 
+  rename(Y = y)
+
+data2022sed <- data2022sed %>% 
+  rename_with(tolower) %>% 
+  rename (OM = om)
+
+data2022 <- data2022loc %>% 
+  left_join(data2022sed, by = "locatiecode") %>% 
+  rename(locatie = locatiecode)
+
+data2023loc <- read_excel(paste0(pad_data, "Locaties2023_ONAF.xlsx"))
+data2023sed <- read_excel(paste0(pad_data, "Sediment2023_spatial.xlsx"))
+
+data2023loc <- data2023loc %>% 
+  dplyr::filter(CampagneCode == "Spatial2023") %>% 
+  rename_with(tolower) %>% 
+  rename(X = x) %>% 
+  rename(Y = y)
+
+data2023sed <- data2023sed %>% 
+  rename_with(tolower) %>% 
+  rename (OM = om)
+
+data2023 <- data2023loc %>% 
+  left_join(data2023sed, by = "locatiecode") %>% 
+  rename(locatie = locatiecode)
+
+
+##selectie variabelen en omzetten lang formaat
+ 
+data2022 <- data2022 %>% 
+    select(jaar, campagne, waterloop, tidaal, fysiotoop, locatie, X, Y, mediaan, OM, slib) %>% 
+    gather("mediaan", "OM", "slib", key = variabele, value = waarde, na.rm = TRUE)  
+  
+data2023 <- data2023 %>% 
+    select(jaar, campagne, waterloop, tidaal, fysiotoop, locatie, X, Y, mediaan, OM, slib) %>% 
+    gather("mediaan", "OM", "slib", key = variabele, value = waarde, na.rm = TRUE)  
+
+##check op dubbels  
+dubbel <-data2023 %>%
+    dplyr::group_by(jaar, campagne, waterloop, tidaal, fysiotoop, locatie, X, Y, variabele) %>%
+    dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
+    dplyr::filter(n > 1L)  
+ 
+##data toevoegen aan dataset vorige rapportage
+  data <- read_excel(paste0(pad_data, "S_DS_V_004a_sediment_data2008_2021_rapportage2023.xlsx"))
+  
+  data <- data %>% 
+    select(jaar, campagne, waterloop, tidaal, fysiotoop, locatie, X, Y, variabele, waarde)
+  
+  ##promemory uit de dataset/databank zijn volgende data verwijderd bij de aanlevering naar VLIZ omdat ze foutief zijn gemeten:
+  # foute data van GK 2015 intertidaal verwijderen
+  #subset(data, !(tidaal=="intertidaal" & jaar==2015 & waterloop=="Zeeschelde IV" & 
+                       # variabele %in% c("mediaan","slib") ))
+    # foute data ZSIV 2013 intertidaal verwijderen
+  # subset(data, !(tidaal == "intertidaal" & jaar ==2013 & waterloop == "Zeeschelde IV" &
+                         # variabele %in% c("mediaan","slib") ))
+  # data ZSI subtidaal 2013 is ook verdacht en werd verwijderd
+  # subset(data, !(tidaal == "subtidaal" & jaar ==2013 & waterloop == "Zeeschelde I" &
+                         # variabele %in% c("mediaan","slib") ))
+  
+  sediment_data <- data %>% 
+    rbind (data2022, data2023) %>% 
+    na.omit(TRUE)
+
+# template_data <- 
+#   data.frame(x = sample(seq(0,10,0.05), 100, replace = TRUE)) %>% 
+#   mutate(y = 0.5 + 2*x + rnorm(n()))
+
+```
+
+
+data gecreëerd op `r Sys.time()`
+
+data weggeschreven naar `r paste0(pad_data, "template_data.csv")`
+
+```{r voorbereiding dataset}
+
+table(sediment_data$tidaal)
+sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "intertidaal"
+sediment_data$tidaal[sediment_data$tidaal=="inter"] <- "Intertidaal"
+sediment_data$tidaal[sediment_data$tidaal=="sub"] <- "subtidaal"
+
+  unique(sediment_data$tidaal)
+
+table(sediment_data$waterloop)
+  
+## tijarm Zwijnaarde en Gentbrugge-Melle afzonderlijk aanleveren
+sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde Ia"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde Ia"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb\r\n"] <- "Zeeschelde Ia"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde"] <- "Zeeschelde Ib"
+  sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde\r\n"] <- "Zeeschelde Ib"
+  sediment_data$waterloop[sediment_data$waterloop=="Beneden_Dijle"] <- "Dijle"
+
+sediment_data <- sediment_data %>%
+  mutate(waterloop = if_else(startsWith(locatie, "TZ"), "Zeeschelde Ib", waterloop))  
+sediment_data <- sediment_data %>%
+  mutate(waterloop = if_else(startsWith(locatie, "GM"), "Zeeschelde Ia", waterloop))  
+  # 
+  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde_trj_Ml_Gb"] <- "Zeeschelde I"
+  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb"] <- "Zeeschelde I"
+  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I trj_Ml_Gb\r\n"] <- "Zeeschelde I"
+  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde"] <- "Zeeschelde I"
+  # sediment_data$waterloop[sediment_data$waterloop=="Zeeschelde I tijarm Zwijnaarde\r\n"] <- "Zeeschelde I"
+  # 
+    table(sediment_data$waterloop)
+  sediment_data$waterloop <- factor(sediment_data$waterloop, 
+                                    levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde Ia","Zeeschelde Ib", "Rupel","Durme","Nete","Dijle","Zenne"))
+  
+  # sediment_data$waterloop <- factor(sediment_data$waterloop, 
+  #                                   levels=c("Zeeschelde IV","Zeeschelde III","Zeeschelde II","Zeeschelde I","Zeeschelde Ia","Zeeschelde Ib", "Rupel","Durme","Nete","Dijle","Zenne"))
+
+  
+    table(sediment_data$fysiotoop)
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="diep subtidaal"] <- "diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoge slikzone"] <- "hoog"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoog slik"] <- "hoog"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="lage slikzone"] <- "laag"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laag intertidaal"] <- "laag"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laag slik"] <- "laag"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="matig diep subtidaal"] <- "matig diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch matig diep subtidaal"] <- "laagdynamisch matig diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch matig diep subtidaal"] <- "hoogdynamisch matig diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoge slikzone"] <- "midden"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="middelhoog slik"] <- "midden"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="nog te bepalen - sub"] <- "sub indet."
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="subtidaal"] <- "sub indet."
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="ondiep subtidaal"] <- "ondiep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch ondiep subtidaal"] <- "laagdynamisch ondiep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch ondiep subtidaal"] <- "hoogdynamisch ondiep"
+   sediment_data$fysiotoop[sediment_data$fysiotoop=="slik onbepaald"] <- "inter indet."
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="laagdynamisch diep subtidaal"] <- "laagdynamisch diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch diep subtidaal"] <- "hoogdynamisch diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hoogdynamisch zeer diep subtidaal"] <- "hoogdynamisch zeer diep"
+  sediment_data$fysiotoop[sediment_data$fysiotoop=="hard antropogeen"] <- "hard substraat"
+  
+  unique(sediment_data$fysiotoop)
+  
+ 
+  
+```
+
+
+```{r wegschrijven-data}
+
+ file <- paste0(pad_data, "S_DS_V_004a_sediment_data2008_",(year(Sys.Date())-1),"_rapportage",year(Sys.Date()),".xlsx")
+  
+  openxlsx::write.xlsx(sediment_data, file, rowNames = FALSE, overwrite = TRUE)
+
+  
+###voor data analyse 2024 heb ik geen hoog vs laagdynamisch meegenomen
+###data wel aangeleverd met opdeling hoog vs laagdynamisch  
+  
+  sediment_data %>%
+  write_delim(paste0(pad_data, "sediment_data.csv"),
+               delim = ";")
+
+```
+
+
+
+
