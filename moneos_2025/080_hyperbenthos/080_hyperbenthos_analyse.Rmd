@@ -135,7 +135,7 @@ laatste_jaar <-
 ```
 
 
-```{r 080- EXTRA totaal-NIET GEBRUIKT}
+```{r 080- EXTRA totaal-NIET GEBRUIKT, eval=FALSE, include=FALSE}
 
 #som per soort, per jaar, ook exoten, en in percent. Stomme INBOtheme kan maar 9 kleuren, dus selecteren van 8 grootste
 #eerst jaarsom om % te knn berekenen in volgende stap
@@ -200,7 +200,6 @@ ggsave(paste0(pad_figuren, "080-figuur-biomassa_soorten_jaren.jpg"), height=6, w
 levels(ordered(data_hyperbenthos$soort))
 
 ```
-
 
 
 ```{r 080-EXTRA dataframe taxa - selectie 8 ifv pie-diagr}
@@ -370,6 +369,39 @@ ggarrange(bxp_hpb1 + rremove("xlab")+ font("xy.text", size = fnt),
 
 ggsave(paste0(pad_figuren, "080-figuur-densiteit_totaal-gebied-maandverloop_jaren.EMSEsoorten.jpg"), height=6, width=9)
 
+### VERHOUDING EMSE versus REST DOORHEEN DE JAREN #####
+#######################################################
+
+verhouding <- data_hyperbenthos %>% 
+  dplyr::mutate(EMSE = ifelse(hoger_taxon %in% c("Mysida", "Decapoda"), "EMSE", "REST")) %>% 
+  dplyr::mutate(EMSE = ifelse(str_detect(soort, "Carcinus|Eriocheir|takanoi"), "REST", EMSE)) %>% 
+  dplyr::select(zone, Jaar, soort, hoger_taxon, n, AFDW, EMSE) %>% 
+  dplyr::group_by(zone, Jaar) %>% 
+  dplyr::mutate(totbiom = sum(na.omit(AFDW)),
+                totN = sum(na.omit(n)), .groups = "drop") %>%
+  dplyr::group_by(zone, Jaar, EMSE) %>% 
+    dplyr::summarise(tot.biom = sum(na.omit(AFDW)),
+                tot.N = sum(na.omit(n)), .groups = "drop")
+  
+EMSE.REST.fig.biom <- ggplot(verhouding, aes(x = Jaar, y = tot.biom, fill = EMSE)) +
+  geom_area() +
+  scale_fill_manual(values = c("EMSE" = "darkseagreen3", "REST" = "cadetblue")) +
+  ylab("Biomassa / zone*vangstdag") +
+  scale_x_continuous(breaks=seq(2014,2024,2)) +
+  facet_grid(rows = vars(zone), scales = "free_y")
+
+EMSE.REST.fig.biom
+ggsave(paste0(pad_figuren, "080-figuur-biomassa_EMSEvsREST.jpg"), height=6, width=9)
+
+EMSE.REST.fig.N <- ggplot(verhouding, aes(x = Jaar, y = tot.N, fill = EMSE)) +
+  geom_area() +
+  scale_fill_manual(values = c("EMSE" = "darkseagreen3", "REST" = "cadetblue")) +
+  ylab("Abundantie / zone*vangstdag") +
+  scale_x_continuous(breaks=seq(2014,2024,2)) +
+  facet_grid(rows = vars(zone), scales = "free_y")
+
+EMSE.REST.fig.N
+ggsave(paste0(pad_figuren, "080-figuur-densiteit_EMSEvsREST.jpg"), height=6, width=9)
 
 ```
 
@@ -460,9 +492,6 @@ annotate_figure(t, left = text_grob("Gemiddelde biomassa per jaar per zone", rot
 
 ggsave(paste0(pad_figuren, "080-EMSE-soorten-biomassa-zone-jaren.jpg"), height=9, width=9)
 ```
-
-
-
 
 
 ```{r 080-figuur-densiteit-totaal-ZS-maandverloop-jaren}
@@ -1469,11 +1498,12 @@ hpb_specrichgnex.avgzs <- data_hyperbenthos %>%
   dplyr::mutate(zone = "Zeeschelde") %>% 
   dplyr::select(Jaar, Maand, zone, specrich)
 
-hpb_specrichgnex.avg <- data_hyperbenthos %>%
+hpb_specrichgnex.avg.month <- data_hyperbenthos %>%
   dplyr::filter(exoot == 0) %>% 
   dplyr::group_by(Jaar, Maand, zone) %>% 
   dplyr::summarise(specrich = length(unique(soort)), .groups = "drop") %>% 
-  bind_rows(hpb_specrichgnex.avgzs) %>% 
+  bind_rows(hpb_specrichgnex.avgzs)
+hpb_specrichgnex.avg <- hpb_specrichgnex.avg.month %>%   
   dplyr::group_by(Jaar, zone) %>% 
   dplyr::summarise(Nsp.avg = mean(specrich), .groups = "drop") 
 
@@ -1486,6 +1516,18 @@ Sp.rich.ZOET <- hpb_specrichgnex.avg %>%
   dplyr::filter(zone == "Zoet")
 Sp.rich.OLIG <- hpb_specrichgnex.avg %>% 
   dplyr::filter(zone == "Oligohalien")
+
+
+Sp.rich.ZS.month <- hpb_specrichgnex.avg.month %>% 
+  dplyr::filter(zone == "Zeeschelde")
+Sp.rich.SS.month <- hpb_specrichgnex.avg.month %>% 
+  dplyr::filter(zone == "Sterke Saliniteitsgradiënt")
+Sp.rich.ZOET.month <- hpb_specrichgnex.avg.month %>% 
+  dplyr::filter(zone == "Zoet")
+Sp.rich.OLIG.month <- hpb_specrichgnex.avg.month %>% 
+  dplyr::filter(zone == "Oligohalien")
+
+
 
 ######### figuren voor elke zone ###########
 library(mgcv)
@@ -1506,7 +1548,7 @@ Navg.SS <- ggplot(data = Sp.rich.SS, aes(x = Jaar, y = Nsp.avg)) +
 Navg.SS
 ## For illustration add a ribbon of variation based on 1.96se of simple smoothed gam
 
-gam_model <- mgcv::gam(Nsp.avg ~ s(Jaar, k = 5), data = Sp.rich.SS)
+gam_model <- mgcv::gam(specrich ~ s(Jaar, k = 5), data = Sp.rich.SS.month)
 
 # Predict & add predicted values & CI
 newdata <- data.frame(Jaar = Sp.rich.SS$Jaar)
@@ -1687,34 +1729,31 @@ welexgeb
 ggsave(paste0(pad_figuren, "080_figuur_soortenrijkdom_perjaarzone.OUD.jpg"), height=5, width=10)
 ```
 
-
+#TOETSPARAMETER Shannon diversity
 ```{r 080-figuur-Shannon-diversiteit}
 shannon_hpbZS <- data_hyperbenthos %>%
   dplyr::group_by(soort, Jaar) %>% 
   dplyr::summarise(nZS = sum(na.omit(n)),
-                   afdwZS = sum(na.omit(AFDW))) %>% 
-  dplyr::ungroup() %>% 
+                   afdwZS = sum(na.omit(AFDW)), .groups = "drop") %>% 
   dplyr::group_by(Jaar) %>% 
   dplyr::summarise(shannon_afdw = calc_shannon_index(afdwZS),
-                   shannon_n = calc_shannon_index(nZS)) %>%
-  dplyr::ungroup() %>% 
-  dplyr::mutate(zone = "Gehele Zeeschelde")
+                   shannon_n = calc_shannon_index(nZS), .groups = "drop") %>%
+  dplyr::mutate(zone = "Zeeschelde")
 
-
+## Datafile Shannon: Zeeschelde + de 3 evaluatie zones 
 shannon_hpb <- data_hyperbenthos %>%
-   dplyr::mutate(zone = if_else(gebied == "Brede Schoren" | gebied == "Dendermonde", "Zoet", if_else(gebied == "Ballooi" | gebied == "Rupel", "Oligohalien", "Sterke Saliniteitsgradiënt"))) %>% 
-  ungroup() %>% 
   dplyr::group_by(soort, zone, Jaar) %>% 
   dplyr::summarise(nzone = sum(na.omit(n)),
-                   afdwzone = sum(na.omit(AFDW))) %>% 
-  dplyr::ungroup() %>% 
+                   afdwzone = sum(na.omit(AFDW)), .groups = "drop") %>% 
   dplyr::group_by(zone, Jaar) %>% 
   dplyr::summarise(shannon_afdw = calc_shannon_index(afdwzone),
-                   shannon_n = calc_shannon_index(nzone)) %>%
-  dplyr::ungroup() %>% 
+                   shannon_n = calc_shannon_index(nzone), , .groups = "drop") %>%
   rbind(shannon_hpbZS)
 
-  shan_n <- ggplot(shannon_hpb, aes(x=Jaar, colour=zone))+
+
+
+### Figuren
+shan_n <- ggplot(shannon_hpb, aes(x=Jaar, colour=zone))+
   geom_line(aes(y=shannon_n),  size=1)+
     ylab("Shannon diversiteit densiteit")+
     xlab("Jaar")+
@@ -1735,6 +1774,217 @@ ggarrange(shan_n, shan_b,
           nrow = 1, common.legend=T)
 
 ggsave(paste0(pad_figuren, "080_figuur_shannon.jpg"), height=5, width=10)
+
+
+
+####################################################
+# met gemiddeldes/maand*zone
+
+### Eerst dframes makes
+
+# voor Zeeschelde
+shannon_hpbZS.avg <- data_hyperbenthos %>%
+  dplyr::group_by(soort, Jaar, Maand) %>% 
+  dplyr::summarise(nZS = sum(na.omit(n)),
+                   afdwZS = sum(na.omit(AFDW)), .groups = "drop") %>% 
+  dplyr::group_by(Jaar, Maand) %>% 
+  dplyr::summarise(shannon_afdw = calc_shannon_index(afdwZS),
+                   shannon_n = calc_shannon_index(nZS), .groups = "drop") %>%
+  dplyr::mutate(zone = "Zeeschelde")
+
+## voor Zeeschelde + 3 zones
+shannon_hpb.avg <- data_hyperbenthos %>%
+  dplyr::group_by(soort, zone, Jaar, Maand) %>% 
+  dplyr::summarise(nzone = sum(na.omit(n)),
+                   afdwzone = sum(na.omit(AFDW)), .groups = "drop") %>% 
+  dplyr::group_by(zone, Jaar, Maand) %>% 
+  dplyr::summarise(shannon_afdw = calc_shannon_index(afdwzone),
+                   shannon_n = calc_shannon_index(nzone), , .groups = "drop") %>%
+  rbind(shannon_hpbZS.avg) %>% 
+  dplyr::group_by(Jaar, zone) %>% 
+  dplyr::summarise(Shannon.avg = mean(shannon_n), .groups = "drop")
+
+Shannon.ZS <- shannon_hpb.avg %>% 
+  dplyr::filter(zone == "Zeeschelde")
+Shannon.SS <- shannon_hpb.avg %>% 
+  dplyr::filter(zone == "Sterke Saliniteitsgradiënt")
+Shannon.OLIG <- shannon_hpb.avg %>% 
+  dplyr::filter(zone == "Oligohalien")
+Shannon.ZOET <- shannon_hpb.avg %>% 
+  dplyr::filter(zone == "Zoet")
+
+###########################################
+### Figuur voor Zeeschelde ####
+
+Shan.avg.ZS <- ggplot(data = Shannon.ZS, aes(x = Jaar, y = Shannon.avg)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(Shannon.avg, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+  labs(x = "", y="") +
+  #theme(axis.text.x = element_text(angle = 45))+
+  ggtitle("Zeeschelde") +
+  theme(title = element_text(size=10)) +
+  scale_y_continuous(breaks=seq(0,1.8,0.2), limits = c(0, 1.8))
+Shan.avg.ZS
+## For illustration add a ribbon of variation based on 1.96se of simple smoothed gam
+
+gam_model <- mgcv::gam(Shannon.avg ~ s(Jaar, k = 5), data = Shannon.ZS)
+
+# Predict & add predicted values & CI
+newdata.sh.ZS <- data.frame(Jaar = Shannon.ZS$Jaar)
+pred.sh.ZS <- predict(gam_model, newdata.sh.ZS = newdata.sh.ZS, se.fit = TRUE)
+newdata.sh.ZS$fit <- pred.sh.ZS$fit
+newdata.sh.ZS$se <- pred.sh.ZS$se.fit
+newdata.sh.ZS$upper <- newdata.sh.ZS$fit + 1.96 * newdata.sh.ZS$se
+newdata.sh.ZS$lower <- newdata.sh.ZS$fit - 1.96 * newdata.sh.ZS$se
+
+# Filter to only positive fitted values for plotting purposes
+newdata_ribbon.sh.ZS <- newdata.sh.ZS %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(Shannon.avg = fit)
+
+### Add threshold, strong bias by exceptional 2014, and single year is always prone to variation so extract rollmean of 2016 (first year out of influence of 2014 with rollmean=3)
+
+# Compute 3-year rollmean of AFDW_mean
+Shannon.ZS$rollmean <- zoo::rollmean(Shannon.ZS$Shannon.avg, 3, na.pad = TRUE)
+
+# Extract rollmean value for year 2016
+rollmean_2016.sh.ZS <- Shannon.ZS$rollmean[Shannon.ZS$Jaar == 2016]
+
+Shan.avg.ZS.x <- Shan.avg.ZS +
+  geom_hline(yintercept = rollmean_2016.sh.ZS, linetype = "dashed", colour = "red") +
+    geom_ribbon(data = newdata_ribbon.sh.ZS, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+Shan.avg.ZS.x
+
+### Figuur voor Sterke Saliniteitsgradiënt ####
+
+Shan.avg.SS <- ggplot(data = Shannon.SS, aes(x = Jaar, y = Shannon.avg)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(Shannon.avg, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+  labs(x = "", y="") +
+  #theme(axis.text.x = element_text(angle = 45))+
+  ggtitle("Sterke Saliniteitsgradiënt") +
+  theme(title = element_text(size=10)) +
+  scale_y_continuous(breaks=seq(0,1.8,0.2), limits = c(0, 1.8))
+Shan.avg.SS
+## For illustration add a ribbon of variation based on 1.96se of simple smoothed gam
+
+gam_model <- mgcv::gam(Shannon.avg ~ s(Jaar, k = 5), data = Shannon.SS)
+
+# Predict & add predicted values & CI
+newdata.sh.SS <- data.frame(Jaar = Shannon.SS$Jaar)
+pred.sh.SS <- predict(gam_model, newdata.sh.SS = newdata.sh.SS, se.fit = TRUE)
+newdata.sh.SS$fit <- pred.sh.SS$fit
+newdata.sh.SS$se <- pred.sh.SS$se.fit
+newdata.sh.SS$upper <- newdata.sh.SS$fit + 1.96 * newdata.sh.SS$se
+newdata.sh.SS$lower <- newdata.sh.SS$fit - 1.96 * newdata.sh.SS$se
+
+# Filter to only positive fitted values for plotting purposes
+newdata_ribbon.sh.SS <- newdata.sh.SS %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(Shannon.avg = fit)
+
+### Add threshold, strong bias by exceptional 2014, and single year is always prone to variation so extract rollmean of 2016 (first year out of influence of 2014 with rollmean=3)
+
+# Compute 3-year rollmean of AFDW_mean
+Shannon.SS$rollmean <- zoo::rollmean(Shannon.SS$Shannon.avg, 3, na.pad = TRUE)
+
+# Extract rollmean value for year 2016
+rollmean_2016.sh.SS <- Shannon.SS$rollmean[Shannon.SS$Jaar == 2016]
+
+Shan.avg.SS.x <- Shan.avg.SS +
+  geom_hline(yintercept = rollmean_2016.sh.SS, linetype = "dashed", colour = "red") +
+    geom_ribbon(data = newdata_ribbon.sh.SS, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+Shan.avg.SS.x
+
+### Figuur voor Oligohalien ####
+
+Shan.avg.OLIG <- ggplot(data = Shannon.OLIG, aes(x = Jaar, y = Shannon.avg)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(Shannon.avg, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+  labs(x = "", y="") +
+  #theme(axis.text.x = element_text(angle = 45))+
+  ggtitle("Oligohalien") +
+  theme(title = element_text(size=10)) +
+  scale_y_continuous(breaks=seq(0.4,1.8,0.2), limits = c(0.4, 1.8))
+Shan.avg.OLIG
+## For illustration add a ribbon of variation based on 1.96se of simple smoothed gam
+
+gam_model <- mgcv::gam(Shannon.avg ~ s(Jaar, k = 5), data = Shannon.OLIG)
+
+# Predict & add predicted values & CI
+newdata.sh.OLIG <- data.frame(Jaar = Shannon.OLIG$Jaar)
+pred.sh.OLIG <- predict(gam_model, newdata.sh.OLIG = newdata.sh.OLIG, se.fit = TRUE)
+newdata.sh.OLIG$fit <- pred.sh.OLIG$fit
+newdata.sh.OLIG$se <- pred.sh.OLIG$se.fit
+newdata.sh.OLIG$upper <- newdata.sh.OLIG$fit + 1.96 * newdata.sh.OLIG$se
+newdata.sh.OLIG$lower <- newdata.sh.OLIG$fit - 1.96 * newdata.sh.OLIG$se
+
+# Filter to only positive fitted values for plotting purposes
+newdata_ribbon.sh.OLIG <- newdata.sh.OLIG %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(Shannon.avg = fit)
+
+### Add threshold, strong bias by exceptional 2014, and single year is always prone to variation so extract rollmean of 2016 (first year out of influence of 2014 with rollmean=3)
+
+# Compute 3-year rollmean of AFDW_mean
+Shannon.OLIG$rollmean <- zoo::rollmean(Shannon.OLIG$Shannon.avg, 3, na.pad = TRUE)
+
+# Extract rollmean value for year 2016
+rollmean_2016.sh.OLIG <- Shannon.OLIG$rollmean[Shannon.OLIG$Jaar == 2016]
+
+Shan.avg.OLIG.x <- Shan.avg.OLIG +
+  geom_hline(yintercept = rollmean_2016.sh.OLIG, linetype = "dashed", colour = "red") +
+    geom_ribbon(data = newdata_ribbon.sh.OLIG, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+Shan.avg.OLIG.x
+
+
+### Figuur voor Zoet ####
+
+Shan.avg.ZOET <- ggplot(data = Shannon.ZOET, aes(x = Jaar, y = Shannon.avg)) +
+  geom_line(size = 1.2) +
+  geom_line(aes(y=zoo::rollmean(Shannon.avg, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(size = 1.2) +
+  labs(x = "", y="") +
+  #theme(axis.text.x = element_text(angle = 45))+
+  ggtitle("Zoet") +
+  theme(title = element_text(size=10)) +
+  scale_y_continuous(breaks=seq(0.4,1.8,0.2), limits = c(0.4, 1.8))
+Shan.avg.ZOET
+## For illustration add a ribbon of variation based on 1.96se of simple smoothed gam
+
+gam_model <- mgcv::gam(Shannon.avg ~ s(Jaar, k = 5), data = Shannon.ZOET)
+
+# Predict & add predicted values & CI
+newdata.sh.ZOET <- data.frame(Jaar = Shannon.ZOET$Jaar)
+pred.sh.ZOET <- predict(gam_model, newdata.sh.ZOET = newdata.sh.ZOET, se.fit = TRUE)
+newdata.sh.ZOET$fit <- pred.sh.ZOET$fit
+newdata.sh.ZOET$se <- pred.sh.ZOET$se.fit
+newdata.sh.ZOET$upper <- newdata.sh.ZOET$fit + 1.96 * newdata.sh.ZOET$se
+newdata.sh.ZOET$lower <- newdata.sh.ZOET$fit - 1.96 * newdata.sh.ZOET$se
+
+# Filter to only positive fitted values for plotting purposes
+newdata_ribbon.sh.ZOET <- newdata.sh.ZOET %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(Shannon.avg = fit)
+
+### Add threshold, strong bias by exceptional 2014, and single year is always prone to variation so extract rollmean of 2016 (first year out of influence of 2014 with rollmean=3)
+
+# Compute 3-year rollmean of AFDW_mean
+Shannon.ZOET$rollmean <- zoo::rollmean(Shannon.ZOET$Shannon.avg, 3, na.pad = TRUE)
+
+# Extract rollmean value for year 2016
+rollmean_2016.sh.ZOET <- Shannon.ZOET$rollmean[Shannon.ZOET$Jaar == 2016]
+
+Shan.avg.ZOET.x <- Shan.avg.ZOET +
+  geom_hline(yintercept = rollmean_2016.sh.ZOET, linetype = "dashed", colour = "red") +
+    geom_ribbon(data = newdata_ribbon.sh.ZOET, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+Shan.avg.ZOET.x
+
+####Gezamenlijk figuur
+
+t.SHANNON <-ggarrange(Shan.avg.ZS.x  + font("xy.text", size = fnt), 
+          Shan.avg.SS.x  + font("xy.text", size = fnt),
+          Shan.avg.OLIG.x + font("xy.text", size = fnt), 
+          Shan.avg.ZOET.x + font("xy.text", size = fnt), ncol=2, nrow = 2) 
+annotate_figure(t.SHANNON, left = text_grob("Gemiddelde Shannon-diversity per maand per zone", rot=90), bottom=text_grob("Jaar"))
+
+ggsave(paste0(pad_figuren, "080-figuur-Shannon.per.maand_ZONES.jpg"), height=4, width=6)
+
 
 ```
 
