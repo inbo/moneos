@@ -424,8 +424,8 @@ Crangon <- data_hyperbenthos.EMSE %>%
 crangon.fig <- ggplot(Crangon, aes(x = Jaar, y = Biom.avg, fill = zone)) +
   geom_area() +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
-  annotate("text", x = 2019, y=1.4, label = "Crangon crangon") +
-  scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
+  annotate("text", x = 2019, y=1.4, label = expression(italic("Crangon crangon")), size = unit(4.5, "pt")) +
+  scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise")) +
 labs(x = "", y="") +
   theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 crangon.fig
@@ -443,7 +443,7 @@ Neomysis.integer <- data_hyperbenthos.EMSE %>%
 Neomysis.integer.fig <- ggplot(Neomysis.integer, aes(x = Jaar, y = Biom.avg, fill = zone)) +
   geom_area() +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
-  annotate("text", x = 2019, y=0.23, label = "Neomysis integer") +
+  annotate("text", x = 2019, y=0.23, label = expression(italic("Neomysis integer")), size = unit(4.5, "pt")) +
   scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
 labs(x = "", y="") +
   theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
@@ -463,7 +463,7 @@ Mesopodopsis <- data_hyperbenthos.EMSE %>%
 Mesopodopsis.fig <- ggplot(Mesopodopsis, aes(x = Jaar, y = Biom.avg, fill = zone)) +
   geom_area() +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
-  annotate("text", x = 2019, y=1, label = "Mesopodopsis slabberi") +
+  annotate("text", x = 2019, y=1, label = expression(italic("Mesopodopsis slabberi")), size = unit(4.5, "pt")) +
   scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
 labs(x = "", y="") +
   theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
@@ -482,17 +482,17 @@ Palaemon <- data_hyperbenthos.EMSE %>%
 Palaemon.fig <- ggplot(Palaemon, aes(x = Jaar, y = Biom.avg, fill = zone)) +
   geom_area() +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
-  annotate("text", x = 2019, y=2.2, label = "Palaemon longirostris") +
+  annotate("text", x = 2019, y=2.2, label = expression(italic("Palaemon longirostris")), size = unit(4.5, "pt")) +
   scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise")) +
 labs(x = "", y="") +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+  theme(plot.margin = unit(c(0.1,0.2,0,1), 'lines'))
 Palaemon.fig
 
 t <- ggarrange(crangon.fig  + font("xy.text", size = fnt), 
           Palaemon.fig  + font("xy.text", size = fnt),
           Mesopodopsis.fig + font("xy.text", size = fnt), 
           Neomysis.integer.fig + font("xy.text", size = fnt), ncol=1, nrow = 4) 
-annotate_figure(t, left = text_grob("Gemiddelde biomassa per jaar per zone", rot = 90), bottom = text_grob("Jaar"))
+annotate_figure(t, left = text_grob("Gemiddelde biomassa per jaar per zone", rot = 90, size = 16), bottom = text_grob("Jaar", size = 16))
 
 ggsave(paste0(pad_figuren, "080-EMSE-soorten-biomassa-zone-jaren.jpg"), height = 9, width = 9)
 
@@ -502,7 +502,7 @@ ggsave(paste0(pad_figuren, "080-EMSE-soorten-biomassa-zone-jaren.jpg"), height =
 crangon.fig.n <- ggplot(Crangon, aes(x = Jaar, y = N.avg, fill = zone)) +
   geom_area() +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
-  annotate("text", x = 2019, y=650, label = "Crangon crangon") +
+  annotate("text", x = 2019, y=650, label = expression(italic("Crangon crangon")), size = unit(4.5, "pt")) +
   scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
 labs(x = "", y="") +
   theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
@@ -511,7 +511,7 @@ crangon.fig.n
 Palaemon.fig.n <- ggplot(Palaemon, aes(x = Jaar, y = N.avg, fill = zone)) +
   geom_area() +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
-  annotate("text", x = 2019, y=68, label = "Palaemon longirostris") +
+  annotate("text", x = 2019, y=68, label = expression(italic("Palaemon longirostris")), size = unit(4.5, "pt")) +
   scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise")) +
 labs(x = "", y="") +
   theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
@@ -520,7 +520,7 @@ Palaemon.fig.n
 Mesopodopsis.fig.n <- ggplot(Mesopodopsis, aes(x = Jaar, y = N.avg, fill = zone)) +
   geom_area() +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
-  annotate("text", x = 2019, y=2100, label = "Mesopodopsis slabberi") +
+  annotate("text", x = 2019, y=2100, label = expression(italic("Mesopodopsis slabberi")), size = unit(4.5, "pt")) +
   scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
 labs(x = "", y="") +
   theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
@@ -529,7 +529,7 @@ Mesopodopsis.fig.n
 Neomysis.integer.fig.n <- ggplot(Neomysis.integer, aes(x = Jaar, y = N.avg, fill = zone)) +
   geom_area() +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
-  annotate("text", x = 2019, y=175, label = "Neomysis integer") +
+  annotate("text", x = 2019, y=175, label = expression(italic("Neomysis integer")), size = unit(4.5, "pt")) +
   scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
 labs(x = "", y="") +
   theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
@@ -539,7 +539,7 @@ t.n <- ggarrange(crangon.fig.n  + font("xy.text", size = fnt),
           Palaemon.fig.n  + font("xy.text", size = fnt),
           Mesopodopsis.fig.n + font("xy.text", size = fnt), 
           Neomysis.integer.fig.n + font("xy.text", size = fnt), ncol=1, nrow = 4) 
-annotate_figure(t.n, left = text_grob("Gemiddelde abundantie per jaar per zone", rot = 90), bottom = text_grob("Jaar"))
+annotate_figure(t.n, left = text_grob("Gemiddelde abundantie per jaar per zone", rot = 90, size=16), bottom = text_grob("Jaar", size = 16))
 
 ggsave(paste0(pad_figuren, "080-EMSE-soorten-abundantie-zone-jaren.jpg"), height = 9, width = 9)
 
@@ -702,7 +702,7 @@ bxp_hpbZSb
 
 ```
 
-#TOETSPARAMETER abundantie
+#TOETSPARAMETER abundantie EMSE
 ```{r 080 - TOETSPARAMETER ABUNDANTIE}
 fnt <- 8
 
@@ -1061,7 +1061,7 @@ ggsave(paste0(pad_figuren, "080-figuur-biomassa_ZS_jaarverloop_zones.jpg"), heig
 
 ```
 
-#TOETSPARAMETER EMSE Biomassa
+#TOETSPARAMETER Biomassa EMSE
 
 ```{r 080 - TOETSPARAMETER BIOMASSA}
 trend_BIOM_ZS.EMSE <- 
@@ -1310,7 +1310,7 @@ t.EMSE.BIOM <- ggarrange(BIOM.ZS  + font("xy.text", size = fnt),
           BIOM.SS  + font("xy.text", size = fnt),
           BIOM.OLIG + font("xy.text", size = fnt), 
           BIOM.ZOET + font("xy.text", size = fnt), ncol = 2, nrow = 2) 
-annotate_figure(t.EMSE.BIOM, left=text_grob("Gemiddelde biomassa (g AFDW) per bemonstering per zone", rot = 90), bottom = text_grob("Jaar"))
+annotate_figure(t.EMSE.BIOM, left=text_grob("Gemiddelde biomassa (g AFDW) per 2bemonstering per zone", rot = 90, size = 9), bottom = text_grob("Jaar", size = 12))
 
 
 ggsave(paste0(pad_figuren, "080-figuur-biomassa_zones.EMSE.jpg"), height=4, width=6)
@@ -1509,6 +1509,7 @@ hpb_specrich <- data_hyperbenthos %>%
 welex  <-ggplot(hpb_specrich, aes(x = Jaar, y = specrich, color = zone)) +
   geom_line(size=1) +
   ylab("Taxa rijkdom") +
+  theme(axis.title=element_text(size=15)) +
   ylim(13,60) +
   theme(legend.position = "none")
 welex
@@ -1531,21 +1532,22 @@ hpb_specrichgnex <- data_hyperbenthos %>%
   ungroup() %>% 
   bind_rows(hpb_specrichgnex.ZS)
 
-gnex <-ggplot(hpb_specrichgnex, aes(x = Jaar, y = specrich, color = zone)) +
-  geom_line(size=1)+
+gnex <- ggplot(hpb_specrichgnex, aes(x = Jaar, y = specrich, color = zone)) +
+  geom_line(size=1) +
   ylab("Taxa rijkdom zonder exoten") +
   ylim(13,60) +
-  theme(legend.text = element_text(size=10)) +
+  theme(axis.title=element_text(size=15)) +
+  theme(legend.text = element_text(size=12)) +
    theme(legend.key.size = unit(0.44, "cm")) +
    theme(legend.position = "inside",
-      legend.position.inside = c(0.8,0.85))
+      legend.position.inside = c(0.7,0.85))
 
 
 gnex
 ggarrange(welex, gnex, 
           nrow = 1)
 
-ggsave(paste0(pad_figuren, "080_figuur_soortenrijkdomZS_perjaar.jpg"), height = 4, width = 6)
+ggsave(paste0(pad_figuren, "080_figuur_soortenrijkdomZS_perjaar.jpg"), height = 7, width = 10)
 
 ################## met avg soortenrijkdom ###########
 #######################################################
@@ -1767,6 +1769,8 @@ annotate_figure(t.EMSE.SPECRICH, left = text_grob("Gemiddelde soortenrijkdom per
 
 ggsave(paste0(pad_figuren, "080-figuur-Soortenrijkdom.per.maand_ZONES.jpg"), height = 4, width = 6)
 
+
+##########################################################
 #### Statistiek ####
 # rijkdom verschilt weinig per maand, daarom als herhaalde meting gebruiken voor bepalen richness per jaar (niet echt juist, kweet het...)
 ggplot(Sp.rich.ZS.month, aes(x=Maand, y = specrich))+
@@ -2084,7 +2088,7 @@ Shan.avg.ZOET.x
 
 ####Gezamenlijk figuur
 
-t.SHANNON <-ggarrange(Shan.avg.ZS.x  + font("xy.text", size = fnt), 
+t.SHANNON <- ggarrange(Shan.avg.ZS.x  + font("xy.text", size = fnt), 
           Shan.avg.SS.x  + font("xy.text", size = fnt),
           Shan.avg.OLIG.x + font("xy.text", size = fnt), 
           Shan.avg.ZOET.x + font("xy.text", size = fnt), ncol=2, nrow = 2) 
