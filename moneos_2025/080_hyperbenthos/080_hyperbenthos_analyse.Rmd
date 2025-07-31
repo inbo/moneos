@@ -373,20 +373,20 @@ ggsave(paste0(pad_figuren, "080-figuur-densiteit_totaal-gebied-maandverloop_jare
 #######################################################
 
 verhouding <- data_hyperbenthos %>% 
-  dplyr::mutate(EMSE = ifelse(hoger_taxon %in% c("Mysida", "Decapoda"), "EMSE", "REST")) %>% 
-  dplyr::mutate(EMSE = ifelse(str_detect(soort, "Carcinus|Eriocheir|takanoi"), "REST", EMSE)) %>% 
+  dplyr::mutate(EMSE = ifelse(hoger_taxon %in% c("Mysida", "Decapoda"), "EMSE", "REST")) %>% # EMSE taxa (aas|steur)garnalen
+  dplyr::mutate(EMSE = ifelse(str_detect(soort, "Carcinus|Eriocheir|takanoi"), "REST", EMSE)) %>% #geen krabben
   dplyr::select(zone, Jaar, soort, hoger_taxon, n, AFDW, EMSE) %>% 
   dplyr::group_by(zone, Jaar) %>% 
-  dplyr::mutate(totbiom = sum(na.omit(AFDW)),
+  dplyr::mutate(totbiom = sum(na.omit(AFDW)), # jaarsom per zone alle soorten
                 totN = sum(na.omit(n)), .groups = "drop") %>%
   dplyr::group_by(zone, Jaar, EMSE) %>% 
-    dplyr::summarise(tot.biom = sum(na.omit(AFDW)),
+  dplyr::summarise(tot.biom = sum(na.omit(AFDW)), # jaarsom per zone per EMSE/REST
                 tot.N = sum(na.omit(n)), .groups = "drop")
   
 EMSE.REST.fig.biom <- ggplot(verhouding, aes(x = Jaar, y = tot.biom, fill = EMSE)) +
   geom_area() +
   scale_fill_manual(values = c("EMSE" = "darkseagreen3", "REST" = "cadetblue")) +
-  ylab("Biomassa / zone*vangstdag") +
+  ylab(" Jaarsom Biomassa per zone") +
   scale_x_continuous(breaks=seq(2014,2024,2)) +
   facet_grid(rows = vars(zone), scales = "free_y")
 
@@ -396,7 +396,7 @@ ggsave(paste0(pad_figuren, "080-figuur-biomassa_EMSEvsREST.jpg"), height=6, widt
 EMSE.REST.fig.N <- ggplot(verhouding, aes(x = Jaar, y = tot.N, fill = EMSE)) +
   geom_area() +
   scale_fill_manual(values = c("EMSE" = "darkseagreen3", "REST" = "cadetblue")) +
-  ylab("Abundantie / zone*vangstdag") +
+  ylab("Jaarsom abundantie per zone") +
   scale_x_continuous(breaks=seq(2014,2024,2)) +
   facet_grid(rows = vars(zone), scales = "free_y")
 
@@ -426,7 +426,8 @@ crangon.fig <- ggplot(Crangon, aes(x = Jaar, y = Biom.avg, fill = zone)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
   annotate("text", x = 2019, y=1.4, label = "Crangon crangon") +
   scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
-labs(x = "", y="")
+labs(x = "", y="") +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 crangon.fig
 #########
 
@@ -444,7 +445,8 @@ Neomysis.integer.fig <- ggplot(Neomysis.integer, aes(x = Jaar, y = Biom.avg, fil
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
   annotate("text", x = 2019, y=0.23, label = "Neomysis integer") +
   scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
-labs(x = "", y="")
+labs(x = "", y="") +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 Neomysis.integer.fig
 
 #######
@@ -463,7 +465,8 @@ Mesopodopsis.fig <- ggplot(Mesopodopsis, aes(x = Jaar, y = Biom.avg, fill = zone
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
   annotate("text", x = 2019, y=1, label = "Mesopodopsis slabberi") +
   scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
-labs(x = "", y="")
+labs(x = "", y="") +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 Mesopodopsis.fig
 
 #######
@@ -481,16 +484,65 @@ Palaemon.fig <- ggplot(Palaemon, aes(x = Jaar, y = Biom.avg, fill = zone)) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
   annotate("text", x = 2019, y=2.2, label = "Palaemon longirostris") +
   scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise")) +
-labs(x = "", y="")
+labs(x = "", y="") +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 Palaemon.fig
 
-t <-ggarrange(crangon.fig  + font("xy.text", size = fnt), 
+t <- ggarrange(crangon.fig  + font("xy.text", size = fnt), 
           Palaemon.fig  + font("xy.text", size = fnt),
           Mesopodopsis.fig + font("xy.text", size = fnt), 
           Neomysis.integer.fig + font("xy.text", size = fnt), ncol=1, nrow = 4) 
-annotate_figure(t, left = text_grob("Gemiddelde biomassa per jaar per zone", rot=90), bottom = text_grob("Jaar"))
+annotate_figure(t, left = text_grob("Gemiddelde biomassa per jaar per zone", rot = 90), bottom = text_grob("Jaar"))
 
-ggsave(paste0(pad_figuren, "080-EMSE-soorten-biomassa-zone-jaren.jpg"), height=9, width=9)
+ggsave(paste0(pad_figuren, "080-EMSE-soorten-biomassa-zone-jaren.jpg"), height = 9, width = 9)
+
+
+##############################
+# Zelfde voor biomassa
+crangon.fig.n <- ggplot(Crangon, aes(x = Jaar, y = N.avg, fill = zone)) +
+  geom_area() +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
+  annotate("text", x = 2019, y=650, label = "Crangon crangon") +
+  scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
+labs(x = "", y="") +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+crangon.fig.n
+
+Palaemon.fig.n <- ggplot(Palaemon, aes(x = Jaar, y = N.avg, fill = zone)) +
+  geom_area() +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
+  annotate("text", x = 2019, y=68, label = "Palaemon longirostris") +
+  scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise")) +
+labs(x = "", y="") +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+Palaemon.fig.n
+
+Mesopodopsis.fig.n <- ggplot(Mesopodopsis, aes(x = Jaar, y = N.avg, fill = zone)) +
+  geom_area() +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
+  annotate("text", x = 2019, y=2100, label = "Mesopodopsis slabberi") +
+  scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
+labs(x = "", y="") +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+Mesopodopsis.fig.n
+
+Neomysis.integer.fig.n <- ggplot(Neomysis.integer, aes(x = Jaar, y = N.avg, fill = zone)) +
+  geom_area() +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 6)) +
+  annotate("text", x = 2019, y=175, label = "Neomysis integer") +
+  scale_fill_manual(values = c("Sterke Saliniteitsgradiënt" = "darkseagreen3", "Oligohalien" = "cadetblue", "Zoet" = "darkturquoise"))+
+labs(x = "", y="") +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+Neomysis.integer.fig.n
+
+t.n <- ggarrange(crangon.fig.n  + font("xy.text", size = fnt), 
+          Palaemon.fig.n  + font("xy.text", size = fnt),
+          Mesopodopsis.fig.n + font("xy.text", size = fnt), 
+          Neomysis.integer.fig.n + font("xy.text", size = fnt), ncol=1, nrow = 4) 
+annotate_figure(t.n, left = text_grob("Gemiddelde abundantie per jaar per zone", rot = 90), bottom = text_grob("Jaar"))
+
+ggsave(paste0(pad_figuren, "080-EMSE-soorten-abundantie-zone-jaren.jpg"), height = 9, width = 9)
+
 ```
 
 
@@ -652,6 +704,8 @@ bxp_hpbZSb
 
 #TOETSPARAMETER abundantie
 ```{r 080 - TOETSPARAMETER ABUNDANTIE}
+fnt <- 8
+
 trend_ABUN_ZS.EMSE <- 
   data_hyperbenthos_totaal.EMSE %>%
   dplyr::group_by(Jaar, Maand) %>% # stations en zones samen, zodat enkel maandelijks verschillen overblijven. 
@@ -662,30 +716,15 @@ trend_ABUN_ZS.EMSE <-
   summarise(across(c(n, AFDW), list(
     tot = ~sum(., na.rm = TRUE),
     mean = ~max(0, mean(., na.rm = TRUE)))), .groups = "drop") %>% 
-  ggplot(aes(x=Jaar, y= AFDW_mean)) +
+  ggplot(aes(x=Jaar, y= n_mean)) +
   geom_line(size = 1.2) +
-  geom_line(aes(y=zoo::rollmean(AFDW_mean, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(aes(y=zoo::rollmean(n_mean, 3, na.pad=TRUE)), size = 1.2, colour="red") +
   geom_line(size = 1.2) +
    labs(x = "", y="") +
    #theme(axis.text.x = element_text(angle = 45))+
   ylim(0,4000)+ ggtitle("Volledige Zeeschelde")+
   theme(title = element_text(size=10))
-
-## For illustration add a ribbon of variation based on 1.96se of simple smoothed gam
-library(mgcv)
-
-gam_model <- mgcv::gam(AFDW_mean ~ s(Jaar, k = 5), data = data_summary.EMSE)
-
-# Predict & add predicted values & CI
-newdata <- data.frame(Jaar = data_summary.EMSE$Jaar)
-pred <- predict(gam_model, newdata = newdata, se.fit = TRUE)
-newdata$fit <- pred$fit
-newdata$se <- pred$se.fit
-newdata$upper <- newdata$fit + 1.96 * newdata$se
-newdata$lower <- newdata$fit - 1.96 * newdata$se
-
-# Filter to only positive fitted values for plotting purposes
-newdata_pos <- newdata %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(AFDW_mean = fit)
+trend_ABUN_ZS.EMSE
 
 ### Add threshold, strong bias by exceptional 2014, and single year is always prone to variation so extract rollmean of 2016 (first year out of influence of 2014 with rollmean=3)
 data_summary.EMSE <- data_hyperbenthos_totaal.EMSE %>%
@@ -697,15 +736,32 @@ data_summary.EMSE <- data_hyperbenthos_totaal.EMSE %>%
     tot = ~sum(., na.rm = TRUE),
     mean = ~max(0, mean(., na.rm = TRUE)))), .groups = "drop")
 
+## For illustration add a ribbon of variation based on 1.96se of simple smoothed gam
+library(mgcv)
+
+gam_model <- mgcv::gam(n_mean ~ s(Jaar, k = 5), data = data_summary.EMSE)
+
+# Predict & add predicted values & CI
+newdata <- data.frame(Jaar = data_summary.EMSE$Jaar)
+pred <- predict(gam_model, newdata = newdata, se.fit = TRUE)
+newdata$fit <- pred$fit
+newdata$se <- pred$se.fit
+newdata$upper <- newdata$fit + 1.96 * newdata$se
+newdata$lower <- newdata$fit - 1.96 * newdata$se
+
+# Filter to only positive fitted values for plotting purposes
+newdata_pos <- newdata %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(n_mean = fit)
+
 # Compute 3-year rollmean of AFDW_mean
-data_summary.EMSE$rollmean <- zoo::rollmean(data_summary.EMSE$AFDW_mean, 3, na.pad = TRUE)
+data_summary.EMSE$rollmean <- zoo::rollmean(data_summary.EMSE$n_mean, 3, na.pad = TRUE)
 
 # Extract rollmean value for year 2016
 rollmean_2016.EMSE <- data_summary.EMSE$rollmean[data_summary.EMSE$Jaar == 2016]
 
-ABUND.ZS <-trend_ABUN_ZS.EMSE +
+ABUND.ZS <- trend_ABUN_ZS.EMSE +
   geom_hline(yintercept = rollmean_2016.EMSE, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_pos, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_pos, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 ABUND.ZS
 
 
@@ -721,9 +777,9 @@ trend_ABUN_SS.EMSE <-
   dplyr::summarise(across(c(n, AFDW), list(
     tot = ~sum(., na.rm = TRUE),
     mean = ~max(0, mean(., na.rm = TRUE)))), .groups = "drop") %>% 
-  ggplot(aes(x=Jaar, y= AFDW_mean)) +
+  ggplot(aes(x=Jaar, y= n_mean)) +
   geom_point(size = 1.2) +
-  geom_line(aes(y=zoo::rollmean(AFDW_mean, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(aes(y=zoo::rollmean(n_mean, 3, na.pad=TRUE)), size = 1.2, colour="red") +
   geom_line(size = 1.2) +
    labs(x = "", y="") +
    #theme(axis.text.x = element_text(angle = 45))+
@@ -741,7 +797,7 @@ data_summary.SS.EMSE <- data_hyperbenthos_totaal.EMSE %>%
     mean = ~max(0, mean(., na.rm = TRUE)))), .groups = "drop")
 
 ##### Add some indication of variation of data, purely illustrative. Based on simple GAM
-gam_modelSS <- mgcv::gam(AFDW_mean ~ s(Jaar, k = 5), data = data_summary.SS.EMSE)
+gam_modelSS <- mgcv::gam(n_mean ~ s(Jaar, k = 5), data = data_summary.SS.EMSE)
 
 # Predict & add predicted values & CI
 newdataSS <- data.frame(Jaar = data_summary.SS.EMSE$Jaar)
@@ -752,18 +808,19 @@ newdataSS$upper <- newdataSS$fit + 1.96 * newdataSS$se
 newdataSS$lower <- newdataSS$fit - 1.96 * newdataSS$se
 
 # Filter to only positive fitted values for plotting purposes
-newdata_posSS <- newdataSS %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(AFDW_mean = fit)
+newdata_posSS <- newdataSS %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(n_mean = fit)
 
 ##### Compute 3-year rollmean of AFDW_mean
-data_summary.SS.EMSE$rollmean <- zoo::rollmean(data_summary.SS.EMSE$AFDW_mean, 3, na.pad = TRUE)
+data_summary.SS.EMSE$rollmean <- zoo::rollmean(data_summary.SS.EMSE$n_mean, 3, na.pad = TRUE)
 
 # Extract rollmean value for year 2016
 rollmean_2016.SS.EMSE <- data_summary.SS.EMSE$rollmean[data_summary.SS.EMSE$Jaar == 2016]
 
 ABUND.SS <- trend_ABUN_SS.EMSE +
   geom_hline(yintercept = rollmean_2016.SS.EMSE, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_posSS, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
-
+    geom_ribbon(data = newdata_posSS, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ABUND.SS
 
 
 ######## OLIGOHALIEN ##########
@@ -777,9 +834,9 @@ trend_ABUN_OLIG.EMSE <-
   dplyr::summarise(across(c(n, AFDW), list(
     tot = ~sum(., na.rm = TRUE),
     mean = ~max(0, mean(., na.rm = TRUE)))), .groups = "drop") %>% 
-  ggplot(aes(x=Jaar, y= AFDW_mean)) +
+  ggplot(aes(x=Jaar, y= n_mean)) +
   geom_point(size = 1.2) +
-  geom_line(aes(y=zoo::rollmean(AFDW_mean, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(aes(y=zoo::rollmean(n_mean, 3, na.pad=TRUE)), size = 1.2, colour="red") +
   geom_line(size = 1.2) +
    labs(x = "", y="") +
    #theme(axis.text.x = element_text(angle = 45))+
@@ -798,13 +855,13 @@ data_summary.OLIG.EMSE <- data_hyperbenthos_totaal.EMSE %>%
     mean = ~max(0, mean(., na.rm = TRUE)))), .groups = "drop")
 
 # Compute 3-year rollmean of AFDW_mean
-data_summary.OLIG.EMSE$rollmean <- zoo::rollmean(data_summary.OLIG.EMSE$AFDW_mean, 3, na.pad = TRUE)
+data_summary.OLIG.EMSE$rollmean <- zoo::rollmean(data_summary.OLIG.EMSE$n_mean, 3, na.pad = TRUE)
 
 # Extract rollmean value for year 2016
 rollmean_2016.OLIG.EMSE <- data_summary.OLIG.EMSE$rollmean[data_summary.OLIG.EMSE$Jaar == 2016]
 
 ##### Add some indication of variation of data, purely illustrative. Based on simple GAM
-gam_modelOLIG <- mgcv::gam(AFDW_mean ~ s(Jaar, k = 5), data = data_summary.OLIG.EMSE)
+gam_modelOLIG <- mgcv::gam(n_mean ~ s(Jaar, k = 5), data = data_summary.OLIG.EMSE)
 
 # Predict & add predicted values & CI
 newdataOLIG <- data.frame(Jaar = data_summary.OLIG.EMSE$Jaar)
@@ -815,14 +872,13 @@ newdataOLIG$upper <- newdataOLIG$fit + 1.96 * newdataOLIG$se
 newdataOLIG$lower <- newdataOLIG$fit - 1.96 * newdataOLIG$se
 
 # Filter to only positive fitted values for plotting purposes
-newdata_posOLIG <- newdataOLIG %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(AFDW_mean = fit)
-
+newdata_posOLIG <- newdataOLIG %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(n_mean = fit)
 
 # FIGUUR
-
 ABUND.OLIG <- trend_ABUN_OLIG.EMSE +
   geom_hline(yintercept = rollmean_2016.OLIG.EMSE, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_posOLIG, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_posOLIG, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 ABUND.OLIG
 
 
@@ -837,9 +893,9 @@ trend_ABUN_ZOET.EMSE <-
   dplyr::summarise(across(c(n, AFDW), list(
     tot = ~sum(., na.rm = TRUE),
     mean = ~max(0, mean(., na.rm = TRUE)))), .groups = "drop") %>% 
-  ggplot(aes(x=Jaar, y= AFDW_mean)) +
+  ggplot(aes(x=Jaar, y= n_mean)) +
   geom_point(size = 1.2) +
-  geom_line(aes(y=zoo::rollmean(AFDW_mean, 3, na.pad=TRUE)), size = 1.2, colour="red") +
+  geom_line(aes(y=zoo::rollmean(n_mean, 3, na.pad=TRUE)), size = 1.2, colour="red") +
   geom_line(size = 1.2) +
    labs(x = "", y="") +
    #theme(axis.text.x = element_text(angle = 45))+
@@ -858,13 +914,13 @@ data_summary.ZOET.EMSE <- data_hyperbenthos_totaal.EMSE %>%
     mean = ~max(0, mean(., na.rm = TRUE)))), .groups = "drop")
 
 # Compute 3-year rollmean of AFDW_mean
-data_summary.ZOET.EMSE$rollmean <- zoo::rollmean(data_summary.ZOET.EMSE$AFDW_mean, 3, na.pad = TRUE)
+data_summary.ZOET.EMSE$rollmean <- zoo::rollmean(data_summary.ZOET.EMSE$n_mean, 3, na.pad = TRUE)
 
 # Extract rollmean value for year 2016
 rollmean_2016.ZOET.EMSE <- data_summary.ZOET.EMSE$rollmean[data_summary.ZOET.EMSE$Jaar == 2016]
 
 ##### Add some indication of variation of data, purely illustrative. Based on simple GAM
-gam_modelZOET <- mgcv::gam(AFDW_mean ~ s(Jaar, k = 5), data = data_summary.ZOET.EMSE)
+gam_modelZOET <- mgcv::gam(n_mean ~ s(Jaar, k = 5), data = data_summary.ZOET.EMSE)
 
 # Predict & add predicted values & CI
 newdataZOET <- data.frame(Jaar = data_summary.ZOET.EMSE$Jaar)
@@ -875,28 +931,28 @@ newdataZOET$upper <- newdataZOET$fit + 1.96 * newdataZOET$se
 newdataZOET$lower <- newdataZOET$fit - 1.96 * newdataZOET$se
 
 # Filter to only positive fitted values for plotting purposes
-newdata_posZOET <- newdataZOET %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(AFDW_mean = fit)
+newdata_posZOET <- newdataZOET %>% dplyr::mutate(lower = ifelse(lower<0, 0, lower)) %>% rename(n_mean = fit)
 
 
 # FIGUUR
 
 ABUND.ZOET <- trend_ABUN_ZOET.EMSE +
   geom_hline(yintercept = rollmean_2016.ZOET.EMSE, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_posZOET, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_posZOET, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 ABUND.ZOET
 
   
  
 ####FIGUREN SAMEN
 
-t.EMSE <-ggarrange(ABUND.ZS  + font("xy.text", size = fnt), 
+t.EMSE <- ggarrange(ABUND.ZS  + font("xy.text", size = fnt), 
           ABUND.SS  + font("xy.text", size = fnt),
           ABUND.OLIG + font("xy.text", size = fnt), 
           ABUND.ZOET + font("xy.text", size = fnt), ncol=2, nrow = 2) 
-annotate_figure(t, left=text_grob("Gemiddelde densiteit per jaar per zone", rot=90), bottom=text_grob("Jaar"))
-t.EMSE
+annotate_figure(t.EMSE, left = text_grob("    Gemiddelde densiteit per bemonstering per zone", rot=90), bottom = text_grob("Jaar"))
 
-ggsave(paste0(pad_figuren, "080-figuur-densiteit_ZS_jaarverloop_zones1.EMSE.jpg"), height=4, width=6)
+ggsave(paste0(pad_figuren, "080-figuur-densiteit_zones.EMSE.jpg"), height=4, width=6)
 ```
 
 
@@ -1062,7 +1118,8 @@ rollmean_2016.EMSE <- data_summary.EMSE$rollmean[data_summary.EMSE$Jaar == 2016]
 
 BIOM.ZS <-trend_BIOM_ZS.EMSE +
   geom_hline(yintercept = rollmean_2016.EMSE, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_pos, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_pos, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 BIOM.ZS
 
 
@@ -1119,7 +1176,8 @@ rollmean_2016.SS.EMSE <- data_summary.SS.EMSE$rollmean[data_summary.SS.EMSE$Jaar
 
 BIOM.SS <- trend_BIOM_SS.EMSE +
   geom_hline(yintercept = rollmean_2016.SS.EMSE, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_posSS, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_posSS, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 
 BIOM.SS
 
@@ -1179,7 +1237,8 @@ newdata_posOLIG <- newdataOLIG %>% dplyr::mutate(lower = ifelse(lower<0, 0, lowe
 
 BIOM.OLIG <- trend_BIOM_OLIG.EMSE +
   geom_hline(yintercept = rollmean_2016.OLIG.EMSE, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_posOLIG, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_posOLIG, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 BIOM.OLIG
 
 
@@ -1239,21 +1298,22 @@ newdata_posZOET <- newdataZOET %>% dplyr::mutate(lower = ifelse(lower<0, 0, lowe
 
 BIOM.ZOET <- trend_BIOM_ZOET.EMSE +
   geom_hline(yintercept = rollmean_2016.ZOET.EMSE, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_posZOET, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_posZOET, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 BIOM.ZOET
 
   
  
 ####FIGUREN SAMEN
 
-t.EMSE.BIOM <-ggarrange(BIOM.ZS  + font("xy.text", size = fnt), 
+t.EMSE.BIOM <- ggarrange(BIOM.ZS  + font("xy.text", size = fnt), 
           BIOM.SS  + font("xy.text", size = fnt),
           BIOM.OLIG + font("xy.text", size = fnt), 
-          BIOM.ZOET + font("xy.text", size = fnt), ncol=2, nrow = 2) 
-annotate_figure(t, left=text_grob("Gemiddelde densiteit per jaar per zone", rot=90), bottom=text_grob("Jaar"))
-t.EMSE.BIOM
+          BIOM.ZOET + font("xy.text", size = fnt), ncol = 2, nrow = 2) 
+annotate_figure(t.EMSE.BIOM, left=text_grob("Gemiddelde biomassa (g AFDW) per bemonstering per zone", rot = 90), bottom = text_grob("Jaar"))
 
-ggsave(paste0(pad_figuren, "080-figuur-densiteit_ZS_jaarverloop_zones1.EMSE.jpg"), height=4, width=6)
+
+ggsave(paste0(pad_figuren, "080-figuur-biomassa_zones.EMSE.jpg"), height=4, width=6)
 ```
 
 
@@ -1431,7 +1491,7 @@ ggsave(paste0(pad_figuren, "080_figuur_biomassa_biomassa_perc_soorten_perjaar.jp
 ```{r 080-figuur-soortenrijkdomZS-perjaar}
 #met en zonder exoten ter vgl
 
-#TODO: best ook evg rijkdom, zodat variatie doorheen tijd kan weergegeven worden -> evaluatiecriterium
+
 hpb_specrich.ZS <- data_hyperbenthos %>%
   dplyr::group_by(Jaar) %>% 
   dplyr::summarise(specrich = length(unique(soort))) %>% 
@@ -1485,7 +1545,7 @@ gnex
 ggarrange(welex, gnex, 
           nrow = 1)
 
-ggsave(paste0(pad_figuren, "080_figuur_soortenrijkdomZS_perjaar.jpg"), height=4, width=6)
+ggsave(paste0(pad_figuren, "080_figuur_soortenrijkdomZS_perjaar.jpg"), height = 4, width = 6)
 
 ################## met avg soortenrijkdom ###########
 #######################################################
@@ -1571,7 +1631,8 @@ rollmean_2016.EMSE.SS <- Sp.rich.SS$rollmean[Sp.rich.SS$Jaar == 2016]
 
 Navg.SS.x <- Navg.SS +
   geom_hline(yintercept = rollmean_2016.EMSE.SS, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_posSSrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_posSSrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2)  +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 Navg.SS.x
 
 ## ZEESCHELDE
@@ -1611,7 +1672,8 @@ rollmean_2016.EMSE.ZS <- Sp.rich.ZS$rollmean[Sp.rich.ZS$Jaar == 2016]
 
 Navg.ZS.x <- Navg.ZS +
   geom_hline(yintercept = rollmean_2016.EMSE.ZS, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_posZSrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_posZSrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2)  +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 Navg.ZS.x
 
 ## OLIGOHALIEN
@@ -1651,7 +1713,8 @@ rollmean_2016.EMSE.OLIG <- Sp.rich.OLIG$rollmean[Sp.rich.OLIG$Jaar == 2016]
 
 Navg.OLIG.x <- Navg.OLIG +
   geom_hline(yintercept = rollmean_2016.EMSE.OLIG, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_posOLIGrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_posOLIGrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2)  +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 Navg.OLIG.x
 
 ## ZOET
@@ -1691,7 +1754,8 @@ rollmean_2016.EMSE.ZOET <- Sp.rich.ZOET$rollmean[Sp.rich.ZOET$Jaar == 2016]
 
 Navg.ZOET.x <- Navg.ZOET +
   geom_hline(yintercept = rollmean_2016.EMSE.ZOET, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_posZOETrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_posZOETrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2)  +
+  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
 Navg.ZOET.x
 
 
@@ -1701,7 +1765,50 @@ t.EMSE.SPECRICH <-ggarrange(Navg.ZS.x  + font("xy.text", size = fnt),
           Navg.ZOET.x + font("xy.text", size = fnt), ncol=2, nrow = 2) 
 annotate_figure(t.EMSE.SPECRICH, left = text_grob("Gemiddelde soortenrijkdom per maand per zone", rot=90), bottom=text_grob("Jaar"))
 
-ggsave(paste0(pad_figuren, "080-figuur-Soortenrijkdom.per.maand_ZONES.jpg"), height=4, width=6)
+ggsave(paste0(pad_figuren, "080-figuur-Soortenrijkdom.per.maand_ZONES.jpg"), height = 4, width = 6)
+
+#### Statistiek ####
+# rijkdom verschilt weinig per maand, daarom als herhaalde meting gebruiken voor bepalen richness per jaar (niet echt juist, kweet het...)
+ggplot(Sp.rich.ZS.month, aes(x=Maand, y = specrich))+
+  geom_bar(stat = "summary", fun.y = "mean")
+
+## testen van de flating mean tov de referentie (ook een floating mean, maar dan rond 2016)
+## test met lmer met als vb Oligohalien: 
+# Required packages
+library(zoo)
+library(lme4)
+library(emmeans)
+
+
+# Step 1: Sort and calculate 3-year floating mean per plot (Maand)
+df_ma <- Sp.rich.OLIG.month %>%
+  arrange(Maand, Jaar) %>%
+  dplyr::group_by(Maand) %>%
+  dplyr::mutate(
+    specrich_ma3 = rollapply(specrich, width = 3, FUN = mean, align = "center", fill = NA),
+    center_year = rollapply(Jaar, width = 3, FUN = function(x) x[2], align = "center", fill = NA)
+  ) %>%
+  dplyr::ungroup() %>%
+  dplyr::filter(!is.na(specrich_ma3))
+
+# Step 2: Create year_window factor and set reference (e.g., center year = 2001)
+df_ma <- df_ma %>%
+  dplyr::mutate(
+    year_window = factor(center_year),
+    year_window = relevel(year_window, ref = "2016")  # set 2016 as reference
+  )
+
+# Step 3: Fit linear mixed model
+model <- lmer(specrich_ma3 ~ year_window + (1 | Maand), data = df_ma)
+
+# Step 4: Estimated marginal means and comparison to reference window
+em <- emmeans(model, ~ year_window)
+results <- contrast(em, method = "trt.vs.ctrl", ref = which(levels(df_ma$year_window) == "2016"))
+
+# View results
+summary(results) # voor floating mean van 2023 is p-waarde 0.12 voor contrast met floating mean van 2016 (referentie)
+
+
 ```
 
 ```{r 080-figuur-soortenrijkdomZS-perjaargebied}
