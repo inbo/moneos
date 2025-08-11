@@ -2602,8 +2602,8 @@ hline.zs_vals <- avgShannon.base %>%
 
 
 shan.zs.biom <- ggplot(avgShannon.base, aes(x = jaar, y = Shannon_biomassa_mean, group = tidaal)) + 
-  geom_point(aes(x = jaar, y = Shannon_biomassa_mean, group = tidaal)) + 
-  geom_smooth(span = 2) + 
+  geom_point(aes(x = jaar, y = Shannon_biomassa_mean, colour=tidaal)) + 
+  geom_smooth(span = 2, aes(colour = tidaal)) + 
   geom_hline(
     data = hline.zs_vals %>% dplyr::filter(jaar == "2009"),
     aes(yintercept = Shannon_biomassa_mean, linetype = tidaal),
@@ -2622,7 +2622,7 @@ shan.zs.biom
 
 shan.zs.dens <- ggplot(avgShannon.base, aes(x = jaar, y = Shannon_dens_mean, group = tidaal)) + 
   geom_point(aes(x = jaar, y = Shannon_dens_mean, colour = tidaal)) + 
-  geom_smooth(span = 2) + 
+  geom_smooth(span = 2, aes(colour = tidaal)) + 
     geom_hline(
     data = hline.zs_vals %>% dplyr::filter(jaar == "2009"),
     aes(yintercept = Shannon_dens_mean, linetype = tidaal),
@@ -2687,8 +2687,8 @@ hline_vals <- avgShannon.base.wl %>%
 
 
 shan.wl.biom <- ggplot(avgShannon.base.wl, aes(x = jaar, y = Shannon_biomassa_mean, group = tidaal)) + 
-  geom_point(aes(x = jaar, y = Shannon_biomassa_mean, group = tidaal)) + 
-  geom_smooth(span = 2) + 
+  geom_point(aes(x = jaar, y = Shannon_biomassa_mean, colour = tidaal)) + 
+  geom_smooth(span = 2, aes(colour = tidaal)) + 
   geom_hline(
     data = hline_vals %>% dplyr::filter(jaar == "2009"),
     aes(yintercept = Shannon_biomassa_mean, linetype = tidaal),
@@ -2708,8 +2708,8 @@ shan.wl.biom <- ggplot(avgShannon.base.wl, aes(x = jaar, y = Shannon_biomassa_me
 shan.wl.biom
 
 shan.wl.dens <- ggplot(avgShannon.base.wl, aes(x = jaar, y = Shannon_dens_mean, group = tidaal)) + 
-  geom_point(aes(x = jaar, y = Shannon_dens_mean, group = tidaal)) + 
-  geom_smooth(span = 2) +
+  geom_point(aes(x = jaar, y = Shannon_dens_mean, colour = tidaal)) + 
+  geom_smooth(span = 2,  aes(colour = tidaal)) +
     geom_hline(
     data = hline_vals %>% dplyr::filter(jaar == "2009"),
     aes(yintercept = Shannon_dens_mean, linetype = tidaal),
@@ -2728,8 +2728,8 @@ shan.wl.dens <- ggplot(avgShannon.base.wl, aes(x = jaar, y = Shannon_dens_mean, 
   theme(axis.text.x = element_text(angle = 90))
 shan.wl.dens
 
-Shan.avg.biomdens <- ggarrange(shan.wl.biom + rremove("xlab") + rremove("ylab") + font("xy.text", size = 8), 
-          shan.wl.dens + rremove("xlab") + rremove("ylab") + font("xy.text", size = 8), 
+Shan.avg.biomdens <- ggarrange(shan.wl.dens + rremove("xlab") + rremove("ylab") + font("xy.text", size = 8), 
+          shan.wl.biom + rremove("xlab") + rremove("ylab") + font("xy.text", size = 8), 
           nrow = 2,
           common.legend = TRUE, legend = "right")
 
