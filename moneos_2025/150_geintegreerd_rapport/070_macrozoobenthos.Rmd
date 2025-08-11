@@ -333,51 +333,61 @@ knitr::include_graphics(paste0(pad_figuren, "070-figuur-aandeel-lege-stalen.jpg"
 
 #### Soortenrijkdom
 
-Het meest recente EMSE criterium geeft aan dat de soortenrijkdom niet significant mag afnemen ten opzichte van de T2009 en de T2015, in elk deelgebied en voor inter- en subtidaal (Consortium Schelde in Beeld, 2022). Omdat we totale soortenrijkdom niet kunnen corrigeren voor aantal en herkomst van stalen (tenzij deels met rarefactie) geven we voor de zone Zoet kort verblijf de soortenrijkdom ook apart weer voor de tijarmen. Een volledige determinatie van het macrozoöbenthos, inclusief de Oligochaeta, gebeurt elke drie jaar (2008, 2011, 2014, 2017, 2020, 2023). We indiceren daarom de OID determinatiejaren met bolletjes in de figuren. Naast de totale soortenrijkdom (overheen alle stalen in een deelgebied), geven we ook de mediane soortenrijkdom op fysiotoopniveau per deelgebied. Totale soortenrijkdom wordt in grotere mate beïnvloed door verschillen in aanwezigheid van soorten tussen fysiotopen, terwijl de mediane soortenrijkdom op fysiotoopniveau meer vertelt over de soortendichtheid (hoeveel soorten per oppervlakte). TODO
+Het meest recente EMSE criterium geeft aan dat de soortenrijkdom niet significant mag afnemen ten opzichte van de T2009 en de T2015, in elk deelgebied en voor inter- en subtidaal (Consortium Schelde in Beeld, 2022). Omdat we totale soortenrijkdom niet kunnen corrigeren voor aantal en herkomst van stalen (tenzij deels met rarefactie) geven we in de zone Zoet kort verblijf de soortenrijkdom ook apart weer voor de tijarmen. Een volledige determinatie van het macrozoöbenthos, inclusief de Oligochaeta, gebeurt elke drie jaar (2008, 2011, 2014, 2017, 2020, 2023), wat een sterke invloed heeft op de soortenrijkdom. We indiceren daarom de OID determinatiejaren met bolletjes in de figuren. DE EMSE grenswaarden (EMSE_2009 en EMSE_2015) betreffen jaren zonder OID, en zijn dus niet toepasbaar op OID jaren, inclusief het huidige rapportagejaar 2023. De soortenrijkdom in 2023 was vrij hoog in de meeste deelgebieden, zelfs voor een OID-jaar (Figuur \@ref(fig:070-figuur10-rijkdom)). Een belangrijke opmerking is dat we soortenrijkdom niet corrigeren voor densiteit, en dat de densiteit in 2023 hoger lag in verschillende deelgebieden.
 
 ```{r 070-figuur10-rijkdom, fig.cap=caption_regressie10rijkdom, out.width="100%"}
-caption_regressie10rijkdom <- "Totaal aantal soorten (volle lijn) en mediane soortenrijkdom per staal (."
+caption_regressie10rijkdom <- "Totaal aantal soorten per deelgebied en per inter- en subtidaal. OID-jaren worden aangeduid met een punt. De EMSE-grenswaarden (2009: blauw, 2015: rood) worden weergegeven als horizontale lijnen."
 
-knitr::include_graphics(paste0(pad_figuren, "070-figuur-SOORTENRIJKDOM-waterloop.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "070-figuur-SOORTENRIJKDOM-waterloop.tidaal.jpg"))
 
 ```
 
+De Oligochaeta vormen veruit de soortenrijkste groep in het grootste deel van de Zeeschelde, en bij uitstek in de zoete en oligohaliene zones. IN OID-jaren zoals 2023 bekijken we de rijkdom van Oligochaeta meer in detail. Vanwege de grote invloed van abundantie op soortenrijkdom, gebruiken we hiervoor rarefactie. Meer uitleg over deze methode en hoe we deze toepassen is te vinden in het MONEOS rapport van 2023 (Van Ryckegem et al. 2023). Belangrijk voor het begrijpen van de figuren is dat soortenrijkdom toeneemt met het aantal Oligochaeta dat je determineert, en dat je soortenrijkdom voor verschillende deelgebieden of jaren kan vergelijken door de curves te vergelijken bij eenzelfde aantal Oligochaeta.
+De soortenrijkdom van Oligochaeta is binnen de deelgebieden van de Zeeschelde het hoogst in de zone Zoet kort verblijf, en dat blijft zo overheen alle OID-jaren (Figuur \@ref(fig:070-figuur11-rarefact)). Wanneer we per zone kijken, dan valt op dat Oligochaeta diversiteit opvallend hoog was in de zone Sterke Saliniteitsgradiënt, veel hoger dan in alle voorgaande OID-jaren. In de andere deelgebieden viel de soortenrijkdom binnen de langjarige variatie (Figuur \@ref(fig:070-figuur12-rarefact)).
 
+```{r 070-figuur11-rarefact, fig.cap=caption_regressie11rarefact, out.width="100%"}
+caption_regressie11rarefact <- "Rarefactie-curves van Oligochaeta voor de deelgebieden van de Zeeschelde per OID jaar."
 
-De soortenrijkdom lijkt daarom cyclisch hoger, behalve na 2018 in de zijrivieren omdat hier enkel nog driejaarlijks bemonsterd wordt in de OID-jaren (niet in Durme en Rupel - deze worden wel jaarlijks bemonsterd), en de soortenrijkdom dus structureel hoger lijkt.\
-Een overzicht van de soortenrijkdom voor de verschillende waterlichamen en de verschillende jaren per tidale zone (inter-, sub-) staat in de figuren \@ref(fig:070-figuur15) en \@ref(fig:070-figuur15b).
-Het onderzoeksjaar 2022 was geen OID jaar, dus de de soortenrijkdom is exclusief de soortenrijkdom van Oligochaeta.
+knitr::include_graphics(paste0(pad_figuren, "OID.RAREFACT.WATERLOOP.per.jaar.jpg"))
 
-In vrij veel zones ligt de soortenrijkdom de laatste 2-3 onderzoeksjaren iets hoger dan in vergelijkbare jaren (zonder OID) de voorbije periode.
-Mogelijke oorzaken zijn het steeds toenemend aantal exotische soorten en de uitzonderlijke droogteperioden die mogelijks marinisatie van de Zeeschelde veroorzaakten.
-Vooral in de zone Saliniteitsgradiënt zien we vrij consistent een hogere soortenrijkdom.
-Apart onderzoek is nodig om het relatief belang van exoten in de Zeeschelde te duiden.
-Opvallend is dat enkel in het Oligohalien en de Rupel de taxa rijkdom vaak hoger is in het subtidaal dan in het intertidaal (Oligochaeta niet meegeteld).
-Dit patroon is stabiel in de tijd maar een reden ervoor is niet gekend.
-
-```{r 070-figuur15, fig.cap=caption_regressie15, out.width="100%"}
-caption_regressie15 <- "Staalgemiddelde soortenrijkdom (boxplots; mediaan, IQrange) per waterlichaam doorheen de tijd. De Oligochaeta worden niet steeds gedetermineerd en werden als 1 taxon beschouwd, behalve in de jaren 2008, 2011, 2014, 2017 en 2020. De jaren onderling vergelijken kan dus enkel tussen deze opgesomde jaren, en tussen de tussenliggende jaren."
-
-knitr::include_graphics(paste0(pad_figuren, "070-figuur-soortenrijkdom-Zeeschelde.jpg"))
 ```
 
-```{r 070-figuur15b, fig.cap=caption_regressie15b, out.width="100%"}
-caption_regressie15b <- "Soortenrijkdom per waterlichaam doorheen de tijd. De Oligochaeta worden niet steeds gedetermineerd en werden als 1 taxon beschouwd, behalve in de jaren 2008, 2011, 2014, 2017 en 2020. De jaren onderling vergelijken kan dus enkel voor deze opgesomde jaren, en voor de tussenliggende jaren. De zone Zoet kort verblijf wordt hier getoond exlusief de tijarmen."
+```{r 070-figuur12-rarefact, fig.cap=caption_regressie12rarefact, out.width="100%"}
+caption_regressie12rarefact <- "Rarefactie-curves van Oligochaeta per OID-jaar voor de vier deelgebieden van de Zeeschelde."
 
-knitr::include_graphics(paste0(pad_figuren, "070-figuur-soortenrijkdom-lijn-Zeeschelde.jpg"))
+knitr::include_graphics(paste0(pad_figuren, "OID.RAREFACT.jaar.per.WATERLOOP.jpg"))
+
 ```
 
 <br/>
 
 #### Soortendiversiteit Shannon-index
 
-De Shannon diversiteit is een relatief nieuwe evaluatieparameter (EMSE 2021).
-Ze wordt berekend op zowel biomassa (g droge stof AFDW/m²) als op aantallen van het macrozoöbenthos.
-De Oligochaeta werden overheen alle jaren als één taxon beschouwd.
-We berekenden de Shannon diversiteit voor de vier saliniteitszones van de Zeeschelde (niveau 3) en voor de totale Zeeschelde.
-De evolutie van deze parameter overheen de jaren per tidale zone (inter-, sub-) staat in de figuren \@ref(fig:070-figuur16) en \@ref(fig:070-figuur17).
+De Shannon diversiteit is een relatief nieuwe evaluatieparameter (Consortium Schelde in Beeld, 2022).
+Ze wordt berekend op zowel biomassa (g droge stof AFDW/m²) als op abundantie van het macrozoöbenthos.
+Om het effect van OID-jaren weg te filteren worden de Oligochaeta overheen alle jaren als één taxon beschouwd.
+We berekenden de Shannon diversiteit voor de vier saliniteitszones van de Zeeschelde en voor de totale Zeeschelde.
+De evolutie van deze parameter voor densiteit en biomassa, overheen de jaren, overheen alle stalen, per tidale zone (inter-, sub-), voor de Zeeschelde eh de vier deelgebieden, staat in de figuren \@ref(fig:070-figuur13-shan1) en \@ref(fig:070-figuur14-shan1).
 
-De Shannon indices voor het intertidaal zijn vrij stabiel doorheen de tijd.
+
+```{r 070-figuur13-shan1, fig.cap=caption_regressie13shan1, out.width="100%"}
+caption_regressie13shan1 <- "Rarefactie-curves van Oligochaeta per OID-jaar voor de vier deelgebieden van de Zeeschelde."
+
+knitr::include_graphics(paste0(pad_figuren, "070-figuur-SHANNON-TOT-INTERTIDAAL.jpg"))
+
+```
+
+```{r 070-figuur14-shan1, fig.cap=caption_regressie14shan1, out.width="100%"}
+caption_regressie14shan1 <- "Rarefactie-curves van Oligochaeta per OID-jaar voor de vier deelgebieden van de Zeeschelde."
+
+knitr::include_graphics(paste0(pad_figuren, "070-figuur-SHANNON-TOT-SUBTIDAAL.jpg"))
+
+```
+
+
+De Shannon indices voor het intertidaal zijn vrij stabiel doorheen de tijd. In de meeste gebieden bemerken we een toename overheen de monitoringsperiode, maar 2023 was een jaar met een erg lage Shannon-diversiteit in de zone Oligohalien, omwille van een aantal stalen in de Rupel met zeer hoge densiteiten van Oligochaeta (>1000000 exs/m²), waardoor ook de Shannon diversiteit voor de volledige Zeeschelde daalde. Hetzelfde patroon voor Oligohalien vinden we in mindere mate terug in het subtidaal, al wordt daar de systeemtrend overheerst door de opkomst van de exotische brakwaterkorfschelp *Potamocorbula amurensis* vanaf 2019 in de zone Sterke Saliniteitsgradiënt.
+
+
 De Zeeschelde als geheel en de zone sterke Saliniteitsgradiënt hebben intertidaal een hogere Shannon diversiteit dan de overige zones, die vrij laag scoren.
 Voor Oligohalien biomassa en densiteiten en voor de overige zones enkel voor de densiteiten, is er grosso-modo een toenemende trend sinds 2015 van de Shannon-diversiteit.
 
