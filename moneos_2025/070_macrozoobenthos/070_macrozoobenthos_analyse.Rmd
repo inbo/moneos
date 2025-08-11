@@ -95,11 +95,15 @@ data_macrobenthos <-
     TRUE ~ fysiotoop)) %>% 
   droplevels() 
 #waaraan ligt de enorme toename (zie verder) in oligohalien? --> zeer grote densiteiten wormen in enkele stalen!!
+
 t2023 <- data_macrobenthos %>% 
   dplyr::filter(jaar == "2023" & waterloop %in% c("Rupel", "Oligohalien")) %>% 
   dplyr::filter(str_detect(soort, "Tubificide z"))
 ggplot(t2023, aes(x=densiteit, y=biomassa)) +
   geom_point()
+
+sub2023 <- data_macrobenthos %>% 
+  dplyr::filter(tidaal == "subtidaal" & jaar == "2023")
 
 
 unique(data_macrobenthos$fysiotoop)
@@ -2328,22 +2332,23 @@ Nspec <- data_macrobenthos %>%
 Nmed <- Nspec %>%
   dplyr::filter(jaar %in% c(2009, 2015)) %>% 
   dplyr::group_by(jaar, waterloop, tidaal) %>% 
-  dplyr::summarise(med = median(n, .groups = "drop")) 
+  dplyr::summarise(med = median(n, .groups = "drop")) %>% 
+  dplyr::ungroup() %>% 
+  droplevels()
   
-
 
 ggplot(data = Nspec, aes(x = jaar, y = n, fill = OID.jaar)) +
   geom_boxplot(aes(x = jaar, y = n)) +
   ggsci::scale_fill_simpsons() +
   labs(y = "aantal soorten (mediaan + 25-75 quantielen)") +
-  labs(x = "") +
- geom_hline(data = Nmed, aes(yintercept = med), inherit.aes = FALSE, linetype = "dashed", color = "orange") +
+  labs(x = "", fill = "OID jaar") +
+ geom_hline(data = Nmed, aes(yintercept = med), inherit.aes = FALSE, linetype = "dashed", color = Nmed$jaar) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
   theme(axis.text = element_text(size=6)) +
   scale_x_discrete(breaks = pretty(data_macrobenthos$jaar, n = 6)) +
   facet_wrap(tidaal~waterloop, nrow = 2)
 
-ggsave(paste0(pad_figuren, "070-figuur-MEDIAAN-RICHNESS-BOXPLOTS.jpg"), height=5, width=8) # hline geeft de 2009 en 2015 mediane richness weer, dus voor jaren ZONDER OID. Enkel te vgl met de NIET-OID jaren dus/ In bijschrift de lezer hierop wijzen en zeggen dat hij 2008 en 2014 kan gebruiken voor de OID jaren (niet aangeduid, figuur is nu al te vol)
+ggsave(paste0(pad_figuren, "070-figuur-MEDIAAN-RICHNESS-BOXPLOTS.jpg"), height=5.5, width=9) # hline geeft de 2009 en 2015 mediane richness weer, dus voor jaren ZONDER OID. Enkel te vgl met de NIET-OID jaren dus/ In bijschrift de lezer hierop wijzen en zeggen dat hij 2008 en 2014 kan gebruiken voor de OID jaren (niet aangeduid, figuur is nu al te vol)
 
 #waterlopen_order
 
@@ -2354,6 +2359,14 @@ SR <- data_macrobenthos %>%
                              levels = c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", "Zoet kort verblijf", "Zeeschelde I tijarm Zwijnaarde", "Zeeschelde I trj_Ml_Gb"))) %>% 
   dplyr::filter(!is.na(waterloop)) %>%
   dplyr::select(!c(locatie, densiteit, biomassa)) %>% 
+    dplyr::mutate(
+    fysiotoop = case_when(
+      fysiotoop == "subtidaal indet." ~ "ondiep subtidaal",
+      str_detect(fysiotoop, "matig") ~ "matig diep subtidaal",
+      str_detect(fysiotoop, "zeer|ch diep") ~ "diep subtidaal",
+      str_detect(fysiotoop, "ondiep") ~ "ondiep subtidaal",
+      TRUE ~ fysiotoop
+    )) %>% 
   dplyr::filter(fysiotoop %in% fysiotoop_order,
          fysiotoop != "hard substraat") %>% 
   dplyr::filter(soort !="geen") %>% 
@@ -2362,13 +2375,33 @@ SR <- data_macrobenthos %>%
 
 #soortenrijkdom per waterloop x jaar
 SR.waterloop <- SR %>% 
-  dplyr::group_by(jaar, waterloop) %>% 
-  dplyr::summarise(n = sum(is_soort), .groups = "drop")
+  dplyr::group_by(jaar, waterloop, tidaal) %>% 
+  dplyr::summarise(n = sum(is_soort)) %>% 
+  dplyr::ungroup()  %>% 
+  dplyr::mutate(OID.jaar = ifelse(
+      jaar %in% c(2008,2011,2014,2017,2020,2023), 1, 0))
 
-#soortenrijkdom per waterloop x jaar x fysiotoop, daarna daarvan boxplots; samenvoegen met de soortenrijkdom van SR.waterloop
+SR.plot <- ggplot(data = SR.waterloop, aes(x = jaar, y = n)) + 
+  geom_point(data = SR.waterloop %>%  dplyr::filter(OID.jaar == 1), color = "black") +
+  geom_line(aes(color = tidaal), size = 0.5) +
+   geom_hline(data = subset(SR.waterloop, jaar == 2009), aes(yintercept = n), inherit.aes = FALSE, linetype = "solid", color = "blue", size = 0.8) +
+#     geom_hline(data = subset(SR.waterloop, jaar == 2008), aes(yintercept = n), inherit.aes = FALSE, linetype = "11", color = "blue", size = 0.8) +
+   geom_hline(data = subset(SR.waterloop, jaar == 2015), aes(yintercept = n), inherit.aes = FALSE, linetype = "solid", color = "red", size = 0.8) +
+#     geom_hline(data = subset(SR.waterloop, jaar == 2014), aes(yintercept = n), inherit.aes = FALSE, linetype = "11", color = "red", size = 0.8) +
+  facet_grid(tidaal~waterloop) + 
+  theme(legend.position = "none") + 
+  labs(y="Totaal aantal soorten")  +
+    theme(axis.text.x = element_text(angle = 45), size = 8)
+SR.plot
+
+ggsave(paste0(pad_figuren, "070-figuur-SOORTENRIJKDOM-waterloop.tidaal.jpg"), height=6.5, width=10)
+
+
+#soortenrijkdom per waterloop x jaar x fysiotoop (mediaan),  samenvoegen met de soortenrijkdom van SR.waterloop
 SR.1 <- SR %>% 
   dplyr::group_by(jaar, fysiotoop, waterloop) %>% 
-  dplyr::summarise(n = sum(is_soort), .groups = "drop") %>% 
+  dplyr::summarise(n = sum(is_soort), .groups = "drop") %>%
+  dplyr::ungroup() %>% 
   dplyr::group_by(jaar, waterloop) %>% 
   dplyr::summarise_at(vars(n), 
                list(med = ~max(0, median(., na.rm = TRUE)),
@@ -2376,6 +2409,7 @@ SR.1 <- SR %>%
                     upr1 = ~max(0, quantile(., 0.75, na.rm = TRUE)),
                     lwr2 = ~max(0, quantile(., 0.05, na.rm = TRUE)),
                     upr2 = ~max(0, quantile(., 0.95, na.rm = TRUE)))) %>% 
+  dplyr::ungroup() %>% 
   left_join(SR.waterloop, by = c("jaar", "waterloop"))  %>% 
   dplyr::mutate(OID.jaar = ifelse(
       jaar %in% c(2008,2011,2014,2017,2020,2023), 1, 0))
