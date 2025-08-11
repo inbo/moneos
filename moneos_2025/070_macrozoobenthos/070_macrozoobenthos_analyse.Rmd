@@ -220,7 +220,6 @@ ggplot(correctie.GM.TZ, aes(x = jaar, y = oppratio, colour=waterloop)) +
 ```
 
 
-
 # Totaal-files
 ```{r 070-totaal-over-soorten}
 
@@ -297,10 +296,18 @@ tabel_staalnamelocaties$waterloop <- factor(
   tabel_staalnamelocaties$waterloop,
   levels = c("Dijle", "Nete", "Zenne", "Rupel","Durme", "Saliniteitsgradient", "Oligohalien", "Zoet kort verblijf", "Zoet lang verblijf"))
 
-tabel_staalnamelocaties_sorted <- tabel_staalnamelocaties[
+tabel_staalnamelocaties_sorted <- 
+  tabel_staalnamelocaties[
   order(tabel_staalnamelocaties$waterloop),
 ]
 
+tabel_staalnamelocaties_sorted1 <-
+
+  class(tabel_staalnamelocaties_sorted)
+%>% 
+  dplyr::select()
+
+ class(tabel_staalnamelocaties_sorted)
 #%>% 
 #  dplyr::select(waterloop, `laag intertidaal`, `middelhoog/hoog intertidaal`, `diep subtidaal`, `matig #diep subtidaal`, `ondiep subtidaal`)# `subtidaal indet.`, ,  `hard substraat`
 
@@ -2293,7 +2300,8 @@ data_macrobenthos_totaal %>%
   geom_point(aes(shape = systeem), size = 3) +
   scale_x_continuous(breaks = seq(if_else((laatste_jaar-vroegste_jaar)%%2 == 0, vroegste_jaar, vroegste_jaar+1), laatste_jaar, 2)) +
   scale_y_continuous(breaks = seq(0,50,10), labels = paste0(seq(0,50,10), "%")) +
-  labs(y = "aandeel lege stalen")
+  labs(y = "aandeel lege stalen") +
+  theme_bw()
 
 ggsave(paste0(pad_figuren, "070-figuur-aandeel-lege-stalen.jpg"), height=5, width=8)
 
