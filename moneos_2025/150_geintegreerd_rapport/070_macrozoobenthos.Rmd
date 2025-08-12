@@ -22,10 +22,7 @@ knitr::opts_knit$set(eval.after = "fig.cap")
 
 library(tidyverse)
 library(readxl)
-<<<<<<< HEAD
 library(knitr)
-=======
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 library(kableExtra)
 library(INBOtheme)
 library(rprojroot) ## workaround pad
@@ -72,13 +69,9 @@ Deze gegevens zijn verzameld met het oog op een systeemmonitoring, maar volgen e
 Sinds 2008 wordt jaarlijks op basis van een random stratified design benthos bemonsterd in de Zeeschelde, Durme en Rupel.
 Periodiek wordt ook het getij-onderhevige deel van de andere zijrivieren bemonsterd.
 
-<<<<<<< HEAD
-De gegevens van 2008 tot en met 2023 worden geleverd in een Excel-bestand
+De gegevens van 2008 tot en met 2023 worden geleverd in een Excel-bestand 
 
 (benthos_data2008-2023_rapportage2025.xlsx) met volgende werkbladen.
-=======
-De gegevens van 2008 tot en met 2023 worden geleverd in een Excel-bestand (benthos_data2008-2023_rapportage2025.xlsx) met volgende werkbladen.
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 -   macrobenthos –- densiteit en biomassa per staalnamelocatie uitgedrukt per m²
 -   locaties –- de Lambert72-coördinaten van de bemonsterde locaties
@@ -96,11 +89,8 @@ Bij de rapportage voor de zone Zoet kort verblijf worden staalnamepunten in deze
 
 Per waterlichaam wordt vervolgens een opdeling gemaakt per fysiotoop, met de uitzondering dat hoog slik en slik in het supralitoraal (potentiële pionierzone) samen genomen worden.
 Dit resulteert in een meer gelijkmatige spreiding van de staalnamelocaties binnen de waterlichamen.
-<<<<<<< HEAD
 Deze stratificatie volgens waterlichaam x fysiotoop volgt de filosofie dat elk stratum een vrij homogene ecologische eenheid is voor het macrobenthos (voor meer uitleg hierover, zie Van Braeckel et al. 2020).
-=======
-Deze stratificatie volgens waterlichaam x fysiotoop volgt de filosofie dat elk stratum een vrij homogene ecologische eenheid is voor het macrobenthos (voor meer uitleg hierover, zie Van Braeckel et al., 2020).
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
+
 Als basiskaart voor de randomisatie werd de meest recente fysiotopenkaart van 2022 gebruikt.
 De randomisatie gebeurt sinds 2023 op basis van de ecotopenkaart 2.0.
 Dat wil zeggen dat de ecotoopgrenzen licht wijzigden, en dat er in het subtidaal een onderscheid gemaakt wordt tussen hoog- en laagdynamische zones.
@@ -113,15 +103,9 @@ Jaarlijks worden nieuwe random vastgelegde staalnamelocaties gekozen binnen elk 
 Het standaard quotum van staalnames bestaat uit 5 locaties per stratum.
 Dit aantal werd echter aangepast in functie van de relatieve en absolute areaalgrootte van de fysiotopen binnen en tussen de waterlichamen.
 Zo worden er in de zone sterke Saliniteitsgradiënt in het intertidaal ongeveer dubbel zoveel stalen genomen als in de andere zones (9), omdat in deze zone de slikoppervlaktes veel groter zijn (met meer potentie voor ruimtelijke variatie), terwijl in de overige zones er meestal 5 of minder stalen genomen worden (N = 3—5).
-<<<<<<< HEAD
 Het overtal aan stalen in Sterke Saliniteitsgradiënt is niet enkel nuttig om een (eventuele) grotere ruimtelijke variatie van het macrobenthos in rekening te brengen, maar vooral ook om de precisie hier groter te maken (of de foutenmarge op de schatting kleiner) wat belangrijk is aangezien deze zone bij het berekenen van de systeembiomassa, waarbij de gemiddelde macrobenthos biomassa vermenigvuldigd wordt met de oppervlakte per stratum, een veel groter gewicht heeft.
 Vanaf 2023 worden er in de zone Sterke Saliniteitsgradiënt bovendien extra stalen genomen met een grotere steekbuis (zie verder), om een betere schatting te verkrijgen van met name bivalven die hier recent sterk toenemen.
 In het doorgaans benthosarmere subtidaal worden er minder stalen genomen dan in het intertidaal (5 in Saliniteitsgradiënt, meestal 3 in de overige zones).
-=======
-Het overtal aan stalen in Sterke Saliniteitsgradiënt is niet enkel nuttig om een (eventuele) grotere ruimtelijke variatie van het macrobenthos in rekening te brengen, maar vooral ook om de precisie hier groter te maken (of de foutenmarge op de schatting kleiner) aangezien deze zone bij het berekenen van de systeembiomassa, waarbij de gemiddelde macrobenthos biomassa vermenigvuldigd wordt met de oppervlakte per stratum, een veel groter gewicht heeft.
-Vanaf 2023 worden er in de zone Sterke Saliniteitsgradient bovendien extra stalen genomen met een grotere steekbuis (zie verder), om een betere schatting te verkrijgen van met name bivalven die hier recent sterk toenemen.
-In het benthosarmere subtidaal worden er minder stalen genomen dan in het intertidaal (5 in Saliniteitsgradiënt, meestal 3 in de overige zones).
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 Hoewel tijdens het nemen van de stalen veel aandacht gaat naar het zo volledig mogelijk uitvoeren van de vooropgezette design, kan doorgaans een klein aantal stalen niet genomen worden door technische problemen of onvoorziene omstandigheden (bijvoorbeeld grote ongekende velden breuksteen subtidaal die de staalname onmogelijk maken).
 In de meeste gevallen worden punten over een kleine afstand verlegd, waarbij erop gelet wordt dat ze in hetzelfde stratum blijven.
@@ -142,12 +126,9 @@ tabel_x_waarden <-
 # naam van de tabel om weg te schrijven en uit te lezen in .png file
 naam_tabel <- "tabel_staalnamelocaties"
 
-<<<<<<< HEAD
-#lange namen versch rijen
+#lange namen versch rijen: LATEX codering via makecell
 colnames(tabel_x_waarden) <- c("waterloop", "\\makecell{laag  \\\\ intertidaal}", "\\makecell{middelhoog/  \\\\hoog\\\\ intertidaal}",  "\\makecell{ondiep \\\\ subtidaal}", "\\makecell{laagdynamisch\\\\ ondiep\\\\ subtidaal}", "\\makecell{hoogdynamisch\\\\ ondiep\\\\ subtidaal}", "\\makecell{matig\\\\ diep\\\\ subtidaal}", "\\makecell{laagdynamisch\\\\ matig\\\\ diep\\\\ subtidaal}", "\\makecell{hoogdynamisch\\\\ matig\\\\ diep\\\\ subtidaal}", "\\makecell{diep\\\\ subtidaal}", "\\makecell{laagdynamisch\\\\ diep\\\\ subtidaal}", "\\makecell{hoogdynamisch\\\\ diep\\\\ subtidaal}", "\\makecell{hoogdynamisch\\\\ zeer diep\\\\ subtidaal}", "\\makecell{subtidaal\\\\ indet.}") 
  
-=======
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 # hoofding tabel
 caption_staalnamelocaties <- "Aantal stalen per stratum in 2022."
 
@@ -157,7 +138,6 @@ caption_staalnamelocaties <- "Aantal stalen per stratum in 2022."
 # opmaak tabel en opslaan als .png
 tabel_x_waarden %>%
   # mutate_all(~replace_na(., "")) %>%
-<<<<<<< HEAD
   knitr::kable(format = "latex",
                escape = FALSE,
                booktabs = TRUE,
@@ -165,12 +145,6 @@ tabel_x_waarden %>%
                ) %>% # escape = FALSE allows HTML tags
   kable_styling(full_width = FALSE) %>%
   kable_styling(full_width = FALSE, latex_options = "scale_down")
-=======
-  knitr::kable(booktabs = TRUE,
-               caption = caption_staalnamelocaties) %>%
-  kable_styling(latex_options = "scale_down")
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
-
 
 # weergeven van de tabel
 #knitr::include_graphics(paste0(naam_tabel,".png"))
@@ -179,7 +153,6 @@ tabel_x_waarden %>%
 
 <!-- lege lijn na tabel -->
 
-<<<<<<< HEAD
 Een belangrijk verschil met de eerdere rapportages is dat we de presentatie en evaluatie nu in lijn brengen met de meest recente EMSE evaluatiecriteria (Consortium Schelde in Beeld, 2022).
 Er zijn daarbij een aantal belangrijke kanttekeningen te maken.
 Ten eerste definieert het Consortium Schelde in Beeld (2022) het macrozoöbenthos als de organismen die achterblijven op een zeef van 1 mm, terwijl dat met de huidige methode voor het basisstaal in de Zeeschelde 500 µm is.
@@ -190,35 +163,17 @@ Een tweede bemerking is dat in eerdere rapportages vrijwel enkel resultaten voor
 Vanaf nu zullen ook subtidale resultaten getoond worden.
 Omdat resultaten voor biomassa, abundantie, Shannon-diversiteit op abundantie, Shannon-diversiteit op biomassa en soortenrijkdom voor zowel inter- als subtidaal, en voor de vier waterlichamen van de Zeeschelde én voor de gehele Zeeschelde gevraagd worden, bedraagt het aantal toetsparameters nu 50.
 Er worden in deze rapportage waar mogelijk zo pragmatisch mogelijk resultaten getoond.
-=======
-Een belangrijke verschil met de eerdere rapportages is dat we de presentatie en evaluatie nu in lijn brengen met de meest recente EMSE evaluatiecriteria (Consortium Schelde in Beeld, 2022).
-Er zijn daarbij een aantal belangrijke kanttekeningen te maken.
-Ten eerste definieert het Consortium Schelde in Beeld (2022) het macrobenthos als de organismen die achterblijven op een zeef van 1 mm, terwijl dat voor het basissstaal in de Zeeschelde 500 µm is.
-Er is tot hiertoe altijd met die grens van 500 µm gewerkt bij de raportages, en hoewel we de gegevens per fractie hebben, rapporteren we hier alsnog de volledige vangsten (dus inclusief de 500 µm vangst).
-Ter illustratie van dit verschil: in 2023 werd overheen alle BS-stalen 58% van de biomassa (AFDW) van macrobenthos in de 1 mm zeef, en 42% in de 500 µm zeef.
-
-Een tweede bemerking is in eerdere rapportages enkel resultaten voor het intertiaal gerapporteerd werden.
-Vanaf nu zullen ook subtidale resultaten getoond worden.
-Omdat resultaten voor biomassa, abundantie, Shannon-diversiteit op abundantie, Shannon-diversiteit op biomassa en soortenrijkdom voor zowel inter- als subtidaal, en voor de vier waterlichamen van de Zeeschelde én voor de gehele Zeeschelde gevraagd worden, bedraagt het aantal toetsparameters nu 50.
-Er wordt in de rapportage waar mogelijk zo pragmatisch mogelijk resultaten getoond.
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 <br/>
 
 ### Staalname
 
 We onderscheiden drie soorten benthosstalen.
-<<<<<<< HEAD
+
 Tot en met 2017 werd jaarlijks een basisstaal (BS) genomen en in Oligochaeta identificatie-jaren ook een Oligochaeta identificatie-staal (OID).
 Vanaf 2020 vervalt het extra OID-staal, maar vanaf 2023 wordt een extra uitbreidingsstaal genomen (US-staal) in de zone Sterke Saliniteitsgradiënt.
 
 **Basisstaal (BS)**: jaarlijks
-=======
-Tot en met 2017 werd jaarlijks een basisstaal (BS) genomen en in Oligochaeta identifcatie-jaren ook een Oligochaeta identificatie-staal.
-Vanaf 2020 vervalt het extra OID-staal, maar vanaf 2023 wordt een extra uitbreidingsstaal genomen (US-staal) in de zone Sterke Saliniteitsgradiënt.
-
-**basisstaal (BS)**: jaarlijks
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 -   intertidaal: 1 steekbuisstaal (diameter: 4,5cm) tot op een diepte van 15 cm (30 cm in de zone Sterke Saliniteitsgradiënt)
 
@@ -231,7 +186,6 @@ Het staal wordt genomen door:
 
 -   intertidaal: 1 steekbuisstaal (diameter: 15 cm) tot op een diepte van 30 cm
 
-<<<<<<< HEAD
 -   subtidaal: het volledige Reineck box-corer staal (diameter: 15 cm) tot op een diepte van 30 cm.
     Dit staal is in de realiteit kleiner (betreft een kleinere oppervlakte) doordat:
 
@@ -243,16 +197,7 @@ Het staal wordt genomen door:
 Dit staal wordt genomen in functie van de identificatie van oligochaeten.
 Vanaf 2020 gebeurt de determinatie echter op de oligochaeten die verzameld werden in het basisstaal.
 Wanneer de oligochaeten apart getrieerd zijn voor determinatie noemen we deze oligochaetenfractie opnieuw het OID-staal.
-=======
--   subtidaal: het volledige Reineck box-corer staal (diameter: 15 cm) tot op een diepte van 30 cm wordt verzameld.
-    Dit staalt mist een deel doordat er uit deze core al een BS en een sedimentstaal (zie verder) genomen werd, waardoor de effectieve oppervlakte iets kleiner is.
-
-**Oligochaetenidentificatiestaal (OID)**: elke drie jaar (2008, 2011, 2014, 2017) werd tot en met 2017 (dus *niet* meer in 2020 en 2023) aanvullend een tweede benthosstaal genomen.
-Dit staal wordt genomen in functie van de identificatie van oligochaeten (OID).
-Vanaf 2020 gebeurt de determinatie echter op de oligochaeten die verzameld werden in het basisstaal.
-Wanneer de oligochaeten apart getrieerd zijn voor determinatie noemen we deze oligochaetenfractie wel opnieuw het OID-staal.
 Het staal werd op dezelfde manier genomen als het basisstaal.
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 Alle benthosstalen (BS, OID, US) worden gefixeerd (met F-Solv (glutaaraldehyde) 50%).
 Op elke staalnamelocatie wordt jaarlijks ook een **sedimentstaal** genomen met een sedimentcorer (diameter 2 cm, zie ook hoofdstuk 6.2) tot 10 cm diepte in het substraat (intertidaal) of in het box-corer staal (subtidaal).
@@ -284,11 +229,7 @@ Hieronder geven we de chronologie van handelingen bij de verwerking van elk type
     -   drogen (12h bij 105°C) =\> drooggewicht (DW)
     -   verassen (2h bij 550°C) =\> asgewicht (AW)
     -   biomassa: asvrij drooggewicht AFDW = DW - AW
-<<<<<<< HEAD
 -   de resultaten van dit staal worden enkel gebruikt om betere schattingen te krijgen van grote organismen (95% weerhouden op maaswijdte 1 mm in de BS stalen) die vaak maar in lage frequentie in de BS stalen opduiken. Het aantal per taxon in het US staal en het gepaarde BS staal worden opgeteld en op basis van hun gezamenlijke oppervlakte omgezet naar densiteiten per m².
-=======
--   de resultaten van dit staal worden enkele gebruikt om betere schattingen te krijgen van grote organismen (95% weerhouden op maaswijdte 1 mm in de BS stalen) die vaak maar in lage frequentie in de BS stalen opduiken. Het aantal per taxon in het US staal en het gepaarde BS staal worden opgeteld en op basis van hun gezamenlijke oppervlakte ogezet naar densiteiten per m².
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 **OID**
 
@@ -297,7 +238,6 @@ Hieronder geven we de chronologie van handelingen bij de verwerking van elk type
 -   determineren van 25 individuen Oligochaeta per zeeffractie (dus maximaal N=50 per staal) tot op het laagst mogelijke taxonomische niveau + tellen totaal aantal wormen in het staal (sinds 2020 is dat aantal al gekend vanuit het BS-staal)
 -   geen biomassabepaling per soort. Biomassabepaling gebeurt op het volledige OID-staal. Het bepalen van de soortspecfieke biomassa en densiteit gebeurt door de totale biomassa Oligochaeta in het BS staal te alloceren aan de verschillende taxa volgens hun relatieve aantallen in het OID staal. Deze methode houdt geen rekening met soortspecifieke biomassa's en is dus benaderend.
 
-<<<<<<< HEAD
 ## Resultaten macrozoöbenthos 2023
 
 We bespreken hieronder de verkennende analyses van de jaarlijkse standaard monitoringsinspanning (BS stalen, inclusief US stalen in deelgebied Sterke Saliniteitsgradiënt) voor het jaar 2023.
@@ -307,37 +247,17 @@ We bespreken hieronder de verkennende analyses van de jaarlijkse standaard monit
 
 We rapporteren hier de resultaten voor gemiddelde densiteit per m².
 Deze waardes per deelgebied of voor de gehele Zeeschelde kwamen tot stand door een gewogen gemiddelde te nemen, waarbij rekening werd gehouden met de oppervlaktes van de fysiotopen en verschillende deelgebieden (voordien werd een eenvoudig gemiddelde of de mediaan overheen de stalen genomen).
-=======
-## Resultaten
-
-We bespreken hieronder de verkennende analyses van de jaarlijkse standaard monitoringsinspanning (BS stalen) voor het jaar 2023.
-
-### Resultaten macrozoöbenthos 2023
-
-#### Densiteit
-
-We rapporteren hier de resultaten voor gemiddelde densiteit per m².
-Deze waardes per deelgebied of voor de gehele Zeeschelde kwamen tot stand door een gewogen gemiddelde te nemen, waarbij rekening werd gehouden met de oppervlaktes van de fysiotopen en verschillende deelgebieden (voordien werd een eenvoudig gemiddelde overheen de stalen genomen).
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 Verder wijzen we er nog op dat de dataset veel nulwaarden (lege stalen) en een typische spreiding voor tellingen (met extreme spreiding) bevat.
-Het jaar 2023 was een vrij goed jaar voor de densiteit van het macrozoöbenthos in de Zeeschelde.
-(Figuur \@ref(fig:070-figuur-1densiteit)).
+Het jaar 2023 was een vrij goed jaar voor de densiteit van het macrozoöbenthos in de Zeeschelde (Figuur \@ref(fig:070-figuur-1densiteit)).
 Zowel in het inter- als het subtidaal ligt de 2023 gemiddelde densiteit per m² boven de EMSE-2009 en EMSE-2015 evaluatiecriteria en is de tendens positief.
 
-<<<<<<< HEAD
 ```{r 070-figuur-1densiteit, fig.cap=caption_regressie1densiteit, out.width="80%"}
 caption_regressie1densiteit <- "Gemiddelde densiteit (punten) per m² van macrozoöbenthos voor het intertidaal (boven) en subtidaal (onder) in de Zeeschelde. De trendlijnen zijn een weighted least squares regression (LOESS) met span=2. De EMSE grenswaardes worden getoond, als de gemiddelde waardes voor 2009 (blauwe lijn) en 2015 (rode lijn). (opgelet: de y-as heeft een log10-schaal)"  
-=======
-```{r 070-figuur-1densiteit, fig.cap=caption_regressie1densiteit, out.width="100%"}
-caption_regressie1densiteit <- "Gemiddelde densiteit (punten) per m² van macrozoöbenthos voor het intertidaal (boven) en subtidaal (onder) in de Zeeschelde. De trendline is een weighted least squares regression (LOESS) met span=2. De EMSE grenswaardes worden getoond, als de gemiddelde waardes voor 2009 en 2015. (opgelet: de y-as heeft een log10-schaal)"  
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
-
 knitr::include_graphics(paste0(pad_figuren, "070-figuur-DENSITEIT.avg-ZEESCHELDE.jpg"))
 ```
 
 <br/>
 
-<<<<<<< HEAD
 Wanneer we naar de deelgebieden kijken, dan zien we die positieve trend in het intertidaal terug in de meeste gebieden behalve in Sterke Saliniteitsgradiënt (Figuur \@ref(fig:070-figuur-2densiteit)).
 Dit laatste deelgebied is het enige waar de EMSE-criteria niet gehaald worden.
 Voor het subtidaal zijn de patronen minder duidelijk (Figuur \@ref(fig:070-figuur-3densiteit)) en zijn er gebieden die zowel boven als onder de EMSE criteria zitten.
@@ -361,29 +281,6 @@ knitr::include_graphics(paste0(pad_figuren, "070-figuur-DENSITEIT-GEMIDDELDE-SUB
 <br/>
 
 ### Biomassa
-=======
-Wanneer we naar de deelgebieden kijken, dan zien we die positieve trend in het intertidaal terug in de meeste gebieden behalve in Sterke Saliniteitsgradiënt.
-Dit laatste deelgebied is het enige waar de EMSE-criteria niet gehaald worden.
-Voor het subtidaal zijn de patronen minder duidelijk (Figuur \@ref(fig:070-figuur-2densiteit), Figuur \@ref(fig:070-figuur-3densiteit)) en zijn er gebieden die zowel boven als onder de EMSE criteria zitten.
-Voor alle voorgaande trends en waardes geldt dat we (nog) geen statistische onderbouwing voorzien over de richting van een trend of over een waarde al dan niet significant verschilt van een EMSE grenswaarde.
-De gegeven interpretatie is puur beschrijvend.
-
-```{r 070-figuur-2densiteit, fig.cap=caption_regressie2densiteit, out.width="100%"}
-caption_regressie2densiteit <- "Gemiddelde densiteit (punten) per m² van macrozoöbenthos voor het intertidaal in de vier deelgebieden van de Zeeschelde. De trendlines zijn  een weighted least squares regression (LOESS) met span=2.  Per deelgebied worden de EMSE grenswaardes getoond, hier als de gemiddelde waardes voor 2009 en 2015. (opgelet: de y-as heeft een log10-schaal)"  
-
-knitr::include_graphics(paste0(pad_figuren, "070-figuur-DENSITEIT-GEMIDDELDE-INTERTIDAAL.jpg"))
-```
-
-```{r 070-figuur-3densiteit, fig.cap=caption_regressie3densiteit, out.width="100%"}
-caption_regressie3densiteit <- "Gemiddelde densiteit (punten) per m² van macrozoöbenthos voor het subtidaal in de vier deelgebieden van de Zeeschelde. De trendlines zijn  een weighted least squares regression (LOESS) met span=2.  Per deelgebied worden de EMSE grenswaardes getoond, hier als de gemiddelde waardes voor 2009 en 2015. (opgelet: de y-as heeft een log10-schaal)"  
-
-knitr::include_graphics(paste0(pad_figuren, "070-figuur-DENSITEIT-GEMIDDELDE-SUBTIDAAL.jpg"))
-```
-
-<br/>
-
-#### Biomassa
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 Net als voor de densiteit werd de gemiddelde biomassa bepaald als een gewogen gemiddelde over stratum-oppervlakte.
 Zowel in het intertidaal als in het subtidaal is er sinds enkele jaren een opvallende toenemende trend (Figuur \@ref(fig:070-figuur-4biomassa)).
@@ -391,18 +288,13 @@ In het intertidaal was 2023 het beste jaar van de meetreeks, voor het subtidaal 
 Deze laatste waarde ligt echter nog steeds ruim boven de EMSE-grenswaarden.
 Het jaar 2023 is het eerste jaar waarin er een veel preciezere bepaling van de biomassa (en densiteit) van soorten met een grote biomassa-contributie gebeurde, in het deelgebied Sterke Saliniteitsgradiënt.
 
-<<<<<<< HEAD
+
 ```{r 070-figuur-4biomassa, fig.cap=caption_regressie4biomassa, out.width="80%"}
 caption_regressie4biomassa <- "Gemiddelde biomassa (punten) als g AFDW per m² van macrozoöbenthos voor het intertidaal (boven) en subtidaal (onder) van de Zeeschelde. De trendlijnen zijn  een weighted least squares regression (LOESS) met span=2. De EMSE grenswaardes worden getoond, als de gemiddelde biomassawaardes van 2009 (blauwe lijn) en 2015 (rode lijn)."  
-=======
-```{r 070-figuur-4biomassa, fig.cap=caption_regressie4biomassa, out.width="100%"}
-caption_regressie4biomassa <- "Gemiddelde biomassa (punten) als g AFDW per m² van macrozoöbenthos voor het intertidaal (boven) en subtidaal (onder) van de Zeeschelde. De trendlines zijn  een weighted least squares regression (LOESS) met span=2. De EMSE grenswaardes worden getoond, als de gemiddelde biomassawaardes van 2009 en 2015."  
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 knitr::include_graphics(paste0(pad_figuren, "070-figuur-BIOMASSA.avg-ZEESCHELDE.jpg"))
 ```
 
-<<<<<<< HEAD
 <br/> 
 
 Wanneer we de gemiddelde biomassa per m² per deelgebied bekijken (Figuur \@ref(fig:070-figuur-5biomassa), Figuur \@ref(fig:070-figuur-6biomassa)), dan valt voor het intertidaal op dat in de zoete zones en in deelgebied Oligohalien in 2023 de (bijna) hoogste waardes van de meetreeks gemeten werden.
@@ -413,32 +305,17 @@ De steile opgang van bivalven (in het subtidaal betreft het vrijwel alleen de br
 
 ```{r 070-figuur-5biomassa, fig.cap=caption_regressie5biomassa, out.width="100%"}
 caption_regressie5biomassa <- "Gemiddelde biomassa (punten) als g AFDW per m² van macrozoöbenthos voor het intertidaal in de vier deelgebieden van de Zeeschelde. De trendlijnen zijn een weighted least squares regression (LOESS) met span=2. Per deelgebied worden de EMSE grenswaardes getoond, hier als de gemiddelde waardes voor 2009 (blauwe lijn) en 2015 (rode lijn)."  
-=======
-<br/>
-Wanneer we gemiddelde biomassa per deelgebied bekijken (Figuur \@ref(fig:070-figuur-5biomassa), Figuur \@ref(fig:070-figuur-6biomassa)), dan valt voor het intertidaal op dat in de zoete zones en in deelgebied Oligohalien in 2023 de (bijna) hoogste waardes van de meetreeks gemeten werden.
-In Saliniteitsgradiënt was de biomassa vrij normaal (net boven de EMSE-grenswaardes), maar duidelijk lager dan in 2020 en 2021.
-Voor het subtidaal zien we eenzelfde patroon in Zoet lang verblijf en Oligohalien.
-In Zoet kort verblijf lag de waarde aan de lage kant, en in Saliniteitsgradiënt was de waarde hoog in de hstorische contextn maar laag in vergelijking met de periode 2020-2022.
-De steile opgang van bivalven (in het subtidaal betreft het vrijwel alleen de brakwaterkorfschelp *Potamocorbula amurensis*) lijkt een terugval gekend te hebben in 2023, al herhalen we opnieuw dat in 2023 voor het eerst een veel betrouwbaardere schatting van densiteit en biomassa gemeten werd.
-
-```{r 070-figuur-5biomassa, fig.cap=caption_regressie5biomassa, out.width="100%"}
-caption_regressie5biomassa <- "Gemiddelde biomassa (punten) als g AFDW per m² van macrozoöbenthos voor het intertidaal in de vier deelgebieden van de Zeeschelde. De trendlijnen zijn een weighted least squares regression (LOESS) met span=2. Per deelgebied worden de EMSE grenswaardes getoond, hier als de gemiddelde waardes voor 2009 en 2015."  
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 knitr::include_graphics(paste0(pad_figuren, "070-figuur-BIOMASSA-GEMIDDELDE-INTERTIDAAL.jpg"))
 ```
 
 ```{r 070-figuur-6biomassa, fig.cap=caption_regressie6biomassa, out.width="100%"}
-<<<<<<< HEAD
+
 caption_regressie6biomassa <- "Gemiddelde biomassa (punten) als g AFDW per m² van macrozoöbenthos voor het subtidaal in de vier deelgebieden van de Zeeschelde. De trendlijnen zijn een weighted least squares regression (LOESS) met span=2. Per deelgebied worden de EMSE grenswaardes getoond, hier als de gemiddelde waardes voor 2009 (blauwe lijn) en 2015 (rode lijn)."  
-=======
-caption_regressie6biomassa <- "Gemiddelde biomassa (punten) als g AFDW per m² van macrozoöbenthos voor het subtidaal in de vier deelgebieden van de Zeeschelde. De trendlijnen zijn een weighted least squares regression (LOESS) met span=2. Per deelgebied worden de EMSE grenswaardes getoond, hier als de gemiddelde waardes voor 2009 en 2015."  
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 knitr::include_graphics(paste0(pad_figuren, "070-figuur-BIOMASSA-GEMIDDELDE-SUBTIDAAL.jpg"))
 ```
 
-<<<<<<< HEAD
 <br/> 
 
 Als we de gemiddelde biomassa's doorvertalen naar systeembiomassa voor de Zeeschelde en haar deelgebieden, dan zien we dat in 2023 de EMSE-grenwaardes opnieuw ruim gehaald werden (Figuur \@ref(fig:070-figuur-7biomassasyst)).
@@ -450,22 +327,13 @@ Deze nam sterk af in 2023, maar is nog ruim hoger dan de waardes van subtidale s
 Opgeteld voor inter- en subtidaal bedraagt de systeembiomassa in 2023 in de Zeeschelde ruim 240 ton AFDW, ofwel een 8-voud van de EMSE-grenswaarde.
 
 ```{r 070-figuur-7biomassasyst, fig.cap=caption_regressie7biomassasyst, out.width="80%"}
-caption_regressie7biomassasyst <- "Jaarlijkse systeembiomassa als ton AFDW macrozoöbenthos voor het intertidaal en het subtidaal van de Zeeschelde. De horizontale lijn geeft de EMSE-grenswaarde aan."  
-=======
-<br/>
-Als we de gemiddelde biomassa's doorvertalen naar systeembiomassa voor de Zeeschelde en haar deelgebieden, dan zien we dat in 2023 de EMSE-grenwaardes opnieuw ruim gehaald werden (Figuur \@ref(fig:070-figuur-7biomassa.syst)). Vooral in het intertidaal is er terug een grote toename tot de hoogste waarde van de meetreeks, en wordt de EMSE grenswaarde van 30 ton ruimschoots gehaald. De EMSE-grenswaardes zijn afgeleid uit het areaal intergetijdegebied en lijken daarom met name getoetst te moeten worden aan de intertidale systeembiomassa. In het meest recente EMSE rapport (Consortium Schelde in Beeld, 2022) wordt echter vermeld dat ze gelden voor de systeembiomassa, zonder expliciete restrictie. We tonen de grenswaarde daarom ook voor de subtidale systeembiomassa. Deze nam sterk af in 2023, maar is nog ruim hoger dan de waardes van subtidale systeembiomassa voorafgaand aan 2020, en veel hoger dan de EMSE grenswaarde. Opgeteld voor inter- en subtidaal bedraagt de systeembiomassa in 2023 in de Zeeschelde ruim 240 ton AFDW, ofwel een 8-voud van de EMSE-grenswaarde.
-
-
-```{r 070-figuur-7biomassa.syst, fig.cap=caption_regressie7biomassa.syst, out.width="100%"}
-caption_regressie7biomassa.syst <- "Jaarlijkse systeembiomassa als ton AFDW macrozoöbenthos voor het intertidaal en het subtidaal van de Zeeschelde. De horizontale lijn geeft de EMSE-grenswaarde aan."  
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
+caption_regressie7biomassasyst <- "Jaarlijkse systeembiomassa als ton AFDW macrozoöbenthos voor het intertidaal en het subtidaal van de Zeeschelde. De horizontale lijn geeft de EMSE-grenswaarde aan."
 
 knitr::include_graphics(paste0(pad_figuren, "070-figuur-BIOMASSA.TOTAAL.ZEESCHELDE.jpg"))
 ```
 
 <br/>
 
-<<<<<<< HEAD
 De Figuur \@ref(fig:070-figuur-8biomassasyst) toont de systeembiomassa per deelgebied van de Zeeschelde.
 Dit is het eerste jaar dat in alle deelgebieden het EMSE-criterium gehaald wordt.
 De EMSE-grenswaarde per deelgebied is vastgesteld uitgaande van de systeembiomassa voor de Zeeschelde (30 ton AFDW) waarbij het minimumareaal intergetijdengebied per deelgebied is gebruikt als factor om een minimumbiomassa (= EMSE-grenswaarde) per deelgebied te berekenen.
@@ -473,23 +341,13 @@ Vooral het deelgebied Zoet lang verblijf scoorde jarenlang constant ondermaats, 
 
 ```{r 070-figuur-8biomassasyst, fig.cap=caption_regressie8biomassasyst, out.width="100%"}
 caption_regressie8biomassasyst <- "Jaarlijkse systeembiomassa als ton AFDW macrozoöbenthos voor het intertidaal en het subtidaal van de vier deelgebieden van de Zeeschelde. De horizontale lijn geeft de EMSE-grenswaarde per deelgebied aan."  
-=======
-De Figuur \@ref(fig:070-figuur-8biomassa.syst) toont de systeembiomassa per deelgebied van de Zeeschelde. Dit is het eerste jaar dat in alle deelgebieden het EMSE-criterium gehaald wordt. De EMSE-grenswaarde per deelgebied is vastgesteld uitgaande van de systeembiomassa voor de Zeeschelde (30 ton AFDW) waarbij het minimumareaal intergetijdengebied per deelgebied is gebruikt als factor om een minimumbiomassa (= EMSE-grenswaarde) per deelgebied te berekenen. Vooral het deelgebied Zoet lang verblijf scoorde jarenlang constant ondermaats, maar verviervoudigde zijn intertidale biomassa in 2023.
-
-```{r 070-figuur-8biomassa.syst, fig.cap=caption_regressie8biomassa.syst, out.width="100%"}
-caption_regressie8biomassa.syst <- "Jaarlijkse systeembiomassa als ton AFDW macrozoöbenthos voor het intertidaal en het subtidaal van de vier deelgebieden van de Zeeschelde. De horizontale lijn geeft de EMSE-grenswaarde per deelgebied aan."  
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
-
 knitr::include_graphics(paste0(pad_figuren, "070-figuur-BIOMASSA.TOTAAL.waterloop.jpg"))
 ```
+<br/>
 
-<<<<<<< HEAD
 Het aandeel lege stalen viel voor alle zones ruim binnen de langjarige variatie (Figuur \@ref(fig:070-figuur9-legestalen)).
 In deelgebied Sterke Saliniteitsgradiënt was er een vrij forse toename van minder dan 10% tot meer dan 30%.
-=======
 
-Het aandeel lege stalen viel voor alle zones ruim binnen de langjarige variatie (Figuur \@ref(fig:070-figuur9-legestalen)). In deelgebied Sterke Saliniteitsgradiënt was er een vrij forse toename van minder dan 10% tot meer dan 30%.
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 ```{r 070-figuur9-legestalen, fig.cap=caption_regressie9legestalen, out.width="100%"}
 caption_regressie9legestalen <- "Percentages lege stalen per deelgebied inclusief de zijrivieren."
@@ -500,7 +358,6 @@ knitr::include_graphics(paste0(pad_figuren, "070-figuur-aandeel-lege-stalen.jpg"
 
 <br/>
 
-<<<<<<< HEAD
 ### Soortenrijkdom
 
 Het meest recente EMSE criterium geeft aan dat de soortenrijkdom niet significant mag afnemen ten opzichte van de T2009 en de T2015, voor elk deelgebied en voor inter- en subtidaal (Consortium Schelde in Beeld, 2022).
@@ -517,6 +374,7 @@ caption_regressie10rijkdom <- "Totaal aantal soorten per deelgebied en per inter
 knitr::include_graphics(paste0(pad_figuren, "070-figuur-SOORTENRIJKDOM-waterloop.tidaal.jpg"))
 
 ```
+<br/>
 
 De Oligochaeta vormen veruit de soortenrijkste groep in het grootste deel van de Zeeschelde, en bij uitstek in de zoete en oligohaliene zones.
 In OID-jaren zoals 2023 bekijken we de rijkdom van Oligochaeta meer in detail.
@@ -531,55 +389,14 @@ In de andere deelgebieden viel de soortenrijkdom binnen de langjarige variatie (
 caption_regressie11rarefact <- "Rarefactie-curves van Oligochaeta voor de deelgebieden van de Zeeschelde per OID jaar."
 
 knitr::include_graphics(paste0(pad_figuren, "OID.RAREFACT.WATERLOOP.per.jaar.jpg"))
-
 ```
-
 ```{r 070-figuur12-rarefact, fig.cap=caption_regressie12rarefact, out.width="100%"}
 caption_regressie12rarefact <- "Rarefactie-curves van Oligochaeta per OID-jaar voor de vier deelgebieden van de Zeeschelde."
 
 knitr::include_graphics(paste0(pad_figuren, "OID.RAREFACT.jaar.per.WATERLOOP.jpg"))
-
-=======
-#### Soortenrijkdom
-
-Het meest recente EMSE criterium geeft aan dat de soortenrijkdom niet significant mag afnemen ten opzichte van de T2009 en de T2015, in elk deelgebied en voor inter- en subtidaal (Consortium Schelde in Beeld, 2022). Omdat we totale soortenrijkdom niet kunnen corrigeren voor aantal en herkomst van stalen (tenzij deels met rarefactie) geven we voor de zone Zoet kort verblijf de soortenrijkdom ook apart weer voor de tijarmen. Een volledige determinatie van het macrozoöbenthos, inclusief de Oligochaeta, gebeurt elke drie jaar (2008, 2011, 2014, 2017, 2020, 2023). We indiceren daarom de OID determinatiejaren met bolletjes in de figuren. Naast de totale soortenrijkdom (overheen alle stalen in een deelgebied), geven we ook de mediane soortenrijkdom op fysiotoopniveau per deelgebied. Totale soortenrijkdom wordt in grotere mate beïnvloed door verschillen in aanwezigheid van soorten tussen fysiotopen, terwijl de mediane soortenrijkdom op fysiotoopniveau meer vertelt over de soortendichtheid (hoeveel soorten per oppervlakte).
-
-```{r 070-figuur10-rijkdom, fig.cap=caption_regressie10rijkdom, out.width="100%"}
-caption_regressie10rijkdom <- "Totaal aantal soorten (volle lijn) en mediane soortenrijkdom per staal (."
-
-knitr::include_graphics(paste0(pad_figuren, "070-figuur-SOORTENRIJKDOM-waterloop.jpg"))
-
 ```
-
-
-
-De soortenrijkdom lijkt daarom cyclisch hoger, behalve na 2018 in de zijrivieren omdat hier enkel nog driejaarlijks bemonsterd wordt in de OID-jaren (niet in Durme en Rupel - deze worden wel jaarlijks bemonsterd), en de soortenrijkdom dus structureel hoger lijkt.\
-Een overzicht van de soortenrijkdom voor de verschillende waterlichamen en de verschillende jaren per tidale zone (inter-, sub-) staat in de figuren \@ref(fig:070-figuur15) en \@ref(fig:070-figuur15b).
-Het onderzoeksjaar 2022 was geen OID jaar, dus de de soortenrijkdom is exclusief de soortenrijkdom van Oligochaeta.
-
-In vrij veel zones ligt de soortenrijkdom de laatste 2-3 onderzoeksjaren iets hoger dan in vergelijkbare jaren (zonder OID) de voorbije periode.
-Mogelijke oorzaken zijn het steeds toenemend aantal exotische soorten en de uitzonderlijke droogteperioden die mogelijks marinisatie van de Zeeschelde veroorzaakten.
-Vooral in de zone Saliniteitsgradiënt zien we vrij consistent een hogere soortenrijkdom.
-Apart onderzoek is nodig om het relatief belang van exoten in de Zeeschelde te duiden.
-Opvallend is dat enkel in het Oligohalien en de Rupel de taxa rijkdom vaak hoger is in het subtidaal dan in het intertidaal (Oligochaeta niet meegeteld).
-Dit patroon is stabiel in de tijd maar een reden ervoor is niet gekend.
-
-```{r 070-figuur15, fig.cap=caption_regressie15, out.width="100%"}
-caption_regressie15 <- "Staalgemiddelde soortenrijkdom (boxplots; mediaan, IQrange) per waterlichaam doorheen de tijd. De Oligochaeta worden niet steeds gedetermineerd en werden als 1 taxon beschouwd, behalve in de jaren 2008, 2011, 2014, 2017 en 2020. De jaren onderling vergelijken kan dus enkel tussen deze opgesomde jaren, en tussen de tussenliggende jaren."
-
-knitr::include_graphics(paste0(pad_figuren, "070-figuur-soortenrijkdom-Zeeschelde.jpg"))
-```
-
-```{r 070-figuur15b, fig.cap=caption_regressie15b, out.width="100%"}
-caption_regressie15b <- "Soortenrijkdom per waterlichaam doorheen de tijd. De Oligochaeta worden niet steeds gedetermineerd en werden als 1 taxon beschouwd, behalve in de jaren 2008, 2011, 2014, 2017 en 2020. De jaren onderling vergelijken kan dus enkel voor deze opgesomde jaren, en voor de tussenliggende jaren. De zone Zoet kort verblijf wordt hier getoond exlusief de tijarmen."
-
-knitr::include_graphics(paste0(pad_figuren, "070-figuur-soortenrijkdom-lijn-Zeeschelde.jpg"))
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
-```
-
 <br/>
 
-<<<<<<< HEAD
 ### Soortendiversiteit Shannon-index
 
 De Shannon diversiteit is een relatief nieuwe evaluatieparameter (Consortium Schelde in Beeld, 2022).
@@ -589,7 +406,7 @@ We berekenden de Shannon diversiteit voor de vier deelgebieden van de Zeeschelde
 De evolutie van deze parameter voor densiteit en biomassa, overheen de jaren, overheen alle stalen, per tidale zone (inter-, sub-), voor de Zeeschelde en de vier deelgebieden, staat in de figuren \@ref(fig:070-figuur13-shan1) en \@ref(fig:070-figuur14-shan1).
 De intertidale Shannon-diversiteit voor densiteit was lager dan de voorgaande jaren in bijna alle deelgebieden.
 Behalve in Sterke Saliniteitsgradiënt was dit ook het geval voor de Shannon-diversiteit voor biomassa.
-De subtidale Shannon-diversiteit voor het systeem Zeeschelde wordt sterk negatief beïnvloed door deelgebied Sterke Salniteitsgradiënt, waar de opkomst en dominantie van de brakwaterkorfschelp de index negatief beïnvloedt.
+De subtidale Shannon-diversiteit voor het systeem Zeeschelde wordt sterk negatief beïnvloed door deelgebied Sterke Saliniteitsgradiënt, waar de opkomst en dominantie van de brakwaterkorfschelp de index negatief beïnvloedt.
 Bij de andere deelgebieden springt de zeer lage index voor Oligohalien in het oog.
 Wellicht staat dit in verband met de hoge densiteiten (en dominantie) van Oligochaeta in 2023.
 
@@ -605,46 +422,14 @@ caption_regressie14shan1 <- "Shannon-diversiteit voor abundantie en biomassa ove
 
 knitr::include_graphics(paste0(pad_figuren, "070-figuur-SHANNON-TOT-SUBTIDAAL.jpg"))
 
-=======
-#### Soortendiversiteit Shannon-index
-
-De Shannon diversiteit is een relatief nieuwe evaluatieparameter (EMSE 2021).
-Ze wordt berekend op zowel biomassa (g droge stof AFDW/m²) als op aantallen van het macrozoöbenthos.
-De Oligochaeta werden overheen alle jaren als één taxon beschouwd.
-We berekenden de Shannon diversiteit voor de vier saliniteitszones van de Zeeschelde (niveau 3) en voor de totale Zeeschelde.
-De evolutie van deze parameter overheen de jaren per tidale zone (inter-, sub-) staat in de figuren \@ref(fig:070-figuur16) en \@ref(fig:070-figuur17).
-
-De Shannon indices voor het intertidaal zijn vrij stabiel doorheen de tijd.
-De Zeeschelde als geheel en de zone sterke Saliniteitsgradiënt hebben intertidaal een hogere Shannon diversiteit dan de overige zones, die vrij laag scoren.
-Voor Oligohalien biomassa en densiteiten en voor de overige zones enkel voor de densiteiten, is er grosso-modo een toenemende trend sinds 2015 van de Shannon-diversiteit.
-
-De patronen in het subtidaal zijn behoorlijk erratisch in vergelijking met deze voor het intertidaal.
-Door de veel lagere densiteit en biomassadichtheid in het subtidaal is de invloed van toeval op de Shannon diversiteit er vermoedelijk relatief groter.
-Met wat goede wil is ook hier een opvering van de Shannon index in de deelgebieden merkbaar sinds 2015, maar variatie tussen de jaren is groot.
-Een opmerkelijk patroon is te zien subtidaal in de zone sterke Saliniteitsgradiënt: bij densiteiten is er een toename, terwijl er voor biomassa een sterke afname van de Shannon diversiteit is.
-Waarschijnlijk is dit te wijten aan de opkomst en tegenwoordig dominantie van de brakwaterkorfschelp (Dumoulin & Langeraert, 2020).
-In 2022 vertoonden de overige subtidale Shannon-indices overwegend een neerwaartse trend, maar evaluatie gebeurt best op langjarige tijdsreeksen bij deze variabele parameter.
-
-```{r 070-figuur16, fig.cap=caption_regressie16, out.width="100%"}
-caption_regressie16 <- "Shannon diversiteit per waterlichaam en voor de volledige Zeeschelde voor het intertidaal doorheen de tijd. De Shannon diversiteit werd zowel berekend op densiteiten (aantallen/m²) als voor biomassa (g/m²). De Oligochaeta worden niet steeds gedetermineerd en werden als 1 taxon beschouwd."
-
-knitr::include_graphics(paste0(pad_figuren, "070-figuur-Shannondiv-intert-Zeeschelde.jpg"))
-```
-
-```{r 070-figuur17, fig.cap=caption_regressie17, out.width="100%"}
-caption_regressie17 <- "Shannon diversiteit per waterlichaam en voor de volledige Zeeschelde voor het subtidaal doorheen de tijd. De Shannon diversiteit werd zowel berekend op densiteiten (aantallen/m²) als voor biomassa (g/m²). De Oligochaeta worden niet steeds gedetermineerd en werden als 1 taxon beschouwd."
-
-knitr::include_graphics(paste0(pad_figuren, "070-figuur-Shannondiv-subt-Zeeschelde.jpg"))
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 ```
 
 <br/>
 
-<<<<<<< HEAD
 De Shannon-index overheen een totaal van stalen kent een ander gedrag dan een Shannon-index op staalniveau.
-Neem bijvoorbeeld het deelgebied Oligohalien, waarin enkele stalen enorme aantallen van 1 soort bevatten, zodat dit de index van het deelgebied sterk beïnvloedt, maar waarbij het onduidelijk is of dit fenomeen algemeen voorkomt over alle stalen.
+Een goed voorbeeld is het deelgebied Oligohalien, waarin enkele stalen enorme aantallen van 1 soort bevatten, zodat dit de index van het gehele deelgebied sterk beïnvloedt, maar waarbij het onduidelijk is of dit fenomeen algemeen ("gemiddeld") voorkomt over alle stalen.
 We berekenden daarom ook de gemiddelde Shannon-index op staalniveau.
-Die parameter meet of de Shannon-index op staalniveau verandert (\@ref(fig:070-figuur15-shan1) en \@ref(fig:070-figuur16-shan1)).
+Die parameter meet of de Shannon-index op staalniveau verandert (\@ref(fig:070-figuur15-shan1) en \@ref(fig:070-figuur16-shan1)). Louter indicatief geven we ook de grenswaarden voor 2009 en 2015 mee in de figuur.
 De patronen zijn inderdaad licht verschillend, maar de hoofdlijnen, waaronder een afnemende diversiteit van Sterke Saliniteitsgradiënt naar het deelgebied Zoet kort verblijf, zijn gelijkend.
 Toch zijn er belangrijke nuances.
 Zoals verwacht zijn de patronen in deelgebied Oligohalien minder extreem, maar anderzijds blijkt in deelgebied Sterke Saliniteitsgradiënt dat in 2023 op staalniveau de gemiddelde Shannon diversiteit voor zowel densiteit als biomassa relatief in de monitoringsperiode een stuk lager ligt dan de Shannon-diversiteit op gebiedsniveau.
@@ -660,92 +445,12 @@ knitr::include_graphics(paste0(pad_figuren, "070-figuur-SHANNON.avg-ZEESCHELDE.j
 caption_regressie16shan1 <- "Gemiddelde Shannon-diversiteit voor abundantie en biomassa per staal voor het intertidaal en het subtidaal van de vier deelgebieden van de Zeeschelde."
 
 knitr::include_graphics(paste0(pad_figuren, "070-figuur-SHANNON.avg-WATERLOOP.jpg"))
-
-=======
-#### Actueel: trends in de aanwezigheid van knijtenlarven (Ceratopogonidae) in de Zeeschelde
-
-**Aanleiding**
-
-Er is sinds enkele jaren grote publieke aandacht voor knijten langsheen de Schelde.
-Met name in de buurt van nieuwe estuariene Sigmagebieden, maar ook bijvoorbeeld langsheen het traject Gentbrugge-Melle, klagen of klaagden buurtbewoners over overlast door stekende knijten.
-Eerder onderzoek wees de soort *Culicoides riethi* als de (hoofd)schuldige aan.
-Larven van deze soort ontwikkelen zich in slikken langs de Schelde of in estuarien gebied naast de Schelde waar ze vermoedelijk leven van kleine algen die op en in het slik groeien (microfytobenthos).
-In nieuwe estuariene gebieden worden grote concentraties aan knijten gezien, dit sluit niet uit dat er een algemene toename van knijten in het Zeeschelde ecosysteem gaande is.
-Om deze vraag te onderzoeken kan de MONEOS spatial dataset van INBO gebruikt worden.
-Hieronder proberen we de vraag te beantwoorden of knijtenlarven op slikken langs de Schelde, exclusief de nieuwe Sigmagebieden, een toenemende trend vertonen.
-
-**Beschrijving van trends en patronen in de data**
-
-We gebruiken voor dit onderzoek de MONEOS data van 2008 tot en met 2022.
-Voorafgaand aan 2008 was de Schelde over grote delen van haar loop nog zuurstofloos en waren de condities waarschijnlijk ongeschikt voor *Culicoides*.
-In het deel Zeeschelde I, vooral in het meest bovenstroomse deel tegen Gent aan, was er al vanaf 2003 een toename van het zuurstofgehalte in het water.
-Daardoor werden de condities gecreëerd waarbij knijten zich konden vestigen.
-Dit was waarschijnlijk het geval, wat kan afgeleid worden uit sporadische meldingen van overlast door knijten in die periode (Sohier et al. 2010).
-We hebben echter te weinig data uit die periode om de opkomst van knijtenlarven te detecteren.
-
-Van 2008 tot en met 2022 werden in 75 MONEOS spatial stalen in de Zeeschelde knijtenlarven aangetroffen, op een totaal van 1888 intertidale stalen (\@ref(fig:070-figuur18)).
-Deze locaties liggen gespreid over het ganse estuarium, van Gentbrugge tot in Ketenisse, en overheen de zijrivieren Durme, Rupel, Dijle en Zenne.
-Nazicht van de positieve stalen leert dat 15 van deze 75 punten in of op de rand van nieuw ontwikkeld estuarien gebied lagen.
-Deze records worden daarom uit de verdere analyse en bespreking gelaten.
-
-In het traject Gentbrugge-Melle zijn al van bij de eerste MONEOS SPATIAL staalname (2008) knijtenlarven gevonden.
-Zoals eerder aangehaald liep in dit bovendeel van de Zeeschelde de waterkwaliteitsverbetering enkele jaren voor op de verandering in de zone tussen de Dendermonding en Antwerpen.
-Heel waarschijnlijk waren hier voor 2008 al knijtenlarven aanwezig.
-Blijkbaar bleven ook na 2008 knijtenlarven lange tijd een lokaal fenomeen in de Zeeschelde, dat beperkt bleef tot het traject Gentbrugge-Melle.
-De eerste melding van knijtenlarven in de Zeeschelde tussen Melle en de Nederlandse grens is vastgesteld in 2016 bij Sint-Amands.
-Voordien was er wel een melding bij Hamme in 2009, maar dit was in de uitwatering van het Lippenbroek.
-In de zijrivieren (Rupel, Durme, Zenne, Dijle, Beneden-Nete) werd de eerste knijtenlarve, exclusief 1 vondst in 2010 in de Zenne, vastgesteld in de Rupel (2019).
-Nadien volgden waarnemingen in de Durme en de Zenne in 2020.
-Trends op basis van het aantal stalen met knijten per jaar voor de Zeeschelde tussen Melle en de Nederlandse grens, voor de centrale Zeeschelde (Zeeschelde II en III, zonder zijrivieren) en voor de zijrivieren Durme, Rupel, Dijle en Nete, staan in \@ref(fig:070-figuur19).
-De figuren lijken een toename te tonen van het aantal stalen met knijten dat jaarlijks wordt aangetroffen, met name sinds 2015.
-
-```{r 070-figuur18, fig.cap=caption_regressie18, out.width="100%"}
-caption_regressie18 <- "Situering van de 75 staalname punten van de SPATIAL campagne waarin tijdens de periode 2008–2022 knijten zijn aangetroffen."
-
-knitr::include_graphics(paste0(pad_figuren, "070-fig1_KnijtenZeeschelde.jpg"))
-```
-
-```{r 070-figuur19, fig.cap=caption_regressie19, out.width="100%"}
-caption_regressie19 <- "Aantal stalen met larven van knijten (Ceratopogonidae) in de periode 2008–2022 voor de Zeeschelde van Melle tot de Nederlandse grens (bovenaan) voor het centrale deel van de Zeeschelde (Zeeschelde II en III, exclusief zijrivieren) en voor de zijrivieren Dijle, Nete, Durme en Rupel (rechtsonder). Sinds 2017 werden de zijrivieren Dijle en Nete enkel nog in 2020 bemonsterd, en zijn de aantallen gebaseerd op enkel Durme en Rupel."
-
-knitr::include_graphics(paste0(pad_figuren, "070-fig2_KnijtenperZone.jpg"))
-```
-
-Het is belangrijk om deze visuele suggestie van een toename statistisch te onderbouwen, en waarbij rekening wordt gehouden met de vangstinspanning.
-We focussen daarbij op het middendeel van de Zeeschelde (Zeeschelde II en III) omdat hier recent de meeste overlast gemeld werd.
-Voor deze verkennende analyse gebruikten we een eenvoudige Chi-square test, waarbij we het aantal knijtenvondsten ten opzichte van het totaal aantal onderzochte intertidale punten vergelijken tussen twee periodes.
-We beschouwen enkel punten gelegen op middelhoog en hoog slik, omdat eerder onderzoek aantoonde dat hier op het lage slik weinig macrobenthos en geen knijtenlarven voorkomen.
-De gemelde overlast in deze zone startte ongeveer rond 2018-2019, wat suggereert dat er vanaf toen een toename was.
-We kozen er daarom voor om de laatste 5 onderzochte jaren (periode 2018-2022) te vergelijken met de periode voordien (2008-2017).
-Het resultaat van een tweezijdige test is duidelijk significant (X-squared = 11.074, df = 1, p-value = 0.00087).
-Omdat de vraagstelling is of er een toename is, en we dus niet geïnteresseerd zijn in een afname, is de gepaste test-statistiek eenzijdig, ofwel p=0.00044.
-Deze statistiek bevestigt en onderbouwt de eerdere suggestie dat op slikken langs de Zeeschelde, zonder dat we de nieuw ontwikkelde estuariene gebieden meetellen, een toename is gebeurd van knijtenlarven sinds 2018.
-
-Knijtenlarven zijn dan wel gevonden van Gent tot tegen de Nederlandse grens aan, er zijn duidelijk een aantal hotspots binnen de Zeeschelde te onderscheiden.
-In de eerste plaats is er het traject Gentbrugge-Melle, waar overheen de hele onderzoeksperiode knijtenlarven zijn aangetroffen (\@ref(fig:070-figuur20)).
-Daarnaast vinden we al sinds 2016 regelmatig knijten rondom de ebgeul van Sint-Amands (\@ref(fig:070-figuur21)).
-Vooral sinds ongeveer 2020 worden er ook op de Zenne, de Durme, en tussen de Durmemonding en Temse, langs de oevers knijtenlarven gevonden.
-
-<br/>
-
-```{r 070-figuur20, fig.cap=caption_regressie20, out.width="100%"}
-caption_regressie20 <- "Vindplaatsen van knijtenlarven op basis van de SPATIAL staalnames door INBO (2008-2022) in het bovendeel van het traject Gentbrugge-Melle. Het getal voor de underscore is het jaartal van de staalname."
-
-knitr::include_graphics(paste0(pad_figuren, "070-KnijtenGM2.jpg"))
-```
-
-```{r 070-figuur21, fig.cap=caption_regressie21, out.width="100%"}
-caption_regressie21 <- "Vindplaatsen van knijtenlarven op basis van de MONEOS spatial staalnames door INBO (2008-2022) op de Durme en de Zeeschelde van Sint-Amands tot Temse. Het getal voor de underscore verwijst naar het jaartal van de staalname."
-
-knitr::include_graphics(paste0(pad_figuren, "070-KnijtenZS2Durme.jpg"))
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 ```
 
 <br/>
 
 ## Algemene conclusie
 
-<<<<<<< HEAD
 **De abundantie per m²**
 
 Het jaar 2023 was een vrij uitzonderlijk jaar voor het macrozoöbenthos in de Zeeschelde.
@@ -783,65 +488,19 @@ Ook in het subtidaal waren de waardes aan de hoge kant, al was er in Sterke Sali
 
 ## Referenties
 
-Consortium Schelde in Beeld (2022).
-Evaluatiemethodiek Schelde-estuarium.
-Update 2021.
+Consortium Schelde in Beeld 
+(2022).
+Evaluatiemethodiek Schelde-estuarium. Update 2021.
 HKV/universiteit Gent/Bureau Waardenburg/ Antea Group: Nederland, Bergen-op-Zoom.
 p. 396.
 
 Dumoulin E., & Langeraert W.
 (2020).
-De brakwaterkorfschelp *Potamocorbula amurensis* (Schrenck, 1861) (Bivalvia, Myida, Corbulidae), een nieuwkomer in het Schelde-estuarium; of het begin van een langverhaal.
-=======
-**De soortenrijkdom**
-
-De soortenrijkdom (exclusief Oligochaeta) lijkt de laatste paar jaren licht te stijgen in verschillende waterlichamen van de Zeeschelde, met name de zone Zoet kort verblijf en sterke Saliniteitsgradiënt.
-In de laatste zone zijn recent een aantal soorten (deels exotische) tweekleppigen toegenomen en is er mogelijk marinisatie gaande, waardoor soorten die normaal in de Westerschelde voorkomen nu meer in de Zeeschelde opduiken.
-Verder is nader onderzoek nodig om het toenemend belang van exoten in de Zeeschelde in kaart te brengen.
-
-**De Shannon diversiteit**
-
-De Shannon diversiteit is een nieuwe EMSE evaluatieparameter die in 2022 voor het eerst gerapporteerd werd (Van Ryckegem et al. 2022).
-Het gedrag van deze parameter en hoe deze best te interpreteren is nog onderhevig aan voortschrijdend inzicht.
-Een eerste beoordeling gaf aan dat deze parameter vrij sterke fluctuaties vertoont en mogelijk minder goed bruikbaar is in de subtidale zone, door het erratisch verloop van de parameter overheen de jaren.
-Waarschijnlijk is dit gelinkt aan de lagere densiteiten macrozoöbenthos in deze zone, en grotere toevalseffecten bij de standaard bemonstering.
-De Shannon diversiteit in het intertidaal is in de meeste zones behalve sterke Saliniteitsgradiënt heel laag.
-Dit is te wijten aan de dominantie van 1 taxon (Oligochaeta).
-Omdat Oligochaeta slechts om de drie jaren tot op soort gedetermineerd worden, wordt deze diversiteit niet in rekening gebracht, en dus onderschat.
-Sinds 2015 zien we dat de Shannon-diversiteit overal is toegenomen en de verschillen tussen deelgebieden kleiner worden.
-Dit is het meest duidelijk in de oligohaliene zone.
-Subtidaal is er in de zone met sterke Saliniteitsgradiënt recent een duidelijke toename in diversiteit gebaseerd op aantallen, maar een gelijktijdige sterke afname in diversiteit gebaseerd op biomassa.
-Dat laatste fenomeen is wellicht te wijten aan de opkomst en momenteel sterke dominantie van de brakwaterkorfschelp.
-
-**De systeembiomassa**
-
-Na een periode van drie jaren waarin het kwaliteitscriterium voor de systeembiomassa vlot gehaald werd, zakte deze in 2022 weer (ver) onder de kritische grens van 30 ton droge stof voor het intertidaal van de Zeeschelde (22.8 ton).
-De periode waarin zeer hoge densiteiten en biomassa Oligochaeta in de zoete en oligohaliene zones een grote bijdrage hadden aan de systeembiomassa ligt als even achter ons.
-Tijdelijke bloeiperiodes van Oligochaeta, zoals in de zone Zoet kort verblijf en de aanliggende tijarm Gentbrugge-Melle in 2018-2019 doven nu uit.
-In al de zones waarin Oligochaeta de dominante groep zijn (zoet en oligohalien) halen we de lokale kwaliteitscriteria ruim niet.
-De totale systeembiomassa van het intertidaal macrozoöbenthos werd recent vooral bepaald door de zone Saliniteitsgradiënt, en werd aangestuurd door een plotse toename van tweekleppigen en de vestiging van een exotische soort, de brakwaterkorfschelp.
-Deze laatste soort komt vooral subtidaal voor, en heeft net als de andere tweekleppigen lagere densiteiten in het (laag) intertidaal.
-De standaard staalnamemethode met een kleine steekbuis is minder geschikt om in dergelijke situaties macrozoöbenthos densiteiten te bepalen, met een grotere onzekerheid op de biomassa bepaling en grotere, betekenisloze verschillen tussen opeenvolgende jaren als gevolg.
-De sterke daling van de biomassa droge stof in de zone Saliniteitsgradiënt, en daardoor een terugval onder de kritische grens voor het systeem Zeeschelde, is dus mogelijk een sampling effect.
-Een indicatie dat het om een sampling effect gaat, is dat in het subtidaal er wel een verdere toename van benthosbiomassa werd vastgesteld.
-Om de impact van dit potentieel methodologisch artefact te verminderen, en de staalnamemethode aan te passen aan de nieuwe situatie waarin tweekleppigen talrijk voorkomen in de Zeeschelde, voegde INBO vanaf 2023 een extra staalname met grote steekbuis toe aan het moneos protocol voor de zone Saliniteistgradiënt.
-Bij de volgende rapportage in 2025 zullen de resultaten hiervan besproken worden, en zal met meer betrouwbare data kunnen beoordeeld worden hoe de systeembiomassa evolueert.
-
-**Veranderingen in de aantallen knijtenlarven in slikken langs de Schelde** Er is een toename van meldingen van overlast door stekende knijten langs de Zeeschelde, vaak in de buurt van nieuwe estuariene natuur in Sigmagebieden.
-Een analyse van de MONEOS spatial data in Zeeschelde II en III (de zone zoet lang en oligohalien), waarbij we enkel de slikken langs de Zeeschelde beschouwen, zonder dat we de nieuw ontwikkelde estuariene gebieden meetellen, toont een significante toename van het aantal stalen met knijtenlarven in slikken van de Schelde.
-Die toename lijkt ingezet rond 2015, terwijl voorheen knijtenlarven vooral beperkt waren tot het traject Gentbrugge–Melle.
-Er zijn een aantal hotspots, maar verder zijn knijtenlarven over een verrassend ruim gebied gevonden van Gentbrugge tot Ketenisse (recent ook in de Hedwigepolder), en ook in de meeste zijrivieren.
-De conclusie is dat de toename van knijten in Sigmagebieden past in een ruimere trend waarbij knijten significant toenemen in het hele Zeeschelde ecosysteem.
-
-## Referenties
-
-Dumoulin E., & Langeraert W.(2020). De brakwaterkorfschelp *Potamocorbula amurensis* (Schrenck, 1861) (Bivalvia, Myida, Corbulidae), een nieuwkomer in het Schelde-estuarium; of het begin van een langverhaal.
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
+De brakwaterkorfschelp *Potamocorbula amurensis* (Schrenck, 1861) (Bivalvia, Myida, Corbulidae), een nieuwkomer in het Schelde-estuarium; of het begin van een lang verhaal.
 De Strandvlo 40: 113–172.
 
 Nichols F., Thompson J.
 & Schemel L.
-<<<<<<< HEAD
 (1990).
 Remarkable invasion of San Francisco Bay (California, USA), by the Asian clam *Potamocorbula amurensis*.
 II, Displacement of a former community.
@@ -858,16 +517,6 @@ Van de Meutter, F., O. Bezdenjesnji, N. De Regge, J. Maes, J. Soors, J. Speybroe
 (2019). 
 The cross-shore distribution of epibenthic predators and its effect on zonation of intertidal macrobenthos: a case study in the river Scheldt. 
 Hydrobiologia 846: 123–133. https://doi.org/10.1007/s10750-019-04056-5.
-=======
-(1990).Remarkable invasion of San Francisco Bay (California, USA), by the Asian clam *Potamocorbula amurensis*.
-II, Displacement of a former community.
-Marine Ecology Progress Series 66: 95–101.
-
-Sohier C., Dekoninck W., Versteirt V., Van Damme S., Van den Bergh E.,Grootaert, P. (2010).
-Monitoring van de Culicoides-overlast ter hoogte van het stuwcomplex van de Zeeschelde te Gentbrugge.
-CULIMON project eindrapport.
-Gent, Waterwegen en Zeekanaal, 80 pp.
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
 
 Van Hoey G., Drent J.& Ysebaert T.
 (2007).
@@ -876,27 +525,9 @@ NIOO report 2007-02.
 
 Van Ryckegem G., Vanoverbeke J., Van Braeckel A., Van de Meutter F., Mertens W. Mertens A.
 & Breine J.
-<<<<<<< HEAD
 (2023).
 MONEOS - Geïntegreerd datarapport INBO: Toestand Zeeschelde 2022.
 Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
 Rapporten van het Instituut voor Natuur- en Bosonderzoek 2023 (45).
 Instituut voor Natuur- en Bosonderzoek, Brussel.
 DOI: 10.21436/inbor.98471395.
-=======
-(2021).
-MONEOS-Datarapport INBO: toestand Zeeschelde 2020.
-Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
-Rapporten van het Instituut voor Natuur- en Bosonderzoek 2021 (47).
-Instituut voor Natuur- en Bosonderzoek, Brussel.
-DOI: doi.org/10.21436/inbor.52484672.
-
-Van Ryckegem G., Vanoverbeke J., Van Braeckel A., Van de Meutter F., Mertens W. Mertens A.
-& Breine J.
-(2021).
-MONEOS-Datarapport INBO: toestand Zeeschelde 2020.
-Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
-Rapporten van het Instituut voor Natuur- en Bosonderzoek 2021 (47).
-Instituut voor Natuur- en Bosonderzoek, Brussel.
-DOI: doi.org/10.21436/inbor.52484672.
->>>>>>> 71ded6f945cbe8bdc4a6aeaceb9eca1d3f260431
