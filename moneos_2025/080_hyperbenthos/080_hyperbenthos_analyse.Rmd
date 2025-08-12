@@ -180,7 +180,7 @@ data.hpb.biomsoort<- tussenstap.1 %>%
 #trends voor een selectie van 6 soorten die de bulk van biomassa en aantallen uitmaken
 
 data.h.bsp <- data_hyperbenthos %>%
-  mutate(zone = factor(zone,
+  dplyr::mutate(zone = factor(zone,
                              levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet"))) %>%
   dplyr::mutate(soort = recode(soort, "Pomatoschistus minutus" = "Pomatoschistus sp")) %>%
       dplyr::filter(soort %in% c("Platichthys flesus",  "Crangon crangon", "Neomysis integer", "Pomatoschistus sp", "Palaemon longirostris", "Mesopodopsis slabberi")) %>% 
@@ -761,7 +761,10 @@ rollmean_2016.EMSE <- data_summary.EMSE$rollmean[data_summary.EMSE$Jaar == 2016]
 ABUND.ZS <- trend_ABUN_ZS.EMSE +
   geom_hline(yintercept = rollmean_2016.EMSE, linetype = "dashed", colour = "red") +
     geom_ribbon(data = newdata_pos, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines')) 
 ABUND.ZS
 
 
@@ -819,7 +822,10 @@ rollmean_2016.SS.EMSE <- data_summary.SS.EMSE$rollmean[data_summary.SS.EMSE$Jaar
 ABUND.SS <- trend_ABUN_SS.EMSE +
   geom_hline(yintercept = rollmean_2016.SS.EMSE, linetype = "dashed", colour = "red") +
     geom_ribbon(data = newdata_posSS, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines')) 
 ABUND.SS
 
 
@@ -878,7 +884,10 @@ newdata_posOLIG <- newdataOLIG %>% dplyr::mutate(lower = ifelse(lower<0, 0, lowe
 ABUND.OLIG <- trend_ABUN_OLIG.EMSE +
   geom_hline(yintercept = rollmean_2016.OLIG.EMSE, linetype = "dashed", colour = "red") +
     geom_ribbon(data = newdata_posOLIG, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines')) 
 ABUND.OLIG
 
 
@@ -938,10 +947,12 @@ newdata_posZOET <- newdataZOET %>% dplyr::mutate(lower = ifelse(lower<0, 0, lowe
 
 ABUND.ZOET <- trend_ABUN_ZOET.EMSE +
   geom_hline(yintercept = rollmean_2016.ZOET.EMSE, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_posZOET, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+  geom_ribbon(data = newdata_posZOET, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+  theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines')) 
 ABUND.ZOET
-
   
  
 ####FIGUREN SAMEN
@@ -949,10 +960,11 @@ ABUND.ZOET
 t.EMSE <- ggarrange(ABUND.ZS  + font("xy.text", size = fnt), 
           ABUND.SS  + font("xy.text", size = fnt),
           ABUND.OLIG + font("xy.text", size = fnt), 
-          ABUND.ZOET + font("xy.text", size = fnt), ncol=2, nrow = 2) 
+          ABUND.ZOET + font("xy.text", size = fnt), ncol=2, nrow = 2,
+          font.label = list(face = "plain")) 
 annotate_figure(t.EMSE, left = text_grob("    Gemiddelde densiteit per bemonstering per zone", rot=90), bottom = text_grob("Jaar"))
 
-ggsave(paste0(pad_figuren, "080-figuur-densiteit_zones.EMSE.jpg"), height=4, width=6)
+ggsave(paste0(pad_figuren, "080-figuur-densiteit_zones.EMSE2.jpg"), height=4, width=6)
 ```
 
 
@@ -1119,7 +1131,10 @@ rollmean_2016.EMSE <- data_summary.EMSE$rollmean[data_summary.EMSE$Jaar == 2016]
 BIOM.ZS <-trend_BIOM_ZS.EMSE +
   geom_hline(yintercept = rollmean_2016.EMSE, linetype = "dashed", colour = "red") +
     geom_ribbon(data = newdata_pos, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines')) 
 BIOM.ZS
 
 
@@ -1177,7 +1192,10 @@ rollmean_2016.SS.EMSE <- data_summary.SS.EMSE$rollmean[data_summary.SS.EMSE$Jaar
 BIOM.SS <- trend_BIOM_SS.EMSE +
   geom_hline(yintercept = rollmean_2016.SS.EMSE, linetype = "dashed", colour = "red") +
     geom_ribbon(data = newdata_posSS, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines')) 
 
 BIOM.SS
 
@@ -1238,7 +1256,10 @@ newdata_posOLIG <- newdataOLIG %>% dplyr::mutate(lower = ifelse(lower<0, 0, lowe
 BIOM.OLIG <- trend_BIOM_OLIG.EMSE +
   geom_hline(yintercept = rollmean_2016.OLIG.EMSE, linetype = "dashed", colour = "red") +
     geom_ribbon(data = newdata_posOLIG, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines')) 
 BIOM.OLIG
 
 
@@ -1299,7 +1320,10 @@ newdata_posZOET <- newdataZOET %>% dplyr::mutate(lower = ifelse(lower<0, 0, lowe
 BIOM.ZOET <- trend_BIOM_ZOET.EMSE +
   geom_hline(yintercept = rollmean_2016.ZOET.EMSE, linetype = "dashed", colour = "red") +
     geom_ribbon(data = newdata_posZOET, aes(x=Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines')) 
 BIOM.ZOET
 
   
@@ -1313,7 +1337,7 @@ t.EMSE.BIOM <- ggarrange(BIOM.ZS  + font("xy.text", size = fnt),
 annotate_figure(t.EMSE.BIOM, left=text_grob("Gemiddelde biomassa (g AFDW) per 2bemonstering per zone", rot = 90, size = 9), bottom = text_grob("Jaar", size = 12))
 
 
-ggsave(paste0(pad_figuren, "080-figuur-biomassa_zones.EMSE.jpg"), height=4, width=6)
+ggsave(paste0(pad_figuren, "080-figuur-biomassa_zones.EMSE2.jpg"), height=4, width=6)
 ```
 
 
@@ -1503,12 +1527,16 @@ hpb_specrich <- data_hyperbenthos %>%
   dplyr::group_by(Jaar, zone) %>% 
   dplyr::summarise(specrich = length(unique(soort))) %>% 
   ungroup() %>% 
-  bind_rows(hpb_specrich.ZS)
+  bind_rows(hpb_specrich.ZS) %>% 
+      dplyr::mutate(zone = 
+                  factor(zone, 
+                         levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet", "Zeeschelde"))) 
 
 
 welex  <-ggplot(hpb_specrich, aes(x = Jaar, y = specrich, color = zone)) +
   geom_line(size=1) +
   ylab("Taxa rijkdom") +
+  theme_bw() +
   theme(axis.title=element_text(size=15)) +
   ylim(13,60) +
   theme(legend.position = "none")
@@ -1527,15 +1555,19 @@ hpb_specrichgnex.ZS <- data_hyperbenthos %>%
 
 hpb_specrichgnex <- data_hyperbenthos %>%
   dplyr::filter(exoot == 0) %>% 
-  dplyr::group_by(Jaar, zone) %>% 
+  dplyr::group_by(Jaar, zone) %>%
   dplyr::summarise(specrich = length(unique(soort))) %>% 
   ungroup() %>% 
-  bind_rows(hpb_specrichgnex.ZS)
+  bind_rows(hpb_specrichgnex.ZS) %>% 
+    dplyr::mutate(zone = 
+                  factor(zone, 
+                         levels = c("Sterke Saliniteitsgradiënt", "Oligohalien", "Zoet", "Zeeschelde"))) 
 
 gnex <- ggplot(hpb_specrichgnex, aes(x = Jaar, y = specrich, color = zone)) +
   geom_line(size=1) +
   ylab("Taxa rijkdom zonder exoten") +
   ylim(13,60) +
+  theme_bw() +
   theme(axis.title=element_text(size=15)) +
   theme(legend.text = element_text(size=12)) +
    theme(legend.key.size = unit(0.44, "cm")) +
@@ -1606,7 +1638,7 @@ Navg.SS <- ggplot(data = Sp.rich.SS, aes(x = Jaar, y = Nsp.avg)) +
   #theme(axis.text.x = element_text(angle = 45))+
   ggtitle("Sterke Saliniteitsgradiënt") +
   theme(title = element_text(size=10)) +
-  scale_y_continuous(breaks=seq(5,15,5), limits = c(5, 15))
+  scale_y_continuous(breaks=seq(4,15,2), limits = c(4, 15))
 Navg.SS
 ## For illustration add a ribbon of variation based on 1.96se of simple smoothed gam
 
@@ -1634,7 +1666,10 @@ rollmean_2016.EMSE.SS <- Sp.rich.SS$rollmean[Sp.rich.SS$Jaar == 2016]
 Navg.SS.x <- Navg.SS +
   geom_hline(yintercept = rollmean_2016.EMSE.SS, linetype = "dashed", colour = "red") +
     geom_ribbon(data = newdata_posSSrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2)  +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines'))
 Navg.SS.x
 
 ## ZEESCHELDE
@@ -1645,7 +1680,7 @@ Navg.ZS <- ggplot(data = Sp.rich.ZS, aes(x = Jaar, y = Nsp.avg)) +
   geom_line(size = 1.2) +
    labs(x = "", y="") +
    #theme(axis.text.x = element_text(angle = 45))+
-  ylim(5,20)+ 
+  ylim(4,20)+ 
   ggtitle("Zeeschelde") +
   theme(title = element_text(size=10))
 Navg.ZS
@@ -1675,7 +1710,10 @@ rollmean_2016.EMSE.ZS <- Sp.rich.ZS$rollmean[Sp.rich.ZS$Jaar == 2016]
 Navg.ZS.x <- Navg.ZS +
   geom_hline(yintercept = rollmean_2016.EMSE.ZS, linetype = "dashed", colour = "red") +
     geom_ribbon(data = newdata_posZSrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2)  +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines'))
 Navg.ZS.x
 
 ## OLIGOHALIEN
@@ -1686,7 +1724,7 @@ Navg.OLIG <- ggplot(data = Sp.rich.OLIG, aes(x = Jaar, y = Nsp.avg)) +
   geom_line(size = 1.2) +
    labs(x = "", y="") +
    #theme(axis.text.x = element_text(angle = 45))+
-  ylim(5,10)+ 
+  ylim(4,10)+ 
   ggtitle("Oligohalien") +
   theme(title = element_text(size=10))
 Navg.OLIG
@@ -1716,7 +1754,10 @@ rollmean_2016.EMSE.OLIG <- Sp.rich.OLIG$rollmean[Sp.rich.OLIG$Jaar == 2016]
 Navg.OLIG.x <- Navg.OLIG +
   geom_hline(yintercept = rollmean_2016.EMSE.OLIG, linetype = "dashed", colour = "red") +
     geom_ribbon(data = newdata_posOLIGrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2)  +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines'))
 Navg.OLIG.x
 
 ## ZOET
@@ -1727,7 +1768,7 @@ Navg.ZOET <- ggplot(data = Sp.rich.ZOET, aes(x = Jaar, y = Nsp.avg)) +
   geom_line(size = 1.2) +
    labs(x = "", y="") +
    #theme(axis.text.x = element_text(angle = 45))+
-  ylim(5,10)+ 
+  ylim(4,10)+ 
   ggtitle("Zoet") +
   theme(title = element_text(size=10))
 Navg.ZOET
@@ -1757,7 +1798,10 @@ rollmean_2016.EMSE.ZOET <- Sp.rich.ZOET$rollmean[Sp.rich.ZOET$Jaar == 2016]
 Navg.ZOET.x <- Navg.ZOET +
   geom_hline(yintercept = rollmean_2016.EMSE.ZOET, linetype = "dashed", colour = "red") +
     geom_ribbon(data = newdata_posZOETrich, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2)  +
-  theme(plot.margin = unit(c(0,0.2,0,1), 'lines'))
+ theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines'))
 Navg.ZOET.x
 
 
@@ -1767,7 +1811,7 @@ t.EMSE.SPECRICH <-ggarrange(Navg.ZS.x  + font("xy.text", size = fnt),
           Navg.ZOET.x + font("xy.text", size = fnt), ncol=2, nrow = 2) 
 annotate_figure(t.EMSE.SPECRICH, left = text_grob("Gemiddelde soortenrijkdom per maand per zone", rot=90), bottom=text_grob("Jaar"))
 
-ggsave(paste0(pad_figuren, "080-figuur-Soortenrijkdom.per.maand_ZONES.jpg"), height = 4, width = 6)
+ggsave(paste0(pad_figuren, "080-figuur-Soortenrijkdom.per.maand_ZONES2.jpg"), height = 4, width = 6)
 
 
 ##########################################################
@@ -1867,7 +1911,8 @@ shannon_hpb <- data_hyperbenthos %>%
 shan_n <- ggplot(shannon_hpb, aes(x=Jaar, colour=zone))+
   geom_line(aes(y=shannon_n),  size=1)+
     ylab("Shannon diversiteit densiteit")+
-    xlab("Jaar")+
+    xlab("Jaar") +
+  theme_bw() +
   theme(legend.text = element_text(size=14))+
       theme(legend.title = element_text(size=14))+
     scale_x_continuous(labels = scales::number_format(accuracy = 1))     
@@ -1876,7 +1921,8 @@ shan_n <- ggplot(shannon_hpb, aes(x=Jaar, colour=zone))+
 shan_b <- ggplot(shannon_hpb, aes(x=Jaar, colour=zone))+
   geom_line(aes(y=shannon_afdw),  size=1)+
     ylab("Shannon diversiteit biomassa")+
-    xlab("Jaar")+
+    xlab("Jaar") +
+  theme_bw() +
   theme(legend.text = element_text(size=14))+
       theme(legend.title = element_text(size=14))+
     scale_x_continuous(labels = scales::number_format(accuracy = 1))
@@ -1962,7 +2008,11 @@ rollmean_2016.sh.ZS <- Shannon.ZS$rollmean[Shannon.ZS$Jaar == 2016]
 
 Shan.avg.ZS.x <- Shan.avg.ZS +
   geom_hline(yintercept = rollmean_2016.sh.ZS, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_ribbon.sh.ZS, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_ribbon.sh.ZS, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+   theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines'))
 Shan.avg.ZS.x
 
 ### Figuur voor Sterke Saliniteitsgradiënt ####
@@ -2002,7 +2052,11 @@ rollmean_2016.sh.SS <- Shannon.SS$rollmean[Shannon.SS$Jaar == 2016]
 
 Shan.avg.SS.x <- Shan.avg.SS +
   geom_hline(yintercept = rollmean_2016.sh.SS, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_ribbon.sh.SS, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_ribbon.sh.SS, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2)+
+   theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines'))
 Shan.avg.SS.x
 
 ### Figuur voor Oligohalien ####
@@ -2042,7 +2096,11 @@ rollmean_2016.sh.OLIG <- Shannon.OLIG$rollmean[Shannon.OLIG$Jaar == 2016]
 
 Shan.avg.OLIG.x <- Shan.avg.OLIG +
   geom_hline(yintercept = rollmean_2016.sh.OLIG, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_ribbon.sh.OLIG, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_ribbon.sh.OLIG, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+   theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines'))
 Shan.avg.OLIG.x
 
 
@@ -2083,7 +2141,11 @@ rollmean_2016.sh.ZOET <- Shannon.ZOET$rollmean[Shannon.ZOET$Jaar == 2016]
 
 Shan.avg.ZOET.x <- Shan.avg.ZOET +
   geom_hline(yintercept = rollmean_2016.sh.ZOET, linetype = "dashed", colour = "red") +
-    geom_ribbon(data = newdata_ribbon.sh.ZOET, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) 
+    geom_ribbon(data = newdata_ribbon.sh.ZOET, aes(x = Jaar, ymin = lower, ymax = upper), alpha = 0.2) +
+   theme_bw(base_family = "sans") +
+  theme(panel.border = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.margin = unit(c(0,0,0,0), 'lines'))
 Shan.avg.ZOET.x
 
 ####Gezamenlijk figuur
@@ -2094,9 +2156,7 @@ t.SHANNON <- ggarrange(Shan.avg.ZS.x  + font("xy.text", size = fnt),
           Shan.avg.ZOET.x + font("xy.text", size = fnt), ncol=2, nrow = 2) 
 annotate_figure(t.SHANNON, left = text_grob("Gemiddelde Shannon-diversity per maand per zone", rot=90), bottom=text_grob("Jaar"))
 
-ggsave(paste0(pad_figuren, "080-figuur-Shannon.per.maand_ZONES.jpg"), height=4, width=6)
-
-
+ggsave(paste0(pad_figuren, "080-figuur-Shannon.per.maand_ZONES2.jpg"), height=4, width=6)
 ```
 
 
