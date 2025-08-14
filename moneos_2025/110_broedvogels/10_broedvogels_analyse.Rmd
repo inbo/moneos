@@ -52,14 +52,14 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 
 ```{r data}
-Soorten <- read_xlsx(path = str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"),
+Soorten <- read_xlsx(path = str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"),
                    sheet = "Soorten")
 Terr_Sigma_BB <- 
   read_csv(str_c(pad_tabellen, "Terr_Sigma_BB.csv"))
 Terr_Sigma_AB <- 
   read_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
 Terr_Sigma_AB_tot <- 
-  read_csv(str_c("C:/R/Projects/Broedvogels/data-output/Terr_Sigma_AB_tot.csv"))
+  read_csv(str_c(pad_tabellen, "Terr_Sigma_AB_tot.csv"))
 ```
 
 
@@ -188,16 +188,16 @@ Terr_Sigma_AB %>%
 
 # Broedlocaties per soort
 
-Voor het schrijven van het hoofdstuk kan het handig zijn een jaarlijks overzicht van broedlocaties van de soorten handig zijn.
+Voor het schrijven van het hoofdstuk kan een jaarlijks overzicht van broedlocaties van de soorten handig zijn.
 
 ```{r nested data 202122}
-data23 <- readxl::read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), 
-                            range = "A1:G500") %>% 
+data24 <- readxl::read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"),
+                            sheet = "Data", range = "R1C1:R10000C7") %>% 
   filter(!is.na(Soort))
 # we nest data to make a table for each species-year by using a for loop
-# the result is a dataframe with columns Soort(chr), Jaar (num) en data(list). Eacht list item in data contains a dataframe with Gebied, minimum and maximum.
+# the result is a dataframe with columns Soort(chr), Jaar (num) en data(list). Each list item in data contains a dataframe with Gebied, minimum and maximum.
 data_nested <- 
-  data23  %>% 
+  data24  %>% 
   arrange(Soort, Jaar) %>% 
   nest(data = c(Gebied, minimum, maximum), .by = c(Soort, Jaar))
 # data_nested$data[1]
