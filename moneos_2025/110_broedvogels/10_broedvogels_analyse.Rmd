@@ -58,6 +58,8 @@ Terr_Sigma_BB <-
   read_csv(str_c(pad_tabellen, "Terr_Sigma_BB.csv"))
 Terr_Sigma_AB <- 
   read_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
+Terr_Sigma_AB_na2005 <- 
+  read_csv(str_c(pad_tabellen, "Terr_Sigma_AB2005.csv"))
 Terr_Sigma_AB_tot <- 
   read_csv(str_c(pad_tabellen, "Terr_Sigma_AB_tot.csv"))
 ```
@@ -107,7 +109,7 @@ ggsave(filename = str_c(pad_figuren, "110_fig3.jpg"), height=8, width=6)
 cap_algemene_soorten <-
   "Evoluties in de broedvogelaantallen (territoria) voor een selectie van algemenere soorten voor een beperkt aantal gebieden die frequent worden geteld (BD (Blokkersdijk), K (Ketenisse), Sigma (Kalkense Meersen, Wijmeers, Bergenmeersen, Paardeweide, Weijmeerbroek en Polder van Kruibeke), Sigma\\_LO (= Noordelijke gebied = Doelpolder + Prosperpolder + Paardenschor + Schor Ouden Doel)). Rode horizontale lijn geeft de tot doel gestelde aantallen."
 
-Terr_Sigma_AB %>% 
+Terr_Sigma_AB_na2005 %>% 
   ggplot() +
   geom_bar(aes(Jaar, weight = Aantal, fill = TypeGebied))+
   geom_hline(aes(yintercept = Doel), size = 1, color = "red")+
@@ -137,6 +139,7 @@ cap_algemene_soorten <-
   "Evoluties in de broedvogelaantallen (territoria) voor een selectie van algemenere soorten voor een beperkt aantal gebieden die frequent worden geteld (BD (Blokkersdijk), K (Ketenisse), Sigma (Kalkense Meersen, Wijmeers, Bergenmeersen, Paardeweide, Weijmeerbroek en Polder van Kruibeke), Sigma\\_LO (= Noordelijke gebied = Doelpolder + Prosperpolder + Paardenschor + Schor Ouden Doel)) tot en met 2020 en voor alle getelde gebieden sinds 2021. Rode horizontale lijn geeft de tot doel gestelde aantallen."
 
 Terr_Sigma_AB_tot %>% 
+  filter(Jaar > 2004) %>% 
   ggplot() +
   geom_bar(aes(Jaar, weight = Aantal, fill = TypeGebied))+
   geom_hline(aes(yintercept = Doel), size = 1, color = "red")+

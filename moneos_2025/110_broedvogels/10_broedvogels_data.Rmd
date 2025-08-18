@@ -174,13 +174,23 @@ Terr_Sigma_BB %>%
 
 # Algemene broedvogels
 
-```{r read data algemenesoorten}
+```{r algemenesoorten}
 (Terr_Sigma_AB <- 
   data %>% 
   filter(Soort %in% ab) %>% 
   mutate(Aantal = ceiling((minimum + maximum)/2)) %>% 
   left_join(gebied, by = c("Gebied")) %>% 
-  filter(Gebiedscode %in% gebieden_ab$Gebied) %>% 
+  filter(Gebiedscode %in% gebieden_ab$Gebied) %>% # subset van gebieden
+  left_join(soort, by = "Soort") %>% 
+  select(Soort, Gebied, Gebiedscode,  TypeGebied, Doel, Jaar, Aantal) ) # analyse gebeurt op selectie van goed getelde gebieden
+```
+
+```{r algemenesoorten tot}
+(Terr_Sigma_AB_tot <- 
+  data %>% 
+  filter(Soort %in% ab) %>% 
+  mutate(Aantal = ceiling((minimum + maximum)/2)) %>% 
+  left_join(gebied, by = c("Gebied")) %>% 
   left_join(soort, by = "Soort") %>% 
   select(Soort, Gebied, Gebiedscode,  TypeGebied, Doel, Jaar, Aantal) ) # analyse gebeurt op selectie van goed getelde gebieden
 ```
@@ -226,51 +236,26 @@ anaf 2007.
 
 ```{r save data}
 Terr_Sigma_AB_na2005 %>% 
-  write_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
-Terr_Sigma_AB %>% 
+  write_csv(str_c(pad_tabellen, "Terr_Sigma_AB2005.csv"))
+Terr_Sigma_AB_tot %>% 
   write_csv(str_c(pad_tabellen, "Terr_Sigma_AB_tot.csv"))
+Terr_Sigma_AB %>% 
+  write_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
 ```
 
+```{r AB tot tabel}
+Terr_Sigma_AB_tot %>% 
+  summarise(.by = c(Soort, Jaar), Aantal = sum(Aantal, na.rm = TRUE)) %>% 
+  arrange((desc(Jaar)))
 
-
-
-
-
-
-
-
-
-
-```{r}
-(Terr_Sigma_AB_2023_tot <-
-  data %>%
-  filter(Soort %in% c("Blauwborst", "Dodaars","Rietzanger","Scholekster",
-                      "Slobeend", "Zomertaling")) %>%
-  group_by(Jaar, Soort, Gebied) %>%
-  summarise(minimum = sum(minimum), maximum = sum(maximum),
-            .groups = "drop") %>%
-  mutate(Aantal = ceiling(minimum + maximum)/2) %>%
-  select(-c(minimum, maximum)))
-
-# Add 2021, 2022 and 2023
-Terr_Sigma_AB_tot <-
-  Terr_Sigma_AB_2021 %>%
-  select(-c(TypeGebied, Doel)) %>%
-  pivot_longer(cols = !c(SOORT, Gebied),
-               names_to = "Jaar",
-               values_to = "Aantal") %>%
-  rename(Soort = SOORT) %>%
-  mutate(Jaar = as.numeric(Jaar)) %>%
-  bind_rows(Terr_Sigma_AB_2023_tot) %>%
-  complete(Soort, Gebied, Jaar, fill = list(Aantal = 0)) %>%
-  group_by(Soort, Gebied, Jaar) %>%
-  summarise(Aantal = sum(Aantal), .groups = "drop") %>%
-  left_join(Gebieden[,c(1,4)]) %>% # add TypeGebied
-  left_join(Soorten[,c(1,5)]) # add Doel
-getwd()
-Terr_Sigma_AB_tot %>%
-  write_csv("C:/R/Projects/Broedvogels/data-output/Terr_Sigma_AB_tot.csv")
 ```
 
+```{r AB tot tabel2}
+Terr_Sigma_AB_na2005 %>% 
+  filter(Soort == "Scholekster", Jaar %in% c(2020:2024)) %>% 
+  summarise(.by = c(Soort, Jaar, TypeGebied), Aantal = sum(Aantal, na.rm = TRUE)) %>% 
+  arrange((desc(Jaar))) %>% 
+  print(n = 20)
 
+```
 
