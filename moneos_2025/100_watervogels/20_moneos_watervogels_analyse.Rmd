@@ -224,8 +224,7 @@ data_oppecotoop <-data_oppecotoop %>%
 
 data_oppecotoop <- data_oppecotoop %>%
   dplyr::filter(niveau3 != "rest") %>% 
-  left_join(data_gebiedsindeling_T2021) %>% 
-  mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme")))
+    mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf", "Rupel","Durme")))
 
 ## we selecteren de jaren met volledige kaart BEZ BOZ Rupel Durme
 
@@ -895,6 +894,8 @@ ggsave(paste0(pad_figuren, "100_figuur_wintermaxima_rivier.jpg"))
 #### Watervogels Sigma estuarien en wetlands
 
 ```{r winteraantallen Sigma}
+
+##nog te doen
 
 table(Waterbirds$analyseset)
 table(Waterbirds$gebiedsgroep)
@@ -2593,19 +2594,20 @@ data_watervogels %>%
 ##welke soorten -- achtergrond bespreking
 data_watervogels %>% 
   dplyr::filter(maand %in% c(10:12, 1:3)) %>% 
-  dplyr::filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
+  dplyr::filter(str_detect(gebiedsklassecode, "ZS")) %>% 
   dplyr::filter(jaar >= 2012,
          telseizoen != "2011/12") %>% 
   dplyr::filter(!is.na(trofische_groep)) %>%
-  dplyr::filter(trofische_groep=="Nomn") %>% 
-  group_by(telseizoen, maand, trofische_groep, gebiedsgroep, nednaam) %>% 
+  dplyr::filter(trofische_groep=="Nomn") %>%
+  # dplyr::filter(nednaam %in% c("Kokmeeuw")) %>% 
+  group_by(telseizoen, maand, trofische_groep, krwzone, nednaam) %>% 
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
-  group_by(telseizoen, trofische_groep, gebiedsgroep, nednaam) %>% 
+  group_by(telseizoen, trofische_groep, krwzone, nednaam) %>% 
   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
-ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) + 
-  geom_point(aes(shape = gebiedsgroep)) +
+ggplot(aes(ordered(telseizoen), aantal, group = krwzone, color = krwzone)) + 
+  geom_point(aes(shape = krwzone)) +
   geom_line() +
   labs(x = "telseizoen", 
        y = "aantal") +
@@ -2616,19 +2618,20 @@ ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgro
 
 data_watervogels %>% 
   dplyr::filter(maand %in% c(10:12, 1:3)) %>% 
-  dplyr::filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
+  dplyr::filter(str_detect(gebiedsklassecode, "ZS")) %>% 
   dplyr::filter(jaar >= 2012,
          telseizoen != "2011/12") %>% 
   dplyr::filter(!is.na(trofische_groep)) %>%
   dplyr::filter(trofische_groep=="Nherb") %>% 
-  group_by(telseizoen, maand, trofische_groep, gebiedsgroep, nednaam) %>% 
+  # dplyr::filter(nednaam %in% c("xxxxx")) %>%
+    group_by(telseizoen, maand, trofische_groep, krwzone, nednaam) %>% 
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
-  group_by(telseizoen, trofische_groep, gebiedsgroep, nednaam) %>% 
+  group_by(telseizoen, trofische_groep, krwzone, nednaam) %>% 
   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
-ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) + 
-  geom_point(aes(shape = gebiedsgroep)) +
+ggplot(aes(ordered(telseizoen), aantal, group = krwzone, color = krwzone)) + 
+  geom_point(aes(shape = krwzone)) +
   geom_line() +
   labs(x = "telseizoen", 
        y = "aantal") +
@@ -2637,51 +2640,7 @@ ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgro
         legend.position = "bottom",
         legend.title = element_blank())
 
-data_watervogels %>% 
-  dplyr::filter(maand %in% c(10:12, 1:3)) %>% 
-  dplyr::filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
-  dplyr::filter(telseizoen > "2011/12") %>% 
-  dplyr::filter(!is.na(trofische_groep)) %>%
-  dplyr::filter(trofische_groep=="Nomn") %>% 
-  dplyr::filter(nednaam %in% c("Kokmeeuw")) %>% 
-  group_by(telseizoen, maand, trofische_groep, gebiedsgroep, nednaam) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, trofische_groep, gebiedsgroep, nednaam) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) + 
-  geom_point(aes(shape = gebiedsgroep)) +
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "aantal") +
-  facet_wrap(~nednaam) +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
 
-data_watervogels %>% 
-  dplyr::filter(maand %in% c(10:12, 1:3)) %>% 
-  dplyr::filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
-  dplyr::filter(jaar >= 2012,
-         telseizoen != "2011/12") %>% 
-  dplyr::filter(!is.na(trofische_groep)) %>%
-  dplyr::filter(trofische_groep=="Npisc") %>% 
-  group_by(telseizoen, maand, trofische_groep, gebiedsgroep, nednaam) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, trofische_groep, gebiedsgroep, nednaam) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) + 
-  geom_point(aes(shape = gebiedsgroep)) +
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "aantal") +
-  facet_wrap(~nednaam) +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
 ```
 
 ##### figuur abundante soorten met \> 5% per KRWzone voor en na 2009
@@ -2691,6 +2650,7 @@ ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgro
 abundante_wintervogels <- data_watervogels %>% 
     # dplyr::filter(str_detect(gebiedsgroep_code, "ZS")) %>% 
   dplyr::filter(maand %in% c(10:12, 1:3)) %>% 
+  dplyr::filter(telseizoen == "2020/21") %>% 
      group_by(niveau3, nednaam) %>% 
   mutate(totaal = sum(aantal, na.rm = TRUE)) %>%
   ungroup() %>%
@@ -2699,10 +2659,9 @@ abundante_wintervogels <- data_watervogels %>%
   mutate(perc = (totaal/totaalgebiedsgroep)*100) %>% 
   dplyr::filter(perc > 5) %>% 
   ungroup() %>% 
-  select(nednaam) %>%
-  distinct(nednaam) %>% 
-  arrange(nednaam)
-  
+  select(nednaam,niveau3, perc) %>%
+  distinct(nednaam,niveau3, perc) %>% 
+  arrange(niveau3) 
 
 # #Create a custom color scale for species: 10 colors needed and order of color must be the same for each species
 # library(RColorBrewer)
