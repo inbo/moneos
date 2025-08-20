@@ -25,6 +25,10 @@ library(INBOtheme)
 library(writexl)
 library(rprojroot) ## workaround pad
 library(RcppRoll)
+library(rtrim)
+library(conflicted)
+
+
 ```
 
 ```{r pad}
@@ -158,7 +162,7 @@ WV_DB_noMS <- WV_DB %>%
           teldatum < "2025-04-01",        
          telseizoen1 > 1990 & telseizoen1 < 2024)
 
-### samenvatten dataset 
+### samenvatten dataset niveau 3 
 Tellingen_ZS_sets <- 
   Tellingen_ZS_alles %>% 
     group_by(krwcode,
@@ -1953,6 +1957,392 @@ data_watervogels_index_trofniv3 %>%
  ggsave(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen_niv2.jpg"))
  
 ```
+
+##### index rtrim
+
+```{r 100-trend-rtrim-niveau3, fig.height=6, fig.width=8}
+
+
+df_doelsrt <- read_delim(paste0(pad_data, "ihd_nietbroedvogels_zs.csv"),
+              delim = ";") %>%
+  select(-bron, -criterium) %>% 
+  mutate(soort_nl = str_to_title(soort_nl))
+l_doel <- unique(df_doelsrt$soort_nl)
+
+# pijlstaart : winter seizoensgemiddelde telseizoen 2000/01 tot 2005/06
+# wintertaling : winter seizoensgemiddelde telseizoen 1998/99 tot 2005/06
+# krakeend: winter seizoensgemiddelde telseizoen 2002/03 tot 2006/07
+# tafeleend: winter seizoensgemiddelde telseizoen 2001/02 tot 2006/07
+# bergeend: winter seizoensgemiddelde telseizoen 1992/93 tot 2006/07
+
+d_mnd <- data_watervogels %>%
+  dplyr::filter(nednaam %in% l_doel) %>%
+  mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>%
+  dplyr::filter(maand %in% c(10:12, 1:3)) %>%
+  group_by(niveau3, nednaam, telseizoen1, maand) %>%
+  summarise(maandsom = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>%
+  complete(telseizoen1, nednaam, maand, niveau3,
+           fill = list("maandsom"=0))
+  
+##Calculate trend stats with packages rtrim
+# script T2021 T2021/06_Ecologie/08_Vogels/Zeeschelde/Scripts/d_plot
+#/plot_zs_nietbroedvogels.R
+#
+
+# long term trend (vanaf telseizoen 1992)
+# shorterm trend (last 12 years -> vanaf 2009)
+
+d_agg_trim <- d_mnd %>%
+  filter(telseizoen1>1991) %>% 
+  rename(soort_nl = nednaam,
+         site = niveau3, 
+         count = maandsom,
+         year = telseizoen1)
+#
+#  long-term trend
+#
+
+# maak een df met alle soorten. als het model is gecrashed dan zie je NA's.
+df_doel <- data.frame(soort_nl = l_doel)
+conflict_prefer("filter", "dplyr")
+
+df_out <- NULL
+for(srt in l_doel){ #srt="tafeleend" #l_doel[1]
+  print(srt)
+  
+  df_tmp <- NULL
+  
+  d_sel <- d_agg_trim %>%
+    filter(soort_nl == srt,
+           year>=1991) %>%
+    group_by(soort_nl, year, 
+             # month,
+             site) %>%
+    summarise(count = sum(count)/6) %>%
+    mutate(count =   replace_na(count, 0)) # trim imputes NA
+  
+
+  m <- trim(object = d_sel,
+             count_col = "count",
+             year_col = "year", 
+             # month_col = "month",
+             site_col = "site",
+             model = 2,
+             # changepoints = "all",
+             overdisp = TRUE
+  )
+ 
+  # Create filename
+  filename <- paste0(pad_figuren, "trend_trim_long_", srt, "_zs.png")
+  
+  # Open PNG device, create plot, close device
+  png(filename, width = 16, height = 12, units = "cm", res = 300)
+  plot(overall(m))
+  dev.off()
+  
+  # Display plot in console/viewer (optional)
+  plot(overall(m), main = paste("Long-term trend:", srt))
+    
+# Extract slope data
+  df_tmp <- overall(m)$slope %>% as.data.frame()
+  df_tmp$soort_nl <- srt
+  print(df_tmp)
+  df_out <- rbind(df_out, df_tmp)
+  
+  # Print summary
+  print(summary(m))
+}
+
+df_longterm <- df_doel %>% 
+  left_join(df_out) %>%
+  select(soort_nl, from, upto,p, meaning)
+
+#
+#  short-term trend
+#
+
+df_out <- NULL
+
+for(srt in l_doel){
+  print(srt)
+  df_tmp <- NULL
+  d_sel <- d_agg_trim %>%
+    filter(soort_nl == srt,
+           year>=2009) %>%
+    group_by(soort_nl, year, site) %>%
+    summarise(count = sum(count)/6)
+  
+  try({
+    m <- trim(object = d_sel,
+              count_col = "count",
+              year_col = "year", 
+              # month_col = "month",
+              site_col = "site",
+              model = 2,
+              # changepoints = "all",
+              overdisp = TRUE
+    )
+     # Create filename
+  filename <- paste0(pad_figuren, "trend_trim_long_", srt, "_zs.png")
+  
+  # Open PNG device, create plot, close device
+  png(filename, width = 16, height = 12, units = "cm", res = 300)
+  plot(overall(m))
+  dev.off()
+  
+  # Display plot in console/viewer (optional)
+  plot(overall(m), main = paste("Short-term trend:", srt))
+    
+# Extract slope data
+  df_tmp <- overall(m)$slope %>% as.data.frame()
+  df_tmp$soort_nl <- srt
+  print(df_tmp)
+  df_out <- rbind(df_out, df_tmp)
+  
+  # Print summary
+  print(summary(m))
+  })
+} 
+
+
+df_shortterm <- df_doel %>% 
+  left_join(df_out) %>%
+  select(soort_nl, from, upto,p, meaning)
+
+#
+#  export
+#
+meaning = c("Strong decrease", 
+            "Moderate decrease",
+            "Stable",
+            "Moderate increase",
+            "Strong increase",
+            "Uncertain")
+
+symbol = c("--",
+           "-",
+           "0",
+           "+",
+           "++",
+           "~")
+
+toelichting = c(
+  "sterke significante afname van >5% per jaar",
+  "matige significante afname van < 5% per jaar",
+  "stabiel, geen significante trend",
+  "significante matige toename van < 5% per jaar",
+  "significante sterke toename van >5% per jaar",
+  "onzeker, geen trend aantoonbaar")
+
+df_meaning <- data.frame(meaning, symbol, toelichting)
+
+# merge and remove sig level
+df_trim <- df_longterm %>% 
+  rbind(df_shortterm) %>% 
+  mutate(across(meaning, str_replace, " \\(p<0.05\\)", '')) %>%
+  mutate(across(meaning, str_replace, " \\(p<0.01\\)", '')) %>% 
+  left_join(df_meaning)
+
+
+write_xlsx(df_trim, 
+           paste0(pad_tabellen, "trend_stats", paste0("trend_rtrim_nietbroedvogels_zs.xlsx")))
+
+# 
+# # 
+# #  ggplot plot  - seizoensgemiddelde tov instandhoudingsdoel
+## deze plots zijn niet correct: moeten gemaakt worden obv gewogengemiddele periode 5 - zie IHD boven
+# # 
+# 
+# l_srt <- unique(df_doelsrt$soort_nl)
+# 
+# # plot kleuren
+# colors <- c("trend" = "royalblue", "ihd" = "red")
+# 
+# d_agg <- d_mnd %>%
+#   rename(soort_nl = nednaam,
+#          n_sum = maandsom) %>% 
+#   group_by(soort_nl, telseizoen1
+#            # month,niveau3
+#            ) %>%
+#   summarise(n_mean = sum(n_sum)/6) %>%
+#   mutate(n_mean =   replace_na(n_mean, 0)) %>%
+#   ungroup()# trim imputes NA
+# 
+# for(srt in l_srt){
+#   # srt= l_srt[2]; srt = "pijlstaart"
+#   
+#   print(srt)
+#   
+#   # selecteer data
+#   d_sel <- d_agg %>%
+#     filter(soort_nl == srt,
+#            telseizoen1>1991)  
+#     
+#   
+#   # selecteer het bijbehorend ihd om als lijn in de figuur op te nemen
+#   grens_sel <- df_doelsrt %>% rename(n_mean = ihd) %>%
+#     filter(soort_nl == srt) 
+#   
+#   p <- ggplot() +
+#     geom_point(data = d_sel, aes(x = telseizoen1, y = n_mean)) +
+#     geom_hline(data= grens_sel, aes(yintercept = n_mean, color = "ihd"), size=1) +
+#     geom_smooth(data = d_sel, aes(x = telseizoen1, y = n_mean, color = "trend"),
+#                 method = 'gam', formula = y ~ s(x, k = 10),
+#                 fill = '#1E64C8', na.rm = T, show.legend=F) +
+#     coord_cartesian(ylim=c(0,NA)) + # check that we dont kill the ribbon of geom_smooth
+#     theme_light() +
+#     scale_color_manual(values = colors, limits=c("trend", "ihd")) +
+#     labs(title = paste(srt, "- Zeeschelde"),
+#          x= "telseizoen",
+#          y= "telseizoen gem. (wintermaanden)",
+#          color = "Legenda") 
+#     
+#   print(p)
+#   
+#   plotnm <- paste0("100-figuur_trendrtrim_", srt, "_zs.png")
+#   
+#   ggsave(filename= paste0(pad_figuren, plotnm), plot = p)    
+#     
+# }
+
+
+
+```
+
+#### Multispecies_index
+
+```{r 100-multispeciesindex-niveau2, fig.height=6, fig.width=8}
+
+# aangepast naar: T2021/06_Ecologie/08_Vogels/Zeeschelde/Scripts/d_plot
+#/plot_zs_multispecies_index.R
+library(scales)
+
+
+------------------------------------------------------------------------------
+#####  functions  
+------------------------------------------------------------------------------
+
+f.geom_mean <- function(x){
+  exp(mean(log(x)))
+  # prod(x)^(1/length(x))
+}
+
+f.geom_mean_correctzero <- function(x){
+  exp(mean(log(x+1)))-1
+  # prod(x)^(1/length(x))
+}
+
+df_doelsrt <- read_delim(paste0(pad_data, "ihd_nietbroedvogels_zs.csv"),
+              delim = ";") %>%
+  select(-bron, -criterium) %>% 
+  mutate(soort_nl = str_to_title(soort_nl))
+l_doel <- unique(df_doelsrt$soort_nl)
+
+------------------------------------------------------------------------------
+#####  dataset  
+------------------------------------------------------------------------------
+
+d_mnd_n2 <- data_watervogels %>%
+  dplyr::filter(nednaam %in% l_doel) %>%
+  mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>%
+  dplyr::filter(maand %in% c(10:12, 1:3)) %>%
+  dplyr::filter(niveau2 =="Zeeschelde") %>% #voor de Zeeschelde alleen te berekenen, dataset zijrivieren is onvolledig
+  group_by(nednaam, telseizoen1, maand) %>%
+  summarise(maandsom = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>%
+  group_by(nednaam, telseizoen1) %>%
+  summarise(n_mean = mean(maandsom, na.rm = TRUE)) %>% 
+  ungroup() %>%
+  complete(telseizoen1, nednaam,
+           fill = list("n_mean"=0))
+
+
+------------------------------------------------------------------------------
+#####  Analyse: bepaal index per soort op n2
+------------------------------------------------------------------------------
+
+# filterstappen
+# - alleen soorten die ingedeeld kunnen worden in een voedselgroep
+# - alleen soorten die in het referentie jaar zijn waargenomen
+# - alleen soorten met een instandhoudings doel (slechts berekend op basis van 5 soorten dus)
+
+df_nietbrdvgl <- d_mnd_n2   
+
+
+# het referentiejaar
+
+#check volledigheid tellingen 1991 vs 1992
+
+check_telling <- Tellingen_ZS_alles %>% 
+  filter(telseizoen %in% c("1991/92", "1992/93")) %>% 
+  filter(rivier == "Zeeschelde") 
+
+all_combinations <- expand_grid(
+  gebied = unique(check_telling$gebied),
+  telseizoen1 = c(1991, 1992),
+  maand = (1:3 & 10:12)
+)
+
+check <- check_telling %>% 
+  group_by(gebied, telseizoen1, maand) %>% 
+  summarise(n_records = n(), .groups = 'drop') %>%
+  right_join(all_combinations, by = c("gebied", "telseizoen1", "maand")) %>%
+  mutate(n_records = replace_na(n_records, 0)) 
+
+##voor de Zeeschelde is de dataset goed maar opgelet: de Rupel werd nog niet geteld dus index is te maken op niveau 2 enkel op de rivier Zeeschelde (zonder deel Rupel). Deze selectie was foutief voor T2021.
+
+year_idx100 = 1991
+
+# lijst met soorten die in indexjaar zijn waargenomen
+indexyr_ngr0 <- df_nietbrdvgl %>% 
+  filter(telseizoen1 %in% year_idx100) %>%
+  filter(n_mean >0) %>% 
+  mutate(aanwezig_refjaar = 1,
+         n100 = n_mean) %>%
+  select(nednaam, aanwezig_refjaar, n100) 
+
+##alle 5 de IHD soorten werden waargenomen in referentiejaar
+
+# index bepalen mbv het referentiejaar
+df_index_n2 <- df_nietbrdvgl %>% 
+  left_join(indexyr_ngr0) %>%
+  filter(aanwezig_refjaar ==1) %>% 
+  mutate(index = n_mean  / n100 *100)%>%
+  mutate(index = if_else(index <1, 1, index)) 
+
+# bereken geometrisch gemiddelde index (met correctie voor nullen)
+df_geomindex_n2 <- df_index_n2 %>% 
+  group_by(telseizoen1) %>%
+  summarise(geom_idx = f.geom_mean_correctzero(index), 
+            gem_idx = mean(index) ) %>%
+  ungroup()
+
+
+------------------------------------------------------------------------------
+#####  plot  
+------------------------------------------------------------------------------
+
+# maakt het uit of index 1 of 100 is? Ja! 
+# in het geval van nullen wordt er truc +1 en -1 toegepast.
+# dit heeft een groot effect wanneer referentie op 1 wordt gezet ipv 100
+
+
+ggplot(data=df_geomindex_n2) +
+  geom_line(aes(x=telseizoen1, y=geom_idx), color = "blue") +
+  coord_cartesian(ylim = c(0,NA)) +
+  # facet_wrap(~niveau2, scales = "free") +  
+  # scale_y_continuous(trans = log10_trans()) +
+  geom_hline(yintercept = 100, color = "black" ) +
+  geom_vline(xintercept = year_idx100, color = "red" ) +
+  labs(title = "Multi-species index niveau2",
+       y = "index") 
+ 
+ggsave(paste0(pad_figuren, "100-figuur_multispeciesindex_niv2.jpg"))
+
+```
+
+
 
 ##### figuur wintergemiddelde aantallen per KRWzone
 
