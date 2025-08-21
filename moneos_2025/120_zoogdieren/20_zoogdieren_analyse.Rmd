@@ -1,0 +1,732 @@
+---
+params:
+  hoofdstuk: "120_zoogdieren"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "MONEOS zoogdieren analyse"
+output: 
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    code_hide: false
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+options(knitr.kable.NA = '')
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(INBOtheme)
+library(rprojroot)
+library(lubridate)
+library(readxl)
+library("sf")
+library("tmap")
+library(kableExtra)
+library(leaflet)
+conflicted::conflicts_prefer(dplyr::filter)
+
+```
+
+
+```{r pad}
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+pad_geodata <- "I:/GIS/VNSC/"
+pad_geodata2 <- "Z:/VNSC/gebiedsindeling_schelde_draft112014/gebiedsindeling_schelde112014/"
+```
+
+
+```{r data}
+zoogdier_data_raw <- 
+  read_csv(str_c(pad_data, "zoogdier_data_2010_2024.csv"))
+```
+
+
+# beschrijving van de data
+
+  - Per waarneming zijn er `r ncol(zoogdier_data_raw)` informatievelden
+    + `r str_flatten(names(zoogdier_data_raw), collapse = "\n    - ")`
+  - In totaal bevat de dataset in 2022 `r nrow(zoogdier_data_raw)` waarnemingen
+  - De dataset bevat waarnemingen van `r str_flatten(unique(zoogdier_data_raw$naam_nl), collapse = ", ", last = " en ")`
+
+
+
+# Aantal waarnemingen per soort per jaar 
+
+```{r aantal waarnemingen}
+
+n_seeings <- 
+  zoogdier_data_raw %>% 
+  group_by(naam_nl, Jaar = year(datum)) %>% 
+  count() %>% 
+  spread(key = naam_nl, value = n) %>% 
+  mutate_all(~replace(., is.na(.), 0)) 
+# Voor rapport wordt andere tabel gemaakt, zie chunk aantal_waarnemingen2
+# n_seeings %>% 
+#   write_csv(paste0(pad_tabellen, "aantal_waarnemingen.csv"))
+
+kbl(n_seeings, 
+             caption = "Aantal waarnemingen per soort per jaar") %>% 
+  kable_styling(full_width = FALSE, position = "left")
+
+```
+<br/>
+<br/>
+
+Tot en met rapportage 2021 werden alle waarnemingen opgenomen in de data-analyse. Hieronder wordt de dataset beperkt tot goedgekeurde waarnemingen. Voor bever en otter en bruinvis zijn de verschillen niet groot en/of de trends gelijkaardig, maar voor bruinvis en zeehonden zijn er zeker na 2016 weinig gevalideerde waarnemingen. We beperken de dataset voor de analyse tot gevalideerde data voor bever en otter, voor bruinvis en zeehonden behouden we alle data.
+
+```{r aantal goedgekeurde waarnemingen}
+n_seeings_goedgekeurd <- 
+  zoogdier_data_raw %>% 
+  filter(str_detect(status, "Goedgekeurd")) %>% 
+  group_by(naam_nl, Jaar = year(datum)) %>% 
+  count() %>% 
+  spread(key = naam_nl, value = n) %>% 
+  mutate_all(~replace(., is.na(.), 0)) 
+# wordt niet gebruikt in rapport
+# n_seeings_goedgekeurd %>% 
+#   write_csv(paste0(pad_tabellen, "aantal_waarnemingen_goedgekeurd.csv"))
+
+kbl(n_seeings_goedgekeurd, 
+             caption = "Aantal goedgekeurde waarnemingen per soort per jaar") %>% 
+  kable_styling(full_width = FALSE, position = "left")
+```
+
+```{r}
+# voor bever en otter enkel goedgekeurde waarnemingen
+zoogdier_data <- 
+  zoogdier_data_raw %>% 
+  filter(case_when(naam_nl %in% c("Europese Bever", "Europese Otter") ~ str_detect(status, "Goed"),
+                   .default = status == status
+                   ))
+```
+
+
+# Bever waarnemingen van sporen tegenover dierwaarnemingen
+
+## Alle data
+
+```{r sporen}
+# aantal goedgekeurde beverwaarnemingen
+bever0 <- zoogdier_data_raw[zoogdier_data_raw$naam_nl == "Europese Bever",]
+nb0 <- nrow(bever0)
+# bever-spoorwaarnemingen
+bever0_spoor <- bever0[(bever0$gedrag %in% c("bezet nest", "sporen")|
+                  bever0$methode %in% c( "andere sporen", "prenten", "sporen", 
+                                        "sporenbed", "uitwerpselen", 
+                                        "verlaten nest", "vraatsporen")),]
+count(bever0_spoor, methode, gedrag) %>% print(n =25)
+# klopt grotendeels, maar er zitten enkele exotische combinaties tussen ("andere sporen"-"in kolonie anders", "prenten"-"zwemmend", "sporenbed"-"foeragerend"); het aantal hiervan is erg laag
+nbsp0 <- nrow(bever0_spoor)
+
+# niet duidelijk of het een waarneming van een dier of van een spoor is
+bever0_onbepaald <- bever0[(bever0$gedrag %in% c("onbekend", "overige") &
+                    bever0$methode %in% c( "NULL", "onbekend")) ,]
+count(bever0_onbepaald, methode, gedrag)
+nbonb0 <- nrow(bever0_onbepaald)
+
+# bever dierwaarnemingen
+bever0_dier <- 
+  bever0 %>% 
+  anti_join(bever0_onbepaald, by = c("unieke_id")) %>% 
+  anti_join(bever0_spoor, by = c("unieke_id"))
+count(bever0_dier, methode, gedrag) %>% print(n =75)
+# klopt ook grotendeels, maar ook wat exotisme ("ondebekend" - "nestkast", )
+nbdier0 <- nrow(bever0_dier)
+```
+
+```{r sporen nietbever}
+# aantal niet-beverwaarnemingen
+niet_bever <- 
+  zoogdier_data[zoogdier_data$naam_nl != "Europese Bever",]
+nnb <- nrow(niet_bever)
+niet_bever_spoor <- 
+  niet_bever[(niet_bever$gedrag %in% c("bezet nest", "sporen")|
+       niet_bever$methode %in% c("andere sporen", "prenten", "sporen", 
+                                 "sporenbed", "uitwerpselen", "verlaten nest",
+                                 "vraatsporen")) ,]
+nspnb <- nrow(niet_bever_spoor)
+```
+
+Bij de beverwaarnemingen zitten heel wat waarnemingen van sporen of andere aanduidingen van de aanwezigheid van de soort anders dan een levend of een dood dier, het betreft `r round(100*nbsp0/nb0, 0)` van de beverwaarnemingen (`r nbsp0` waarnemingen op een totaal van `r nb0`). Bij de andere soorten nemen niet-dierwaarnemingen slechts `r round(100*nspnb/nnb, 0)` % in.
+
+## Goedgekeurde beverwaarnemingen
+
+```{r sporen goedg}
+# aantal goedgekeurde beverwaarnemingen
+bever <- zoogdier_data[zoogdier_data$naam_nl == "Europese Bever" &
+                         str_detect(zoogdier_data$status, "Goedg"),]
+nb <- nrow(bever)
+# bever-spoorwaarnemingen
+bever_spoor <- bever[(bever$gedrag %in% c("bezet nest", "sporen")|
+                  bever$methode %in% c( "andere sporen", "prenten", "sporen", 
+                                        "sporenbed", "uitwerpselen", 
+                                        "verlaten nest", "vraatsporen")),]
+count(bever_spoor, methode, gedrag) %>% print(n =25)
+# klopt grotendeels, maar er zitten enkele exotische combinaties tussen ("andere sporen"-"in kolonie anders", "prenten"-"zwemmend", "sporenbed"-"foeragerend"); het aantal hiervan is erg laag
+nbsp <- nrow(bever_spoor)
+
+# niet duidelijk of het een waarneming van een dier of van een spoor is
+bever_onbepaald <- bever[(bever$gedrag %in% c("onbekend", "overige") &
+                    bever$methode %in% c( "NULL", "onbekend")) ,]
+count(bever_onbepaald, methode, gedrag) %>% print(n =25)
+nonb <- nrow(bever_onbepaald)
+
+# bever dierwaarnemingen
+bever_dier <- 
+  bever %>% 
+  anti_join(bever_onbepaald, by = c("unieke_id")) %>% 
+  anti_join(bever_spoor, by = c("unieke_id"))
+count(bever_dier, methode, gedrag) %>% print(n =75)
+# klopt ook grotendeels
+nbdier <- nrow(bever_dier)
+```
+
+Onder de goedgekeurde beverwaarnemingen slaan ook `r round(100*nbsp/nb, 0)` % op sporen (`r nbsp` waarnemingen op een totaal van `r nb`). 
+<br/>
+<br/>
+
+
+# Aantal waarnemingen per soort per jaar (exclusief waarnemingen van sporen)
+
+```{r aantal waarnemingen2}
+(n_seeings <- 
+  zoogdier_data %>% # voor otter en bever enkel geodgekeurde
+  mutate(Jaar = year(datum)) %>% 
+  summarise(.by = c(naam_nl, Jaar), n = n()) %>% 
+  pivot_wider(names_from = naam_nl, values_from = n, values_fill = 0) %>% 
+   arrange(Jaar))
+```
+
+
+```{r aantal zichtwaarnemingen, include=FALSE}
+(n_bever_zichtwaarneming <- 
+  bever_dier %>% 
+  count(naam_nl, Jaar = year(datum)) %>% 
+  pivot_wider(names_from = naam_nl, values_from = n))
+n_bever_zichtwaarneming %>% 
+  write_csv(paste0(pad_tabellen, "/n_bever_zichtwaarneming.csv"))
+
+cap <- "Aantal goedgekeurde zichtwaarnemingen van bever per jaar (exclusief waarnemingen van sporen)."
+n_bever_zichtwaarneming %>% 
+  kbl(caption = cap, align = "lc") %>% 
+  kable_styling(position = "left") %>% 
+  column_spec(1:2, width = "7cm")
+```
+<br/>
+<br/>
+
+```{r aantal zichtwaarnemingen2}
+n_waarnemingen <- 
+  n_seeings %>% 
+  inner_join(n_bever_zichtwaarneming, by = ("Jaar")) %>% 
+  mutate(`Europese Bever` = paste0(`Europese Bever.x`, " (", 
+                                   `Europese Bever.y`, ")")) %>% 
+  select(Jaar, `Europese Bever`, `Europese Otter`, `Gewone Bruinvis`, `Gewone Zeehond`,
+         `Grijze Zeehond`, `Zeehond onbekend`)
+n_waarnemingen %>% 
+  write_csv(paste0(pad_tabellen, "aantal_waarnemingen.csv"))
+cap <- "Aantal waarnemingen per soort per jaar, voor bever staat het aantal zichtwaarnemingen van dieren tussen hakkejes. Voor bever en otter enkel goedgekeurde waarnemingen, voor de overige soorten alle waarnemigen."
+n_waarnemingen %>% 
+  kbl(caption = cap, align = "lcccccc") %>% 
+  kable_styling(full_width = FALSE, position = "left")
+```
+<br/>
+<br/>
+
+```{r aantal individuen}
+n_indiv <- 
+  zoogdier_data %>% 
+  filter(!(gedrag %in% c("sporen", "bezet nest")),
+         !(methode %in% c( "andere sporen", "prenten", "sporen", "sporenbed",
+                           "uitwerpselen", "verlaten nest", "vraatsporen"))) %>%
+  mutate(Jaar = year(datum)) %>%
+  summarise(.by = c(naam_nl, Jaar), n = sum(aantal))
+# categorieën in veld gedrag zijn van naam gewijzigd tov 2022
+n_indiv_death <- 
+  zoogdier_data %>% 
+  filter(gedrag %in% c("dood", "slachtoffer verdrinking", "slachtoffer verkeer")) %>% 
+  mutate(Jaar = year(datum)) %>%
+  summarise(.by = c(naam_nl, Jaar), n_death = sum(aantal))
+n_indiv_with_dead <- 
+  n_indiv %>% 
+  left_join(n_indiv_death, by = c("naam_nl", "Jaar")) %>% 
+  mutate(string = ifelse(is.na(n_death), 
+                         as.character(n), 
+                         paste0(n, " (", n_death, "†)"))) %>% 
+  select(Jaar, naam_nl, string) %>% 
+  pivot_wider(names_from = naam_nl, names_sort = TRUE, 
+              values_from = string, values_fill = "0") %>% 
+  arrange(Jaar)
+
+n_indiv_with_dead %>% 
+  write_csv(paste0(pad_tabellen, "/aantal_ind.csv"))
+
+cap <- "Aantal ingevoerde individuen per jaar (exclusief waarnemingen van sporen). Voor bever en otter enkel goedgekeurde waarnemingen, voor de overige soorten alle waarnemigen."
+n_indiv_with_dead %>% 
+  kbl(align = "lccccccc",
+      caption = cap) %>% 
+  kable_styling(full_width = FALSE, position = "left")
+```
+<br/>
+<br/>
+
+```{r 120_fig_aantal_indiv}
+fig_1 <- 
+  n_indiv %>% 
+  complete(naam_nl, Jaar, fill = list(n = 0)) %>% # fill out missing years
+  mutate(facet = case_when(naam_nl %in% c("Europese Bever", "Gewone Bruinvis") ~ 
+                     "Bever en bruinvis",
+                   .default = "Otter en zeehonden")) %>%  # for facetting of graph
+  ggplot(aes(x = Jaar, y = n, color = naam_nl)) +
+  geom_line(lwd = 1) +
+  scale_x_continuous(breaks = seq(2010, 2023, by =1)) +
+  theme(axis.title = element_blank(),
+        legend.title = element_blank(),
+        legend.position = "bottom") +
+  facet_wrap(facets = ~facet, scales = "free") +
+  scale_x_continuous(breaks = seq(2010, 2024, by = 2))
+
+fig_1
+ggsave(paste0(pad_figuren, "120_fig1_aantal_ind.jpg"), width = 8, height = 4)
+```
+
+# Verspreidingskaartjes bever
+
+Onderstaande verspreidingskaartje zijn gebaseerd op alle gevalideerde waarnemingen van bever in waarnemingen.be.
+
+```{r geodata, include=FALSE}
+utm1 <- st_read(str_c(pad_geodata, "NOPplus_UTM1.shp"))
+utm1_c <- st_centroid(utm1) %>% 
+  select(-c(Shape_Leng, Shape_Area))
+Schelde_boundaries <- st_read(str_c(pad_geodata2, "Boundaries.shp"))
+pad_geodata
+pad_geodata2
+getijrivieren <- st_read(str_c(pad_geodata2, "getij_afh_zones.shp"))
+buurlanden <- st_read(str_c(pad_geodata2, "buurlanden.shp"))
+```
+
+```{r beverkaartdata}
+(soort_nUTM1 <- 
+  zoogdier_data %>% 
+  filter(str_detect(status, "Goedg")) %>% 
+  group_by(Jaar = year(datum), naam_nl) %>% 
+  summarise(n = n_distinct(utm1),
+            .groups = "drop"))
+write_csv(soort_nUTM1, file = str_c(pad_data, "soort_nUTM1.csv"))
+```
+
+```{r mapbackground}
+bbox <- st_bbox(utm1_c) + c(-500, -500, 500, 500)
+map_basis <- 
+  tm_shape(buurlanden, bbox = bbox) + tm_borders() + tm_fill(col = "lightyellow") +
+  tm_shape(Schelde_boundaries) + 
+    tm_borders(col = "blue", fill_alpha = 0.5) +
+    tm_fill(fill = "dodgerblue") +
+   tm_shape(getijrivieren) + tm_lines(col = "blue", col_alpha = 0.5) +
+  tm_shape(utm1) +
+    tm_borders(lwd = 0.25, col = "grey30")
+```
+
+```{r maps-nieuw-valid, eval=FALSE}
+# make list of tibbles each tibble has unique naam_nl en Jaar, voor gevalideerde waarnemingen van bever en otter.
+zoogd_grouped <- 
+  zoogdier_data %>% 
+  filter(str_detect(status, "Goedg"),
+         naam_nl %in% c("Europese Bever", "Europese Otter")) %>%  # enkel gevalideerde waarnemingen
+  group_by(naam_nl, Jaar = year(datum), TAG = utm1) %>% 
+  summarise(aantal = sum(aantal), radius = sum(aantal)^0.5,
+            .groups = "drop") %>%
+  group_by(naam_nl, Jaar)
+
+# make list of tibbles for each group in zoogd_grouped 
+utm_n_list <-
+  zoogd_grouped%>% 
+  group_split(.keep = TRUE)
+groupkeys <-  # get names of eacht tibble ("naam-nl_jaar")
+  group_keys(zoogd_grouped) %>% 
+    mutate(naam_jaar = str_c(naam_nl, "_", Jaar)) %>% 
+    select(naam_jaar)
+names(utm_n_list) <- groupkeys$naam_jaar # names tiblles in list
+
+# make list of simple features
+utm_n_list2 <- map(utm_n_list, merge, utm1_c) # merge to utm centroid
+utm_n_list_sf <- map(utm_n_list2, st_as_sf, sf_column_name = "geometry") # make sf
+
+# function to make list of tmaps
+mapf <- function(x){
+  title <- str_c(x[[2]][1], "_", x[[3]][1])
+  m <- 
+    map_basis + 
+    tm_shape(x) + 
+    tm_symbols(fill = "red", col = "black",
+               size = "radius", 
+               size.scale = 
+                 tm_scale_continuous(limits = c(0,7), 
+                                     outliers.trunc = c(FALSE, TRUE), 
+                                     ticks = c(1, 2, 3, 5, 7),
+                                     labels = c("1", "4", "9", "49", ">=49")), 
+                 size.legend = tm_legend(title = title,
+                                         bg.color = "white", bg.alpha = 0.5,
+                                         position = tm_pos_in(pos.h = "right"), 
+                                         title.size = 1.2, text.size = 0.8)
+                 )
+  return(m)
+}
+
+# test
+# mapf(utm_n_list_sf[[16]])
+# mapf(utm_n_list_sf[["Europese Otter_2012"]])
+
+utm_tmmap_list <- map(utm_n_list_sf, mapf) # make tmap objects
+
+utm_tmmap_list[[2]]
+# utm_tmmap_list[[8]]
+utm_tmmap_list[["Europese Bever_2024"]]
+# utm_tmmap_list[["Grijze Zeehond_2019"]]
+
+# save all maps 
+for(x in names(utm_tmmap_list)){
+  a <- utm_tmmap_list[[x]]
+  tmap_save(a, filename = str_c(pad_figuren, x, ".png"))
+}
+# utm_tmmap_list[["Zeehond onbekend_2021"]] %>% 
+#   tmap_save(filename = str_c(pad_figuren, "Zeehond onbekend_2021", ".png"))
+# hieronder een poging om bovenstaand for-loop met purrr::map te doen, maar deze code (allebeid) bewaart herhaaldelijk "Zeehond onbekend_2021"
+# map(utm_tmmap_list[], tmap_save, filename = str_c(pad_figuren, x, ".png"))
+# map(utm_tmmap_list, tmap_save, filename = str_c(pad_figuren, x, ".png"))
+
+```
+
+```{r maps-nieuw-notvalid, eval=FALSE}
+# make list of tibbles each tibble has unique naam_nl en Jaar, met alle gevalideerde (?) waarnemingen van gewone zeehond, grijze zeehond, bruinvis en zeehond onbekend
+zoogd_grouped <- 
+  zoogdier_data %>% 
+  filter(!naam_nl %in% c("Europese Bever", "Europese Otter")) %>%  # alle waarnemingen van zeehonden en bruinvis
+  group_by(naam_nl, Jaar = year(datum), TAG = utm1) %>% 
+  summarise(aantal = sum(aantal), radius = sum(aantal)^0.5,
+            .groups = "drop") %>%
+  group_by(naam_nl, Jaar)
+
+# make list of tibbles for each group in zoogd_grouped 
+utm_n_list <-
+  zoogd_grouped%>% 
+  group_split(.keep = TRUE)
+groupkeys <-  # get names of eacht tibble ("naam-nl_jaar")
+  group_keys(zoogd_grouped) %>% 
+    mutate(naam_jaar = str_c(naam_nl, "_", Jaar)) %>% 
+    select(naam_jaar)
+names(utm_n_list) <- groupkeys$naam_jaar # names tiblles in list
+
+# make list of simple features
+utm_n_list2 <- map(utm_n_list, merge, utm1_c) # merge to utm centroid
+utm_n_list_sf <- map(utm_n_list2, st_as_sf, sf_column_name = "geometry") # make sf
+
+# function to make list of tmaps
+mapf <- function(x){
+  title <- str_c(x[[2]][1], "_", x[[3]][1])
+  m <- 
+    map_basis + 
+    tm_shape(x) + 
+    tm_symbols(fill = "red", col = "black",
+               size = "radius", 
+               size.scale = 
+                 tm_scale_continuous(limits = c(0,7), 
+                                     outliers.trunc = c(FALSE, TRUE), 
+                                     ticks = c(1, 2, 3, 5, 7),
+                                     labels = c("1", "4", "9", "49", ">=49")), 
+                 size.legend = tm_legend(title = title,
+                                         bg.color = "white", bg.alpha = 0.5,
+                                         position = tm_pos_in(pos.h = "right"), 
+                                         title.size = 1.2, text.size = 0.8)
+                 )
+  return(m)
+}
+
+# test
+# mapf(utm_n_list_sf[[16]])
+# mapf(utm_n_list_sf[["Europese Otter_2012"]])
+
+utm_tmmap_list <- map(utm_n_list_sf, mapf) # make tmap objects
+
+# utm_tmmap_list[[2]]
+# utm_tmmap_list[[8]]
+# utm_tmmap_list[["Europese Bever_2019"]]
+# utm_tmmap_list[["Grijze Zeehond_2019"]]
+
+# save all maps 
+for(x in names(utm_tmmap_list)){
+  a <- utm_tmmap_list[[x]]
+  tmap_save(a, filename = str_c(pad_figuren, x, ".png"))
+}
+# utm_tmmap_list[["Zeehond onbekend_2021"]] %>% 
+#   tmap_save(filename = str_c(pad_figuren, "Zeehond onbekend_2021", ".png"))
+# hieronder een poging om bovenstaand for-loop met purrr::map te doen, maar deze code (allebeid) bewaart herhaaldelijk "Zeehond onbekend_2021"
+# map(utm_tmmap_list[], tmap_save, filename = str_c(pad_figuren, x, ".png"))
+# map(utm_tmmap_list, tmap_save, filename = str_c(pad_figuren, x, ".png"))
+
+```
+
+```{r mapbever2019, fig.cap="Aantal waarnemingen van Europese bever per UTM-km-hok in 2019."}
+knitr::include_graphics(paste0(pad_figuren, "Europese Bever_2019.png"))
+```
+
+```{r mapbever2020, fig.cap="Aantal waarnemingen van Europese bever per UTM-km-hok in 2020."}
+knitr::include_graphics(paste0(pad_figuren, "Europese Bever_2020.png"))
+```
+
+```{r mapbever2021, fig.cap="Aantal waarnemingen van Europese bever per UTM-km-hok in 2021."}
+knitr::include_graphics(paste0(pad_figuren, "Europese Bever_2021.png"))
+```
+
+```{r mapbever2022, fig.cap="Aantal waarnemingen van Europese bever per UTM-km-hok in 2022."}
+knitr::include_graphics(paste0(pad_figuren, "Europese Bever_2022.png"))
+```
+
+```{r mapbever2023, fig.cap="Aantal waarnemingen van Europese bever per UTM-km-hok in 2023."}
+knitr::include_graphics(paste0(pad_figuren, "Europese Bever_2023.png"))
+```
+
+```{r mapbever2024, fig.cap="Aantal waarnemingen van Europese bever per UTM-km-hok in 2023."}
+knitr::include_graphics(paste0(pad_figuren, "Europese Bever_2024.png"))
+```
+
+```{r bezette utm-hokken}
+soort_nUTM1 %>% 
+  filter(naam_nl == "Europese Bever") %>% 
+  ggplot(aes(x = Jaar, y = n)) +
+  geom_point() +
+  geom_line() +
+  labs(y = "aantal bezette km-hokken") +
+  scale_x_continuous(breaks = seq(2010, 2024, by = 2))
+ggsave(filename = paste0(pad_figuren, "bever_utm.png"))
+```
+
+```{r recente-utm}
+bever_evol <- 
+  zoogdier_data %>% 
+  filter(naam_nl == "Europese Bever") %>% 
+  mutate(Jaar = year(datum)) %>% 
+  group_by(utm1) %>% 
+  summarise(EersteJaar = min(Jaar), AantalJaar = n_distinct(Jaar)) %>% 
+  mutate(EersteJaarf = factor(EersteJaar, levels = c(2010:2024))) %>% 
+  arrange(desc(EersteJaar))
+
+map_basis +
+  (utm1 %>% 
+  left_join(bever_evol, by = c("TAG" = "utm1")) %>% 
+  filter(EersteJaar > 2021) %>% 
+  tm_shape() + 
+  tm_fill(fill = "EersteJaar", 
+          fill.scale = 
+            tm_scale_categorical(values = c("red", "orange", "yellow"),
+                                 labels = c("2022", "2023", "2024"))))
+```
+
+
+```{r utm-evol}
+pal <- cols4all::c4a("-brewer.yl_or_br", n = 14)
+kolononisatie_fig <- 
+  map_basis +
+  (utm1 %>% 
+  left_join(bever_evol, by = c("TAG" = "utm1")) %>% 
+  filter(!is.na(EersteJaar)) %>% 
+  tm_shape() + 
+  tm_fill(fill = "EersteJaarf", 
+          fill.scale = 
+            tm_scale_categorical(values = pal, labels = c(2010:2023)),
+          fill.legend = tm_legend_hide()) +
+  tm_add_legend(labels = c(2010:2016), fill = pal[1:7], type = "polygons", 
+                title = "Eerste jaar", bg.color = "white") +
+  tm_add_legend(labels = c(2017:2023), fill = pal[8:14], type = "polygons", 
+                title = " ", stack = "horizontal")) +
+  tm_place_legends_inside()
+
+tmap_save(tm = kolononisatie_fig, 
+          filename = paste0(pad_figuren, "bever_kolonisatie.png"))
+```
+
+
+# Verspreidingskaartjes otter
+
+
+```{r mapotter2021, fig.cap="Aantal waarnemingen van Europese otter per UTM-km-hok in 2021."}
+knitr::include_graphics(paste0(pad_figuren, "Europese Otter_2021.png"))
+```
+
+```{r mapotter2022, fig.cap="Aantal waarnemingen van Europese otter per UTM-km-hok in 2022."}
+knitr::include_graphics(paste0(pad_figuren, "Europese Otter_2022.png"))
+```
+
+```{r mapotter2023, fig.cap="Aantal waarnemingen van Europese otter per UTM-km-hok in 2023."}
+knitr::include_graphics(paste0(pad_figuren, "Europese Otter_2023.png"))
+```
+
+```{r mapotter2024, fig.cap="Aantal waarnemingen van Europese otter per UTM-km-hok in 2020."}
+knitr::include_graphics(paste0(pad_figuren, "Europese Otter_2024.png"))
+```
+
+Bij merendeel van de waarnemingen is methode niet ingevuld. Waarschijnlijk zijn meeste waarnemingen van Joris Everaert met cameraval, maar is dit uit veiligheidsoverwegingen niet ingegeven.
+
+```{r methode}
+zoogdier_data %>% 
+  filter(str_detect(status, "Goedg"),
+         naam_nl == "Europese Otter") %>% 
+  count(Jaar = year(datum), methode)
+```
+
+```{r bezette utm-hokken_otter}
+soort_nUTM1 %>% 
+  filter(naam_nl == "Europese Otter") %>% 
+  ggplot(aes(x = Jaar, y = n)) +
+  geom_point() +
+  geom_line() +
+  labs(y = "aantal bezette km-hokken") +
+  scale_x_continuous(breaks = seq(2010, 2022, by = 2)) +
+  scale_y_continuous(breaks = seq(0, 14, by = 5), minor_breaks = seq(0, 14, by =2))
+ggsave(filename = paste0(pad_figuren, "otter_utm.png"))
+```
+
+# Gewone zeehond
+
+
+```{r tabel gewone zeehond}
+GewoneZeehond2023 <- 
+  zoogdier_data %>% 
+  filter(naam_nl == "Gewone Zeehond",
+         year(datum) == 2023) %>% 
+  select(Datum = datum, Aantal = aantal, Gedrag = gedrag, Gebied = gebied, 
+         Gemeente = gemeente, Deelgemeente = deelgemeente) %>% 
+  arrange(Datum) 
+GewoneZeehond2023 %>% 
+  kbl(align = "lcllll", caption = "Tabel XX: overzicht van alle waarnemingen van gewone zeehond in 2023 in de Zeeschelde en haar bijrivieren.") %>% 
+  kable_styling(full_width = TRUE, bootstrap_options = c("condensed")) %>% 
+  column_spec(1, width = "2.5cm") %>% 
+  column_spec(2, width = "1.5cm") %>% 
+  column_spec(3, width = "2.5cm")
+
+GewoneZeehond2023 %>%
+  write_csv(paste0(pad_tabellen, "/zeehond2023.csv"))
+```
+<br/>
+
+```{r make sf}
+# zeehond_data_sf <- 
+#   zoogdier_data %>% 
+#   filter(naam_nl == "Gewone Zeehond",
+#          year(datum) == 2022) %>% 
+#   select(datum, aantal, gedrag, methode, x, y) %>% 
+#   st_as_sf(coords = c("x", "y"), crs =31370) %>% 
+#   st_transform(crs = 4326)
+```
+
+
+```{r map zeehond}
+# leaflet() %>% 
+  # addTiles() %>% 
+  # addCircleMarkers(data = zeehond_data_sf,
+  #                  radius = 3, label = ~datum)
+```
+<br/>
+<br/>
+
+
+
+# Grijze zeehond
+
+```{r tabel grijze zeehond}
+GrijzeZeehond2023 <- 
+  zoogdier_data %>% 
+  filter(naam_nl == "Grijze Zeehond",
+         year(datum) == 2023) %>% 
+  select(Datum = datum, Aantal = aantal, Gedrag = gedrag, Gebied = gebied, 
+         Gemeente = gemeente, Deelgemeente = deelgemeente) %>% 
+  arrange(Datum) 
+GrijzeZeehond2023 %>% 
+  kbl(align = "lcllll", caption = "Tabel XX: overzicht van alle waarnemingen van grijze zeehond in 2023 in de Zeeschelde en haar bijrivieren.") %>% 
+  kable_styling(full_width = TRUE, bootstrap_options = c("condensed")) %>% 
+  column_spec(1, width = "2.5cm") %>% 
+  column_spec(2, width = "1.5cm") %>% 
+  column_spec(3, width = "2.5cm")
+
+GrijzeZeehond2023 %>%
+  write_csv(paste0(pad_tabellen, "/grijzezeehond2023.csv"))
+```
+<br/>
+
+```{r make sf2}
+# grijzezeehond_data_sf <- 
+#   zoogdier_data %>% 
+#   filter(naam_nl == "Grijze Zeehond",
+#          year(datum) == 2022) %>% 
+#   select(datum, aantal, gedrag, methode, x, y) %>% 
+#   st_as_sf(coords = c("x", "y"), crs =31370) %>% 
+#   st_transform(crs = 4326)
+```
+
+
+```{r map grijzezeehond}
+# leaflet() %>% 
+#   addTiles() %>% 
+#   addCircleMarkers(data = grijzezeehond_data_sf,
+#                    radius = 3, label = ~datum)
+```
+<br/>
+
+```{r tabel bruinvis}
+Bruinvis2023 <- 
+  zoogdier_data %>% 
+  filter(naam_nl == "Gewone Bruinvis",
+         year(datum) == 2023) %>% 
+  select(Datum = datum, Aantal = aantal, Gedrag = gedrag, Gebied = gebied, 
+         Gemeente = gemeente, Deelgemeente = deelgemeente) %>% 
+  arrange(Datum) 
+Bruinvis2023 %>% 
+  kbl(align = "lcllll", caption = "Tabel XX: overzicht van alle waarnemingen van bruinvis in 2023 in de Zeeschelde en haar bijrivieren.") %>% 
+  kable_styling(full_width = TRUE, bootstrap_options = c("condensed")) %>% 
+  column_spec(1, width = "2.5cm") %>% 
+  column_spec(2, width = "1.5cm") %>% 
+  column_spec(3, width = "2.5cm")
+
+Bruinvis2023 %>%
+  write_csv(paste0(pad_tabellen, "/bruinvis2023.csv"))
+```
+<br/>
+
+
+```{r make sf3}
+# bruinvis_data_sf <- 
+#   zoogdier_data %>% 
+#   filter(naam_nl == "Gewone Bruinvis",
+#          year(datum) == 2022) %>% 
+#   select(datum, aantal, gedrag, methode, x, y) %>% 
+#   st_as_sf(coords = c("x", "y"), crs =31370) %>% 
+#   st_transform(crs = 4326)
+```
+
+
+```{r map bruinvis}
+# leaflet() %>% 
+#   addTiles() %>% 
+#   addCircleMarkers(data = bruinvis_data_sf,
+#                    radius = 3, label = ~datum)
+```
+<br/>

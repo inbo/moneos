@@ -23,7 +23,7 @@ options(knitr.kable.NA = '')
 
 library(tidyverse)
 library(rprojroot)
-# library(readxl)
+library(readxl)
 library(lubridate)
 library(kableExtra)
 
@@ -47,46 +47,22 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 ```{r data}
 pad_data
 (files <- list.files(pad_data, full.names = TRUE, ))
-(rawfiles2025 <- files[str_detect(files, "csv")])
-# two tables delivered from waarnemingen.be, one with standard data, one with for which observer had to give consent
-# this year csv tables in stead of xlsx
-# the format of the columns is not the same!
+(rawfiles2024 <- files[str_detect(files, "xlsx")])
+# two tables delivered from waarningen.be, one with standard data, one with for which observer had to give consent
+# read the xlsx files
+
 zoogdier_data <- 
-  map(rawfiles2025, read_csv)
+  map(rawfiles2024, read_xlsx)
+
 # check whether files have same structure
 ncol(zoogdier_data[[1]]) == ncol(zoogdier_data[[2]]) # same number of columns
 names(zoogdier_data[[1]]) == names(zoogdier_data[[2]]) # same column names
-sum(names(zoogdier_data[[1]]) == names(zoogdier_data[[2]])) == ncol(zoogdier_data[[1]])
+
 # combine list items to one tibble
-# zoogdier_data <- 
-#   zoogdier_data %>% 
-#   list_rbind()
-# rlang::last_trace()
-str(zoogdier_data[[1]]) # col 1 is double, date columns are character
-str(zoogdier_data[[2]]) # col 1 is character, date columns are date
-# trying to force column type is difficult
 zoogdier_data <- 
-  map(rawfiles2025, read_csv, col_types = "cccdDDdccccnnnnccccccccDdcdccDdc")
-problems(zoogdier_data[[1]]) # datum niet herlend
-# problems(zoogdier_data[[2]]) => geen problemen
+  zoogdier_data %>% 
+  list_rbind()
 
-# we have to read both files apart
-zoogdier_data_1 <- 
-  read_csv(rawfiles2025[[1]]) 
-
-zoogdier_data_1 <- 
-  zoogdier_data_1 %>% 
-  mutate(
-    unieke_id = as.character(unieke_id),
-    datum = dmy(datum),
-    invoerdatum = dmy(invoerdatum),
-    embargo_datum = dmy(embargo_datum),
-    aanleverdatum = dmy(aanleverdatum)
-  )
-zoogdier_data_2 <- 
-  read_csv(rawfiles2025[[2]])
-zoogdier_data <- 
-  bind_rows(zoogdier_data_1, zoogdier_data_2)
 ```
 
 # Soorten in aangeleverde data
@@ -103,32 +79,17 @@ zoogdier_data %>%
 
 # Jaren in aangeleverde data
 
-De dataset bevat alle waarnemingen uit de periode `r min(year(zoogdier_data$datum))`- `r max(year(zoogdier_data$datum))`
+De dataset bevat alle waarnemingen uit de periode 2010- 2023.
 
 ```{r jaren}
 table(year(zoogdier_data$datum))
 ```
 
-```{r filter2010tot2024}
-zoogdier_data <- 
-  zoogdier_data %>% 
-  filter(between(year(datum), 2010, 2024))
-```
-
-We filteren op de jaren 2010 tot en met 2024.
-
-```{r jaren2}
-table(year(zoogdier_data$datum))
-```
-
-Het aantal waarnemingen per soort per jaar tot 2023 verschilt licht van de dataset van vorig jaar. Waarnemingen.be is een dynamisch systeem waarin ook historische data worden toegevoegd of aangepast.
-
 ```{r jarensoort}
 table(year(zoogdier_data$datum), zoogdier_data$naam_nl) %>% 
-  kbl(caption = "Aantal waarnemingen per jaar per soort") %>% 
+  kable(caption = "Aantal waarnemingen per jaar per soort") %>% 
   kableExtra::kable_paper()
 ```
-<br/>
 
 # Gedrag in aangeleverde data
 
@@ -145,8 +106,8 @@ zoogdier_data %>%
 zoogdier_data %>% 
   count(gedrag, Jaar = year(datum)) %>% 
   spread(key = Jaar, value = n) %>% 
-  kbl(caption = "Gedrag per jaar in dataset") %>% 
-  kable_paper()
+  knitr::kable(caption = "Gedrag per jaar in dataset") %>% 
+  kable_styling()
 ```
 
 # Methode in aangeleverde data
@@ -171,12 +132,12 @@ zoogdier_data %>%
 # Combinatie gedrag - methode
 
 
-Analyse is niet makkelijk voor bever. Combinatie gedrag - methode is niet echt logisch voor deze soort. Bv. de categorie gedrag "(nabij) nest/burcht" kan zowel de aanwezigheid van een burcht betekenen als een zichtwaarneming van een induvidu bij de burcht. Bij gedrag bestaat een categorie bezet nest en bij methode bestaat een categorie "verlaten nest". Wij gebruiken het als zichtwaarnemingen indien methode niet aangegeven wordt dat het om sporen of een burcht gaat (zie 20_zoogdieren_analyse.Rmd). 
+Analyse is niet makkelijk voor bever. Combinatie gedrag - methode is niet echt logisch voor deze soort. Bv. de categorie gedrag "(nabij) nest/burcht" kan zowel de aanwezigheid van een burcht betekenen als een zichtwaarneming van een induvidu bij de burcht. Bij gedrag bestaat een categorie bezet nest en bij methode bestaat een categorie "verlaten nest". Wij gebruiken het als zichtwaarnemingen indien methode niet aangegevens wordt dat het om sporen of een burcht gaat (zie 20_zoogdieren_analyse.Rmd). 
 
 ```{r gedrag-methode}
 zoogdier_data %>% 
   count(gedrag, methode) %>% 
-  kbl(caption = "Combinatie Gedrag-Methode in dataset") %>% 
+  knitr::kable(caption = "Combinatie Gedrag-Methode in dataset") %>% 
   kable_styling(full_width = FALSE, position = "left")
 ```
 
@@ -184,7 +145,7 @@ zoogdier_data %>%
 zoogdier_data %>% 
   filter(str_detect(naam_nl, "Bever")) %>% 
   count(gedrag, methode) %>% 
-  kbl(caption = "Combinatie Gedrag-Methode voor bever") %>% 
+  knitr::kable(caption = "Combinatie Gedrag-Methode voor bever") %>% 
   kable_styling(full_width = FALSE, position = "left")
 ```
 
@@ -192,24 +153,24 @@ zoogdier_data %>%
 ```{r gedrag-methode-nonspec}
 zoogdier_data %>% 
   filter(str_detect(naam_nl, "Bever"),
-         (gedrag == "overige" & methode == "NULL")|
-          (gedrag == "ter plaatse" & methode == "NULL")|
+         (gedrag == "overige" & is.na(methode))|
+          (gedrag == "ter plaatse" & is.na(methode))|
            (gedrag == "ter plaatse" & methode == "onbekend")
          ) %>% 
   count(gedrag, methode, jaar = year(datum)) %>% 
-  kbl(caption = "Combinatie Gedrag-Methode-jaar voor bever ") %>% 
+  knitr::kable(caption = ) %>% 
   kable_styling(full_width = FALSE, position = "left")
 
 ```
 
 
-Er zijn `r nrow(zoogdier_data[zoogdier_data$naam_nl == "Europese Bever" & zoogdier_data$gedrag == "overige" & zoogdier_data$methode == "NULL",]) + nrow(zoogdier_data[zoogdier_data$naam_nl == "Europese Bever" & zoogdier_data$gedrag == "ter plaatse" & zoogdier_data$methode == "NULL",])` waarnemingen van bever zonder specificatie (combinaties (gedrag = "overige" en methode = "NULL"), (gedrag = "ter plaatse" en methode = na) op een totaal van `r nrow(zoogdier_data[,2] == "Europese Bever")` waarnemingen. Gedrag = "ter plaatse" is de standaard instelling in ObsMap. Dit kan dus betekenen dat het dier ter plaatse bleef maar ook dat het veld gedrag door de waarnemer niet werd ingevuld. Na 2017 komt de combinatie gedrag = "ter plaatse" en methode = "NULL" niet meer voor omdat een waarde voor methode moest worden ingevoerd, de standaardwaarde is vanaf toen "onbekend".
+Er zijn `r nrow(zoogdier_data[zoogdier_data$naam_nl == "Europese Bever" & zoogdier_data$gedrag == "overige" & is.na(zoogdier_data$methode),]) + nrow(zoogdier_data[zoogdier_data$naam_nl == "Europese Bever" & zoogdier_data$gedrag == "ter plaatse" & is.na(zoogdier_data$methode),])` waarnemingen van bever zonder specificatie (combinaties (gedrag = "overige" en methode = na), (gedrag = "ter plaatse" en methode = na) op een totaal van `r nrow(zoogdier_data[,2] == "Europese Bever")` waarnemingen. Gedrag = "ter plaatse" is de standaard instelling in ObsMap. Dit kan dus betekenen da het dier ter plaatse bleef maar ook dat het veld gedrag door de waarnemer niet werd ingevuld. Na 2017 komt de combinatie gedrag = "ter plaatse" en methode = na niet meer voor omdat een waarde voor methode moest worden ingevoerd, de standaardwaarde is vanaf toen "onbekend".
 
 ```{r gedrag-methode-jaar}
 zoogdier_data %>% 
   count(gedrag, methode, Jaar = year(datum)) %>% 
   spread(key = Jaar, value = n) %>% 
-  kbl() %>% 
+  knitr::kable() %>% 
   kable_styling()
 ```
 
@@ -218,9 +179,9 @@ zoogdier_data %>%
 # Status
 
 De meeste waarnemingen zijn op één of andere wijze gevalideerd (`r round(sum(str_detect(zoogdier_data$status, "Goed"))/count(zoogdier_data)*100, 0)` %).\
-`r round(sum(zoogdier_data$status == "Onbehandeld")/count(zoogdier_data)*100, 0)` % van waarnemingen zijn niet gevalideerd. De status "Niet te beoordelen" komt in de huidige dataset niet meer voor. De 37 waarnemingen uit de vorige dataset zijn verdeeld over de andere statuscategorieën.
+`r round(sum(zoogdier_data$status == "Onbehandeld")/count(zoogdier_data)*100, 0)` % van waarnemingen zijn niet gevalideerd, `r round(sum(str_detect(zoogdier_data$status, "Niet"))/count(zoogdier_data)*100, 1)` % van de waarnemingen zijn gecategoriseerd als "Niet te beoordelen".
 
-Als we dit per soort bekijken valt op dat voor bever, otter (en bruinvis) een groot deel van de waarnemingen gevalideerd zijn. Voor gewone en grijze zeehond en 'zeehond onbekend' is (sinds 2016) een aanzienlijk deel van de waarnemingen onbehandeld. Dit geldt ook voor alle waarnemingen van bruinvis ná 2015, maar dat zijn er erg weinig. Gebrek aan goed bewijsmateriaal van deze laatste soorten is een mogelijke reden hiervoor, maar ook mindere aandacht van de personen die moeten valideren is een mogelijke reden, zeker gezien ook bij 'zeehond onbekend' het overgrote deel van de waarnemingen onbehandeld is.
+Als we dit per soort bekeken valt op dat voor bever, otter (en bruinvis) een groot deel van de waarnemingen gevalideerd zijn. Voor gewone en grijze zeehond en 'zeehond onbekend' is (sinds 2016) een aanzienlijk deel van de waarnemingen onbehandeld. Dit geldt ook voor alle waarnemingen van bruinvis ná 2015, maar dat zijn er erg weinig. Gebrek aan goed bewijsmateriaal van deze laatste soorten is een mogelijke reden hiervoor, maar ook mindere aandacht van de personen die moeten valideren is een mogelijke reden, zeker gezien ook bij 'zeehond onbekend' het overgrote deel van de waarnemingen onbehandeld is.
 <br/>
 
 ```{r status}
