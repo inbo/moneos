@@ -166,6 +166,10 @@ dat_dil <-
          WaarnemingID %in% dilution_NA$WaarnemingID)
   
 
+data_recent <- 
+  data_recent %>% 
+  replace_na(list(METI_DILUTION_FACTOR = 1))
+
 ```
 
 
