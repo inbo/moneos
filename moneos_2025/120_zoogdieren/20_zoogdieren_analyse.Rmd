@@ -14,13 +14,11 @@ editor_options:
   chunk_output_type: console
 ---
 
-
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = TRUE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 options(knitr.kable.NA = '')
 ```
-
 
 ```{r libraries}
 
@@ -37,7 +35,6 @@ conflicted::conflicts_prefer(dplyr::filter)
 
 ```
 
-
 ```{r pad}
 # inlezen van variabelen
 # pad naar data : pad_data
@@ -53,24 +50,20 @@ pad_geodata <- "I:/GIS/VNSC/"
 pad_geodata2 <- "Z:/VNSC/gebiedsindeling_schelde_draft112014/gebiedsindeling_schelde112014/"
 ```
 
-
 ```{r data}
 zoogdier_data_raw <- 
   read_csv(str_c(pad_data, "zoogdier_data_2010_2024.csv"))
 ```
 
-
 # beschrijving van de data
 
-  - Per waarneming zijn er `r ncol(zoogdier_data_raw)` informatievelden
-    + `r str_flatten(names(zoogdier_data_raw), collapse = "\n    - ")`
-  - In totaal bevat de dataset in `r year(today())` `r nrow(zoogdier_data_raw)` waarnemingen
-  - Er zitten data in van `r min(year(zoogdier_data_raw$datum))` tot en met `r max(year(zoogdier_data_raw$datum))`
-  - De dataset bevat waarnemingen van `r str_flatten(unique(zoogdier_data_raw$naam_nl), collapse = ", ", last = " en ")`
+-   Per waarneming zijn er `r ncol(zoogdier_data_raw)` informatievelden
+    -   `r str_flatten(names(zoogdier_data_raw), collapse = "\n    - ")`
+-   In totaal bevat de dataset in `r year(today())` `r nrow(zoogdier_data_raw)` waarnemingen
+-   Er zitten data in van `r min(year(zoogdier_data_raw$datum))` tot en met `r max(year(zoogdier_data_raw$datum))`
+-   De dataset bevat waarnemingen van `r str_flatten(unique(zoogdier_data_raw$naam_nl), collapse = ", ", last = " en ")`
 
-
-
-# Aantal waarnemingen per soort per jaar 
+# Aantal waarnemingen per soort per jaar
 
 ```{r aantal waarnemingen}
 
@@ -89,8 +82,8 @@ kbl(n_seeings,
   kable_styling(full_width = FALSE, position = "left")
 
 ```
-<br/>
-<br/>
+
+<br/> <br/>
 
 Tot en met rapportage 2021 werden alle waarnemingen opgenomen in de data-analyse. Hieronder wordt de dataset beperkt tot goedgekeurde waarnemingen. Voor bever en otter zijn de verschillen niet groot en/of de trends gelijkaardig, maar voor bruinvis en zeehonden zijn er zeker na 2016 weinig gevalideerde waarnemingen. We beperken de dataset voor de analyse tot gevalideerde data voor bever en otter, voor bruinvis en zeehonden behouden we alle data. De datalevering bevat alle waarnemingen, ook de niet gevalideerde.
 
@@ -119,7 +112,6 @@ zoogdier_data <-
                    .default = status == status
                    ))
 ```
-
 
 # Bever waarnemingen van sporen tegenover dierwaarnemingen
 
@@ -167,9 +159,9 @@ count(bever0_spoor, methode, gedrag) %>%
   kable_styling(bootstrap_options = c("condensed", "striped", "hover"))
 ```
 
-Tabel \@ref(tab:sporen) geeft alle combinaties van methode en gedrag die we bestempelen als niet-dierwaarnemingen. Er zitten enkele exotische combinaties tussen (andere sporen-in kolonie anders, prenten-zwemmend, sporenbed-foeragerend); het aantal dergelijke waarnemingen is wel erg laag. 
+Tabel \@ref(tab:sporen) geeft alle combinaties van methode en gedrag die we bestempelen als niet-dierwaarnemingen. Er zitten enkele exotische combinaties tussen (andere sporen-in kolonie anders, prenten-zwemmend, sporenbed-foeragerend); het aantal dergelijke waarnemingen is wel erg laag.
 
-Tabel \@ref(tab:onbepaald) geeft de combinaties van methode en gedrag waaruit we niet kunnen afleiden of het al dan niet om een effectieve dierwaarneming gaat.  
+Tabel \@ref(tab:onbepaald) geeft de combinaties van methode en gedrag waaruit we niet kunnen afleiden of het al dan niet om een effectieve dierwaarneming gaat.
 
 ```{r onbepaald}
 cap <- "Waarnemingen van bever waarvan niet geweten is of het effectief om dierwaarnemingen dan wel om sporen of burchten gaat"
@@ -248,10 +240,7 @@ count(bever_dier, methode, gedrag) %>%
   kable_styling(bootstrap_options = c("condensed", "striped", "hover"))
 ```
 
-Onder de goedgekeurde beverwaarnemingen slaan ook `r round(100*nbsp/nb, 0)` % op sporen (`r nbsp` waarnemingen op een totaal van `r nb`). 
-<br/>
-<br/>
-
+Onder de goedgekeurde beverwaarnemingen slaan ook `r round(100*nbsp/nb, 0)` % op sporen (`r nbsp` waarnemingen op een totaal van `r nb`). <br/> <br/>
 
 # Aantal waarnemingen per soort per jaar (exclusief waarnemingen van sporen)
 
@@ -270,7 +259,6 @@ n_seeings %>%
                 bootstrap_options = c("condensed", "striped"))
 ```
 
-
 ```{r aantalzichtwaarnemingen, include=FALSE}
 (n_bever_zichtwaarneming <- 
   bever_dier %>% 
@@ -285,8 +273,8 @@ n_bever_zichtwaarneming %>%
   kable_styling(position = "left") %>% 
   column_spec(1:2, width = "7cm")
 ```
-<br/>
-<br/>
+
+<br/> <br/>
 
 ```{r aantalzichtwaarnemingen2}
 n_waarnemingen <- 
@@ -303,8 +291,8 @@ n_waarnemingen %>%
   kbl(caption = cap, align = "lcccccc") %>% 
   kable_styling(full_width = FALSE, position = "left")
 ```
-<br/>
-<br/>
+
+<br/> <br/>
 
 ```{r aantalindividuen}
 n_indiv <- 
@@ -340,8 +328,8 @@ n_indiv_with_dead %>%
       caption = cap) %>% 
   kable_styling(full_width = FALSE, position = "left")
 ```
-<br/>
-<br/>
+
+<br/> <br/>
 
 ```{r 120_fig_aantal_indiv}
 fig_1 <- 
@@ -584,9 +572,7 @@ map_basis +
           fill.legend = tm_legend(position = tm_pos_out("right"))))
 ```
 
-
 # Verspreidingskaartjes otter
-
 
 ```{r mapotter2021, fig.cap="Aantal waarnemingen van Europese otter per UTM-km-hok in 2021."}
 knitr::include_graphics(paste0(pad_figuren, "Europese Otter_2021.png"))
@@ -627,7 +613,6 @@ ggsave(filename = paste0(pad_figuren, "otter_utm.png"))
 
 # Gewone zeehond
 
-
 ```{r tabel gewone zeehond}
 GewoneZeehond2024 <- 
   zoogdier_data %>% 
@@ -646,6 +631,7 @@ GewoneZeehond2024 %>%
 GewoneZeehond2024 %>%
   write_csv(paste0(pad_tabellen, "/zeehond2024.csv"))
 ```
+
 <br/>
 
 ```{r make sf}
@@ -658,17 +644,14 @@ GewoneZeehond2024 %>%
 #   st_transform(crs = 4326)
 ```
 
-
 ```{r map zeehond}
 # leaflet() %>% 
   # addTiles() %>% 
   # addCircleMarkers(data = zeehond_data_sf,
   #                  radius = 3, label = ~datum)
 ```
-<br/>
-<br/>
 
-
+<br/> <br/>
 
 # Grijze zeehond
 
@@ -690,6 +673,7 @@ GrijzeZeehond2024 %>%
 GrijzeZeehond2024 %>%
   write_csv(paste0(pad_tabellen, "/grijzezeehond2024.csv"))
 ```
+
 <br/>
 
 ```{r make sf2}
@@ -702,13 +686,13 @@ GrijzeZeehond2024 %>%
 #   st_transform(crs = 4326)
 ```
 
-
 ```{r map grijzezeehond}
 # leaflet() %>% 
 #   addTiles() %>% 
 #   addCircleMarkers(data = grijzezeehond_data_sf,
 #                    radius = 3, label = ~datum)
 ```
+
 <br/>
 
 ```{r tabel bruinvis}
@@ -729,8 +713,8 @@ Bruinvis2024 %>%
 Bruinvis2024 %>%
   write_csv(paste0(pad_tabellen, "/bruinvis2024.csv"))
 ```
-<br/>
 
+<br/>
 
 ```{r make sf3}
 # bruinvis_data_sf <- 
@@ -742,11 +726,11 @@ Bruinvis2024 %>%
 #   st_transform(crs = 4326)
 ```
 
-
 ```{r map bruinvis}
 # leaflet() %>% 
 #   addTiles() %>% 
 #   addCircleMarkers(data = bruinvis_data_sf,
 #                    radius = 3, label = ~datum)
 ```
+
 <br/>
