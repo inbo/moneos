@@ -350,7 +350,7 @@ fig_1 <-
   mutate(facet = case_when(naam_nl %in% c("Europese Bever", "Gewone Bruinvis") ~ 
                      "Bever en bruinvis",
                    .default = "Otter en zeehonden")) %>%  # for facetting of graph
-  ggplot(aes(x = Jaar, y = n, color = naam_nl)) +
+  ggplot(aes(x = Jaar, y = n, color = str_to_sentence(naam_nl))) +
   geom_line(lwd = 1) +
   scale_x_continuous(breaks = seq(2010, 2023, by =1)) +
   theme(axis.title = element_blank(),
@@ -404,7 +404,8 @@ map_basis <-
 # make list of tibbles each tibble has unique naam_nl en Jaar, voor gevalideerde waarnemingen van bever en otter.
 zoogd_grouped <- 
   zoogdier_data %>% 
-  mutate(Jaar = year(datum), TAG = utm1) %>% 
+  mutate(Jaar = year(datum), TAG = utm1,
+         naam_nl = str_to_sentence(naam_nl)) %>% 
   summarise(.by = c(naam_nl, Jaar, TAG),
             aantal = sum(aantal), radius = sum(aantal)^0.5) %>% # aantal waarnemingen per UTM1-hok, soort en jaar
   group_by(naam_nl, Jaar)
@@ -415,7 +416,7 @@ utm_n_list <-
   group_split(.keep = TRUE)
 groupkeys <-  # get names of eacht tibble ("naam-nl_jaar")
   group_keys(zoogd_grouped) %>% 
-    mutate(naam_jaar = str_c(naam_nl, "_", Jaar)) %>% 
+    mutate(naam_jaar = str_c(naam_nl, " ", Jaar)) %>% 
     select(naam_jaar)
 names(utm_n_list) <- groupkeys$naam_jaar # names tiblles in list
 
@@ -426,7 +427,7 @@ utm_n_list_sf <- map(utm_n_list2, st_as_sf, sf_column_name = "geometry") # make 
 
 # function to make list of tmaps
 mapf <- function(x){
-  title <- str_c(x[[2]][1], "_", x[[3]][1])
+  title <- str_c(x[[2]][1], " ", x[[3]][1])
   m <- 
     map_basis + 
     tm_shape(x) + 
