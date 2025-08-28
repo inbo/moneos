@@ -1,7 +1,9 @@
---- 
+---
 output: html_document 
 editor_options: 
    chunk_output_type: inline
+  markdown: 
+    wrap: sentence
 ---
 
 ```{r 110-hoofdstuk, include=FALSE}
@@ -65,14 +67,13 @@ Fichenummer: Fiche S-DS-V-006 -- Broedvogels (aangepaste versie 11/04/2013)
 
 ## Inleiding
 
-De eerstelijnsrapportage beschrijft de trends van de broedvogelsoorten waarvoor Instandhoudingsdoelstellingen zijn geformuleerd in Adriaensen *et al.* (2005).
+De eerstelijnsrapportage beschrijft de trends van de broedvogelsoorten waarvoor instandhoudingsdoelstellingen (IHD) zijn geformuleerd in Adriaensen *et al.* (2005).
 
 ## Materiaal en methode
 
 ### Studiegebied
 
-Het studiegebied is het IHD-gebied zoals beschreven in Adriaensen *et al.* (2005). Dit gebied is de NOP-zonep uit de Ontwikkelingsschets 2010 Schelde-estuarium (Van den Bergh *et al.* 2003) en omvat de vallei van de Zeeschelde en haar tijgebonden zijrivieren, inclusief de vallei van de Grote Nete tot in Zammel en van de Kleine Nete tot in Grobbendonk en alle buitendijkse gebieden (Adriaensens et al. 2005).
-Het studiegebied overlapt deels met het Vogelrichtlijngebied BE2301336 - Schorren en polders van de Beneden-Schelde. Overlappende doelstellingen gelden voor de buitendijkse gebieden Schor Ouden Doel, Groot Buitenschoor, Galgenschoor en Ketenisse en voor de natuurontwikkelingsgebieden van het Sigmaplan Paardeschor, Prosperpolder-noord, Prosperpolder-zuid, Doelpolder-noord en Doelpolder-midden. Tesamen worden deze Sigmagebieden gevat onder de noemer 'Noordelijk gebied'. Het s-IHD-rapport 41 kwantificeert de overlap voor de doelsoorten: 122 koppels blauwborst, 12 koppels bruine kiekendief, 450 koppels kluut, 1-2 koppels roerdomp, 40 koppels lepelaar en 1-2 koppels porseleinhoen. Voor de overige gebieden van het  Vogelrichtlijngebied BE2301336 (inclusief de compensatiegebieden) gelden aparte en niet overlapende instandhoudingsdoelstellingen gelden,  (zie @\ref(fig:110-figuur1). De vogels die in deze gebieden broeden nemen we niet op in dit rapport.  
+Het studiegebied is het IHD-gebied zoals beschreven in Adriaensen *et al.* (2005). Dit gebied is de NOP-zone uit de Ontwikkelingsschets 2010 Schelde-estuarium (Van den Bergh *et al.* 2003) en omvat de vallei van de Zeeschelde en haar tijgebonden zijrivieren, inclusief de vallei van de Grote Nete tot in Zammel en van de Kleine Nete tot in Grobbendonk en alle buitendijkse gebieden (Adriaensens et al. 2005). Het studiegebied overlapt deels met het Vogelrichtlijngebied BE2301336 - Schorren en polders van de Beneden-Schelde. Overlappende doelstellingen gelden voor de buitendijkse gebieden Schor Ouden Doel, Groot Buitenschoor, Galgenschoor en Ketenisse en voor de natuurontwikkelingsgebieden van het Sigmaplan Paardeschor, Prosperpolder-noord, Prosperpolder-zuid, Doelpolder-noord en Doelpolder-midden. Tesamen worden deze Sigmagebieden gevat onder de noemer 'Noordelijk gebied'. Het s-IHD-rapport 41 kwantificeert de overlap voor de doelsoorten: 122 koppels blauwborst, 12 koppels bruine kiekendief, 450 koppels kluut, 1-2 koppels roerdomp, 40 koppels lepelaar en 1-2 koppels porseleinhoen. Voor de overige gebieden van het Vogelrichtlijngebied BE2301336 (inclusief de compensatiegebieden) gelden aparte en niet overlapende instandhoudingsdoelstellingen gelden, (zie \@\ref(fig:110-figuur1). De vogels die in deze gebieden broeden nemen we niet op in dit rapport.\
 Hetzelfde geldt voor de deelgebieden op de Rechterscheldeoever van het vogelrichtlingebied de Kuifeend en Blokkersdijk (BE) en hun omgeving (Kuifeend, Plas Hoge Maey, de Verlegde Schijns, het Oud Schijn, de Grote Kreek en Stadsgracht, de Meeuwenbroedplaats en het Opstalvalleigebied). De soorten die hier broeden worden niet meegeteld omdat hiervoor aparte instandhoudingsdoelstellingen zijn opgesteld (IHD-Z, Adriaensen et al. 2005). Blokkersdijk valt wel binnen het studiegebied, de aantallen die daar broeden tellen we mee in deze analyse.\
 
 ```{r 110-figuur1, fig.cap=caption_figuur1, out.width="95%"}
@@ -80,33 +81,30 @@ caption_figuur1 <- "Het IHD-gebied met aanduiding van de gebieden die geanalysee
 knitr::include_graphics(paste0(pad_figuren, "110_fig1.png"))
 ```
 
+<!--# Het Galgenschoor, Ketenisse en het Noordelijk gebied worden apart behandeld omdat hiervoor aparte doelstellingen zijn gedefinieerd (Adriaensen et al., 2005).\ -->
 
-<!--# Het Galgenschoor, Ketenisse en het Noordelijk gebied worden apart behandeld omdat hiervoor aparte doelstellingen zijn gedefinieerd (Adriaensen et al., 2005).\ --> <!--# Het Groot Buitenschoor, het overstromingsgebied Kruibeke -- Bazel -- Rupelmonde, de Potpolder Lillo, het Molsbroek, de overige gebieden vzw Durme (reservaten Durmemeersen, Scheldebroeken (excl. Paardeweide) en reservaatzone Donkmeer), de Kalkense Meersen en Wijmeers (KM en WM), het Weijmeerbroek, de Paardeweide, de Bergenmeersen, het Aubroek en de Sint Onolfspolder, Schellebelle (omgeving station) en Zennegat zitten vervat in het 'Rest IHD-gebied'. --> <!--# De gegevens van deze gebieden worden tevens in aparte werkbladen gegeven omdat soms voor één of meerdere soorten goede lokale tijdsreeksen beschikbaar zijn. -->
+<!--# Het Groot Buitenschoor, het overstromingsgebied Kruibeke -- Bazel -- Rupelmonde, de Potpolder Lillo, het Molsbroek, de overige gebieden vzw Durme (reservaten Durmemeersen, Scheldebroeken (excl. Paardeweide) en reservaatzone Donkmeer), de Kalkense Meersen en Wijmeers (KM en WM), het Weijmeerbroek, de Paardeweide, de Bergenmeersen, het Aubroek en de Sint Onolfspolder, Schellebelle (omgeving station) en Zennegat zitten vervat in het 'Rest IHD-gebied'. -->
+
+<!--# De gegevens van deze gebieden worden tevens in aparte werkbladen gegeven omdat soms voor één of meerdere soorten goede lokale tijdsreeksen beschikbaar zijn. -->
 
 <!--# Het Fort St- Marie en het gebied tussen de Vlakte van Zwijndrecht en Blokkersdijk is mee opgenomen in 'Rest IHD-gebied'. -->
 
 ### Dataverzameling
 
 De aantallen zijn gecompileerd uit de volgende bronnen: Anselin et al. (1998); Vermeersch et al. (2004); Vermeersch et al. (2006); Vermeersch & Anselin (2009); Anselin (2010);Spanoghe et al. (2003); Gyselings et al. (2004); Spanoghe et al. (2006); Gyselings et al. (2007); Spanoghe et al. (2008); Van Ginhove et al. (2008), Gyselings et al. (2009); Spanoghe et al. (2010); (Gyselings et al., 2010); Gyselings et al. (2013); Weyn et al. (2013); Daniëls et al. (2013).\
-Daarnaast werd gebruik gemaakt van de Broedvogeldatabank van het INBO (<http://broedvogels.inbo.be>) en de Broedvogelatlasdatabank en --kaartlagen van het INBO.
-Deze gegevens werden aangevuld met gegevens uit Waarnemingen.be, de website voor natuurinformatie van Natuurpunt en Stichting Natuurinformatie, ter beschikking gesteld door Natuurpunt Studie vzw.\
+Daarnaast werd gebruik gemaakt van de Broedvogeldatabank van het INBO (<http://broedvogels.inbo.be>) en de Broedvogelatlasdatabank en --kaartlagen van het INBO. Deze gegevens werden aangevuld met gegevens uit Waarnemingen.be, de website voor natuurinformatie van Natuurpunt en Stichting Natuurinformatie, ter beschikking gesteld door Natuurpunt Studie vzw.\
 De data vóór 2000 zijn afkomstig uit BBV-verslagen 1995-1996 en 1994-2005 (Anselin et al. 1998) en (Vermeersch et al. 2006), de Broedvogeldatabank en waarnemingen.be.\
 De gegevens van de periode 2000-2002 zijn afkomstig van de Broedvoegelatlas (Vermeersch et al. 2004) en de digitale voorbereidende bestanden. Voor enkele zeldzame soorten zijn in deze periode de aantallen voor elk jaar gekend. Voor algemenere soorten slaan de aantallen op de hele periode 2000-2002. In de tabel werden ze ingevuld bij 2001.\
 De gegevens van de periode 2003-2005 zijn afkomstig uit het BBV-verslag 1994-2005 (Vermeersch et al. 2006), de Broedvogeldatabank en waarnemingen.be.\
 De gegevens van de periode 2006-2007 zijn afkomstig uit het BBV-verslag 2006-2007 (Vermeersch and Anselin 2009), de Broedvogeldatabank en waarnemingen.be.\
-De gegevens voor de periode 2008-2009 zijn afkomstig uit (Anselin 2010), de Broedvogeldatabank  en waarnemingen.be.\
+De gegevens voor de periode 2008-2009 zijn afkomstig uit (Anselin 2010), de Broedvogeldatabank en waarnemingen.be.\
 Voor de deelgebieden Ketenisse en het Noordelijk gebied met haar deelgebieden Schor Ouden Doel, Doelpolder-noord, Prosperpolder-noord en Prosperpolder-zuid zijn de aantallen vanaf 2003 afgeleid uit de monitoringsrapporten van het Linkerscheldeoevergebied (Spanoghe et al., 2003, 2006, 2008, 2010 en Gyselings et al. 2004, 2007, 2009) en recentere monitoringsgegevens van het INBO-project "Monitoring en evaluatie van het Linkerscheldeoevergebied (LO)".\
 De aantallen voor Blokkersdijk zijn afkomstig van de website van Natuurpunt-Waasland, het tweede monitoringsrapport (De Jonghe & Verschueren, 2017) en data aangeleverd door Willy Verschueren (2018 - 2024).\
 Voor de Polders van Kruibeke zijn de gegevens afkomstig van de jaarverslagen van de Beheercommissie Kruibeke-Bazel-Rupelmonde (Anoniem, 2014) en recentere monitoringsgegevens van het INBO-project "Opvolgen en adviseren beheercommissie Kruibeke-Bazel-Rupelmonder (KBR)" en het INBO/ANB-project "Wetenschappelijke opvolging van de natuurontwikkeling in de gebieden van het geactualiseerde Sigmaplan".\
 Gegevens van Molsbroek en de overige gebieden van de vzw Durme zijn afkomstig van de Vogelwerkgroep Durmevallei aangeleverd door Joris Everaert.\
-Gegevens van Kalkense Meersen, Wijmeers, Paardeweide, Bergenmeersen, Weijmeerbroek en Zennegat na 2008 werden verzameld in het kader van het INBO/ANB-project "Wetenschappelijke opvolging van de natuurontwikkeling in de gebieden van het geactualiseerde Sigmaplan".
-INBO/ANB voert in deze gebieden frequent, maar niet jaarlijks, broedvogelkarteringen uit.
-Het aantal territoria voor jaren zonder kartering wordt berekend op basis van een lineair interpolatie.\
-Gegevens over het aantal gruttoterritoria in de Kalkense Meersen en omgeving in de periode 2001-2009 zijn afkomstig uit Schepers (2010).
-Recentere data werden aangeleverd door Robbert Schepers en zijn afkomstig van tellingen in het kader van het INBO/ANB-project "Wetenschappelijke opvolging van de natuurontwikkeling in de gebieden van het geactualiseerde Sigmaplan" gecombineerd met tellingen door vrijwilligers en medewerkers van het Regionaal Landschap "Schelde-Durme".
-De gegevens van het Groot Buitenschoor (2012) zijn ongepubliceerde gegevens verzameld in het kader van een INBO-ANB monitoringproject Antwerpen RO.\
-De volledige dataset werd aangevuld met waarnemingen uit waarnemingen.be geïnterpreteerd volgens de criteria uit Van Dijk en Boele (2011) en Vergeer et al. (2016).\ 
-Nullen werden enkel ingevuld als:
+Gegevens van Kalkense Meersen, Wijmeers, Paardeweide, Bergenmeersen, Weijmeerbroek en Zennegat na 2008 werden verzameld in het kader van het INBO/ANB-project "Wetenschappelijke opvolging van de natuurontwikkeling in de gebieden van het geactualiseerde Sigmaplan". INBO/ANB voert in deze gebieden frequent, maar niet jaarlijks, broedvogelkarteringen uit. Het aantal territoria voor jaren zonder kartering wordt berekend op basis van een lineair interpolatie.\
+Gegevens over het aantal gruttoterritoria in de Kalkense Meersen en omgeving in de periode 2001-2009 zijn afkomstig uit Schepers (2010). Recentere data werden aangeleverd door Robbert Schepers en zijn afkomstig van tellingen in het kader van het INBO/ANB-project "Wetenschappelijke opvolging van de natuurontwikkeling in de gebieden van het geactualiseerde Sigmaplan" gecombineerd met tellingen door vrijwilligers en medewerkers van het Regionaal Landschap "Schelde-Durme". De gegevens van het Groot Buitenschoor (2012) zijn ongepubliceerde gegevens verzameld in het kader van een INBO-ANB monitoringproject Antwerpen RO.\
+De volledige dataset werd aangevuld met waarnemingen uit waarnemingen.be geïnterpreteerd volgens de criteria uit Van Dijk en Boele (2011) en Vergeer et al. (2016).  Nullen werden enkel ingevuld als:
 
 -   er een intensieve monitoring werd uitgevoerd en geen territoria of broedgevallen zijn vastgesteld in een bepaald gebied
 -   er voor een bepaald jaar voor een gebied aantallen in de databank zaten voor andere soorten
@@ -116,28 +114,20 @@ In andere gevallen, waar geen zekerheid bestaat over aan- of afwezigheid, werd n
 
 De voorbije jaren werd een grote inspanning geleverd om de ruwe data in een bruikbaar formaat te stoppen, met per gebied en jaar één record met het aantal territoria en een bronverwijzing. Bij deze oefenings werd historische data geherevalueerd, aangevuld en verbeterd. Deze ruwe data worden nu voor het eerst meegeleverd (Data_nieuwe_vorm_2025_v2.xlsx). Het bestand Territoria_totalen-1995_2024.csv geeft de totalen voor het IHD-gebied. Deze totalen zijn gebaseerd op de ruwe data. Daar waar in de datasets aangeleverd tot 2023 in geval van een vork steeds de hoogste waarden werd gerapporteerd, wordt in ddeze tabel het gemiddelde van het minimum en maximum aantal territoria gerapporteerd. De aanwezigheid van NA's in deze tabel betekent dat voor die soort dat jaar geen betrouwbare totalen bepaald kunnen worden, omdat het aantal terrotoria van minstens één, maar meestal vele gebieden niet achterhaald kon worden.\
 
-
 ### Exploratieve data-analyse
 
 #### Zeldzame soorten met "volledige" tijdreeksen
 
-Voor sommige soorten werden redelijk volledige tijdsreeksen verkregen voor alle deelgebieden.
-Dit zijn voornamelijk de zeldzame, goed te inventariseren soorten van het Bijzondere Broedvogelproject (baardman, bruine kiekendief, grote karekiet, lepelaar, porseleinhoen, roerdomp, snor en zomertaling) of soorten die niet of amper broeden in Vlaanderen (purperreiger, kwak, kwartelkoning, paapje).\
+Voor sommige soorten werden redelijk volledige tijdsreeksen verkregen voor alle deelgebieden. Dit zijn voornamelijk de zeldzame, goed te inventariseren soorten van het Bijzondere Broedvogelproject (baardman, bruine kiekendief, grote karekiet, lepelaar, porseleinhoen, roerdomp, snor en zomertaling) of soorten die niet of amper broeden in Vlaanderen (purperreiger, kwak, kwartelkoning, paapje).\
 De gegeven aantallen kunnen als minima geïnterpreteerd worden maar geven na 2007 waarschijnlijk toch een redelijk accuraat beeld van de reële aantallen.\
-Voor kluut en tureluur kan aangenomen worden dat de gegeven aantallen voor het Rest IHD-gebied na de atlasperiode tamelijk nauwkeurig zijn omdat deze soorten amper of slechts in (zeer) lage aantallen broeden buiten de recent aangelegde en frequent gemonitorde natuurgebieden van het Sigmaplan.
-Ook de aantallen grutto in het 'Rest IHD-gebied' zijn betrouwbaar omdat telkens de volledige populatie in en rond de Kalkense Meersen en het Noordelijk gebied werd geteld.
-Elders in het 'Rest_IHD-gebied' komt/kwam de soort niet of slechts in zeer lage aantallen tot broeden.
+Voor kluut en tureluur kan aangenomen worden dat de gegeven aantallen voor het Rest IHD-gebied na de atlasperiode tamelijk nauwkeurig zijn omdat deze soorten amper of slechts in (zeer) lage aantallen broeden buiten de recent aangelegde en frequent gemonitorde natuurgebieden van het Sigmaplan. Ook de aantallen grutto in het 'Rest IHD-gebied' zijn betrouwbaar omdat telkens de volledige populatie in en rond de Kalkense Meersen en het Noordelijk gebied werd geteld. Elders in het 'Rest_IHD-gebied' komt/kwam de soort niet of slechts in zeer lage aantallen tot broeden.
 
 #### Algemenere soorten
 
-Voor een aantal minder zeldzame soorten die niet opgenomen zijn in het Bijzondere Broedvogelproject (blauwborst, dodaars, rietzanger, scholekster, slobeend), zijn de tijdreeksen onvolledig.
-Deze soorten broeden ook in substantiële aantallen in (natuur)gebieden die niet frequent gemonitord worden.
-Voor deze soorten voeren we een analyse uit op een deeldataset, nl. de aantallen in een enkele frequent getelde gebieden.
-Het Noordelijk gebied in de haven van Antwerpen, Blokkersdijk en Ketenisse worden jaarlijks integraal onderzocht op broedvogels. Sinds 2022 is in het Noordelijk gebied en Ketenisse overgestapt op een driejaarlijkse monitoring voor zangvogels, de aantallen in de tussenliggende jaren worden geinterpoleerd (imputatie, aangeduid in het opmerkingenveld van de ruwe data).
-In de Sigmagebieden werd één telling uitgevoerd voorafgaand aan de inrichting (T0). Het eerste jaar na de inrichting wordt in regel ook steeds geteld en vervolgens het derde jaar. Nadien wordt minstens om de drie jaar een telling uitgevoerd. De aantallen vóór de inrichting worden gelijkgesteld aan de T0-telling. De aantallen in de tussenliggende jaren (zonder monitoring) worden per gebied geïnterpoleerd (lineair verband). Indien er geen telgegevens zijn van het laatste rapportagejaar worden deze gelijk gesteld aan deze van het laatste getelde jaar. Gezien de Kalkense Meersen bij aanvang van de monitoring (2011) al deels als natuurgebied werd beheerd en er van enkele soorten al aanzienlijke populaties aanwezig waren, kon geen T0-telling uitgevoerd worden. Voor 2005 zijn er gegevens van een gebiedsdekkende kartering (Peter Claus 2006). Voor de periode 2006 - 2010 zitten er voor de Kalkense Meersen geen gegevens in de dataset. Vanaf 2011 zijn de gegevens gebaseerd op het INBO/ANB-project "Wetenschappelijke opvolging van de natuurontwikkeling in de gebieden van het geactualiseerde Sigmaplan".\
+Voor een aantal minder zeldzame soorten die niet opgenomen zijn in het Bijzondere Broedvogelproject (blauwborst, dodaars, rietzanger, scholekster, slobeend), zijn de tijdreeksen onvolledig. Deze soorten broeden ook in substantiële aantallen in (natuur)gebieden die niet frequent gemonitord worden. Voor deze soorten voeren we een analyse uit op een deeldataset, nl. de aantallen in een enkele frequent getelde gebieden. Het Noordelijk gebied in de haven van Antwerpen, Blokkersdijk en Ketenisse worden jaarlijks integraal onderzocht op broedvogels. Sinds 2022 is in het Noordelijk gebied en Ketenisse overgestapt op een driejaarlijkse monitoring voor zangvogels, de aantallen in de tussenliggende jaren worden geinterpoleerd (imputatie, aangeduid in het opmerkingenveld van de ruwe data). In de Sigmagebieden werd één telling uitgevoerd voorafgaand aan de inrichting (T0). Het eerste jaar na de inrichting wordt in regel ook steeds geteld en vervolgens het derde jaar. Nadien wordt minstens om de drie jaar een telling uitgevoerd. De aantallen vóór de inrichting worden gelijkgesteld aan de T0-telling. De aantallen in de tussenliggende jaren (zonder monitoring) worden per gebied geïnterpoleerd (lineair verband). Indien er geen telgegevens zijn van het laatste rapportagejaar worden deze gelijk gesteld aan deze van het laatste getelde jaar. Gezien de Kalkense Meersen bij aanvang van de monitoring (2011) al deels als natuurgebied werd beheerd en er van enkele soorten al aanzienlijke populaties aanwezig waren, kon geen T0-telling uitgevoerd worden. Voor 2005 zijn er gegevens van een gebiedsdekkende kartering (Peter Claus 2006). Voor de periode 2006 - 2010 zitten er voor de Kalkense Meersen geen gegevens in de dataset. Vanaf 2011 zijn de gegevens gebaseerd op het INBO/ANB-project "Wetenschappelijke opvolging van de natuurontwikkeling in de gebieden van het geactualiseerde Sigmaplan".\
 Volgende Sigmagebieden nemen we mee in de analyse (zie Figuur \@ref(fig:110-figuur2)):
 
--   Kalkense Meersen: geleidelijke verwerving van gronden sinds 2008 waarna omzetting tot grasland en/of een verschralingsbeheer wordt opgestart. 
+-   Kalkense Meersen: geleidelijke verwerving van gronden sinds 2008 waarna omzetting tot grasland en/of een verschralingsbeheer wordt opgestart.
 -   Bergenmeersen: GOG-GGG sinds april 2013
 -   Wijmeers: deels ontpolderd en deels ingericht als niet-estuarien wetland sinds november 2015
 -   Paardeweide: oostzijde ingericht als rietatol sinds 2014, de westzijde is een hooilandgebied waar sinds 2022 geëxperimenteerd wordt met vernatting.
@@ -158,76 +148,53 @@ knitr::include_graphics(paste0(pad_figuren, "110_fig2.png"))
 
 ### Zeldzame soorten {#zeld-soorten}
 
-Figuur \@ref(fig:110-figuur3) toont de resultaten met uitzondering van de vijf algemenere soorten (blauwborst, dodaars, rietzanger, scholekster, slobeend) en één tot nog toe afwezige soort (puperreiger).
-Deze figuur toont de trends van de soorten binnen de gebieden met instandhoudingsdoelstellingen in het Schelde-estuarium.
-Hoewel geen gebiedsdekkende kartering mogelijk is, wordt aangenomen dat het aantal territoria voor deze soorten een redelijk accuraat beeld geeft van de reële aantallen.
+Figuur \@ref(fig:110-figuur3) toont de resultaten met uitzondering van de vijf algemenere soorten (blauwborst, dodaars, rietzanger, scholekster, slobeend) en één tot nog toe afwezige soort (puperreiger). Deze figuur toont de trends van de soorten binnen de gebieden met instandhoudingsdoelstellingen in het Schelde-estuarium. Hoewel geen gebiedsdekkende kartering mogelijk is, wordt aangenomen dat het aantal territoria voor deze soorten een redelijk accuraat beeld geeft van de reële aantallen.
 
-Verscheidene doelsoorten komen tot 2024 nog steeds zelden tot broeden in het IHD-gebied Schelde-estuarium (kwartelkoning en paapje) of werden nog nooit vastgesteld als broedvogel (purperreiger).   
+Verscheidene doelsoorten komen tot 2024 nog steeds zelden tot broeden in het IHD-gebied Schelde-estuarium (kwartelkoning en paapje) of werden nog nooit vastgesteld als broedvogel (purperreiger).
 
 Roeromp was in 2022 en 2023 aanwezig in Grote Wal, een Scheldepolder die als tijdelijke inrichting in deze periode onder water kwam te staan met gebiedseigen water. In 2023 werd ook een laat baltsend exemplaar waargenomen in het Weijmeerbroek. In 2024 was er een territorium in Prosperpolder-zuid.
 
-Voor het eerst sinds 2020 bleef de grote karekiet afwezig, terwijl er in 2023 nog drie territoria waren. Een echt stabiele hervestiging van deze soort heeft dus nog niet plaatsgevonden.  
+Voor het eerst sinds 2020 bleef de grote karekiet afwezig, terwijl er in 2023 nog drie territoria waren. Een echt stabiele hervestiging van deze soort heeft dus nog niet plaatsgevonden.
 
-Lepelaar broedt sinds 2020 jaarlijks in het IHD-gebied. 
-Na een schuchtere poging tot nestbouw in de Wijmeers (Wichelen) in 2016 en twee nesten in het Broek De Naeyer (Willebroek) in 2020 werden in 2021 tien nesten gevonden in het Meulendijkbroek in de Durmevallei (Waasmunster) en vier in het Noordelijk gebied (Beveren).
-In 2022 werden zeven nesten geteld in de Durmevallei en één in het Noordelijk gebied.
-In 2023 daalde het aantal nesten in het Meulendijkbroek naar één, maar ontstond wel een kleine kolonie met acht nesten in het weidevogelgebied van Doelpolder-noord (Noordelijk gebied). De kolonie groeide daar in 2024 verder uit tot 23 nesten. De combinatie van een veilige broedplek (predatiewerend raster) en een immens foerageergebied in de onmiddellijke nabijheid (de slikken in de ontpolderde Prosper- en Hedwigepolders) speelt wellicht een belangrijke rol. In 2024 broedde lepelaar niet meer in de Durmevallei, de tijdelijke inrichting van Meulendijkbroek werd stopgezet vanwege inrichtingswerken. Ondertussen kent het aanpalende Groot Broek een gelijkaardige tijdelijke inrichting als het Meulendijkbroek tussen 2020 en 2023. Het gebied staat ondiep onder water met aanvoer vanuit de Durme. Hopelijk leidt dit de komende jaren tot hervestiging in de Durmevallei.
+Lepelaar broedt sinds 2020 jaarlijks in het IHD-gebied. Na een schuchtere poging tot nestbouw in de Wijmeers (Wichelen) in 2016 en twee nesten in het Broek De Naeyer (Willebroek) in 2020 werden in 2021 tien nesten gevonden in het Meulendijkbroek in de Durmevallei (Waasmunster) en vier in het Noordelijk gebied (Beveren). In 2022 werden zeven nesten geteld in de Durmevallei en één in het Noordelijk gebied. In 2023 daalde het aantal nesten in het Meulendijkbroek naar één, maar ontstond wel een kleine kolonie met acht nesten in het weidevogelgebied van Doelpolder-noord (Noordelijk gebied). De kolonie groeide daar in 2024 verder uit tot 23 nesten. De combinatie van een veilige broedplek (predatiewerend raster) en een immens foerageergebied in de onmiddellijke nabijheid (de slikken in de ontpolderde Prosper- en Hedwigepolders) speelt wellicht een belangrijke rol. In 2024 broedde lepelaar niet meer in de Durmevallei, de tijdelijke inrichting van Meulendijkbroek werd stopgezet vanwege inrichtingswerken. Ondertussen kent het aanpalende Groot Broek een gelijkaardige tijdelijke inrichting als het Meulendijkbroek tussen 2020 en 2023. Het gebied staat ondiep onder water met aanvoer vanuit de Durme. Hopelijk leidt dit de komende jaren tot hervestiging in de Durmevallei.
 
 Kwak is sinds 2014 jaarlijks aanwezig in kleine aantallen. Zo ook in 2024 met een territorium en een mogelijk territorium in de traditionele gebieden Molsbroek (Lokeren) en Donkmeer (Berlare).
 
-Van de jaarlijks broedende soorten komt een aanzienlijk deel van de populatie van grutto, snor, woudaap en zomertaling voor buiten de haven.
-Voor de andere soorten (baardman, bruine kiekendief, kluut, tureluur) is het Noordelijk gebied van het Antwerpse havengebied op linkeroever veruit het belangrijkste broedgebied.
+Van de jaarlijks broedende soorten komt een aanzienlijk deel van de populatie van grutto, snor, woudaap en zomertaling voor buiten de haven. Voor de andere soorten (baardman, bruine kiekendief, kluut, tureluur) is het Noordelijk gebied van het Antwerpse havengebied op linkeroever veruit het belangrijkste broedgebied.
 
 Baardman, woudaap en snor vertonen de laatste jaren een stijgende trend in de vallei van de Zeeschelde en haar tijgebonden zijrivieren (NOP-zone).
 
-Baardman broedt zelden stroomopwaarts Antwerpen.
-Het Schor Ouden Doel is bij uitstek het belangrijkste gebied voor deze soort, met jaarlijks meer dan 30 territoria sinds 2020.
-Stroomafwaarts Antwerpen broedt de baardman in kleine aantallen ook in andere buitendijkse gebieden (Ketenisse, Groot buitenschoor, Galgenschoor).
-In 2021 werd voor het eerst een broedgeval vastgesteld in het Zennegat (Mechelen). Sinds 2022 zijn er jaarlijks 2 territoria.  
+Baardman broedt zelden stroomopwaarts Antwerpen. Het Schor Ouden Doel is bij uitstek het belangrijkste gebied voor deze soort, met jaarlijks meer dan 30 territoria sinds 2020. Stroomafwaarts Antwerpen broedt de baardman in kleine aantallen ook in andere buitendijkse gebieden (Ketenisse, Groot buitenschoor, Galgenschoor). In 2021 werd voor het eerst een broedgeval vastgesteld in het Zennegat (Mechelen). Sinds 2022 zijn er jaarlijks 2 territoria.
 
-Tussen 2003 en 2010 werden jaarlijks 1 tot 4 territoria snor vastgesteld, bijna uitsluitend in het Noordelijk gebied in de Antwerpse haven (Schor Ouden Doel).
-Tussen 2010 en 2020 schommelden de aantallen tussen 4 en 10, waarbij de soort ook opdook stroomopwaarts Antwerpen.
-Sinds 2021 komen er meer dan 10 territoria voor in het IHD-gebied maar opvallend is dat de soort sinds 2021 niet meer broedt in het Noordelijk gebied.
-Met 30 territoria in 2024 wordt het recordaantal uit 2023 opnieuw overschreden en lijkt de tot doel gestelde populatie van 100 broedparen plots toch realistisch.
-De polders van Kruibeke vormen momenteel het belangrijkste broedgebeid met 11 territoria in 2024, maar de snor heeft zich duidelijk ook gevestigd in de Durmevallei, in de Kalkense Meersen en omgeving en in de valleien van Dijle en Nete.
+Tussen 2003 en 2010 werden jaarlijks 1 tot 4 territoria snor vastgesteld, bijna uitsluitend in het Noordelijk gebied in de Antwerpse haven (Schor Ouden Doel). Tussen 2010 en 2020 schommelden de aantallen tussen 4 en 10, waarbij de soort ook opdook stroomopwaarts Antwerpen. Sinds 2021 komen er meer dan 10 territoria voor in het IHD-gebied maar opvallend is dat de soort sinds 2021 niet meer broedt in het Noordelijk gebied. Met 30 territoria in 2024 wordt het recordaantal uit 2023 opnieuw overschreden en lijkt de tot doel gestelde populatie van 100 broedparen plots toch realistisch. De polders van Kruibeke vormen momenteel het belangrijkste broedgebeid met 11 territoria in 2024, maar de snor heeft zich duidelijk ook gevestigd in de Durmevallei, in de Kalkense Meersen en omgeving en in de valleien van Dijle en Nete.
 
-Ook het aantal woudaapterritoria neemt de laatste jaren toe. Vóór 2015 werden jaarlijks 0 tot maximaal 3 territoria geteld en tussen 2015 en 2021 2 tot 8 territoria. Met 10 territoria daalde de aantallen in 2024 ten opzichte van 2022 (13 territoria) en  2023 (14 territoria). Dit is in de eerste plaats het gevolg van het beëindigen van de tijdelijke inrichting van Grote Wal die in die jaren telkens vier territoria huisvestte. Het Vierselsgebroekt (1 tot 2 territoria) en het Noordelijke Eiland (Wintam) zijn nieuwe broedgebieden. In Paardeweide-oost werd voor het tweede opeenvolgende jaar gebroed (2 territoria).
+Ook het aantal woudaapterritoria neemt de laatste jaren toe. Vóór 2015 werden jaarlijks 0 tot maximaal 3 territoria geteld en tussen 2015 en 2021 2 tot 8 territoria. Met 10 territoria daalde de aantallen in 2024 ten opzichte van 2022 (13 territoria) en 2023 (14 territoria). Dit is in de eerste plaats het gevolg van het beëindigen van de tijdelijke inrichting van Grote Wal die in die jaren telkens vier territoria huisvestte. Het Vierselsgebroekt (1 tot 2 territoria) en het Noordelijke Eiland (Wintam) zijn nieuwe broedgebieden. In Paardeweide-oost werd voor het tweede opeenvolgende jaar gebroed (2 territoria).
 
 De sinds 2013 dalende trend van grutto lijkt om te buigen. Dit is het gevolg van de stijgende aantallen in Doelpolder-noord waar de soort profiteert van de relatieve veiligheid binnen de predatiewerende rasters. Met 67 territoria lagen de aantallen even hoog als in de piekperiode tussen 2010 en 2015, en wordt het doel (80 territoria) stilaan benaderd. Er trad wel een verschuiving op. In de periode 2010 - 2015 was de populatie rondom Kalken doorgaans groter dan die in Doel. In 2024 is de populatie in Doelpolder-noord met 38 territroia duidelijk groter dan deze in en rond de Kalkense Meersen (29 territoria). Maar ook in de stroomopwaartse populatie is er sprake van een voorzichtig herstel ten opzichte van 2022 en 2023 toen er resp. 24 en 25 territoria waren.
 
-De hoogste aantallen kluut werden vastgesteld in de periode tussen 2012 en 2017 (bijna 200 territoria).
-In 2018 en 2019 kende de soort een stevige dip (resp. 10 en 45 territoria).
-Na het nemen van uitgebreide beschermingsmaatregelen tegen grondpredatoren in het Noordelijk gebied (vossenrasters) stijgen de aantallen opnieuw tot rond de 150 territoria in 2020 en 2021. Door de ontpoldering van Prosperpolder-noord in 2022 dalen de aantallen opnieuw een beetje tot 112 in 2024. De broedeilanden in de ontpoldering werden in 2024 niet als broedplaats gebruikt. Naast de 103 nesten in Doelpolder-noord, broedden er in 2024 ook enkele kluten in Prosperpolder-zuid en aan Fort Filip. Stroomopwaarts Antwerpen waren amper kluten aanwezig: enkele territoria in Grote Wal en een onzeker territorium in Paardeweide.  
+De hoogste aantallen kluut werden vastgesteld in de periode tussen 2012 en 2017 (bijna 200 territoria). In 2018 en 2019 kende de soort een stevige dip (resp. 10 en 45 territoria). Na het nemen van uitgebreide beschermingsmaatregelen tegen grondpredatoren in het Noordelijk gebied (vossenrasters) stijgen de aantallen opnieuw tot rond de 150 territoria in 2020 en 2021. Door de ontpoldering van Prosperpolder-noord in 2022 dalen de aantallen opnieuw een beetje tot 112 in 2024. De broedeilanden in de ontpoldering werden in 2024 niet als broedplaats gebruikt. Naast de 103 nesten in Doelpolder-noord, broedden er in 2024 ook enkele kluten in Prosperpolder-zuid en aan Fort Filip. Stroomopwaarts Antwerpen waren amper kluten aanwezig: enkele territoria in Grote Wal en een onzeker territorium in Paardeweide.
 
-De positieve trend van de zomertaling wordt in 2024 bevestigd. Met 28 territoria wordt het hoogste aantal uit de tijdreeks vastgesteld Sinds 2022 wordt het instandhoudingsdoel (20 territoria) jaarlijks behaald. De aantallen zomertaling gaan sinds 2007 in stijgende lijn wat te verklaren is door de stapsgewijze inrichting van (estuariene) wetlandgebieden van het Sigmaplan en in de Antwerpse haven.
-In de eerste jaren na inrichting van overstromingsgebieden met gecontroleerd gereduceerd getij en ontpolderingen verschijnen zomertalingen. Tengevolge van de vegetatiesuccessie (verruiging) nemen de aantallen nadien terug af.
-De laatste jaren nemen de aantallen echter ook duidelijk toe in niet-estuariene gebieden. Het overgrote deel van de territoria in 2024 werd vastgesteld in niet-estuariene gebieden, waarvan ook heel wat buiten de natuurinrichtingsgebieden van het Sigmaplan. Het zeer natte voorjaar was zeker een positieve factor voor deze soort.
+De positieve trend van de zomertaling wordt in 2024 bevestigd. Met 28 territoria wordt het hoogste aantal uit de tijdreeks vastgesteld Sinds 2022 wordt het instandhoudingsdoel (20 territoria) jaarlijks behaald. De aantallen zomertaling gaan sinds 2007 in stijgende lijn wat te verklaren is door de stapsgewijze inrichting van (estuariene) wetlandgebieden van het Sigmaplan en in de Antwerpse haven. In de eerste jaren na inrichting van overstromingsgebieden met gecontroleerd gereduceerd getij en ontpolderingen verschijnen zomertalingen. Tengevolge van de vegetatiesuccessie (verruiging) nemen de aantallen nadien terug af. De laatste jaren nemen de aantallen echter ook duidelijk toe in niet-estuariene gebieden. Het overgrote deel van de territoria in 2024 werd vastgesteld in niet-estuariene gebieden, waarvan ook heel wat buiten de natuurinrichtingsgebieden van het Sigmaplan. Het zeer natte voorjaar was zeker een positieve factor voor deze soort.
 
-De tureluurpopulatie kende tussen 2005 en 2010-2012 een toename tot ca. 50 territoria, het merendeel in het Noordelijk gebied. Daarna boerde de populatie achteruit tot minder dan 30 territoria in de periode 2017 - 2020, als gevolg van een stijgende predatiedruk. 
-De beschermingsmaatregelen tegen grondpredatoren die in het havengebied op de Linkerscheldeoever worden genomen,  werpen hun vruchten af, het aantal territoria steeg naar 39 in 2021, 42 in 2022, 53 in 2023 en 50 in 2024.
-Het overgrote deel van de populatie (\> 90%) broedt in Doelpolder-noord. In 2014 vonden ook enkele broedkoppels de weg naar Prosperpolder-zuid en de estuariene gebieden Prosperpolder-noord, Schor Ouden Doel en Ketenisse.
+De tureluurpopulatie kende tussen 2005 en 2010-2012 een toename tot ca. 50 territoria, het merendeel in het Noordelijk gebied. Daarna boerde de populatie achteruit tot minder dan 30 territoria in de periode 2017 - 2020, als gevolg van een stijgende predatiedruk. De beschermingsmaatregelen tegen grondpredatoren die in het havengebied op de Linkerscheldeoever worden genomen, werpen hun vruchten af, het aantal territoria steeg naar 39 in 2021, 42 in 2022, 53 in 2023 en 50 in 2024. Het overgrote deel van de populatie (\> 90%) broedt in Doelpolder-noord. In 2014 vonden ook enkele broedkoppels de weg naar Prosperpolder-zuid en de estuariene gebieden Prosperpolder-noord, Schor Ouden Doel en Ketenisse.
 
 Het aantal territoria van bruine kiekendief blijft ook in 2024 met 9 territoria ver onder het tot doel gestelde aantal (50). Ook in 2024 blijft het Galgenschoor met 4 territoria een bastion voor deze soort. Bemoedigend is dat de ruimtelijke spreiding de laatste jaren wat groter wordt. In 2024 waren er territoria in Bergenmeersen (Wichelen), de Scheldebroeken (Berlare) en mogelijk ook in Grote Wal (Hamme) en het Viersel Gebroekt.
 
 Het aantal territoria van porseleinhoen is zeer afhankelijk van de weersomstandigheden in het voorjaar en kent een erratisch verloop. De weersomstandigheden waren in 2024 bijzonder goed voor deze soort. Er werd een record aantal van 20 territoria vastgesteld, de helft van het instandhoudingsdoel. De meeste porseleinhoentjes zaten in het langdurig geïnundeerde Viersels Gebroekt. Ze werden er zelfs begeleid door een broedgeval van kleinst waterhoen, een nog zeldzamer neefje van de porseleinhoen en één of twee watersnippen. Maar ook elders trokken de natte valleigronden porseleinhoenen aan. In de Kleine Netevallei werden ook enkele territoria vastgesteld in de Steenbeemden en Varenheuvel-Abroek. Langs de Schelde werd telkens één territorium gevonden in de Gentbrugse Meeren, de Kalkense Meersen, de Wijmeers en in Doelpolder-noord. In de Durmevallei verscheen de soort enkel in het Molsbroek, waar ze jaarlijks broedt.
 
-
 ### Algemenere soorten
 
 Figuur \@ref(fig:110-figuur4) toont de evolutie van vijf algemene soorten in frequent getelde ingerichte Sigmagebieden.
 
-De sterk stijgende trend van de Rietzanger lijkt te plafoneren in de onderzochte gebieden.
-Sinds 2022 broeden in de beperkte set van natuurgebieden meer dan dubbel zoveel rietzangers als het tot doel gestelde aantal voor de hele Scheldevallei (IHD = 170).
+De sterk stijgende trend van de Rietzanger lijkt te plafoneren in de onderzochte gebieden. Sinds 2022 broeden in de beperkte set van natuurgebieden meer dan dubbel zoveel rietzangers als het tot doel gestelde aantal voor de hele Scheldevallei (IHD = 170).
 
 Ook voor de blauwborst komt sinds 2017 meer dan 50% van de IHD voor in deze kleine subset van gebieden. In de volledige dataset zitten voor 2024 404 territoria, bijna 75% van de IHD. Deze soort haalt in het volledige IHD-gebied met grote waarschijnlijkheid het tot doel gestelde aantal (550 territoria).
 
 Dit geldt met zekerheid ook voor dodaars, alhoewel die de laatste jaren in de onderzochte gebieden geen toename vertoont. Met 75 territoria in de volledige dataset wordt duidelijk dat de doelstelling voor deze soort (50 territoria) in 2024 duidelijk gehaald is.
 
-Slobeend kende een sterke toename in de haven in de periode 2010 - 2015 tot 30 territoria.De laatste jaren daalde het aantal territoria er tot een 10-tal. In het natte voorjaar van 2024 stegen de aantallen opnieuw tot 27 territoria, de meeste in de tegen grondpredatoren beschermde Doelpolder-noord.
-In de meegtelde Sigmagebieden bleef het aantal nagenoeg constant t.o.v. 20223. De som van alle gekende territoria (79) blijft ook in 2024 ruim onder het doel (IHD = 150).
+Slobeend kende een sterke toename in de haven in de periode 2010 - 2015 tot 30 territoria.De laatste jaren daalde het aantal territoria er tot een 10-tal. In het natte voorjaar van 2024 stegen de aantallen opnieuw tot 27 territoria, de meeste in de tegen grondpredatoren beschermde Doelpolder-noord. In de meegtelde Sigmagebieden bleef het aantal nagenoeg constant t.o.v. 20223. De som van alle gekende territoria (79) blijft ook in 2024 ruim onder het doel (IHD = 150).
 
-Scholekster broedt tegenwoordig vooral op akkers in het landbouwgebied.
-In de onderzochte natuurontwikkelingsgebieden van het Sigmaplan komt maar een klein aantal scholeksters tot broeden. Jaarlijks zijn er tussen 10 en 20 territoria. Maar ook voor deze soort lijken predatiewerende maatregelen gunstig uit te pakken. In Doelpolder-noord stijgt het aantal territoria gestaag van 8 in 2020 tot 26 in 2024.
+Scholekster broedt tegenwoordig vooral op akkers in het landbouwgebied. In de onderzochte natuurontwikkelingsgebieden van het Sigmaplan komt maar een klein aantal scholeksters tot broeden. Jaarlijks zijn er tussen 10 en 20 territoria. Maar ook voor deze soort lijken predatiewerende maatregelen gunstig uit te pakken. In Doelpolder-noord stijgt het aantal territoria gestaag van 8 in 2020 tot 26 in 2024.
 
 <br/>
 
@@ -249,166 +216,64 @@ knitr::include_graphics(paste0(pad_figuren, "110_fig4.jpg"))
 
 ## Conclusie
 
-Een aantal broedvogelsoorten haalt in de laatste jaren het tot doel gestelde populatieniveau. De toename van het aantal insectenetende rietvogels blauwborst en rietzanger en de watervogels dodaars en zomertaing in de natuurontwikkelingsgebieden van het Sigmaplan heeft hieraan zeker bijgedragen. Voor zomertaling zou het doel in 2022 en 2023 niet gehaald zijn zonder de tijdelijke inrichting van Grote en Kleine Wal in Hamme als ondiepe plas en moeras. In 2024 was het leefgebied in Wal verdwenen, maar door het natte voorjaar was het totaal aantal zomertalingterritoria in 2024 zelfs nog hoger dan voorgaande jaren.
-De insectenetende rietvogels baardman en snor, en de visetende lepelaar en woudaap vertonen de laatste jaren een  positieve trend.  
-De soorten van schrale graslandcomplexen kwartelkoning en paapje blijven afwezig. Herstel van hun leefgebied vergt bodemverschraling van voormalige landbouwgronden en zal (veel) meer tijd in beslag nemen dan de inrichting van moeras- en getijdengebieden.  
-De insectenetende grote karekiet, van de rietvogeltjes het sterkst afhankelijk van waterriet, kwam in 2024 niet voor. Andere soorten van grootschalige moerasgebieden, de visetende kwak en roerdomp waren in 2024 met resp. 2 en 1 territorium net als in de voorgaande jaren in zeer beperkt aantal aanwezig. Purperreiger komt ng steeds niet tot broeden. 
-De weidevogels vertonen over het volledige studiegebied geen duidelijke trend. In het Noordelijk gebied treedt wel populatieherstel op als gevolg van predatiewerende maatregelen.  
+Een aantal broedvogelsoorten haalt in de laatste jaren het tot doel gestelde populatieniveau. De toename van het aantal insectenetende rietvogels blauwborst en rietzanger en de watervogels dodaars en zomertaing in de natuurontwikkelingsgebieden van het Sigmaplan heeft hieraan zeker bijgedragen. Voor zomertaling zou het doel in 2022 en 2023 niet gehaald zijn zonder de tijdelijke inrichting van Grote en Kleine Wal in Hamme als ondiepe plas en moeras. In 2024 was het leefgebied in Wal verdwenen, maar door het natte voorjaar was het totaal aantal zomertalingterritoria in 2024 zelfs nog hoger dan voorgaande jaren. De insectenetende rietvogels baardman en snor, en de visetende lepelaar en woudaap vertonen de laatste jaren een positieve trend.\
+De soorten van schrale graslandcomplexen kwartelkoning en paapje blijven afwezig. Herstel van hun leefgebied vergt bodemverschraling van voormalige landbouwgronden en zal (veel) meer tijd in beslag nemen dan de inrichting van moeras- en getijdengebieden.\
+De insectenetende grote karekiet, van de rietvogeltjes het sterkst afhankelijk van waterriet, kwam in 2024 niet voor. Andere soorten van grootschalige moerasgebieden, de visetende kwak en roerdomp waren in 2024 met resp. 2 en 1 territorium net als in de voorgaande jaren in zeer beperkt aantal aanwezig. Purperreiger komt ng steeds niet tot broeden. De weidevogels vertonen over het volledige studiegebied geen duidelijke trend. In het Noordelijk gebied treedt wel populatieherstel op als gevolg van predatiewerende maatregelen.
 
 ## Referenties
 
-Adriaensen F., Van Damme S., Van den Bergh E., Van Hove D., Brys R., Cox T., Jacobs S., Konings P., Maes J., Maris T.
-et al. (2005).
-Instandhoudingsdoelstellingen Schelde-estuarium.
-Antwerpen: Antwerpen U.
-05-R82.
-249 p.
+Adriaensen F., Van Damme S., Van den Bergh E., Van Hove D., Brys R., Cox T., Jacobs S., Konings P., Maes J., Maris T. et al. (2005). Instandhoudingsdoelstellingen Schelde-estuarium. Antwerpen: Antwerpen U. 05-R82. 249 p.
 
-Anoniem (2014).
-Jaarverslag 2013.
-Beheercommissie Natuur Kruibeke -- Bazel -- Rupelmonde, Gent.
+Anoniem (2014). Jaarverslag 2013. Beheercommissie Natuur Kruibeke -- Bazel -- Rupelmonde, Gent.
 
-Anselin A.
-(2010).
-Enkele resultaten van het project Bijzondere Broedvogels voor 2008 en 2009.
-Vogelnieuws : ornithologische nieuwsbrief van het Instituut voor Natuur- en Bosonderzoek 14(Brussel).
+Anselin A. (2010). Enkele resultaten van het project Bijzondere Broedvogels voor 2008 en 2009. Vogelnieuws : ornithologische nieuwsbrief van het Instituut voor Natuur- en Bosonderzoek 14(Brussel).
 
-Anselin A., Devos K., Kuijken E.
-(1998).
-Kolonievogels en zeldzame broedvogels in Vlaanderen in 1995 en 1996 = colonial and rare breeding birds in flanders (belgium) in 1995 and 1996.
+Anselin A., Devos K., Kuijken E. (1998). Kolonievogels en zeldzame broedvogels in Vlaanderen in 1995 en 1996 = colonial and rare breeding birds in flanders (belgium) in 1995 and 1996.
 
-Claus, P.
-(2006).
-De broedvogels van de Kalkense meersen. Niet gepubliceerd.
+Claus, P. (2006). De broedvogels van de Kalkense meersen. Niet gepubliceerd.
 
-Daniëls F., Deduytsche B., Dillen A., Maes T., Maris T., Nachtergale L., Nollet S., Spanoghe G., Vanden Abeele L., Van den Bergh E.
-et al. (2013).
-Jaarverslag 2012 Beheercommissie Kruibeke-Bazel-Rupelmonde.
-Gent: Beheercommissie Kruibeke-Bazel-Rupelmonde.
+Daniëls F., Deduytsche B., Dillen A., Maes T., Maris T., Nachtergale L., Nollet S., Spanoghe G., Vanden Abeele L., Van den Bergh E. et al. (2013). Jaarverslag 2012 Beheercommissie Kruibeke-Bazel-Rupelmonde. Gent: Beheercommissie Kruibeke-Bazel-Rupelmonde.
 
-De Jonghe G., Verschueren W.
-(2017).
-Blokkersdijk E-131 (Antwerpen Linkeroever).
-Tweede monitoringrapport.
-Antwerpen: Natuurpunt Waasland vzw Kern Antwerpen Linkeroever.
+De Jonghe G., Verschueren W. (2017). Blokkersdijk E-131 (Antwerpen Linkeroever). Tweede monitoringrapport. Antwerpen: Natuurpunt Waasland vzw Kern Antwerpen Linkeroever.
 
-Gyselings R., Spanoghe G., Hessel K., Mertens W., Vandevoorde B., Van den Bergh E.
-(2009).
-Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het zesde jaar : bijlage 9.8 bij het zesde jaarverslag van de Beheercommissie Natuur Linkerscheldeoever.
-Brussel.
-2009.3.
+Gyselings R., Spanoghe G., Hessel K., Mertens W., Vandevoorde B., Van den Bergh E. (2009). Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het zesde jaar : bijlage 9.8 bij het zesde jaarverslag van de Beheercommissie Natuur Linkerscheldeoever. Brussel. 2009.3.
 
-Gyselings R., Spanoghe G., Van den Bergh E.
-(2004).
-Monitoring van het linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het tweede jaar.
-Brussel.
-2004.19.
+Gyselings R., Spanoghe G., Van den Bergh E. (2004). Monitoring van het linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het tweede jaar. Brussel. 2004.19.
 
-Gyselings R., Spanoghe G., Van den Bergh E.
-(2007).
-Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het vierde jaar : bijlage 9.10 van het vierde jaarverslag van de Beheercommissie natuurcompensaties Linkerscheldeoevergebied.
-Brussel.
-2007.2.
+Gyselings R., Spanoghe G., Van den Bergh E. (2007). Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het vierde jaar : bijlage 9.10 van het vierde jaarverslag van de Beheercommissie natuurcompensaties Linkerscheldeoevergebied. Brussel. 2007.2.
 
-Gyselings R., Spanoghe G., Van den Bergh E., Verbelen D., Benoy B., Vogels B., Willems W.
-(2011).
-Monitoring natuur havengebied en omgeving Antwerpen Rechteroever.
-Brussel.
-2010.15.
+Gyselings R., Spanoghe G., Van den Bergh E., Verbelen D., Benoy B., Vogels B., Willems W. (2011). Monitoring natuur havengebied en omgeving Antwerpen Rechteroever. Brussel. 2010.15.
 
-Gyselings R., Spanoghe G., Van den Bergh E., Verbelen D., Benoy L., Vogels B., Lefevre A.
-(2013).
-Monitoring natuur havengebied en omgeving Antwerpen Rechteroever, resultaten van het monitoringsjaar 2012.
-Brussel: Instituut voor Natuur- en Bosonderzoek.
+Gyselings R., Spanoghe G., Van den Bergh E., Verbelen D., Benoy L., Vogels B., Lefevre A. (2013). Monitoring natuur havengebied en omgeving Antwerpen Rechteroever, resultaten van het monitoringsjaar 2012. Brussel: Instituut voor Natuur- en Bosonderzoek.
 
-Mertens W., Hessel K., Spanoghe G., Van Lierop F.
-(in prep.).
-T0-rapportage van de monitoring van de 2010-gebieden van het geactualiseerde Sigmaplan.
-Broedvogels.
-Brussel: Instituut voor Natuur- en Bosonderzoek.
+Mertens W., Hessel K., Spanoghe G., Van Lierop F. (in prep.). T0-rapportage van de monitoring van de 2010-gebieden van het geactualiseerde Sigmaplan. Broedvogels. Brussel: Instituut voor Natuur- en Bosonderzoek.
 
-Gyselings R., Spanoghe G., Van den Bergh E., Verbelen D., Benoy L., Lefevre, A., Willems W.
-(2014).
-Monitoring natuur havengebied en omgeving Antwerpen Rechteroever -- Resultaten 2013.
-Brussel.
-2014.6392398.
+Gyselings R., Spanoghe G., Van den Bergh E., Verbelen D., Benoy L., Lefevre, A., Willems W. (2014). Monitoring natuur havengebied en omgeving Antwerpen Rechteroever -- Resultaten 2013. Brussel. 2014.6392398.
 
-Schepers R.
-(2010).
-De Grutto (Limosa limosa) in de Kalkense Meersen.
-Historiek, broedsucces en toekomstperspectieven.
-Gent: Universiteit Gent.
-63 p.
-Spanoghe G., Gyselings R., Van den Bergh E.
-(2003).
-Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het eerste jaar.
-Brussel.
-2003.15.
+Schepers R. (2010). De Grutto (Limosa limosa) in de Kalkense Meersen. Historiek, broedsucces en toekomstperspectieven. Gent: Universiteit Gent. 63 p. Spanoghe G., Gyselings R., Van den Bergh E. (2003). Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het eerste jaar. Brussel. 2003.15.
 
-Spanoghe G., Gyselings R., Van den Bergh E.
-(2006).
-Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het derde jaar.
-Brussel.
-2006.1.
+Spanoghe G., Gyselings R., Van den Bergh E. (2006). Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het derde jaar. Brussel. 2006.1.
 
-Spanoghe G., Gyselings R., Van den Bergh E.
-(2008).
-Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het vijfde jaar : bijlage 9.10 bij het vijfde jaarverslag van de Beheercommissie Natuurcompensatie Linkerscheldeoevergebied.
-Brussel.
-2008.14.
+Spanoghe G., Gyselings R., Van den Bergh E. (2008). Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het vijfde jaar : bijlage 9.10 bij het vijfde jaarverslag van de Beheercommissie Natuurcompensatie Linkerscheldeoevergebied. Brussel. 2008.14.
 
-Spanoghe G., Gyselings R., Vandevoorde B., Van den Bergh E., Hessel K., Mertens W.
-(2010).
-Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het zevende jaar : bijlage 9.8 bij het zevende jaarverslag van de Beheercommissie Natuur Linkerscheldeoever.
-Brussel.
-2010.8.
+Spanoghe G., Gyselings R., Vandevoorde B., Van den Bergh E., Hessel K., Mertens W. (2010). Monitoring van het Linkerscheldeoevergebied in uitvoering van de resolutie van het Vlaams Parlement van 20 februari 2002: resultaten van het zevende jaar : bijlage 9.8 bij het zevende jaarverslag van de Beheercommissie Natuur Linkerscheldeoever. Brussel. 2010.8.
 
 Van den Bergh E., van Damme S. , Graveland J. , de Jong D.J. , Baten I., Meire P. (2003). Studierapport natuurontwikkelingsmaatregelen ten behoeve van de Ontwikkelingsschets 2010 voor het Schelde-estuarium. Werkdocument/RIKZ/OS/2003.825x. Instituut voor Natuurbehoud, Rijksinstituut voor Kust en Zee, Universitaire Instelling Antwerpen-Vakgroep Ecosysteembeheer. [link](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://www.commissiemer.nl/docs/mer/p17/p1728/1728-08studierapport.pdf)
 
-Van Dijk A.J., Boele A.
-(2011).
-Handleiding SOVON Broedvogelonderzoek.
-Nijmegen, Nederland: SOVON Vogelonderzoek.
+Van Dijk A.J., Boele A. (2011). Handleiding SOVON Broedvogelonderzoek. Nijmegen, Nederland: SOVON Vogelonderzoek.
 
-Van Ginhove, W.
-(2008).
-Broedvogelinventarisatie Potpolder 2006-2007.
-(weblink)[<https://scheldeschorren.be/wp/wp-content/uploads/2015/07/c-Broedvogel-inventarisatie-Potpolder-2006-2007.pdf>]
+Van Ginhove, W. (2008). Broedvogelinventarisatie Potpolder 2006-2007. (weblink)[<https://scheldeschorren.be/wp/wp-content/uploads/2015/07/c-Broedvogel-inventarisatie-Potpolder-2006-2007.pdf>]
 
-Vergeer J.W., van Dijk A.J., Boele A., van Bruggen J.
-& Hustings F.
-2016.
-Handleiding Sovon broedvogelonderzoek: Broedvogel Monitoring Project en Kolonievogels.
-Sovon Vogelonderzoek Nederland, Nijmegen.
-(weblink)[<https://www.sovon.nl/sites/default/files/doc/Handleiding_Broedvogels_2016.pdf>]
+Vergeer J.W., van Dijk A.J., Boele A., van Bruggen J. & Hustings F. 2016. Handleiding Sovon broedvogelonderzoek: Broedvogel Monitoring Project en Kolonievogels. Sovon Vogelonderzoek Nederland, Nijmegen. (weblink)[<https://www.sovon.nl/sites/default/files/doc/Handleiding_Broedvogels_2016.pdf>]
 
-Vermeersch G., Anselin A.
-(2009).
-Broedvogels in Vlaanderen in 2006-2007.
-Recente status en trends van Bijzondere Broedvogels en soorten van de Vlaamse Rode Lijst en/of Bijlage I van de Europese Vogelrichtlijn.
-Brussels, Belgium.
-2009(3).
+Vermeersch G., Anselin A. (2009). Broedvogels in Vlaanderen in 2006-2007. Recente status en trends van Bijzondere Broedvogels en soorten van de Vlaamse Rode Lijst en/of Bijlage I van de Europese Vogelrichtlijn. Brussels, Belgium. 2009(3).
 
-Vermeersch G., Anselin A., Devos K.
-(2006).
-Bijzondere broedvogels in Vlaanderen in de periode 1994-2005 : populatietrends en recente status van zeldzame, kolonievormende en exotische broedvogels in Vlaanderen.
-Brussels, Belgium.
-2006(2).
-1-64 p.
+Vermeersch G., Anselin A., Devos K. (2006). Bijzondere broedvogels in Vlaanderen in de periode 1994-2005 : populatietrends en recente status van zeldzame, kolonievormende en exotische broedvogels in Vlaanderen. Brussels, Belgium. 2006(2). 1-64 p.
 
-Vermeersch G., Anselin A., Devos K., Herremans M., Stevens J., Gabriëls J., Van Der Krieken B.
-(2004).
-Atlas van de Vlaamse broedvogels : 2000-2002.
+Vermeersch G., Anselin A., Devos K., Herremans M., Stevens J., Gabriëls J., Van Der Krieken B. (2004). Atlas van de Vlaamse broedvogels : 2000-2002.
 
 <!--# moeten we deze studie niet vermelden? -->
 
-Vochten T., Lenaerts B.
-& Baetens J.
-(2024).
-Soortbeschermingsprogramma Antwerpse Haven Monitoringsrapport 2023.
-Natuurpunt.
+Vochten T., Lenaerts B. & Baetens J. (2024). Soortbeschermingsprogramma Antwerpse Haven Monitoringsrapport 2023. Natuurpunt.
 
-Weyn K., Gyselings R., Spanoghe G.
-(2013).
-Jaarverslag 2012 Beheercommissie Natuur Linkerscheldeoever.
-Kallo: Beheercommissie Natuur Linkerscheldeoever.
+Weyn K., Gyselings R., Spanoghe G. (2013). Jaarverslag 2012 Beheercommissie Natuur Linkerscheldeoever. Kallo: Beheercommissie Natuur Linkerscheldeoever.
