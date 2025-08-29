@@ -35,6 +35,9 @@ library(kableExtra)
 # library(magick)
 # library(webshot)
 library(rprojroot)
+library(conflicted)
+conflict_prefer("filter", "dplyr")
+
 ```
 
 ```{r 100-pad}
@@ -91,6 +94,36 @@ WV_DB <-
          maand = teldatum %>% 
            ymd() %>% 
            month())
+# vroegste en meest recente telseizoen
+vroegste_telseizoen <- 
+  WV_DB %>% 
+  pull(telseizoen) %>% 
+  unique() %>% 
+  sort() %>% 
+  first()
+
+laatste_telseizoen <- 
+  WV_DB %>% 
+  pull(telseizoen) %>% 
+  unique() %>% 
+  sort() %>% 
+  last()
+
+
+# vroegste en meest recente jaar
+vroegste_jaar <- 
+  WV_DB %>% 
+  pull(jaar) %>% 
+  unique() %>% 
+  sort() %>% 
+  first()
+
+laatste_jaar <- 
+  WV_DB %>% 
+  pull(jaar) %>% 
+  unique() %>% 
+  sort() %>% 
+  last()
 
 
 ### selecteren van de tellingen in de relevante telgebieden NOPzoneplus
@@ -276,15 +309,15 @@ tabel_ontbrekendedata %>%
 
 *Winterkarakteristiek telseizoen 2024/25*:
 
-De winter van 2024/25 [^100_watervogels-1] was klimatologisch nat.
+De winter van 2024/25 was klimatologisch nat.
 Vooral in januari was er meer dan gemiddeld neerslag (waaronder ook enkele cm sneeuw).
 Er was één langere koude periode van 3 tot 22 januari 2025.
 Daarna volgde net zoals in 2023/24 een zeer warme (eind) februari, tot meer dan 19°C.
-In totaal telde de winter 5 sneeuwdagen in januari en in totaal 4 vriesdagen (steeds min \< 0°C).
+In totaal telde de winter 5 sneeuwdagen in januari en in totaal 4 vriesdagen (steeds min < 0°C).
 Grotere waterpartijen vroren niet dicht in de Scheldevallei.
 De winter kende heel weinig zonnige dagen en een hoge gemiddelde windsnelheid.
 
-[^100_watervogels-1]: KMI winter `r laatste_jaar` (dec `r as.numeric(laatste_jaar) - 1` - feb `r laatste_jaar`) \~= wintervogeljaar (telseizoen `r laatste_telseizoen`).
+<!-- [^100_watervogels-1]: KMI winter \`r laatste_jaar\` (dec \`r as.numeric(laatste_jaar) - 1\` - feb \`r laatste_jaar\`) ≈ wintervogeljaar (telseizoen \`r laatste_telseizoen\`). -->
 
 <!--  | -->
 
@@ -325,76 +358,6 @@ tabel_teltrajecten %>%
 ```
 
 <br/>
-
-<!-- <!--  | -->
-
---\>
-
-<!-- <!-- -|- -->
-
---\>
-
-<!-- <!-- : Geselecteerde estuariene gebieden opgenomen in de exploratieve data-analyse (ifv IHD) en in de data-aanlevering. {#tbl:100-tabel-estuarienesigmagebieden} -->
-
---\>
-
-<!-- ```{r 100-tabel-estuarienesigmagebieden} -->
-
-<!-- tabel_sigma_estuarien <-  -->
-
-<!--   read_delim(paste0(pad_tabellen, "gebiedsgroepenSigma_zeeschelde.csv"), -->
-
-<!--               delim = ";") -->
-
-<!-- tabel_sigma_estuarien <- tabel_sigma_estuarien %>%  -->
-
-<!--   dplyr::filter(gebiedsgroep == "GGG" | gebiedsgroep == "Ontpoldering") %>%  -->
-
-<!--   select(-c(gebiedsgroeptype_code, gebiedsgroeptype, gebiedsgroep_code)) %>%  -->
-
-<!--   mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient","Oligohalien","Zoet lang verblijf","Zoet kort verblijf"))) %>%  -->
-
-<!--   arrange(niveau3) -->
-
-<!-- cap_estuarienesigmagebieden <- "Geselecteerde estuariene gebieden opgenomen in de exploratieve data-analyse (ifv IHD) en in de data-aanlevering. Ontpoldering Prosperpolder Noord (sinds okt. 2022) ontbreekt nog als telgebied in databank" -->
-
-<!-- footnote_text <- "De watervogels in de Fasseitpolder worden niet afzonderlijk geteld en zijn vervat in het wetland-telgebied GOG Bazelse Polder Zuid" -->
-
-<!-- tabel_sigma_estuarien %>% -->
-
-<!--   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% -->
-
-<!--   mutate(across(everything(), ~cell_spec(., color = "black"))) %>% -->
-
-<!--   {.[3,4] <- paste0(.[3,4], -->
-
-<!--                     footnote_marker_number(1)) -->
-
-<!--   .} %>% -->
-
-<!--   knitr::kable( -->
-
-<!--     #caption = cap_estuarienesigmagebieden, -->
-
-<!--                # "html", -->
-
-<!--                booktabs = TRUE, -->
-
-<!--                escape = FALSE, -->
-
-<!--                caption = cap_estuarienesigmagebieden) %>% -->
-
-<!--   kableExtra::kable_styling(latex_options = c("scale_down"), -->
-
-<!--                 font_size = 15) %>% -->
-
-<!--   kableExtra::kable_styling(latex_options = c("scale_down")) %>% -->
-
-<!--   footnote(number = footnote_text,  -->
-
-<!--            escape = FALSE, -->
-
-<!--            threeparttable = TRUE) -->
 
 <!-- ``` -->
 
@@ -437,7 +400,9 @@ Er werd gekozen om 3 trends te berekenen:
 -   korte termijn (laatste 6 seizoenen uit evaluatieperiode).
 
     De evaluatie vindt plaats op basis van het wintertelseizoen (oktober tot maart).
-    Er wordt geen rtrim-index berekend voor de opdeling van de doelsoorten per voedselgroep omdat alle S-IHDsoorten als opportunistische omnivoren worden beschouwd in de Zeeschelde. Er wordt ook geen samengestelde indexbereking gemaakt op basis van de 5 soorten. Dit levert geen bijkomende informatie op.
+    Er wordt geen rtrim-index berekend voor de opdeling van de doelsoorten per voedselgroep omdat alle S-IHDsoorten als opportunistische omnivoren worden beschouwd in de Zeeschelde.
+    Er wordt ook geen samengestelde indexbereking gemaakt op basis van de 5 soorten.
+    Dit levert geen bijkomende informatie op.
 
 Trend-wintermax-index (extra - niet in EMSE)
 
@@ -459,8 +424,7 @@ Dit is niet merkbaar langsheen de zijrivieren (Figuur \@ref(fig:100-figuur-maand
 De toegenomen aantallen op de Zeeschelde zijn het gevolg van nieuwe ontpolderingsgebieden die zeer veel vogels aantrekken (Hedwige - Prosperpolder & Groot Schoor Hamme).
 
 De proportionele verdeling van de watervogels over de verschillende zones van de Zeeschelde (zie in Figuur 1.1) toont na de sterke afname van de watervogels in winter 2006/07, vooral in de oligohaliene zone, een geleidelijke toename van het aandeel vogels dat verblijft in de sterke saliniteitsgradiënt (Beneden-Zeeschelde) en Zeeschelde I (zoet kort verblijf).
-De vogelaantallen namen verhoudingsgewijs in 2022 sterk toe in de sterke saliniteitsgradiënt (Beneden-Zeeschelde) (Figuur \@ref(fig:100-figuur-verhouding-aantallen)).
-
+De vogelaantallen namen verhoudingsgewijs in winterseizoen 2023 en 2024 sterk toe in de zone zoet lang (Figuur \@ref(fig:100-figuur-verhouding-aantallen)).
 
 ```{r 100-figuur-maandelijkse-totalen-winter-Zeeschelde, fig.cap=cap_maandelijkse_totalen,out.height="40%"}
 
@@ -531,13 +495,23 @@ tabel_rtrim %>%
 
 <br/>
 
-**Trendindex wintermaximum**
-Figuur \@ref(fig:100-figuur-index-niveau2) toont de trendindex op middellange termijn. Een globaal dalende trend is zichtbaar voor de Zeeschelde en de zijrivieren tot 2019. De winterinflux van 2020 resulteerde in een duidelijke piek. Sinds winterseizoen 2023 is er een hogere winterindex. Beschouwen we de winterindex in meer detail op niveau 3 (saliniteitszones) (Figuur \@ref(fig:100-figuur-index-niveau3)) dan valt op dat winterseizoen 2022/23 een absoluut dieptepunt was, vooral in de zone zoet lang. Dit komt sterk overeen met lage gemiddelde biomassa aan macrobenthos maar niet uitzonderlijk laag sinds 2008. De index nam sterk toe in deze zone onder impuls van de ontpoldering Groot Schoor Hamme die heel veel overwinterende watervogels aantrok die ook tijdelijk op de Zeeschelde verblijven tijdens laag water. Positieve indexverandering is er ook in de zone met sterke saliniteitsgradiënt (impuls Prosperpolder-Hedwige ontpoldering) en in het Oligohalien. Deze trends correleren ook met een algemeen toenemende biomassa aan bodemdieren in 2023 (zie hoofdstuk macrozoöbenthos).
+**Trendindex wintermaximum** Figuur \@ref(fig:100-figuur-index-niveau2) toont de trendindex op middellange termijn.
+Een globaal dalende trend is zichtbaar voor de Zeeschelde en de zijrivieren tot 2019.
+De winterinflux van 2020 resulteerde in een duidelijke piek.
+Sinds winterseizoen 2023 is er een hogere winterindex.
+Beschouwen we de winterindex in meer detail op niveau 3 (saliniteitszones) (Figuur \@ref(fig:100-figuur-index-niveau3)) dan valt op dat winterseizoen 2022/23 een absoluut dieptepunt was, vooral in de zone zoet lang.
+Dit komt sterk overeen met lage gemiddelde biomassa aan macrobenthos maar niet uitzonderlijk laag sinds 2008.
+De index nam sterk toe in deze zone onder impuls van de ontpoldering Groot Schoor Hamme die heel veel overwinterende watervogels aantrok die ook tijdelijk op de Zeeschelde verblijven tijdens laag water.
+Positieve indexverandering is er ook in de zone met sterke saliniteitsgradiënt (impuls Prosperpolder-Hedwige ontpoldering) en in het Oligohalien.
+Deze trends correleren ook met een algemeen toenemende biomassa aan bodemdieren in 2023 (zie hoofdstuk macrozoöbenthos).
 
-De watervogels op de **Rupel** volgen sinds 2009 een dalende trend met een absoluut dieptepunt in het winterseizoen 2019. Er lijkt ook hier de voorbije 2 winters een beperkte verbetering zichtbaar. 
+De watervogels op de **Rupel** volgen sinds 2009 een dalende trend met een absoluut dieptepunt in het winterseizoen 2019.
+Er lijkt ook hier de voorbije 2 winters een beperkte verbetering zichtbaar.
 
-De trends in de **Getijdedurme** tonen lagere aantallen gedurende de baggerperiode en hogere aantallen in daaropvolgend sterke sedimentatieperiode (2013-2017). Daarna namen de aantallen af om de laatste jaren opnieuw wat te stijgen.
-De laatste winters (2021-2023) werden hoge wintermaxima geteld in het Klein Broek en Meulendijkbroek langsheen de Durme (tussentijds beheer) rond de 800- 1000 ex.. Dit is gecorreleert met de natuurontwikkeling in de Durmevallei (Weymeerbroek en bijvoorbeeld de ontpoldering Klein Broek).
+De trends in de **Getijdedurme** tonen lagere aantallen gedurende de baggerperiode en hogere aantallen in daaropvolgend sterke sedimentatieperiode (2013-2017).
+Daarna namen de aantallen af om de laatste jaren opnieuw wat te stijgen.
+De laatste winters (2021-2023) werden hoge wintermaxima geteld in het Klein Broek en Meulendijkbroek langsheen de Durme (tussentijds beheer) rond de 800- 1000 ex..
+Dit is gecorreleert met de natuurontwikkeling in de Durmevallei (Weymeerbroek en bijvoorbeeld de ontpoldering Klein Broek).
 
 **Zoet zijrivier** omvat voor de watervogelevaluatie de **Zenne** en **Dijle**.
 Deze waren tot 2007 nagenoeg 'vogeldood'.
@@ -572,18 +546,24 @@ knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantall
 
 **Trofische groepen**
 
-De index berekening op basis van het wintermaximum per trofische groep op niveau 2 Zeeschelde is weergegeven in Figuur \@ref(fig:100-figuur-aantallen-trofische-groep-index).
+De index berekening op basis van het wintermaximum per trofische groep op niveau 2 Zeeschelde is weergegeven in Figuur \@ref(fig:100-figuur-aantallen-trofische-groep-indexZS).
 In winter `r laatste_telseizoen` is er voor het vijfde jaar op rij een stijging in het aantal benthivore overwinteraars (voornamelijk steltlopers) in de zone met sterke saliniteitsgradiënt.
-Dit is te wijten aan de hogere aantallen van vooral scholekster en tureluur.
-Minstens de scholekster lijkt een nieuwe voedselbron aan te boren - brakwaterkorfschelp *Potamocorbula amurensis* - op de lage slikzone.
-Het gemiddeld aantal omnivore soorten (vooral eenden en meeuwen) is afnemend in alle zones behalve in de zone met een sterke saliniteitsgradiënt, waar vooral de kokmeeuw toenam de voorbije periode.
-Er is een sterke daling van omnivoren tot 2022 in zone Zoet lang.
-Dit is vooral te wijten aan een sterke afname van de wilde eend (Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten)). De laatste jaren is er een herstel door hogere aantallen bergeend en wintertaling (zie boven vooral terhoogte ontpoldering Groot Schoor Hamme)
-Het gemiddeld aantal visetende vogels in Zeeschelde II (vooral aalscholver) varieert met de jaren, vermoedelijk in respons op de beschikbare visbiomassa. De laate twee jaar (2023/24- 2024/25) zijn er duidelijk minder viseters aanwezig.
+Dit is te wijten aan de hogere aantallen steltlopers (Figuur \@ref(fig:100-figuur-aantallen-steltlopers)).
+Minstens de scholekster lijkt een nieuwe voedselbron aan te boren (veldobservaties) - brakwaterkorfschelp *Potamocorbula amurensis* - op de lage slikzone.
+Het gemiddeld aantal omnivore soorten (vooral eenden en meeuwen) is afnemend in alle zones behalve in de zone met een sterke saliniteitsgradiënt en zoet lang.
+Er was een sterke daling van omnivoren tot 2022 in zone Zoet lang.
+Dit is vooral te wijten aan een sterke afname van de wilde eend (Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten)).
+De laatste jaren is er een herstel door hogere aantallen bergeend en wintertaling (zie boven, vooral terhoogte ontpoldering Groot Schoor Hamme) Het gemiddeld aantal visetende vogels in Zeeschelde zoet lange zone varieert met de jaren, vermoedelijk in respons op de beschikbare visbiomassa.
+De laate twee jaar (2023/24- 2024/25) zijn er duidelijk minder viseters aanwezig.
 
-Met het rtrim-package is het mogelijk om de significantie van de (linaire) trends te bepalen. De resultaten zijn weergegeven in (Tabel \@ref(tab:100-tabel-rtrim-analyse-trofische-groepen)). Over de lange termijn zijn alle groepen behalve de viseters significant matig afnemend. Focussen we op de recente periode dan is er een significante matige toename van benthivore (steltlopers) soorten. Dit is vooral onder impuls van de ontwikkelingen in de zone sterke saliniteitsgradiënt. De overige groepen vertonen over laatste 6 jaar bekeken geen duidelijke trends.
+Met het rtrim-package is het mogelijk om de significantie van de (linaire) trends te bepalen.
+De resultaten zijn weergegeven in (Tabel \@ref(tab:100-tabel-rtrim-analyse-trofische-groepen)).
+Over de lange termijn zijn alle groepen behalve de viseters significant matig afnemend.
+Focussen we op de recente periode dan is er een significante matige toename van benthivore (steltlopers) soorten.
+Dit is vooral onder impuls van de ontwikkelingen in de zone sterke saliniteitsgradiënt.
+De overige groepen vertonen over laatste 6 jaar bekeken geen duidelijke trends.
 
-<!-- : R-trim resultaten trofische groepen. {#tbl:100-tabel-rtrim analyse trofische groepen} -->
+<!-- : R-trim resultaten trofische groepen. {#tbl:100-tabel-rtrim-analyse-trofische-groepen} -->
 
 ```{r 100-tabel-rtrim-analyse-trofische-groepen}
 
@@ -614,20 +594,23 @@ tabel_rtrim_trof %>%
 
 De zone met sterke saliniteitsgradiënt heeft het hoogst aantal soorten die meer dan 5% van het totaal omvatten.
 Dit vertaalt zich ook in een hogere Shannon diversiteit (Figuur \@ref(fig:100-figuur-ShannonDiversity-metmeeuwen)).
-De diversiteit is het hoogst en stabiel in de zone met sterke saliniteitsgradiënt en de Rupel. Hoewel de diversiteitscore sterk toenam in de zone zoet lang en steeg tot de hoogste waarde sinds 2001 in de oligohaliene zone.
+De diversiteit is het hoogst en stabiel in de zone met sterke saliniteitsgradiënt en de Rupel.
+Hoewel de diversiteitscore sterk toenam in de zone zoet lang en steeg tot de hoogste waarde sinds 2001 in de oligohaliene zone.
 De Durme heeft een lage diversiteit aan overwinterende watervogels.
 
 Van een aantal algemenere soorten worden de trends in de periode 2010-`r laatste_jaar` getoond in Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten) en Figuur \@ref(fig:100-figuur-aantallen-steltlopers).
 De bergeend neemt duidelijk toe in de zone met sterke saliniteitsgradiënt en zone zoet lang.
 De krakeend nam de laatste twee telseizoenen sterk toe in zoet lang (effect Groot Schoor Hamme).
-Steltlopersoorten nemen bijna allemaal toe maar voor de wulp tekent zich een negatieve trend af. Het moet bekeken worden of dit komt omdat deze soort vooral in de nieuwe gebieden blijft.
+Steltlopersoorten nemen bijna allemaal toe maar voor de wulp tekent zich een negatieve trend af.
+Het moet bekeken worden of dit komt omdat deze soort vooral in de nieuwe gebieden blijft.
 
 In de zone met sterke saliniteitsgradiënt is er een toename in bodemdierbiomassa vastgesteld, voornamelijk door een toename van bivalven (zie hoofdstuk macrozoöbenthos).
 
 **Exoten**
 
 Er zijn 11 exoten of verwilderde soorten die meer dan 30 keer werden waargenomen sinds de start van de tellingen langsheen de Zeeschelde en zijrivieren.
-Het procentueel aandeel is klein. De totale aantallen zijn licht stijgend. 
+Het procentueel aandeel is klein.
+De totale aantallen zijn licht stijgend.
 Dit is vooral door het toenemend aantal nijlganzen, brandganzen en grote Canadese ganzen.
 De trends van de meest talrijke exotische overwinterende vogelsoorten is weergegeven in Figuur \@ref(fig:100-figuur-exotentrends).
 De hoogste aantallen worden geteld in de oligohaliene zone.
@@ -637,9 +620,9 @@ De boerengans en soepeend komen in relatief kleine aantallen voor en zijn stabie
 
 Zie rapportage vorig jaar.
 
-```{r 100-figuur-aantallen-trofische-groep-index, fig.cap=cap_aantallen_trofische_groep_index, out.width="80%"}
+```{r 100-figuur-aantallen-trofische-groep-indexZS, fig.cap=cap_aantallen_trofische_groep_indexZS, out.width="80%"}
 
-cap_aantallen_trofische_groep_index <- paste0("Trendindex wintermaxima per zone (winter 2009/10 – ",
+cap_aantallen_trofische_groep_indexZS <- paste0("Trendindex wintermaxima per zone (winter 2009/10 – ",
                                         laatste_telseizoen, 
                                         ") opgedeeld volgens de trofische indicatorgroepen (Nbenth: benthivoren, Nherb: herbivoren, Nomn: omnivoren en Npisc: piscivoren). Deze figuur is inclusief de meeuwen en sternen.")
 
@@ -648,7 +631,6 @@ knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantall
 ```
 
 <br/>
-
 
 ```{r 100-figuur-aantallen-trofische-groep-index, fig.cap=cap_aantallen_trofische_groep_index, out.width="80%"}
 
@@ -659,17 +641,6 @@ cap_aantallen_trofische_groep_index <- paste0("Trendindex wintermaxima per zone 
 knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen_trofischegroepZSniv3.jpg"))
 
 ```
-
-<br/>
-<!-- ```{r 100-figuur-abundante-soortenna2009, fig.cap=cap_verhouding_abundante_soorten, out.width="80%"} -->
-
-<!-- cap_verhouding_abundante_soorten <- paste0("Verhouding van de dominante soorten (> 5\\% totaal) per zone sinds 2009 - ", laatste_telseizoen, -->
-
-<!--                                            ").") -->
-
-<!-- knitr::include_graphics(paste0(pad_figuren, "100_figuur_abundante_soortenna2009.jpg")) -->
-
-<!-- ``` -->
 
 <br/>
 
@@ -735,16 +706,18 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_exoten.jpg"))
 
 ## Overwinterende watervogels in gebieden met estuariene natuurontwikkeling
 
-Nieuwe SIGMA ontwikkelingen trekken veel watervogels aan. Dit is ook merkbaar op de stukken van de rivier aanpalend deze gebieden.
+Nieuwe SIGMA ontwikkelingen trekken veel watervogels aan.
+Dit is ook merkbaar op de stukken van de rivier aanpalend deze gebieden.
 De gegevens met betrekking tot Prosperpolder zijn nog niet beschikbaar voor de INBO watervogeldatabank.
 Omdat hierdoor een onvolledig beeld is op de Sigmabijdrage werd er beslist om deze rapportage uit te werken volgend jaar.
 
-
 <br/> **Algemene conclusie**
 
-Hoewel over de lange termijn de meeste overwinterende doelsoorten een negatieve trend vertonen is er de laatste 2-3 jaar een kentering zichtbaar door significant matig toename van de bergeend, krakeend, tafeleend en wintertaling. Voor de pijlstaart is geen trend aantoonbaar. Beschouwen we de trends in de trofische groepen is er een signifcant matige toename van de bodemdieretende soorten (steltlopers). Dit is gecorreleerd met de toename van vooral scholekster welke op zijn beurt correleert met een toename aan schelpdieren (zie hoofdstuk Macrozoöbenthos). De toename van overwinterende watervogels op de slikken van de Zeeschelde is ook veroorzaakt door de recente inrichting van twee Sigmagebieden die hoge vogelaantallen aantrekken: Groot Schoor Hamme in de zone zoet lang en de ontpoldering van Hedwige-Prosperpolder in de zone met sterke saliniteitsgradiënt.
-
-
+Hoewel over de lange termijn de meeste overwinterende doelsoorten een negatieve trend vertonen is er de laatste 2-3 jaar een kentering zichtbaar door significant matig toename van de bergeend, krakeend, tafeleend en wintertaling.
+Voor de pijlstaart is geen trend aantoonbaar.
+Beschouwen we de trends in de trofische groepen is er een signifcant matige toename van de bodemdieretende soorten (steltlopers).
+Dit is gecorreleerd met de toename van vooral scholekster welke op zijn beurt correleert met een toename aan schelpdieren (zie hoofdstuk Macrozoöbenthos).
+De toename van overwinterende watervogels op de slikken van de Zeeschelde is ook veroorzaakt door de recente inrichting van twee Sigmagebieden die hoge vogelaantallen aantrekken: Groot Schoor Hamme in de zone zoet lang en de ontpoldering van Hedwige-Prosperpolder in de zone met sterke saliniteitsgradiënt.
 
 ## Referenties
 
