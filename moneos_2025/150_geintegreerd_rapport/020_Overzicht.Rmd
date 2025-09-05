@@ -44,7 +44,7 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
 ## Overzicht
 
-In dit hoofdstuk wordt een overzicht gegeven van de natuurontwikkelingsprojecten die reeds uitgevoerd zijn in de Zeeschelde (Tabel \@ref(tab:020-tabel-natuurontwikkelingsprojecten) en zie situering gebieden in Figuur \@ref(fig:010-figuur-waterlichamen)).
+In dit hoofdstuk wordt een overzicht gegeven van de estuariene natuurontwikkelingsprojecten die reeds uitgevoerd zijn in de Zeeschelde (Tabel \@ref(tab:020-tabel-natuurontwikkelingsprojecten) en zie situering gebieden in Figuur \@ref(fig:010-figuur-waterlichamen)).
 
 Voor details over de uitvoering en de initiele evoluties in de ontpolderingen wordt verwezen naar Van de Neucker et al., (2007) en Speybroeck et al. (2011).
 De evoluties in de GGG's[^overzicht-1] worden opgevolgd door Universiteit Antwerpen (Maris et al., 2023).
@@ -67,7 +67,7 @@ options(knitr.kable.NA = '')
 tabel_natuurontwikkelingsprojecten[c(9,12),3] <- sapply(tabel_natuurontwikkelingsprojecten[c(9,12),3], 
                                                        function(x) paste0(x, footnote_marker_number(1)))
 
-tabel_natuurontwikkelingsprojecten[c(20),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(20),4], 
+tabel_natuurontwikkelingsprojecten[c(16),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(16),4], 
                                                        function(x) paste0(x, footnote_marker_number(2)))
 
 tabel_natuurontwikkelingsprojecten[c(20),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(20),4], 
@@ -79,6 +79,9 @@ tabel_natuurontwikkelingsprojecten[c(20),4] <- sapply(tabel_natuurontwikkelingsp
 tabel_natuurontwikkelingsprojecten[c(20),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(20),4], 
                                                        function(x) paste0(x, footnote_marker_number(5)))
 
+tabel_natuurontwikkelingsprojecten[c(20),4] <- sapply(tabel_natuurontwikkelingsprojecten[c(20),4], 
+                                                       function(x) paste0(x, footnote_marker_number(6)))
+
 
 tabel_natuurontwikkelingsprojecten %>% 
   knitr::kable(caption = "Overzicht van de uitgevoerde estuariene natuurontwikkelingsprojecten langsheen de Zeeschelde en zijrivieren. De gebieden staan gerangschikt van grens BE-NL stroomopwaarts. Gebieden opgenomen in het MWeA - Meest Wenselijk Alternatief (Synthesenota, 2005) inclusief KBR. Habitatoppervlakte bepaald op basis van de laatste ecotopenkaarten (indien reeds ecotopenkaart beschikbaar is voor gebied)",
@@ -88,6 +91,7 @@ tabel_natuurontwikkelingsprojecten %>%
     kable_styling(latex_options = c("scale_down"),
                   font_size = 12) %>%
   footnote(number = c("met koker verbonden (natuurlijk getijpatroon en dynamiek is beïnvloed)",
+                      "vanaf januri 2025 was Klein Broek geen functioneel estuarien gebied",
                       "in de loop van 2017 werd nog een grondstock opgeruimd en toegevoegd aan de ontpoldering (+ 2.2 ha)",
            "in de zomer van 2019 werd een geul gegraven in het westelijk deel van de Wijmeers en ging estuariene oppervlakte tijdelijk verloren door de aanleg van een zandstock",
            "ontpoldering afgesloten voor getij tussen maart 2020 en april 2021 voor de aanleg van een vloedschaar in oostelijk deel",
@@ -150,7 +154,7 @@ In totaal werd er sinds 2003 ruim 660 ha aan estuariene natuur (slik+schor) gere
 ## Recente ontwikkelingen
 
 Sinds 2021 werden verschillende estuariene Sigmaprojecten opgeleverd.
-In juni 2021 werd de ontpoldering/dijkverlegging te Fort Filip gerealiseerd. Het Groot Schoor te Hamme werd als ontpoldering gerealiseerd in juli 2021. Het GGG Grote Vijver Noord langsheen de Beneden Nete trad in werking in maart 2022. Enkele maanden later in oktober 2022 werd definitief Prosper- en Hedwigepolder gebrest. Zo kwam er ruim 450 ha estuariene natuur in één klap bij. In het laatste monitoringsjaar werd het Klein Broek langsheen de Durme uitgevoerd. Dit resulteerde in ongeveer 35 ha extra estuariene natuur.
+In juni 2021 werd de ontpoldering/dijkverlegging te Fort Filip gerealiseerd. Het Groot Schoor te Hamme werd als ontpoldering gerealiseerd in juli 2021. Het GGG Grote Vijver Noord langsheen de Beneden Nete trad in werking in maart 2022. Enkele maanden later, in oktober 2022, werd definitief Prosper- en Hedwigepolder gebrest. Zo kwam er ruim 450 ha estuariene natuur in één klap bij. In november 2023 werd ruimte voor de rivier gecreëerd in het Klein Broek langsheen de Durme. Dit resulteerde in ongeveer 35 ha extra estuariene natuur. In 2024 en 2025 werd geen extra estuariene oppervlakte gecreëerd. In 2025 werd het Klein Broek afgesloten en was het geen actief estuarien gebied. Dit verklaart de afname aan cumulatief functioneel estuariene natuuroppervlakte in 2025.
 
 
 ## Referenties
