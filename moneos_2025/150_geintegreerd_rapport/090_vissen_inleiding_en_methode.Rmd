@@ -111,7 +111,7 @@ aantal_soorten_enkel_ankerkuil <-
 
 Fichenummer: FICHE S-DS-V-004a -- Vissen (KRW)
 
-**Joost Vanoverbeke, Gunther Van Ryckegem, Rhea Measle, Gerlinde Van Thuyne, Merlijn Jocque**
+**Joost Vanoverbeke, Gunther Van Ryckegem, Rhea Maesele, Gerlinde Van Thuyne, Merlijn Jocque**
 
 ## Inleiding
 
@@ -143,10 +143,9 @@ Schietfuiken worden in alle EMSE Scheldezones niveau 3 uitgezet.
 Aanvankelijk werd ook op de zijrivieren jaarlijks gevist maar sinds 2012 werd dit verminderd naar driejaarlijks omdat de totale inspanning te groot werd en omdat de ecosysteem evaluatie vooral op de Zeeschelde zelf gericht is.
 Ankerkuilvisserij kan enkel uitgevoerd worden in de Zeeschelde tot in de zoete zone met lange verblijftijd omdat de geul verder stroomopwaarts daarvoor te nauw wordt.
 
-INBO fuikvangst- en ankerkuilgegevens zijn beschikbaar via de V.I.S. databank ([https://vis2.inbo.be/](https://vis2.inbo.be/#home)) (Brosens et al., 2015).
-Vrijwilligersdata worden afzonderlijk opgeslagen.
+INBO fuikvangst- en ankerkuilgegevens evenals vrijwilligersdata zijn beschikbaar via de V.I.S. databank ([https://vis2.inbo.be/](https://vis2.inbo.be/#home)) (Brosens et al., 2015).
 
-In de huidige rapportage worden ankerkuil data en fuikgegevens van de Zeeschelde besproken.
+In de huidige rapportage worden ankerkuildata <!--# checken in heel document - zonder spatie -->en fuikgegevens van de Zeeschelde besproken.
 <!--#  XXXGegevens van de zijrivieren worden later verwerkt en gerapporteerd.XXX --> Ankerkuildata en fuikdata van het reguliere Zeeschelde meetnet worden aangeleverd als xlsx-bestanden aan de Scheldemonitor.
 
 ```{r 090-tabel-visinspanning, results="asis", fig.show='hide', out.width="100%"}
@@ -188,7 +187,7 @@ Aantallen en biomassa worden omgerekend naar aantallen en biomassa per m\textsup
 In de periode 2012-`r laatste_jaar` werd jaarlijks gevist in de lente (eind april of begin mei), de zomer (juli) en in het najaar (september).
 In 2020 werd uitzonderlijk enkel in de zomer en het najaar gevist.
 Er wordt telkens op vier locaties bemonsterd: Doel, Antwerpen, Steendorp en Branst (Figuur \@ref(fig:090-figuur-locaties-ankerkuil)).
-Doel en Antwerpen bevinden zich in de EMSE niveau 3 scheldezone 'sterke saliniteitsgradiënt', Steendorp bevindt zich in de oligohaliene zone en Branst in de zoetwater zone met lange verblijftijd.
+Doel en Antwerpen bevinden zich in de EMSE niveau 3 scheldezone 'sterke saliniteitsgradiënt' of polyhaliene zone, Steendorp bevindt zich in de licht brakke of oligohaliene zone en Branst in de zoetwater zone met lange verblijftijd.
 De Lambert coördinaten van de locaties zijn: Doel: 143350; 223091, Antwerpen: 149192; 210267, Steendorp: 142898; 200951 en Branst: 137181; 195683.
 
 ```{r 090-figuur-locaties-ankerkuil, fig.cap=cap_locaties_ankerkuil, out.width="100%"}
@@ -218,7 +217,7 @@ In de fuik bevinden zich een aantal trechtervormige netten waarvan het smalle ui
 Eenmaal de vissen een trechter gepasseerd zijn, kunnen ze niet meer terug.
 Om de vissen uit de fuik te halen wordt deze helemaal achteraan geopend en leeggemaakt.
 
-De bemonsterde locaties in de periode 2009-2022 zijn weergegeven in Figuur \@ref(fig:090-figuur-locaties-fuiken).
+De bemonsterde locaties in de periode 2009-`r laatste_jaar` zijn weergegeven in Figuur \@ref(fig:090-figuur-locaties-fuiken).
 Vanaf het najaar van 2015 werd de locatie Zandvliet niet meer bemonsterd maar vervangen door het Paardenschor als nieuwe locatie in de zone sterke saliniteitsgradiënt (Figuur 2).
 Bij de bespreking van de resultaten wordt Zandvliet niet expliciet vermeld maar wordt er verwezen naar Paardenschor.
 De Lambert coördinaten van de locaties zijn: Zandvliet: 139864; 228413, Paardenschor: 142882; 225713, Antwerpen: 150050; 210800, Steendorp: 142520; 201050, Kastel: 137450; 193480, Appels: 128997; 193213 en Overbeke: 114823; 188235.
@@ -228,7 +227,7 @@ Tot en met 2021 stonden de fuiken 48 uur op locatie en werden ze om de 24 uur le
 De gevangen vissen worden ter plaatse geïdentificeerd, geteld, gemeten, gewogen en vervolgens teruggezet.
 Het aantal individuen en de biomassa gevangen met fuiken worden omgerekend naar aantallen en biomassa per fuikdag.
 Deze getransformeerde data worden gebruikt in de verdere analyse.
-Om de totale visinspanning op de Zeeschelde te rationaliseren staan de fuiken sinds 2022 slechts 24 u op locatie en worden ze maar één keer leeggemaakt.
+Om de totale visinspanning op de Zeeschelde te rationaliseren staan de fuiken sinds 2022 slechts 24 uur op locatie en worden ze maar één keer leeggemaakt.
 De gemiddelde aantallen en biomassa per fuikdag zullen hierdoor weinig veranderen maar de tweede fuikdag voegde in het verleden gemiddeld 2 extra soorten toe (berekening op basis van 144 campagnes).
 Deze strategiewijziging zal dus een sprong in de tijdreeks voor soortenrijkdom veroorzaken.
 
@@ -269,7 +268,7 @@ Om een overzichtelijke vaste structuur te behouden worden ze wel telkens mee opg
 Een overzicht van soorten die sinds 2012 in de Zeeschelde werden gevangen, met aanduiding van EMSE habitatgebruik en dieetvoorkeur wordt gegeven in Tabel \@ref(tab:093-tabel-zeeschelde-soorten) in bijlage.
 Er werden in die periode `r aantal_soorten` soorten gevangen waarvan `r aantal_soorten_beide` soorten in zowel ankerkuil als fuiken, `r aantal_soorten_enkel_ankerkuil` soorten enkel met de ankerkuil en `r aantal_soorten_enkel_fuiken` soorten enkel met de dubbele schietfuiken.
 
-Voor elk van de EMSE functionele groepen worden per jaar en per vangstmethode het totaal aantal gevangen individuen en de totale biomassa per vangsteenheid (1000m³ bemonsterd water voor ankerkuil, 1 fuikdag voor fuikvangsten) alsook het aantal soorten en de Shannon diversiteit gerapporteerd.
+Voor elk van de EMSE functionele groepen worden per jaar en per vangstmethode het totaal aantal gevangen individuen en de totale biomassa per vangsteenheid (1000 m³ bemonsterd water voor ankerkuil, 1 fuikdag voor fuikvangsten) alsook het aantal soorten en de Shannon diversiteit gerapporteerd.
 Dit per scheldezone (EMSE niveau 3) en gemiddeld over de bemonsterde seizoenen (voorjaar, zomer, najaar).
 
 De Shannon diversiteit *D* wordt berekend als:
@@ -289,7 +288,7 @@ Daarnaast zijn ook de europees beschermde soorten opgenomen in de sleutelsoorten
 ### Bepalen van de visindex
 
 De gegevens van de fuikvangsten in de Zeeschelde worden gebruikt om de visindex per KRW waterlichaam te berekenen volgens de zone-specifieke estuariene index voor biotische integriteit (Breine et al., 2010).
-De Index wordt berekend op basis van de jaargegevens en is zodoende robuuster dan de brakwater index die gebaseerd is op dagvangsten (Breine et al., 2007).
+De index wordt berekend op basis van de jaargegevens en is zodoende robuuster dan de brakwater index die gebaseerd is op dagvangsten (Breine et al., 2007).
 De index score per waterlichaam integreert de beoordeling van een aantal metrieken, wordt vertaald naar een ecologische kwaliteitsratio (EQR) tussen 0 en 1 en ondergebracht in één van de ecologische kwaliteitsklassen, variërend van 'slecht' over 'onvoldoende', 'matig', 'goed ecologisch potentieel' (GEP) tot 'maximaal ecologisch potentieel' (MEP).
 Elke gebruikte metriek staat voor een bepaalde functie van het ecosysteem voor de visgemeenschap.
 De betekenis van de gebruikte metrieken is weergegeven in Tabel \@ref(tab:090-tabel-metrieken-visindex).
