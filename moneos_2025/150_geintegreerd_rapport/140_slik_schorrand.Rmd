@@ -1,7 +1,3 @@
----
----
----
-
 ```{r 140-hoofdstuk, include=FALSE}
 
 hoofdstuk <- "140_slik_schorrand"
@@ -40,7 +36,7 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
 ```
 
-```{r 140-meta_data}
+```{r 140-meta-data}
 
 meta_data <- 
   read_delim(paste0(pad_data, "meta_data.csv"),
@@ -75,13 +71,13 @@ Vastgestelde erosieve zones worden op terrein onderzocht en bij het vaststellen 
 
 ## 2) Materiaal en methode
 
-De hulpmiddelen die gebruikt worden om de slik- en schorrand te monitoren worden hiërarchisch overlopen in een GIS omgeving (Figuur 1). De focus zal liggen op de schorranderosiekaarten. Vervolgens worden normaal gezien ook breuksteenverschilkaarten onderzocht in combinatie met de combigrids. Indien er erosie is geweest waar geen breuksteen meer zichtbaar is, wijst dit op wegspoeling van breuksteen. Tenslotte worden de bathymetrische verschilkaarten gemaakt van het middelhoog en laag slik en ondiep water. Dit is eerder een ‘early warning’ kaart die informatie geeft over potentieel erosieve oevers indien de erosie zich doorzet op het hogere slik door terugschrijdende erosie van het ondiepe water naar het slik. 
+De hulpmiddelen die gebruikt worden om de slik- en schorrand te monitoren worden hiërarchisch overlopen in een GIS omgeving (Figuur \@ref(fig:140-figuur-methode)). De focus zal liggen op de schorranderosiekaarten. Vervolgens worden normaal gezien ook breuksteenverschilkaarten onderzocht in combinatie met de combigrids. Indien er erosie is geweest waar geen breuksteen meer zichtbaar is, wijst dit op wegspoeling van breuksteen. Tenslotte worden de bathymetrische verschilkaarten gemaakt van het middelhoog en laag slik en ondiep water. Dit is eerder een ‘early warning’ kaart die informatie geeft over potentieel erosieve oevers indien de erosie zich doorzet op het hogere slik door terugschrijdende erosie van het ondiepe water naar het slik. 
 
 Voor deze rapportage werden de jaarlijkse bathymetrische verschilkaarten gemaakt, alsook de LiDAR hoogteverschilkaarten (in de plaats van combigrid verschilkaarten) en de schorranderosiekaarten. Er werd besloten om dit jaar geen breuksteenverschilkaarten te maken, aangezien de informatie die deze verschaffen sterk overlapt met de LiDAR kaarten en oppervlaktes bekomen uit de ecotoopkaart.
 
 ```{r 140-figuur-methode, fig.cap=caption_methode, out.width="50%"}
 
-caption_methode <- "Figuur 1: Stappenplan monitoringsprotocol slik- en schorrandbeheer."
+caption_methode <- "Stappenplan monitoringsprotocol slik- en schorrandbeheer."
 
 knitr::include_graphics(paste0(pad_figuren, "/140_figuur_stappenplan.jpg"))
 
@@ -89,9 +85,9 @@ knitr::include_graphics(paste0(pad_figuren, "/140_figuur_stappenplan.jpg"))
 
 ### 2.1) Schorranderosiekaart
 
-Driejaarlijks, gelijklopend met de opmaak van de ecotopenkaarten van de volledige Zeeschelde (2013, 2016, 2019, 2022, 2025,…)[^140_slik_schorrand_v1-1] kunnen schorranderosiekaarten gemaakt worden. Dit gebeurt op basis van de geomorfologische kaart (zie hoofdstuk ecotopen). Zones met een terugschrijdende erosie van meer dan 2 meter over een periode van 3 jaar worden gevisualiseerd. In Van Ryckegem et al. (2021) werd oorspronkelijk voorgesteld om zones te evalueren waar de terugschrijdende erosie over een periode van 3 jaar meer dan 1 meter bedroeg. Deze buffer bleek echter te klein ten opzichte van de digitalisatiefout van de schorrand op basis van luchtfoto’s.
+Driejaarlijks, gelijklopend met de opmaak van de ecotopenkaarten van de volledige Zeeschelde (2013, 2016, 2019, 2022, 2025,…)[^140_slik_schorrand-1] kunnen schorranderosiekaarten gemaakt worden. Dit gebeurt op basis van de geomorfologische kaart (zie hoofdstuk ecotopen). Zones met een terugschrijdende erosie van meer dan 2 meter over een periode van 3 jaar worden gevisualiseerd. In Van Ryckegem et al. (2021) werd oorspronkelijk voorgesteld om zones te evalueren waar de terugschrijdende erosie over een periode van 3 jaar meer dan 1 meter bedroeg. Deze buffer bleek echter te klein ten opzichte van de digitalisatiefout van de schorrand op basis van luchtfoto’s.
 
-[^140_slik_schorrand_v1-1]: De afgewerkte kaarten zijn beschikbaar 2 jaar na karteerdatum.
+[^140_slik_schorrand-1]: De afgewerkte kaarten zijn beschikbaar 2 jaar na karteerdatum.
 
 Voor deze rapportage werd de verschilkaart gemaakt tussen 2022 en 2019, tussen 2022 en 2016, tussen 2022 en 2010 en ten slotte tussen 2022 en 2001. Dit om enerzijds te bekijken of de erosie recent startte of al langer doorgaat, anderzijds om ook de langzaam erosieve schorranden te detecteren.
 
@@ -119,21 +115,21 @@ Voor deze rapportage werden verschilkaarten gemaakt tussen 2020, 2019, 2018 en 2
 
 #### Beneden Zeeschelde
 
-Langs de Beneden Zeeschelde konden enkele erosieve zones geïdentificeerd worden. Het gaat hierbij bijvoorbeeld om de regio rond het strand van **Sint-Anna**, waarbij zowel op de bathymetrie- als lidar-verschilkaarten erosie werd waargenomen (Figuur 2). Deze erosie kan vermoedelijk gekoppeld worden aan de effecten van de golfslag van de waterbus, die in een later rapport meer uitgebreid besproken zullen worden. Het effect van deze erosie is nog niet echt waarneembaar op de schorranderosiekaarten, wat betekent dat de erosie tot nu toe voor het grootste deel beperkter is dan de buffer van twee meter die toegepast werd om schorranderosie te detecteren.
+Langs de Beneden Zeeschelde konden enkele erosieve zones geïdentificeerd worden. Het gaat hierbij bijvoorbeeld om de regio rond het strand van **Sint-Anna**, waarbij zowel op de bathymetrie- als lidar-verschilkaarten erosie werd waargenomen (Figuur \@ref(fig:140-figuur-2)). Deze erosie kan vermoedelijk gekoppeld worden aan de effecten van de golfslag van de waterbus, die in een later rapport meer uitgebreid besproken zullen worden. Het effect van deze erosie is nog niet echt waarneembaar op de schorranderosiekaarten, wat betekent dat de erosie tot nu toe voor het grootste deel beperkter is dan de buffer van twee meter die toegepast werd om schorranderosie te detecteren.
 
-```{r 140_figuur_2, fig.cap=caption_fig2, out.width="100%"}
+```{r 140-figuur-2, fig.cap=caption_fig2, out.width="100%"}
 
-caption_fig2 <- "Figuur 2: Sint-Anna - erosieve zone. Links: verschilkaart bathymetrie. Rechts: verschilkaart lidar. "
+caption_fig2 <- "Sint-Anna - erosieve zone. Links: verschilkaart bathymetrie. Rechts: verschilkaart lidar. "
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur2_SintAnna.jpg"))
 
 ```
 
-Ook ter hoogte van het **Galgenweel** werd erosie waargenomen die mogelijks te linken is aan de waterbus. De erosie is opnieuw waar te nemen op zowel de bathymetrie- als lidar-verschilkaarten (Figuur 3), en ook reeds deels op de schorranderosiekaarten (Figuur niet opgenomen in deze rapportage).
+Ook ter hoogte van het **Galgenweel** werd erosie waargenomen die mogelijks te linken is aan de waterbus. De erosie is opnieuw waar te nemen op zowel de bathymetrie- als lidar-verschilkaarten (Figuur \@ref(fig:140-figuur-3)), en ook reeds deels op de schorranderosiekaarten (Figuur niet opgenomen in deze rapportage).
 
-```{r 140_figuur_3, fig.cap=caption_fig3, out.width="100%"}
+```{r 140-figuur-3, fig.cap=caption_fig3, out.width="100%"}
 
-caption_fig3 <- "Figuur 3: Galgenweel - erosieve zone. Links: verschilkaart bathymetrie. Rechts: verschilkaart lidar. "
+caption_fig3 <- "Galgenweel - erosieve zone. Links: verschilkaart bathymetrie. Rechts: verschilkaart lidar. "
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur3_Galgenweel.jpg"))
 
@@ -145,51 +141,51 @@ Op de bathymetrische verschilkaarten waren er nog enkele zones die opvielen en d
 
 Voor de Boven Zeeschelde kwamen evenzeer enkele zones naar voren met opvallende erosie en sedimentatie patronen (op basis van bathymetrie en lidar), alsook enkele zones met opvallende schorerosie. Deze meest opvallende gevallen zullen eerst aan de hand van figuren besproken worden, waarna enkele regio’s met opvallende patronen op de bathymetrie-verschilkaart ook kort zullen worden aangehaald (figuren niet opgenomen in dit rapport).
 
-In **De Notelaer** bevindt zich een dynamische zone die in vorige rapportages reeds toegelicht werd. Ook in dit rapport trok de regio de aandacht op zowel de bathymetrie- als lidar-verschilkaarten. Zoals te zien op Figuur 4 ging het vooral om erosie, waarbij een vloedschaar kan waargenomen worden op de orthofoto achter de lidar-verschilkaart (Figuur 4, rechts). In eerdere analyses werd de regio echter ook gekenmerkt door sedimentatie, de afwisseling van dynamische processen is dus al langer aan de gang.
+In **De Notelaer** bevindt zich een dynamische zone die in vorige rapportages reeds toegelicht werd. Ook in dit rapport trok de regio de aandacht op zowel de bathymetrie- als lidar-verschilkaarten. Zoals te zien op Figuur \@ref(fig:140-figuur-4) ging het vooral om erosie, waarbij een vloedschaar kan waargenomen worden op de orthofoto achter de lidar-verschilkaart (Figuur \@ref(fig:140-figuur-4), rechts). In eerdere analyses werd de regio echter ook gekenmerkt door sedimentatie, de afwisseling van dynamische processen is dus al langer aan de gang.
 
-```{r 140_figuur_4, fig.cap=caption_fig4, out.width="100%"}
+```{r 140-figuur-4, fig.cap=caption_fig4, out.width="100%"}
 
-caption_fig4 <- "Figuur 4: De Notelaer - erosieve zone. Links: verschilkaart bathymetrie. Rechts: verschilkaart lidar, let op de vloedschaar. "
+caption_fig4 <- "De Notelaer - erosieve zone. Links: verschilkaart bathymetrie. Rechts: verschilkaart lidar, let op de vloedschaar. "
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur4_DeNotelaer.jpg"))
 
 ```
 
-In het **Groot Schoor Hamme** werd opnieuw erosie en sedimentatie waargenomen, net zoals vorige jaren (Figuur 5, links). Dit uit zich eveneens als schorranderosie, die zeker in de meest recente bestudeerde periode (2022 - 2019) sterk naar voren komt (Figuur 5, rechts; donkerrode kleur).
+In het **Groot Schoor Hamme** werd opnieuw erosie en sedimentatie waargenomen, net zoals vorige jaren (Figuur \@ref(fig:140-figuur-5), links). Dit uit zich eveneens als schorranderosie, die zeker in de meest recente bestudeerde periode (2022 - 2019) sterk naar voren komt (Figuur \@ref(fig:140-figuur-5), rechts; donkerrode kleur).
 
-```{r 140_figuur_5, fig.cap=caption_fig5, out.width="100%"}
+```{r 140-figuur-5, fig.cap=caption_fig5, out.width="100%"}
 
-caption_fig5 <- "Figuur 5: Groot Schoor Hamme. Links: verschilkaart bathymetrie. Rechts: schorranderosiekaart."
+caption_fig5 <- "Groot Schoor Hamme. Links: verschilkaart bathymetrie. Rechts: schorranderosiekaart."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur5_GrootSchoorHamme.jpg"))
 
 ```
 
-In **Bergenmeersen & Paardeweide** worden wederom erosieve zones waargenomen (Figuur 6, links). Opvallend is dat dit zich ook uit in een lange erosieve zone in de schorrand tijdens de meest recente onderzochte periode (2022 - 2019) ter hoogte van Paardeweide (Figuur 6, rechts). Verder onderzoek van de orthofoto’s en ecotoopkaarten toonde aan dat dit schor verdwenen is door het storten van breuksteen.
+In **Bergenmeersen & Paardeweide** worden wederom erosieve zones waargenomen (Figuur \@ref(fig:140-figuur-6), links). Opvallend is dat dit zich ook uit in een lange erosieve zone in de schorrand tijdens de meest recente onderzochte periode (2022 - 2019) ter hoogte van Paardeweide (Figuur \@ref(fig:140-figuur-6), rechts). Verder onderzoek van de orthofoto’s en ecotoopkaarten toonde aan dat dit schor verdwenen is door het storten van breuksteen.
 
-```{r 140_figuur_6, fig.cap=caption_fig6, out.width="100%"}
+```{r 140-figuur-6, fig.cap=caption_fig6, out.width="100%"}
 
-caption_fig6 <- "Figuur 6: Bergenmeersen & Wichelen. Links: verschilkaart bathymetrie. Rechts: schorranderosiekaart. "
+caption_fig6 <- "Bergenmeersen \\& Wichelen. Links: verschilkaart bathymetrie. Rechts: schorranderosiekaart. "
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur6_BergenmeersenWichelen.jpg"))
 
 ```
 
-Ook langs de **Ringvaart** kon zowel erosie als sedimentatie waargenomen worden op de bathymetrische verschilkaart (Figuur 7, links). De erosie was voornamelijk aanwezig ter hoogte van de spoorwegbrug en de brug van de Fraterstraat. Op die laatste locatie kon eveneens schorranderosie waargenomen worden (Figuur 7, rechts). Zowel bathymetrische erosie als schorranderosie kunnen gelinkt worden aan baggerwerken om de sluizen toegankelijk te houden voor schepen.
+Ook langs de **Ringvaart** kon zowel erosie als sedimentatie waargenomen worden op de bathymetrische verschilkaart (Figuur \@ref(fig:140-figuur-7), links). De erosie was voornamelijk aanwezig ter hoogte van de spoorwegbrug en de brug van de Fraterstraat. Op die laatste locatie kon eveneens schorranderosie waargenomen worden (Figuur \@ref(fig:140-figuur-7), rechts). Zowel bathymetrische erosie als schorranderosie kunnen gelinkt worden aan baggerwerken om de sluizen toegankelijk te houden voor schepen.
 
-```{r 140_figuur_7, fig.cap=caption_fig7, out.width="100%"}
+```{r 140-figuur-7, fig.cap=caption_fig7, out.width="100%"}
 
-caption_fig7 <- "Figuur 7: Ringvaart. Links: verschilkaart bathymetrie. Rechts: schorranderosiekaart."
+caption_fig7 <- "Ringvaart. Links: verschilkaart bathymetrie. Rechts: schorranderosiekaart."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur7_Ringvaart.jpg"))
 
 ```
 
-Op de bathymetrische verschilkaart ter hoogte van de **Durme** valt er heel wat erosie waar te nemen (Figuur 8). Dit heeft vermoedelijk te maken met de recente ontpoldering van het Klein Broek net stroomopwaarts van de erosieve zone. Ook ter hoogte van de Durmemonding kan langs de Zeeschelde een erosieve zone waargenomen worden.
+Op de bathymetrische verschilkaart ter hoogte van de **Durme** valt er heel wat erosie waar te nemen (Figuur \@ref(fig:140-figuur-8)). Dit heeft vermoedelijk te maken met de recente ontpoldering van het Klein Broek net stroomopwaarts van de erosieve zone. Ook ter hoogte van de Durmemonding kan langs de Zeeschelde een erosieve zone waargenomen worden.
 
-```{r 140_figuur_8, fig.cap=caption_fig8, out.width="100%"}
+```{r 140-figuur-8, fig.cap=caption_fig8, out.width="100%"}
 
-caption_fig8 <- "Figuur 8: Durme. Links: Bathymetrische verschilkaart met in het noordoosten het recent ontpolderde Klein Broek. Rechts: Erosie en sedimentatie ter hoogte van de Durmemonding op de bathymetrische verschilkaart."
+caption_fig8 <- "Durme. Links: Bathymetrische verschilkaart met in het noordoosten het recent ontpolderde Klein Broek. Rechts: Erosie en sedimentatie ter hoogte van de Durmemonding op de bathymetrische verschilkaart."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur8_Durme.jpg"))
 
@@ -217,75 +213,75 @@ In deze rapportage worden zowel de bathymetrische verschilkaarten (2024 versus 2
 
 In Van Ryckegem et al. (2024) werd de nieuwe bathymetrische kaart van 2023 besproken via verschilkaarten met 2022, 2021 en 2020 ter controle van de laagste oeverzone (laag slik en ondiep water). Hier werden enkele erosieve en sedimenterende zones geïdentificeerd zowel in de Beneden- als Boven-Zeeschelde. Echter, zowel in de kaarten als in de interpretatie werden erosie en sedimentatie omgedraaid. Dit werd niet opgemerkt doordat de patronen die naar boven kwamen de verwachte trend volgden. Bij het maken van de kaarten voor de 2025 rapportage waren de patronen onverwacht en werd deze fout opgemerkt. Een mogelijke verklaring voor deze anomalie zou kunnen zijn dat de bathymetrie van 2023 gemeten werd in het najaar (oktober), terwijl deze normaal altijd genomen wordt in het voorjaar (januari). Dit zou ervoor kunnen zorgen dat er een andere dynamiek wordt waargenomen in de verschilkaarten.
 
-In de kaarten en besprekingen van de erosieve en sedimenterende zones in Van Ryckegem et al. (2024) moeten erosie en sedimentatie dus steeds omgedraaid worden. Er moet echter ook rekening gehouden worden dat sommige van de geobserveerde patronen mogelijk een seizoenaal verschil weergeven. In de huidige rapportage worden de geïdentificeerde zones nog eens weergegeven met de nieuwe bathymetrische verschilkaarten (Figuren 9 tot 17).
+In de kaarten en besprekingen van de erosieve en sedimenterende zones in Van Ryckegem et al. (2024) moeten erosie en sedimentatie dus steeds omgedraaid worden. Er moet echter ook rekening gehouden worden dat sommige van de geobserveerde patronen mogelijk een seizoenaal verschil weergeven. In de huidige rapportage worden de geïdentificeerde zones nog eens weergegeven met de nieuwe bathymetrische verschilkaarten (Figuren @ref(fig:140-figuur-9) tot @ref(fig:140-figuur-17)).
 
-```{r 140_figuur_9, fig.cap=caption_fig9, out.width="50%"}
+```{r 140-figuur-9, fig.cap=caption_fig9, out.width="50%"}
 
-caption_fig9 <- "Figuur 9: Plaat Lillo - erosieve zone (2022 - 2023). Correctie van Figuur 1.2 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
+caption_fig9 <- "Plaat Lillo - erosieve zone (2022 - 2023). Correctie van Figuur 1.2 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur_14_2_Plaat_Lillo_CORRECTIE.jpg"))
 
 ```
 
-```{r 140_figuur_10, fig.cap=caption_fig10, out.width="50%"}
+```{r 140-figuur-10, fig.cap=caption_fig10, out.width="50%"}
 
-caption_fig10 <- "Figuur 10: Sint-Anna strand - erosieve strook (2021/2022 - 2023). Correctie van Figuur 1.3 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
+caption_fig10 <- "Sint-Anna strand - erosieve strook (2021/2022 - 2023). Correctie van Figuur 1.3 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur_14_3_Sint_Anna_strand_CORRECTIE.jpg"))
 
 ```
 
-```{r 140_figuur_11, fig.cap=caption_fig11, out.width="50%"}
+```{r 140-figuur-11, fig.cap=caption_fig11, out.width="50%"}
 
-caption_fig11 <- "Figuur 11: Galgenweel - erosie en sedimentatie (2021/2022 - 2023). Correctie van Figuur 1.4 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
+caption_fig11 <- "Galgenweel - erosie en sedimentatie (2021/2022 - 2023). Correctie van Figuur 1.4 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur_14_4_Galgenweel_CORRECTIE.jpg"))
 
 ```
 
-```{r 140_figuur_12, fig.cap=caption_fig12, out.width="50%"}
+```{r 140-figuur-12, fig.cap=caption_fig12, out.width="50%"}
 
-caption_fig12 <- "Figuur 12: Hoboken - erosieve zone (2022 - 2023). Correctie van Figuur 1.5 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
+caption_fig12 <- "Hoboken - erosieve zone (2022 - 2023). Correctie van Figuur 1.5 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur_14_5_Hoboken_CORRECTIE.jpg"))
 
 ```
 
-```{r 140_figuur_13, fig.cap=caption_fig13, out.width="50%"}
+```{r 140-figuur-13, fig.cap=caption_fig13, out.width="50%"}
 
-caption_fig13 <- "Figuur 13: Plaat/Driegoten (Branst) - erosie en sedimentatie (2022 - 2023). Correctie van Figuur 1.6 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
+caption_fig13 <- "Plaat/Driegoten (Branst) - erosie en sedimentatie (2022 - 2023). Correctie van Figuur 1.6 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur_14_6_Plaat_Driegoten_Branst_CORRECTIE.jpg"))
 
 ```
 
-```{r 140_figuur_14, fig.cap=caption_fig14, out.width="50%"}
+```{r 140-figuur-14, fig.cap=caption_fig14, out.width="50%"}
 
-caption_fig14 <- "Figuur 14: Mariekerke - erosie (2022 - 2023). Correctie van Figuur 1.7 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
+caption_fig14 <- "Mariekerke - erosie (2022 - 2023). Correctie van Figuur 1.7 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur_14_7_Mariekerke_CORRECTIE.jpg"))
 
 ```
 
-```{r 140_figuur_15, fig.cap=caption_fig15, out.width="50%"}
+```{r 140-figuur-15, fig.cap=caption_fig15, out.width="50%"}
 
-caption_fig15 <- "Figuur 15: Groot Schoor Hamme - erosie en sedimentatie (2022 - 2023). Correctie van Figuur 1.8 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
+caption_fig15 <- "Groot Schoor Hamme - erosie en sedimentatie (2022 - 2023). Correctie van Figuur 1.8 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur_14_8_Groot_Schoor_Hamme_CORRECTIE.jpg"))
 
 ```
 
-```{r 140_figuur_16, fig.cap=caption_fig16, out.width="50%"}
+```{r 140-figuur-16, fig.cap=caption_fig16, out.width="50%"}
 
-caption_fig16 <- "Figuur 16: Vlassenbroek - erosive zone (2022 - 2023). Correctie van Figuur 1.9 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
+caption_fig16 <- "Vlassenbroek - erosive zone (2022 - 2023). Correctie van Figuur 1.9 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur_14_9_Vlassenbroek_CORRECTIE.jpg"))
 
 ```
 
-```{r 140_figuur_17, fig.cap=caption_fig17, out.width="50%"}
+```{r 140-figuur-17, fig.cap=caption_fig17, out.width="50%"}
 
-caption_fig17 <- "Figuur 17: Bergenmeersen - erosieve zone (2022 - 2023). Correctie van Figuur 1.10 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
+caption_fig17 <- "Bergenmeersen - erosieve zone (2022 - 2023). Correctie van Figuur 1.10 in de vorige MONEOS rapportage (Van Ryckegem et al., 2024)."
 
 knitr::include_graphics(paste0(pad_figuren, "/Figuur_14_10_Bergenmeersen_CORRECTIE.jpg"))
 
