@@ -604,25 +604,33 @@ knitr::include_graphics(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_di
 
 #### Visindex
 
-We berekenden de indexwaarden voor alle beschikbare gegevens (Tabel \@ref(tab:092-tabel-visindex), Figuur ).
+We berekenen de indexwaarden voor alle beschikbare gegevens (Tabel \@ref(tab:092-tabel-visindex), Figuur ).
 De evolutie van de visindex in de Zeeschelde is ook één van de INBO natuurindicatoren (<https://www.vlaanderen.be/inbo/indicatoren/trend-visindex-zeeschelde>)
 
 In de periode 2011-2020 was deze indicator redelijk stabiel in vergelijking tot het decennium dat daaraan voorafging: De zoete zone scoorde doorgaans beter dan de zone met sterke saliniteitsgradiënt en de oligohaliene zone had meestal de laagste score.
-De laatste twee jaren daalde de EQR van de zoete zone echter van goed ecologisch potentieel in 2020 over matig in 2021 naar ontoereikend in 2022 en `r laatste_jaar`.
-De beide andere zones haalden nog nooit de goede ecologische toestand en scoren beide ontoereikend in `r laatste_jaar`.
+De laatste twee jaren daalde de EQR van de zoete zone echter van goed ecologisch potentieel in 2020 over matig in 2021 naar ontoereikend vanaf 2022 tot slechte toestand in `r laatste_jaar`.
+De EQR van de matig brakke zone verbeterd sinds vorig jaar en bereikt een matige toestand.
+De zone met sterke saliniteitsgradiënt blijft in `r laatste_jaar`ontoereikend zoals in 2023.
 
 Figuur \@ref(fig:092-figuur-spindiagram) geeft voor elke zone een indicatie van de ecologische aspecten die minder en beter scoren in `r laatste_jaar`.
 Zie Tabel \@ref(tab:090-tabel-metrieken-visindex) voor verklaring van de afkortingen.
-In de zoetwaterzone scoren alle metrieken slecht behalve het totaal aantal soorten en het aantal individuen per fuikdag.
-Vooral het percentage van gespecialiseerde paaiers trekt het geheel omlaag.
-In de oligohaliene zone scoren alle metrieken laag en het totaal aantal individuen per fuikdag goed.
-In de saliniteitsgradiënt is de score voor alle metrieken laag.
+
+In de zoetwaterzone scoren alle metrieken slecht en ook het totaal aantal soorten en het aantal individuen per fuikdag zijn in `r laatste_jaar` minder hoog dan in 2023.
+Het relatief percentage diadrome vissen, gespecialiseerde paaiers, piscivoren en benthische soorten scoren anno 2024 nog lager dan in 2023 zodat in deze zone een ‘slechte kwaliteit’ wordt gehaald.
+
+In de zwak brakke zone vingen we in 2024, 16 referentie soorten, Het aantal gevangen individuen is toegenomen in vergelijking met die van 2023 (503 individuen per fuikdag in `r laatste_jaar` in vergelijking met 117 individuen per fuikdag in 2023), deze metriek scoort dan ook heel goed.
+De metriek intolerante species scoort anno 2024 het laagst maar haalt dezelfde score als in 2023.
+De overige metrieken scoren allemaal beter dan in 2023.
+De uiteindelijke EQR in 2024 is zo met een klasse verhoogd naar een ‘matige kwaliteit’.
+
+In de zone met hoge saliniteitsgradieënt scoren de metrieken diadrome soorten en intolerante scoren een ‘ontoereikende kwaliteit’.
+De overige metrieken scoren iets beter maar toch wordt in deze zone maar een totale EQR gehaald van 0,46 en blijft de evaluatie indicatief voor een ‘ontoereikende kwaliteit’.
 
 ```{r 092-tabel-visindex}
 
 tabel_visindex <-
   read_excel(paste0(maak_pad(hoofdstuk, "tabellen"), "visindexreeks.xlsx"),
-             sheet = "tabel1995_2022",
+             sheet = "tabel1995_2024",
              skip = 1)
 
 cap_visindex <-
