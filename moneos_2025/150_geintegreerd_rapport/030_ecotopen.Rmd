@@ -76,7 +76,7 @@ for(i in 1:nrow(meta_data)){
 
 **Fichenummer: S-DH-V-004 - Ecotopen**
 
-**Robrecht Debaut,** **Amber Mertens, Joost Vanoverbeke & Alexander Van Braeckel**
+**Robrecht Debbaut,** **Amber Mertens, Joost Vanoverbeke & Alexander Van Braeckel**
 
 ## Inleiding
 
@@ -345,23 +345,20 @@ knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_BEZ_", laatste_j
 
 \newpage
 
-````{=tex}
-\begin{landscape}
-
-```{r 030-tabel-oppervlakte-BEZ, results="asis", fig.show='hide', out.width="100%"}
-
+```{r}
 caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen Zeeschelde 1.0 in de Beneden-Zeeschelde in de laatste 6 jaar voor ", laatste_jaar, ", inclusief het startjaar ", vroegste_jaar, ".")
 
 img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_BEZ_", vroegste_jaar, "_", laatste_jaar, "_10.PNG")
+
+cat("\\begin{landscape}\n")
 
 figtab(knitr::opts_current$get()$label, 
        img_file,
        caption_tab)
 
-```
+cat("\\end{landscape}\n")
 
-\end{landscape}
-````
+```
 
 \newpage
 
@@ -429,8 +426,6 @@ knitr::include_graphics(paste0(pad_figuren, "030_figuur_Evolution_NOPs_BEZ_", vr
 De ecotopenkaart methode 2.0 van de Beneden-Zeeschelde in `r laatste_jaar` is te zien in Figuur \@ref(fig:030-figuur-kaart-bez-20).
 
 Tabel \@ref(tab:030-tabel-oppervlakte-BEZ-20) toont de oppervlaktes per ecotoop in de Beneden-Zeeschelde voor elk jaar vanaf 2019 in hectare (ha) en als percentage (%) van de totale oppervlakte.
-
-<!--# er ontbreekt 10 ha ecotoop schor in ecotopen 2.0 in 2023??? -->
 
 De korte en lange termijn evolutie van de ecotopen is opnieuw beschreven in Tabel \@ref(tab:030-tabel-evolutie-BEZ-20) via de absolute verandering (ha) en de procentuele verandering (%) tussen de aangegeven jaren.
 Voor de korte termijn evolutie wordt het huidige jaar vergeleken met het jaar ervoor, terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (2019 voor Zeeschelde 2.0).
@@ -545,7 +540,7 @@ Door de ontpoldering van Prosperpolder-Noord is de totale oppervlakte estuarien 
 
 figuur_ecotopenkaart_BOZ <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Boven-Zeeschelde 1.0")  
 
-#knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_BOZ_", laatste_jaar_BOZ, "_10.png")) 
+knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_BOZ_", laatste_jaar_BOZ, "_10.png")) 
 ```
 
 \newpage
@@ -609,7 +604,6 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-
 ```{r 030-figuur-evolutie-BOZ, fig.cap=figuur_evolutie_BOZ, out.width="100%"}
 
 figuur_evolutie_BOZ <- "Temporele evolutie van de oppervlakte van de ecologisch belangrijke ecotopen Zeeschelde 1.0 in de Boven-Zeeschelde met en zonder NOP's (natuurontwikkelingsprojecten zoals ontpolderingen, GGG’s en dijkverleggingen)"
@@ -659,7 +653,7 @@ De ecotopen in het **supralitoraal** zijn hetzelfde gedefinieerd in ecotopen 2.0
 
 figuur_ecotopenkaart_BOZ_20 <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Boven-Zeeschelde 2.0")  
 
-# knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_BOZ_", laatste_jaar_BOZ, "_20.png")) 
+knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_BOZ_", laatste_jaar_BOZ, "_20.png")) 
 
 ```
 
@@ -676,7 +670,6 @@ figtab(knitr::opts_current$get()$label,
        caption_tab)
 
 ```
-
 
 ```{r 030-tabel-evolutie-BOZ-20, results="asis", fig.show='hide', out.width="100%"}
 
@@ -706,20 +699,20 @@ figtab(knitr::opts_current$get()$label,
 
 <br/>
 
-### Ecotopen van Rupel en Durme in `r laatste_jaar_BOZ` 
+### Ecotopen van Rupel en Durme in `r laatste_jaar_BOZ`
 
 #### Rupel {#Rupel}
 
 ##### Rupel ecotopen 1.0
 
-Dit is de rapportage voor de Rupel `r laatste_jaar``.
+Dit is de rapportage voor de Rupel \`r laatste_jaar\`\`.
 
 ```{r 030-figuur-kaart-Rupel, fig.cap=figuur_ecotopenkaart_Rupel, out.width="100%"}
 # kaart wordt gemaakt in sjabloon_Rupel.mxd met schaal 1 : 97 000  
 
 figuur_ecotopenkaart_Rupel <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Rupel 1.0")  
 
-#knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_Rupel_", laatste_jaar_BOZ, "_10.png")) 
+knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_Rupel_", laatste_jaar_BOZ, "_10.png")) 
 ```
 
 \newpage
@@ -785,7 +778,6 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-
 ```{r 030-tabel-evolutie-Rupel-20, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Absolute verandering en procentuele verandering van de evolutie tussen 2019 en ", laatste_jaar_BOZ, " in de Rupel 2.0.")
@@ -815,8 +807,9 @@ figtab(knitr::opts_current$get()$label,
 <br/>
 
 #### Durme {#Durme}
- En hier voor de Durme.
- 
+
+En hier voor de Durme.
+
 ##### Durme ecotopen 1.0
 
 ```{r 030-figuur-kaart-Durme, fig.cap=figuur_ecotopenkaart_Durme, out.width="100%"}
@@ -890,7 +883,6 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-
 ```{r 030-tabel-evolutie-Durme-20, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Absolute verandering en procentuele verandering van de evolutie tussen 2019 en ", laatste_jaar_BOZ, " in de Durme 2.0.")
@@ -922,7 +914,6 @@ figtab(knitr::opts_current$get()$label,
 ### Ecotopen van de Ringvaart en Tijarm Zwijnaarde in `r laatste_jaar_BOZ` {#Tijarm}
 
 ##### Ringvaart en Tijarm Zwijnaarde ecotopen 1.0
-
 
 ```{r 030-figuur-kaart-TijarmZwijnaarde, fig.cap=figuur_ecotopenkaart_TijarmZwijnaarde, out.width="100%"}
 # kaart wordt gemaakt in sjabloon_TijarmZwijnaarde.mxd met schaal 1 : 97 000  
@@ -994,7 +985,6 @@ figtab(knitr::opts_current$get()$label,
        caption_tab)
 
 ```
-
 
 ```{r 030-tabel-evolutie-TijarmZwijnaarde-20, results="asis", fig.show='hide', out.width="100%"}
 
