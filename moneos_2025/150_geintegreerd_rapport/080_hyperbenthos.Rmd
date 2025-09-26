@@ -105,7 +105,8 @@ Een stroomsnelheidsmeter wordt in het net opgehangen om het watervolume dat door
 Na de sleep wordt de vangst gefixeerd met F-Solv (glutaaraldehyde).
 Bijkomende metingen van omgevingsvariabelen worden verricht met een multimeter ter bepaling van de saliniteit, het zuurstofgehalte en de watertemperatuur en de gemeten waarden worden genoteerd.
 Per bemonstering wordt een waterstaal verzameld om het gehalte aan zwevende stof en de organische fractie ervan achteraf te bepalen.
-Dit staal wordt bij laag water rond de waterkering genomen waarbij de persoon op heupdiepte in het water staat en water verzamelt op ca. 20 cm onder het wateroppervlak.
+Dit staal wordt bij laag water rond de waterkering genomen waarbij de persoon op heupdiepte in het water staat en water verzamelt op ca.
+20 cm onder het wateroppervlak.
 
 ### Verwerking
 
@@ -149,7 +150,9 @@ Omdat steeds een vaste transectlengte bemonsterd wordt, is onze methode ook gest
 
 Omdat aantallen van hyperbenthos in de Zeeschelde sterk kunnen verschillen tussen jaren, met name door weersextremen (De Neve et al. 2020), zijn een ijkpunt (referentiejaar) vastgesteld op 1 jaar en evaluaties op basis van de vangst van slechts 1 jaar – zoals voorgesteld binnen Consortium Schelde in Beeld (2022) – minder aangewezen.
 Naast de effectieve jaarlijkse abundanties (per zone) geven we daarom ook een rollend gemiddelde overheen 3 jaren, en nemen we als ijkpunt het rollend gemiddelde van 2016.
-De keuze voor 2016 (en niet voor 2015, wat het oudste beschikbare rollend gemiddelde is), komt doordat 2014 een bijzonder afwijkend jaar was, met enorme aantallen hyperbenthos in grote delen van de Zeeschelde. Dat jaar staat bijvoorbeeld ook gekend als een anomalie voor wat vissen betreft, door een enorme densiteit aan spiering in dat jaar (zie hoofdstuk Vissen). Hoewel de keuze voor een referentietoestand altijd vatbaar is voor discussie
+De keuze voor 2016 (en niet voor 2015, wat het oudste beschikbare rollend gemiddelde is), komt doordat 2014 een bijzonder afwijkend jaar was, met enorme aantallen hyperbenthos in grote delen van de Zeeschelde.
+Dat jaar staat bijvoorbeeld ook gekend als een anomalie voor wat vissen betreft, door een enorme densiteit aan spiering in dat jaar (zie hoofdstuk Vissen).
+Hoewel de keuze voor een referentietoestand altijd vatbaar is voor discussie
 
 De voor de Zeeschelde aangepaste evaluatie van de abundantie van hyperbenthos gebeurt dus door per zone het actuele rollend gemiddelde te vergelijken met het rollend gemiddelde van 2016 (weergegeven in de figuur als een rode horizontale streepjeslijn).
 Een illustratie van de variatie op de gegevens wordt weergegeven als 1.96\*se van een GAM model (in R mgcv:gam(gem_abundantie \~ s(Jaar, k = 5)).
@@ -164,7 +167,14 @@ De EMSE evaluatiemethodiek schrijft voor dat wanneer er zich belangrijke ontwikk
 In Figuur \@ref(fig:080-figuur-abundantie-soorten) is het langjarig abundantieverloop voor de vier belangrijkste EMSE hyperbenthische soorten weergegeven: de grijze garnaal (*Crangon crangon*), de langsneussteurgarnaal (*Palaemon longirostris*), de steeloog-aasgarnaal (*Mesopodopsis slabberi*) en de brakwateraasgarnaal (*Neomysis integer*).
 De figuur maakt ook onderscheid per zone.
 Uit de figuur blijkt duidelijk dat de grijze garnaal en de steeloog-aasgarnaal soorten zijn die enkel in de zone Sterke Saliniteitsgradiënt voorkomen, maar dat de langneussteurgarnaal en de brakwateraasgarnaal ook of zelfs bij voorkeur in de Oligohaliene en Zoete zone voorkomen.
-De verspreiding van deze soorten langsheen de Zeeschelde verschilt tussen jaren, waarschijnlijk onder invloed van het weer. Zo was de brakwateraasgarnaal vrij talrijk in 2024, maar werd ze nauwelijks in de zoete Zeeschelde gezien, terwijl ze in 2017, 2020 en 2022 hier het talrijkst was. De meest opmerkelijke evolutie zien we echter bij de grijze garnaal en de langneussteurgarnaal. De eerste soort kende in 2024 een historisch dieptepunt met minder dan 300 exs. in de Zeeschelde op een heel jaar (doorgaans >2000 exs.). Van de langneussteurgarnaal zijn in 2023 en 2024 respectievelijk 1 en 13 exemplaren gezien. Het is onduidelijk waar dit aan ligt. Naast bovenafvoer (debiet) wat in de Zeeschelde voor een "flush"-effect zorgt, waarbij soorten uitspoelen naar meer zeewaarts gelegen zones (De Neve et al. 2020), zijn ook hoge temperatuursextremen een mogelijke oorzaak, doordat dit de overleving van jonge garnalen vermindert (Consortium Schelde in Beeld 2022).
+De verspreiding van deze soorten langsheen de Zeeschelde verschilt tussen jaren, waarschijnlijk onder invloed van het weer.
+Zo was de brakwateraasgarnaal vrij talrijk in 2024, maar werd ze nauwelijks in de zoete Zeeschelde gezien, terwijl ze in 2017, 2020 en 2022 hier het talrijkst was.
+De meest opmerkelijke evolutie zien we echter bij de grijze garnaal en de langneussteurgarnaal.
+De eerste soort kende in 2024 een historisch dieptepunt met minder dan 300 exs.
+in de Zeeschelde op een heel jaar (doorgaans \>2000 exs.).
+Van de langneussteurgarnaal zijn in 2023 en 2024 respectievelijk 1 en 13 exemplaren gezien.
+Het is onduidelijk waar dit aan ligt.
+Naast bovenafvoer (debiet) wat in de Zeeschelde voor een "flush"-effect zorgt, waarbij soorten uitspoelen naar meer zeewaarts gelegen zones (De Neve et al. 2020), zijn ook hoge temperatuursextremen een mogelijke oorzaak, doordat dit de overleving van jonge garnalen vermindert (Consortium Schelde in Beeld 2022).
 
 ```{r 080-figuur-dens, fig.cap=caption_figdens, out.width="100%"}
 caption_figdens <- "Gemiddelde densiteit van hyperbenthos per 200 m sleep (blauwe lijn) per jaar, per zone en voor de gehele Zeeschelde. Bijkomend worden een rollend gemiddelde overheen 3 jaar (rode lijn) en een evaluatiegrens (=rollend gemiddelde in 2016, als rode streepjeslijn) getoond."
@@ -184,7 +194,9 @@ knitr::include_graphics(paste0(pad_figuren, "080-EMSE-soorten-abundantie-zone-ja
 
 Hyperbenthos densiteiten kunnen jaarlijks sterk wisselen in de Zeeschelde, vermoedelijk deels natuurlijk en deels door omgevingsvariabelen die (mee) door de mens bepaald worden (bv. zwevende stof gehaltes).
 Hyperbenthos is dus inherent een volatiele groep in de Zeeschelde.
-Daarbij komt nog dat de monitoring voor de drie deelzones elk slechts gebaseerd is op 2 stations. Dit draagt verder bij tot de vrij grote variatie tussen opeenvolgende meetjaren en meetmaanden. Daar tegenover staat dat herhaalde, en systeemwijde negatieve trends, een duidelijke indicatie zijn voor kwaliteitsverlies.
+Daarbij komt nog dat de monitoring voor de drie deelzones elk slechts gebaseerd is op 2 stations.
+Dit draagt verder bij tot de vrij grote variatie tussen opeenvolgende meetjaren en meetmaanden.
+Daar tegenover staat dat herhaalde, en systeemwijde negatieve trends, een duidelijke indicatie zijn voor kwaliteitsverlies.
 
 <br/>
 
@@ -195,16 +207,21 @@ Dit gemiddelde mag niet dalen sinds de T2015, noch toenemen met meer dan 25%.
 Voor de Zeeschelde wordt hyperbenthos niet per oppervlakte (m²) bepaald (zie Materiaal en methode), maar per samplevolume (40 m³).
 Omdat steeds een vaste transectlengte bemonsterd wordt, is onze methode ook gestandaardiseerd naar oppervlakte, zodat ze ook aan de vereiste van een gestandaardiseerde oppervlakte voldoet.
 
-Net als bij abundantie passen we de evaluatiecriteria voor de Zeeschelde lichtjes aan ten opzichte van de richtlijnen in Consortium Schelde in Beeld (2022). Omdat aantallen van hyperbenthos in de Zeeschelde sterk kunnen verschillen tussen jaren, met name door weersextremen (De Neve et al. 2020), zijn een ijkpunt (referentiejaar) vastgesteld op 1 jaar en evaluaties op basis van de vangst van slechst 1 jaar, ook voor de biomassa, minder aangewezen.
+Net als bij abundantie passen we de evaluatiecriteria voor de Zeeschelde lichtjes aan ten opzichte van de richtlijnen in Consortium Schelde in Beeld (2022).
+Omdat aantallen van hyperbenthos in de Zeeschelde sterk kunnen verschillen tussen jaren, met name door weersextremen (De Neve et al. 2020), zijn een ijkpunt (referentiejaar) vastgesteld op 1 jaar en evaluaties op basis van de vangst van slechst 1 jaar, ook voor de biomassa, minder aangewezen.
 Naast de gemiddelde jaarlijkse biomassa (per zone) geven we daarom ook een rollend gemiddelde overheen 3 jaren, en nemen we als ijkpunt het rollend gemiddelde van 2016.
-De keuze voor 2016 (en niet voor 2015, wat het oudste beschikbare rollend gemiddelde is), komt doordat 2014 een bijzonder afwijkend jaar was, met enorme aantallen hyperbenthos in grote delen van de Zeeschelde. Dat jaar staat bijvoorbeeld ook gekend als een anomalie voor wat vissen betreft, door een enorme densiteit aan spiering in dat jaar (zie hoofdstuk Vissen).
+De keuze voor 2016 (en niet voor 2015, wat het oudste beschikbare rollend gemiddelde is), komt doordat 2014 een bijzonder afwijkend jaar was, met enorme aantallen hyperbenthos in grote delen van de Zeeschelde.
+Dat jaar staat bijvoorbeeld ook gekend als een anomalie voor wat vissen betreft, door een enorme densiteit aan spiering in dat jaar (zie hoofdstuk Vissen).
 
 De voor de Zeeschelde aangepaste evaluatie van de biomassa van het hyperbenthos gebeurt dus analoog aan deze voor densiteit (zie daar voor meer uitleg).
 De trend in de biomassa van het hyperbenthos, het rollend gemiddelde ervan overheen 3 jaar en de evaluatiegrens, worden weergegeven in Figuur \@ref(fig:080-figuur-biom).
 
-We zien dat voor alle zones het meest recente rollend gemiddelde overheen 3 jaar én de gemiddelde biomassa voor 2024 onder het biomassacriterium (rollend gemiddelde van 2016) liggen. De negatieve trend voor biomassa tekent zich nog duidelijker af dan voor densiteiten. De reden is dat vooral de grotere (en zwaardere) grijze garnalen en langneussteurgarnalen een aantal opeenvolgende slechte jaren kenden, net als de vrij kleine maar soms erg talrijke steeloog-aasgarnaal (zie Figuur \@ref(080-figuur-biom-soorten)).
-De evaluatie van de biomassa is dus uitgesproken negatief. Voor een korte bespreking verwijzen we naar de toetsparameter abundantie. In ieder geval is meer onderzoek nodig om inzicht te krijgen in de invloed van klimaat en van eventuele lokale antropogene factoren.
-
+We zien dat voor alle zones het meest recente rollend gemiddelde overheen 3 jaar én de gemiddelde biomassa voor 2024 onder het biomassacriterium (rollend gemiddelde van 2016) liggen.
+De negatieve trend voor biomassa tekent zich nog duidelijker af dan voor densiteiten.
+De reden is dat vooral de grotere (en zwaardere) grijze garnalen en langneussteurgarnalen een aantal opeenvolgende slechte jaren kenden, net als de vrij kleine maar soms erg talrijke steeloog-aasgarnaal (zie Figuur \@ref(080-figuur-biom-soorten)).
+De evaluatie van de biomassa is dus uitgesproken negatief.
+Voor een korte bespreking verwijzen we naar de toetsparameter abundantie.
+In ieder geval is meer onderzoek nodig om inzicht te krijgen in de invloed van klimaat en van eventuele lokale antropogene factoren.
 
 ```{r 080-figuur-biom, fig.cap=caption_figbiom, out.width="100%"}
 caption_figbiom <- "Gemiddelde biomassa van hyperbenthos per 200 m sleep (blauwe lijn)  per jaar, per zone en voor de gehele Zeeschelde. Bijkomend worden een rollend gemiddelde overheen 3 jaar (rode lijn) en een evaluatiegrens (=rollend gemiddelde in 2016, als rode streepjeslijn) getoond."
@@ -222,11 +239,12 @@ knitr::include_graphics(paste0(pad_figuren, "080-EMSE-soorten-biomassa-zone-jare
 
 <br/>
 
-
 ### Toetsparameter: Soortenrijkdom
 
-De toetsparameter soortenrijkdom kijkt naar het totaal aantal soorten (dus niet enkel de EMSE-soorten) exclusief de exoten, per deelzone. Dit soortenaantal mag niet significant dalen volgens het EMSE criterium (Consortium Schelde in Beeld 2022).
-Totale soortenrijdom op jaarbasis, per deelzone en voor de gehele Zeeschelde, staat weergegeven in Figuur \@ref(fig:080-figuur8). De figuur toont soortenrijkdom met en zonder exoten, waaruit blijkt dat vooral in de zones Sterke Saliniteitsgradiënt en Oligohalien er een belangrijk aandeel exoten aanwezig is (15—20%). 
+De toetsparameter soortenrijkdom kijkt naar het totaal aantal soorten (dus niet enkel de EMSE-soorten) exclusief de exoten, per deelzone.
+Dit soortenaantal mag niet significant dalen volgens het EMSE criterium (Consortium Schelde in Beeld 2022).
+Totale soortenrijdom op jaarbasis, per deelzone en voor de gehele Zeeschelde, staat weergegeven in Figuur \@ref(fig:080-figuur8).
+De figuur toont soortenrijkdom met en zonder exoten, waaruit blijkt dat vooral in de zones Sterke Saliniteitsgradiënt en Oligohalien er een belangrijk aandeel exoten aanwezig is (15—20%).
 
 ```{r 080-figuur8, fig.cap=caption_fig8, out.width="100%"}
 caption_fig8 <- "Taxa rijkdom per jaar per deelzone, en voor de gehele Zeeschelde, mét en zonder exoten."
@@ -236,9 +254,20 @@ knitr::include_graphics(paste0(pad_figuren, "080_figuur_soortenrijkdomZS_perjaar
 
 <br/>
 
-Soortenrijkdom in de Zeeschelde wordt sterk beïnvloed door het occasioneel opduiken ("zwerven") van soorten die normaal meer zeewaarts voorkomen. Een toetsparameter kent bij voorkeur een meer stabiel en minder door toeval gedreven gedrag, en we kozen daarom voor de gemiddelde maandelijkse soortenrijkdom per zone. De manier waarop we deze rapporteren en evalueren is analoog aan de toetsparameters abundantie en biomassa, en we verwijzen naar die onderdelen voor meer uitleg over de methode. Dit wil zeggen dat we een rollend gemiddelde overheen 3 jaren als evaluatieparameter gebruiken. Op dit manier zijn de data gebufferd tegen de inherente jaar-tot-jaar variatie van de hyperbenthos gemeenschap in de Zeeschelde, en ligt de focus meer op herhaalde, repetitieve gebeurtenissen (bv. weersanomalieën) of trends.  
+Soortenrijkdom in de Zeeschelde wordt sterk beïnvloed door het occasioneel opduiken ("zwerven") van soorten die normaal meer zeewaarts voorkomen.
+Een toetsparameter kent bij voorkeur een meer stabiel en minder door toeval gedreven gedrag, en we kozen daarom voor de gemiddelde maandelijkse soortenrijkdom per zone.
+De manier waarop we deze rapporteren en evalueren is analoog aan de toetsparameters abundantie en biomassa, en we verwijzen naar die onderdelen voor meer uitleg over de methode.
+Dit wil zeggen dat we een rollend gemiddelde overheen 3 jaren als evaluatieparameter gebruiken.
+Op dit manier zijn de data gebufferd tegen de inherente jaar-tot-jaar variatie van de hyperbenthos gemeenschap in de Zeeschelde, en ligt de focus meer op herhaalde, repetitieve gebeurtenissen (bv. weersanomalieën) of trends.
 
-De gemiddelde maandelijkse soortenrijkdom of taxa rijkdom (in het geval niet alle exemplaren tot op soort herkend werden), kent  een vrij stabiel verloop doorheen de tijd in de Zeeschelde. In alle zones was 2024 een jaar met gemiddeld minder soorten dan de referentie (het rollend gemiddelde van 2016), en ook het meest recente rollend gemiddelde scoort onder de evaluatiegrens. De meest duidelijke daling doorheen de tijd noteren we voor de zone Oligohalien. Een van de redenen voor een afname van de gemiddelde maandelijkse soortenrijkdom is de eerder gemelde crash van garnalen en steurgarnalen, die daardoor in de meeste maandelijkse staalnames afwezig waren. In de zone Sterke Saliniteitsgradiënt is er geen afname. Wel valt het haaientandprofiel op, met afwisselend tussen jaren verschillen in de gemiddelde soortenrijkdom van ca. 3 soorten, ofwel bijna 25% van het soortaantal. Die jaarlijkse verschillen zijn opmerkelijk, aangezien het een gemiddeld verschil betreft, op basis van monsters van april tot en met oktober op 2 stations.
+De gemiddelde maandelijkse soortenrijkdom of taxa rijkdom (in het geval niet alle exemplaren tot op soort herkend werden), kent een vrij stabiel verloop doorheen de tijd in de Zeeschelde.
+In alle zones was 2024 een jaar met gemiddeld minder soorten dan de referentie (het rollend gemiddelde van 2016), en ook het meest recente rollend gemiddelde scoort onder de evaluatiegrens.
+De meest duidelijke daling doorheen de tijd noteren we voor de zone Oligohalien.
+Een van de redenen voor een afname van de gemiddelde maandelijkse soortenrijkdom is de eerder gemelde crash van garnalen en steurgarnalen, die daardoor in de meeste maandelijkse staalnames afwezig waren.
+In de zone Sterke Saliniteitsgradiënt is er geen afname.
+Wel valt het haaientandprofiel op, met afwisselend tussen jaren verschillen in de gemiddelde soortenrijkdom van ca.
+3 soorten, ofwel bijna 25% van het soortaantal.
+Die jaarlijkse verschillen zijn opmerkelijk, aangezien het een gemiddeld verschil betreft, op basis van monsters van april tot en met oktober op 2 stations.
 
 De evaluatie van de toetsparameter soortenrijkdom is gunstig voor de Zeeschelde als geheel en de zone Sterke Saliniteitsgradiënt, maar evolueert negatief voor de Oligohaliene en (in mindere mate) de Zoete zone van de Zeeschelde.
 
@@ -250,13 +279,20 @@ knitr::include_graphics(paste0(pad_figuren, "080-figuur-Soortenrijkdom.per.maand
 
 <br/>
 
-### Toetsparameter: Shannon-index abundantie 
+### Toetsparameter: Shannon-index abundantie
 
-Om de structuur en samenstelling van de hyperbenthos gemeenschap op te volgen, is door Consortium Schelde in Beeld (2022) de Shannon-diversiteits-index voorgesteld. Deze index geeft een waarde tussen 0 en het natuurlijk logaritme (ln) van soortenrijkdom, en geeft een hoge waarden indien er veel soorten in het monster zitten én indien deze soorten gelijk verdeeld zijn. Bij afwijkingen, bijvoorbeeld de dominantie door 1 soort, verlaagt de index. Deze index mag niet significant dalen volgens het EMSE criterium ten opzichte van de T2015 (Consortium Schelde in Beeld 2022), en moet bepaald worden per zone. Deze toetsparameter wordt bepaald op basis van abundantie.
+Om de structuur en samenstelling van de hyperbenthos gemeenschap op te volgen, is door Consortium Schelde in Beeld (2022) de Shannon-diversiteits-index voorgesteld.
+Deze index geeft een waarde tussen 0 en het natuurlijk logaritme (ln) van soortenrijkdom, en geeft een hoge waarden indien er veel soorten in het monster zitten én indien deze soorten gelijk verdeeld zijn.
+Bij afwijkingen, bijvoorbeeld de dominantie door 1 soort, verlaagt de index.
+Deze index mag niet significant dalen volgens het EMSE criterium ten opzichte van de T2015 (Consortium Schelde in Beeld 2022), en moet bepaald worden per zone.
+Deze toetsparameter wordt bepaald op basis van abundantie.
 
-We volgen dezelfde evaluatiestrategie als bij de toetsparameter Soortenrijkdom, op basis van een gemiddelde maandelijkse Shannon-index per jaar, en per zone (zie hoger). Als toetsparameter nemen we het rollend gemiddelde overheen 3 jaar en als referentie nemen we het rollend gemiddelde van het jaar 2016 (voor argumentatie: zie de andere toetsparameters).
+We volgen dezelfde evaluatiestrategie als bij de toetsparameter Soortenrijkdom, op basis van een gemiddelde maandelijkse Shannon-index per jaar, en per zone (zie hoger).
+Als toetsparameter nemen we het rollend gemiddelde overheen 3 jaar en als referentie nemen we het rollend gemiddelde van het jaar 2016 (voor argumentatie: zie de andere toetsparameters).
 
-De Shannon diversiteit is een zone-specifieke eigenschap van het hyperbenthos, zo blijkt uit Figuur \@ref(fig:080-figuur10). In de Zeeschelde schommelt het rollend gemiddelde rond 1.4, in de zone Sterke Saliniteitsgradiënt rond de 1, en in de overige twee zones rond de 1.2. De Shannon-index is behoorlijk stabiel overheen de tijd, in alle zones.
+De Shannon diversiteit is een zone-specifieke eigenschap van het hyperbenthos, zo blijkt uit Figuur \@ref(fig:080-figuur10).
+In de Zeeschelde schommelt het rollend gemiddelde rond 1.4, in de zone Sterke Saliniteitsgradiënt rond de 1, en in de overige twee zones rond de 1.2.
+De Shannon-index is behoorlijk stabiel overheen de tijd, in alle zones.
 
 ```{r 080-figuur10, fig.cap=caption_fig10, out.width="100%"}
 caption_fig10 <- "Gemiddelde maandelijkse Shannon diversiteit, per deelzone en voor de volledige Zeeschelde, voor de verschillende monitoringsjaren. De shannon diversiteit werd zowel berekend op densiteiten als voor biomassa."
@@ -270,25 +306,37 @@ knitr::include_graphics(paste0(pad_figuren, "080-figuur-Shannon.per.maand_ZONES2
 
 **Toetsparameters Abundantie en Biomassa**
 
-De evaluatie van densiteiten en biomassa van hyperbenthos wordt vanaf het evaluatiejaar 2024 beperkt tot de EMSE-soorten: de aasgarnalen, garnalen en steurgarnalen. Deze aanpak verschilt van de voorgaande rapportages waarbij ook juveniele vis, vlokreeftjes, etc... meegerekend werd.
-De evolutie van abundantie en biomassa overheen de monitoringsjaren is onderhevig aan grote schommelingen, die samen hangen met goede en slechte jaren van specifieke soorten, wellicht voor een deel aangedreven door weersextremen. We ontwikkelden daarom een aangepaste evaluatiemethodiek, op basis van een rollend gemiddelde, waardoor jaar-tot-jaar variatie minder tot uiting komt en de nadruk meer ligt op herhaalde of continue trends. 
-De evaluatie toont aan dat voor abundantie, maar nog meer uitgesproken voor biomassa, er recent een negatieve trend is van het hyperbenthos (EMSE-soorten) in de Zeeschelde. Deze trend is algemeen, maar meest uitgesproken in de zone Oligohalien. Een analyse per soort toont aan dat in 2024 zowel grijze garnalen als langneussteurgarnalen, twee soorten die doorgaans een belangrijk aandeel hebben in de biomassa van het hyperbenthos in de Zeeschelde, vrijwel afwezig waren. Voor de langneussteurgarnaal was dit al het twee jaar op rij waarbij de soort grotendeels ontbrak. Meer onderzoek is nodig naar de mogelijke oorzaken, waarbij zeker aandacht moet gaan naar de invloed van weersextremen, ook met het oog op toekomstige effecten van klimaatverstoring op de ecologie van de Zeeschelde (De Neve et al. 2020, Consortium Schelde in Beeld 2022). 
+De evaluatie van densiteiten en biomassa van hyperbenthos wordt vanaf het evaluatiejaar 2024 beperkt tot de EMSE-soorten: de aasgarnalen, garnalen en steurgarnalen.
+Deze aanpak verschilt van de voorgaande rapportages waarbij ook juveniele vis, vlokreeftjes, etc...
+meegerekend werd.
+De evolutie van abundantie en biomassa overheen de monitoringsjaren is onderhevig aan grote schommelingen, die samen hangen met goede en slechte jaren van specifieke soorten, wellicht voor een deel aangedreven door weersextremen.
+We ontwikkelden daarom een aangepaste evaluatiemethodiek, op basis van een rollend gemiddelde, waardoor jaar-tot-jaar variatie minder tot uiting komt en de nadruk meer ligt op herhaalde of continue trends.
+De evaluatie toont aan dat voor abundantie, maar nog meer uitgesproken voor biomassa, er recent een negatieve trend is van het hyperbenthos (EMSE-soorten) in de Zeeschelde.
+Deze trend is algemeen, maar meest uitgesproken in de zone Oligohalien.
+Een analyse per soort toont aan dat in 2024 zowel grijze garnalen als langneussteurgarnalen, twee soorten die doorgaans een belangrijk aandeel hebben in de biomassa van het hyperbenthos in de Zeeschelde, vrijwel afwezig waren.
+Voor de langneussteurgarnaal was dit al het twee jaar op rij waarbij de soort grotendeels ontbrak.
+Meer onderzoek is nodig naar de mogelijke oorzaken, waarbij zeker aandacht moet gaan naar de invloed van weersextremen, ook met het oog op toekomstige effecten van klimaatverstoring op de ecologie van de Zeeschelde (De Neve et al. 2020, Consortium Schelde in Beeld 2022).
 
 **Toetsparameter soortenrijkdom**
 
-Het rollend gemiddelde van de soortenrijkdom (of taxa rijkdom) van het hyperbenthos in de deelzones van de Zeeschelde kende een vrij stabiel verloop doorheen de tijd. Enkel in de zone Oligohalien lijkt het huidig rollend gemiddeld lager dan de referentie rond 2016. In alle zones was de effectieve gemiddelde maandelijkse soortenrijkdom in 2024 lager dan de referentie, mogelijk mede door het vaak ontbreken van garnalen en steurgarnalen in de monsters. 
+Het rollend gemiddelde van de soortenrijkdom (of taxa rijkdom) van het hyperbenthos in de deelzones van de Zeeschelde kende een vrij stabiel verloop doorheen de tijd.
+Enkel in de zone Oligohalien lijkt het huidig rollend gemiddeld lager dan de referentie rond 2016.
+In alle zones was de effectieve gemiddelde maandelijkse soortenrijkdom in 2024 lager dan de referentie, mogelijk mede door het vaak ontbreken van garnalen en steurgarnalen in de monsters.
 Voor de zone Oligohalien evolueert de toestand voor deze parameter naar ongunstig, voor de andere zones valt deze voorlopig binnen de evaluatiemarge.
-
 
 **Toetsparameter Shannon-index diversiteit**
 
-De gemiddelde maandelijkse Shannon diversiteit is een vrij stabiele, zone-specifieke eigenschap van de  hyperbenthos gemeenschappen in de Zeeschelde. Het is ook een vrij stabiele parameter, die geen duidelijke veranderingen overheen de monitoringsperiode laat zien. We evalueren deze daarom als gunstig.
+De gemiddelde maandelijkse Shannon diversiteit is een vrij stabiele, zone-specifieke eigenschap van de hyperbenthos gemeenschappen in de Zeeschelde.
+Het is ook een vrij stabiele parameter, die geen duidelijke veranderingen overheen de monitoringsperiode laat zien.
+We evalueren deze daarom als gunstig.
 
 ## Referenties
 
-Consortium Schelde in Beeld
-(2022).
-Evaluatiemethodiek Schelde-estuarium. Update 2021. HKV/universiteit Gent/Bureau Waardenburg/ Antea Group: Nederland, Bergen-op-Zoom. p. 396.
+Consortium Schelde in Beeld (2022).
+Evaluatiemethodiek Schelde-estuarium.
+Update 2021.
+HKV/universiteit Gent/Bureau Waardenburg/ Antea Group: Nederland, Bergen-op-Zoom.
+p. 396.
 
 De Neve L., Van Ryckegem G., Vanoverbeke J., Van de Meutter F., Van Braeckel A., Van den Bergh E., & Speybroeck, J.
 (2020).
@@ -302,5 +350,5 @@ Van Ryckegem G., Vanoverbeke J., Van Braeckel A., Van de Meutter F., Mertens W. 
 MONEOS-Datarapport INBO: toestand Zeeschelde 2020.
 Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
 Rapporten van het Instituut voor Natuur- en Bosonderzoek 2021 (47).
-Instituut voor Natuur- en Bosonderzoek, Brussel. 
+Instituut voor Natuur- en Bosonderzoek, Brussel.
 DOI: doi.org/10.21436/inbor.52484672.
