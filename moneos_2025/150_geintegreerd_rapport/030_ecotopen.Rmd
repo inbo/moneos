@@ -259,7 +259,7 @@ In de **supralitorale zone** worden volgende ecotopen onderscheiden:
 
 -   Potentiële pionierzone: de onbegroeide zone op zacht substraat boven HW85. In deze zone zou, op basis van de hoogteligging in het getijvenster, schoruitbreiding met kenmerkende schorvegetatie mogelijk zijn. Aangezien deze zone onbegroeid blijft, zijn de hydrodynamische omstandigheden en/of de waterverzadiging er niet geschikt voor vegetatievestiging;
 -   Schor: zone boven HW85, maar lager dan de grens voor het hoog supralitoraal, begroeid met vegetatie kenmerkend voor estuariene of fluviatiele omstandigheden; <!--# eigenlijk moet hier een soort grenswaarde voor % begroeiing aangegeven worden om potentiële pionierzone van schor te onderscheiden -->
--   Getijdeplas: grote waterplas binnen de schorzone; <!--# in GGG's zijn die toch ook in het slik te vinden? -->
+-   Getijdeplas: grote waterplas binnen de schorzone; <!--# in GGG's zijn die toch ook in het slik te vinden? Getijdeplassen in GGG's bevinden zich ook effectief in het supralitoraal voor BEZ, ecotoopgrenzen zijn appart bepaald voor GGG's dus klopt deze definitie ook hier. Andere watervlakken in laag gelegen zones zijn aangegeven als subtidaal. Voor BOZ klopt dit niet > 2 plassen in slikzone => aan te passen naar subtidaal?  -->
 -   Supralitoraal (s.s.) hard natuurlijk: zone van klei of veen, vaak door erosie vrijgekomen, gelegen tussen HW85 en de ondergrens van het hoog supralitoraal;
 -   Supralitoraal (s.s.) hard antropogeen: zone tussen HW85 en de ondergrens van het hoog supralitoraal met antropogeen hard substraat, meestal breuksteen of schanskorven, waartussen beperkte vegetatieontwikkeling mogelijk is en dus ook met beperkt ecologisch potentieel;
 -   Hoog supralitoraal (hoog supralitorale vegetatie): Met hogere planten begroeide zone boven de functionele schorren;
@@ -314,22 +314,22 @@ Tabel \@ref(tab:030-tabel-oppervlakte-BEZ) toont de oppervlaktes per ecotoop in 
 De korte en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-tabel-evolutie-BEZ) via de absolute verandering (ha) en de procentuele verandering (%) tussen de aangegeven jaren.
 Voor de korte termijn evolutie wordt het huidige jaar vergeleken met het jaar ervoor, terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (`r vroegste_jaar`).
 
-Ten opzichte van de vorige rapportage (Mertens & Van Braeckel, 2023) <!--# referenties aanpassen --> is het **sublitoraal** ecotoop in `r laatste_jaar` gedaald met 6,6 hectare (daling van 0,3 %; Tabel \@ref(tab:030-tabel-evolutie-BEZ)).
+Ten opzichte van de vorige rapportage (Mertens & Van Braeckel, 2024) is het **sublitoraal** ecotoop in `r laatste_jaar` gedaald met 6,6 hectare (daling van 0,3 %; Tabel \@ref(tab:030-tabel-evolutie-BEZ)).
 Deze afname is te wijten aan afnames in oppervlakte van het diep subtidaal en het ondiep subtidaal.
 Het matig diep subtidaal is licht in oppervlakte toegenomen (Tabel \@ref(tab:030-tabel-oppervlakte-BEZ)).
 
 In het **litoraal** is de totale oppervlakte aan zacht substraat met 140 hectare (34 %) gestegen sinds `r laatste_jaar - 1`.
-Deze sterke stijging heeft te maken met de nieuwe inrichting van Prosperpolder-Noord die werd ontpolderd eind 2022 - begin 2023 <!--# wanneer exact? --> (Figuur \@ref(fig:030-figuur-prosperpolder-2023)).
+Deze sterke stijging heeft te maken met de nieuwe inrichting van Prosperpolder-Noord die werd ontpolderd in oktober 2022 (Figuur \@ref(fig:030-figuur-prosperpolder-2023)).
 Door deze ontpoldering is er een derde meer slik zacht substraat bijgekomen in de Beneden-Zeeschelde ten opzichte van voorgaande jaren.
 
 Ook in het **supralitoraal** is er voor alle ecotopen een belangrijke toename in oppervlakte in vergelijking met voorgaande jaren die kan worden toegeschreven aan de ontpoldering van Prosperpolder-Noord.
 Vooral de potentiële pionierzone (met in 2022 nog de laagste waarde sinds 2010) en het hoog supralitoraal kennen in `r laatste_jaar` een procentueel sterke toename.
-Het schor is verder blijven toenemen, in `r laatste_jaar` met 14,8 hectare ten opzichte van `r laatste_jaar - 1`.
+Het schor is verder blijven toenemen, in `r laatste_jaar` met 15,2 hectare ten opzichte van `r laatste_jaar - 1`.
 <!--# Er is opvallende geen verdere verschorring in Fort Filip, Lillo, Fasseit ten opzichte van 2022. -->
 
 Het antropogeen hard substraat (breuksteen) is over alle ecotopen afgenomen met 1,2 hectare.
 
-Door de ontpoldering van Prosperpolder-Noord is de totale oppervlakte estuarien gebied in de Beneden-Zeeschelde met 182 hectare (5 %) gestegen.
+Door de ontpoldering van Prosperpolder-Noord is de totale oppervlakte estuarien gebied in de Beneden-Zeeschelde met 173 hectare (5 %) gestegen.
 
 <br/>
 
@@ -345,18 +345,25 @@ knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_BEZ_", laatste_j
 
 \newpage
 
-```{r}
-caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen Zeeschelde 1.0 in de Beneden-Zeeschelde in de laatste 6 jaar voor ", laatste_jaar, ", inclusief het startjaar ", vroegste_jaar, ".")
+```{r 030-tabel-oppervlakte-BEZ, results='asis', echo=FALSE}
+caption_tab <- str_c(
+  "Oppervlaktes en oppervlaktepercentages van ecotopen Zeeschelde 1.0 in de Beneden-Zeeschelde in de laatste 6 jaar voor ",
+  laatste_jaar, ", inclusief het startjaar ", vroegste_jaar, "."
+)
 
 img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_BEZ_", vroegste_jaar, "_", laatste_jaar, "_10.PNG")
 
-cat("\\begin{landscape}\n")
+cat(paste0(
+  "\\begin{landscape}\n",
+  "\\begin{table}[p]\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{tab:030-tabel-oppervlakte-BEZ}\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.98\\linewidth,height=0.98\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\end{table}\n",
+  "\\end{landscape}\n"
+))
 
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
-cat("\\end{landscape}\n")
 
 ```
 
@@ -487,8 +494,6 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-<!--# er klopt iets niet met de tabel van de hellingen -->
-
 ```{r 030-tabel-oppervlakte-helling-BEZ-20, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Oppervlaktes en percentages van steile en vlakke slikken in de Beneden-Zeeschelde in ", laatste_jaar, ", volgens de Zeeschelde ecotopen 2.0.")
@@ -514,54 +519,64 @@ Tabel \@ref(tab:030-tabel-oppervlakte-BOZ) toont de oppervlaktes per ecotoop in 
 De medio en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-tabel-evolutie-BOZ) via de absolute verandering (ha) en de procentuele verandering (%) tussen de aangegeven jaren.
 Voor de medio termijn evolutie wordt het huidige jaar vergeleken met drie jaar ervoor, terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (`r vroegste_jaar`).
 
-Ten opzichte van de vorige rapportage (Mertens & Van Braeckel, 2023**XXX**) <!--# referenties aanpassen --> is het **sublitoraal** ecotoop in `r laatste_jaar_BOZ` gedaald met 6,6 hectare (daling van 0,3 %; Tabel \@ref(tab:030-tabel-evolutie-BOZ)).
-Deze afname is te wijten aan afnames in oppervlakte van het diep subtidaal en het ondiep subtidaal.
-Het matig diep subtidaal is licht in oppervlakte toegenomen (Tabel \@ref(tab:030-tabel-oppervlakte-BOZ)).
+Ten opzichte van de vorige rapportage (Mertens & Van Braeckel, 2022) is het **sublitoraal** ecotoop in `r laatste_jaar_BOZ` toegenomen met 10,3 hectare (toename van 1,4 %; Tabel \@ref(tab:030-tabel-evolutie-BOZ)).
+Deze toename is te wijten aan toenames in oppervlakte van het diep subtidaal en het ondiep subtidaal van respectievelijk 6,4 en 3,8 ha.
+Het matig diep subtidaal is met 0,1 ha toegenomen (Tabel \@ref(tab:030-tabel-oppervlakte-BOZ)).
 
-In het **litoraal** is de totale oppervlakte aan zacht substraat met 140 hectare (34 %) gestegen sinds `r laatste_jaar_BOZ - 1`.
-Deze sterke stijging heeft te maken met de nieuwe inrichting van Prosperpolder-Noord die werd ontpolderd eind 2022 - begin 2023 <!--# wanneer exact? --> (Figuur \@ref(fig:030-figuur-prosperpolder-2023)).
-Door deze ontpoldering is er een derde meer slik zacht substraat bijgekomen in de Boven-Zeeschelde ten opzichte van voorgaande jaren.
+In het **litoraal** is de totale oppervlakte aan zacht substraat met 4,7 hectare (3 %) gestegen sinds `r laatste_jaar_BOZ - 3`.
 
-Ook in het **supralitoraal** is er voor alle ecotopen een belangrijke toename in oppervlakte in vergelijking met voorgaande jaren die kan worden toegeschreven aan de ontpoldering van Prosperpolder-Noord.
-Vooral de potentiële pionierzone (met in 2022 nog de laagste waarde sinds 2010) en het hoog supralitoraal kennen in `r laatste_jaar_BOZ` een procentueel sterke toename.
-Het schor is verder blijven toenemen, in `r laatste_jaar_BOZ` met 14,8 hectare ten opzichte van `r laatste_jaar_BOZ - 1`.
-<!--# Er is opvallende geen verdere verschorring in Fort Filip, Lillo, Fasseit ten opzichte van 2022. -->
+In het **supralitoraal** is er een toename aan het areaal van schor, potentiële pionierzone en getijdeplas met respectievelijk 20,4; 2,2 en 0,5 ha. Het aandeel hoog supralitoraal is afgenomen met 12,8 ha. 
+<!--# Hoe komt de daling in het HS? -->
 
-Het antropogeen hard substraat (breuksteen) is over alle ecotopen afgenomen met 1,2 hectare.
+Het antropogeen hard substraat (breuksteen) is afgenomen met 3,1 hectare.
 
-Door de ontpoldering van Prosperpolder-Noord is de totale oppervlakte estuarien gebied in de Boven-Zeeschelde met 182 hectare (5 %) gestegen.
 
 <br/>
 
 \newpage
 
-```{r 030-figuur-kaart-BOZ, fig.cap=figuur_ecotopenkaart_BOZ, out.width="100%"}
+```{r 030-figuur-kaart-BOZ, results='asis', echo=FALSE}
 # kaart wordt gemaakt in sjabloon_BOZ.mxd met schaal 1 : 97 000  
+# Caption text
+caption_tab <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Boven-Zeeschelde 1.0")
 
-figuur_ecotopenkaart_BOZ <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Boven-Zeeschelde 1.0")  
+# Path to image
+img_file <- paste0(pad_figuren, "030_figuur_Ecotoop_BOZ_", laatste_jaar_BOZ, "_10.png")
 
-knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_BOZ_", laatste_jaar_BOZ, "_10.png")) 
+# Emit LaTeX figure with landscape, full scaling, and caption
+cat(paste0(
+  "\\newpage\n",
+  "\\begin{landscape}\n",
+  "\\begin{figure}[p]\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.9\\linewidth,height=0.9\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{fig:030-figuur-kaart-BOZ}\n",
+  "\\end{figure}\n",
+  "\\end{landscape}\n"
+))
 ```
 
 \newpage
 
-````{=tex}
-\begin{landscape}
-
-```{r 030-tabel-oppervlakte-BOZ, results="asis", fig.show='hide', out.width="100%"}
-
+```{r 030-tabel-oppervlakte-BOZ, results='asis', echo=FALSE}
 caption_tab <- "Oppervlaktes en oppervlaktepercentages van ecotopen Zeeschelde 1.0 in de Boven-Zeeschelde"
-
 img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_BOZ_", vroegste_jaar, "_", laatste_jaar_BOZ, "_10.PNG")
 
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
-
+cat(paste0(
+  "\\begin{landscape}\n",
+  "\\begin{table}[p]\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{tab:030-tabel-oppervlakte-BOZ}\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.98\\linewidth,height=0.98\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\end{table}\n",
+  "\\end{landscape}\n"
+))
 ```
 
-\end{landscape}
-````
+
+
 
 \newpage
 
@@ -584,17 +599,14 @@ Deze aanpak beschrijft beter de evolutie van de ecotopen in de Boven-Zeeschelde 
 De gebieden die dus niet in rekening worden gebracht onder de 'enge' planimetrie van de Boven-Zeeschelde zijn nieuwe Sigmagebieden of natuurontwikkelingsprojecten in KRWzone IV en III tot aan de Rupelmonding.
 De oppervlaktes van de ecotopen binnen de 'enge' planimetrie zijn weergegeven in Tabel \@ref(tab:030-tabel-eng-BOZ) en het verschil in evolutie binnen het gehele estuarien gebied en enkel de 'enge' planimetrie is te zien in Figuur \@ref(fig:030-figuur-evolutie-BOZ).
 
-Wat meteen opvalt is dat in de enge planimetrie de sterke toenames in middelhoog en hoog slik zacht niet zijn waar te nemen, aangezien deze zijn toe te schrijven aan de recente ontpoldering van Doelpolder-Noord.
-Ook toenames in andere ecotopen in `r laatste_jaar_BOZ` kunnen worden toegeschreven aan de uitbreiding van de laterale gebieden, met name Doelpolder-Noord.
-Over het algemene zijn er in de enge planimetrie geen sterke evoluties waar te nemen en behouden de ecotopen dezelfde oppervlakte als de voorgaande jaren.
-Enkel in het laag slik zacht is er in de enge planimetrie een toename te zien die parallel loopt met de planimetrie inclusief de laterale uitbreidingen.
-<!--# waar is dat aan te wijten? Slik aan Groot Buitenschoor? -->
+In de enge planimetrie valt op dat het aandeel aan schor toegenomen is op lange termijn en dat het aandeel potentiële pionierzone en hard antropogeen (breuksteen) juist afneemt. Verder is het aandeel hoog slik zacht substraat op lange termijn afgenomen, terwijl de medio termijn evolutie eerder stabiel blijft. Het omgekeerde valt op voor laag slik zacht substraat, waarvan het aandeel op medio termijn eerder terugvalt naar het aandeel op lange termijn. Het aandeel middelhoog slik is lichtjes afgenomen tov 2019. Tot slot vallen de fluctuaties van aandeel hoog supralitoraal doorheen de jaren op, waarbij er nu een afname is tov `r laatste_jaar_BOZ - 3` maar dit areaal is nog altijd hoger dan `r vroegste_jaar`.
+<!--# Hoe komen de fluctuaties in het HS?   -->
 
 <br/>
 
 ```{r 030-tabel-eng-BOZ, results="asis", fig.show='hide', out.width="100%"}
 
-caption_tab <- str_c("Ecotooparealen  Zeeschelde 1.0 in de ‘enge planimetrie’ van de  Beneden‐Zeeschelde zonder de NOP’s of ontpolderingen, dijkverleggingen en aantakkingen tussen ", vroegste_jaar, " en ", laatste_jaar_BOZ, ".")
+caption_tab <- str_c("Ecotooparealen  Zeeschelde 1.0 in de ‘enge planimetrie’ van de  Boven‐Zeeschelde zonder de NOP’s of ontpolderingen, dijkverleggingen en aantakkingen tussen ", vroegste_jaar, " en ", laatste_jaar_BOZ, ".")
 
 img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_EngePlanimetrie_BOZ_", vroegste_jaar, "_", laatste_jaar_BOZ, "_10.PNG")
 
@@ -620,16 +632,13 @@ De ecotopenkaart methode 2.0 van de Boven-Zeeschelde in `r laatste_jaar_BOZ` is 
 
 Tabel \@ref(tab:030-tabel-oppervlakte-BOZ-20) toont de oppervlaktes per ecotoop in de Boven-Zeeschelde voor elk jaar vanaf 2019 in hectare (ha) en als percentage (%) van de totale oppervlakte.
 
-<!--# er ontbreekt 10 ha ecotoop schor in ecotopen 2.0 in 2023??? -->
-
 De korte en lange termijn evolutie van de ecotopen is opnieuw beschreven in Tabel \@ref(tab:030-tabel-evolutie-BOZ-20) via de absolute verandering (ha) en de procentuele verandering (%) tussen de aangegeven jaren.
 Voor de korte termijn evolutie wordt het huidige jaar vergeleken met het jaar ervoor, terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (2019 voor Zeeschelde 2.0).
 
 In het **sublitoraal** is een onderverdeling gemaakt tussen hoog- en laagdynamisch subtidaal, op basis van de maximale stroomsnelheid bij vloed.
 De tabel toont dat de diepere delen (diep en matig diep subtidaal) grotendeels hoogdynamisch zijn.
-In het ondiep subtidaal is het aandeel laagdynamisch iets groter dan het aandeel hoogdynamisch.
-De tendens uit `r laatste_jaar_BOZ - 1` dat er in alle diepteklassen een verschuiving heeft plaatsgevonden van hoogdynamisch naar laagdynamisch, zet zich voort in `r laatste_jaar_BOZ`.
-<!--# wat kan deze verschuiving verklaren? --> Vooral in het diep subtidaal is er nog een verdere verschuiving van hoog naar laagdynamisch.
+In het ondiep subtidaal is het aandeel laagdynamisch groter dan het aandeel hoogdynamisch.
+Er is een verschuiving in `r laatste_jaar_BOZ` waarbij er een hoger aandeel hoogdynamisch diep en matig diep subtidaal is en een afname aan laagdynamisch matig diep subtidaal. Daarnaast is er een toename aan laagdynamisch ondiep subtidaal. 
 
 Bij de berekening van het **litoraal** zijn aangepaste grenzen gebruikt ten opzichte van ecotopen 1.0, afhankelijk van de saliniteitszone.
 Hierdoor is het aandeel middelhoog slik kleiner en het aandeel hoog slik groter dan bij het ecotopenstelsel 1.0.
@@ -638,9 +647,9 @@ De toename van middelhoog slik in ecotopen 1.0 door de ontpoldering Doelpolder-N
 
 In de aangepaste methode wordt ook de helling van de slikken in rekening gebracht.
 De oppervlaktes per slikecotoop met een steile (\>25%) en zwakke (\<=25%) helling zijn beschreven in Tabel (\@ref(tab:030-tabel-oppervlakte-helling-BOZ-20)).
-Zowel het litoraal zacht substraat als het litoraal hard natuurlijk hebben vrijwel geen steile hellingen.
-In het litoraal antropogeen hard substraat is wel een redelijk aandeel steil, namelijk ongeveer 39% van het totaal oppervlak litoraal hard antropogeen, wat iets meer is dan in `r laatste_jaar_BOZ-1` toen het ongeveer 33% was.
-De overige 61% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad van kleiner dan of gelijk aan 25%.
+Zowel het litoraal zacht substraat als het litoraal hard natuurlijk hebben een beperkt aandeel aan steile hellingen.
+In het litoraal antropogeen hard substraat is wel een redelijk aandeel steil, namelijk 78% van het totaal oppervlak litoraal hard antropogeen, wat iets meer is dan in `r laatste_jaar_BOZ-3` toen het ongeveer 33% was.
+De overige 22% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad van kleiner dan of gelijk aan 25%.
 
 De ecotopen in het **supralitoraal** zijn hetzelfde gedefinieerd in ecotopen 2.0 als in ecotopen 1.0.
 
@@ -648,12 +657,25 @@ De ecotopen in het **supralitoraal** zijn hetzelfde gedefinieerd in ecotopen 2.0
 
 \newpage
 
-```{r 030-figuur-kaart-BOZ-20, fig.cap=figuur_ecotopenkaart_BOZ_20, out.width="100%"}
+```{r 030-figuur-kaart-BOZ-20, results='asis', echo=FALSE}
+
 # kaart wordt gemaakt in sjabloon_BOZ.mxd met schaal 1 : 97 000  
+img_file <- paste0(pad_figuren, "030_figuur_Ecotoop_BOZ_", laatste_jaar_BOZ, "_20.png")
+caption_tab <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Boven-Zeeschelde 2.0")
 
-figuur_ecotopenkaart_BOZ_20 <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Boven-Zeeschelde 2.0")  
 
-knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_BOZ_", laatste_jaar_BOZ, "_20.png")) 
+# Emit LaTeX figure with landscape, full scaling, and caption
+cat(paste0(
+  "\\newpage\n",
+  "\\begin{landscape}\n",
+  "\\begin{figure}[p]\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.9\\linewidth,height=0.9\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{fig:030-figuur-kaart-BOZ-20}\n",
+  "\\end{figure}\n",
+  "\\end{landscape}\n"
+))
 
 ```
 
@@ -683,8 +705,6 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-<!--# er klopt iets niet met de tabel van de hellingen -->
-
 ```{r 030-tabel-oppervlakte-helling-BOZ-20, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Oppervlaktes en percentages van steile en vlakke slikken in de Boven-Zeeschelde in ", laatste_jaar_BOZ, ", volgens de Zeeschelde ecotopen 2.0.")
@@ -705,17 +725,49 @@ figtab(knitr::opts_current$get()$label,
 
 ##### Rupel ecotopen 1.0
 
-Dit is de rapportage voor de Rupel \`r laatste_jaar\`\`.
+Dit is de rapportage voor de Rupel `r laatste_jaar_BOZ`. De ecotopenkaart methode 1.0 van `r laatste_jaar - 1` wordt weergegeven in Figuur \@ref(fig:030-figuur-kaart-Rupel).
 
-```{r 030-figuur-kaart-Rupel, fig.cap=figuur_ecotopenkaart_Rupel, out.width="100%"}
-# kaart wordt gemaakt in sjabloon_Rupel.mxd met schaal 1 : 97 000  
+Tabel \@ref(tab:030-tabel-oppervlakte-Rupel) toont de oppervlaktes per ecotoop in de Rupel voor elke drie jaar vanaf `r vroegste_jaar` in hectare (ha) en als percentage (%) van de totale oppervlakte.
 
-figuur_ecotopenkaart_Rupel <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Rupel 1.0")  
+De medio en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-tabel-evolutie-Rupel) via de absolute verandering (ha) en de procentuele verandering (%) tussen de aangegeven jaren.
+Voor de medio termijn evolutie wordt het huidige jaar vergeleken met drie jaar ervoor, terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (`r vroegste_jaar`).
 
-knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_Rupel_", laatste_jaar_BOZ, "_10.png")) 
+Ten opzichte van de vorige rapportage (Mertens & Van Braeckel, 2022) is het **sublitoraal** ecotoop in `r laatste_jaar_BOZ` toegenomen met 1,8 ha (toename van 1,2 %; Tabel \@ref(tab:030-tabel-evolutie-Rupel)).
+Deze toename valt te wijten aan toenames in het diep - en matig diep subtidaal.
+
+In het **litoraal** is de totale oppervlakte aan zacht substraat met 1,6 hectare (4,2 %) gedaald in `r laatste_jaar_BOZ`.
+
+In het **supralitoraal** is er voor het schor en het hoog supralitoraal een toename in oppervlakte in vergelijking met vorig meetjaar van respectievelijk 0,5 en 0,7 ha.
+
+Het antropogeen hard substraat (breuksteen) is over alle ecotopen afgenomen met 1,4 hectare.
+
+
+```{r 030-figuur-kaart-Rupel, results='asis', echo=FALSE}
+caption_tab <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Rupel 1.0")  
+
+# Path to image
+img_file <- paste0(pad_figuren, "030_figuur_Ecotoop_Rupel_", laatste_jaar_BOZ, "_10.png")
+
+if (knitr::is_latex_output()) {
+  # When knitting to PDF, emit the full LaTeX code for landscape figure
+  # Emit LaTeX figure with landscape, full scaling, and caption
+cat(paste0(
+  "\\begin{landscape}\n",
+  "\\begin{figure}[htbp]\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.9\\linewidth,height=0.9\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{fig:030-figuur-kaart-Rupel}\n",
+  "\\end{figure}\n",
+  "\\end{landscape}\n"
+))} else {
+  # When previewing in RStudio or knitting to HTML, show the image inline for quick preview
+  knitr::include_graphics(img_file)
+}
+
+
 ```
 
-\newpage
 
 ````{=tex}
 \begin{landscape}
@@ -753,14 +805,56 @@ figtab(knitr::opts_current$get()$label,
 
 ##### Rupel ecotopen 2.0
 
+De ecotopenkaart methode 2.0 van de Rupel in `r laatste_jaar - 1` is te zien in Figuur \@ref(fig:030-figuur-kaart-Rupel-20).
+
+Tabel \@ref(tab:030-tabel-oppervlakte-Rupel-20) toont de oppervlaktes per ecotoop in de Rupel voor elk jaar vanaf 2019 in hectare (ha) en als percentage (%) van de totale oppervlakte.
+
+De korte en lange termijn evolutie van de ecotopen is opnieuw beschreven in Tabel \@ref(tab:030-tabel-evolutie-Rupel-20) via de absolute verandering (ha) en de procentuele verandering (%) tussen 2019 en `r laatste_jaar - 1`.
+
+In het **sublitoraal** is een onderverdeling gemaakt tussen hoog- en laagdynamisch subtidaal, op basis van de maximale stroomsnelheid bij vloed.
+De tabel toont dat de diepere delen (diep en matig diep subtidaal) grotendeels hoogdynamisch zijn.
+In het ondiep subtidaal is het aandeel laagdynamisch iets groter dan het aandeel hoogdynamisch.
+Uit de gegevens blijkt een lichte stijging van het aandeel hoogdynamisch diep- en matig diep subtidaal van `r laatste_jaar - 4` naar `r laatste_jaar - 1`. Daarentegen neemt het aandeel laagdynmaisch ondiep subtidaal in beperkte mate toe.
+
+Bij de berekening van het **litoraal** zijn aangepaste grenzen gebruikt ten opzichte van ecotopen 1.0, afhankelijk van de saliniteitszone.
+Hierdoor is het aandeel middelhoog slik kleiner en het aandeel laag- en hoog slik groter dan bij het ecotopenstelsel 1.0.
+
+In de aangepaste methode wordt ook de helling van de slikken in rekening gebracht.
+De oppervlaktes per slikecotoop met een steile (\>25%) en zwakke (\<=25%) helling zijn beschreven in Tabel (\@ref(tab:030-tabel-oppervlakte-helling-Rupel-20)).
+Het litoraal zacht substraat bestaat hoofdzakelijk uit zwakke hellingen. 
+In het litoraal antropogeen hard substraat is er een hoger aandeel steile hellingen dan zwakke, namelijk ongeveer 63% van het totaal oppervlak litoraal hard antropogeen.
+De overige 37% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad van kleiner dan of gelijk aan 25%.
+
+De ecotopen in het **supralitoraal** zijn hetzelfde gedefinieerd in ecotopen 2.0 als in ecotopen 1.0.
+
+
 \newpage
 
-```{r 030-figuur-kaart-Rupel-20, fig.cap=figuur_ecotopenkaart_Rupel_20, out.width="100%"}
-# kaart wordt gemaakt in sjabloon_Rupel.mxd met schaal 1 : 97 000  
+```{r 030-figuur-kaart-Rupel-20, results='asis', echo=FALSE}
+# Caption text
+caption_tab <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Rupel 2.0")  
 
-figuur_ecotopenkaart_Rupel_20 <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Rupel 2.0")  
+# Path to image
+img_file <- paste0(pad_figuren, "030_figuur_Ecotoop_Rupel_", laatste_jaar_BOZ, "_20.png") 
 
-# knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_Rupel_", laatste_jaar_BOZ, "_20.png")) 
+if (knitr::is_latex_output()) {
+  # When knitting to PDF, emit the full LaTeX code for landscape figure
+  # Emit LaTeX figure with landscape, full scaling, and caption
+cat(paste0(
+  "\\newpage\n",
+  "\\begin{landscape}\n",
+  "\\begin{figure}[p]\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.9\\linewidth,height=0.9\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{fig:030-figuur-kaart-Rupel-20}\n",
+  "\\end{figure}\n",
+  "\\end{landscape}\n"
+))} else {
+  # When previewing in RStudio or knitting to HTML, show the image inline for quick preview
+  knitr::include_graphics(img_file)
+}
+
 
 ```
 
@@ -790,8 +884,6 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-<!--# er klopt iets niet met de tabel van de hellingen -->
-
 ```{r 030-tabel-oppervlakte-helling-Rupel-20, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Oppervlaktes en percentages van steile en vlakke slikken in de Rupel in ", laatste_jaar_BOZ, ", volgens de Zeeschelde ecotopen 2.0.")
@@ -808,16 +900,49 @@ figtab(knitr::opts_current$get()$label,
 
 #### Durme {#Durme}
 
-En hier voor de Durme.
+Dit is de rapportage voor de Durme `r laatste_jaar_BOZ`. De ecotopenkaart methode 1.0 van `r laatste_jaar - 1` wordt weergegeven in Figuur \@ref(fig:030-figuur-kaart-Durme).
+
+Tabel \@ref(tab:030-tabel-oppervlakte-Durme) toont de oppervlaktes per ecotoop in de Durme voor elke drie jaar vanaf `r vroegste_jaar` in hectare (ha) en als percentage (%) van de totale oppervlakte.
+
+De medio en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-tabel-evolutie-Durme) via de absolute verandering (ha) en de procentuele verandering (%) tussen de aangegeven jaren.
+Voor de medio termijn evolutie wordt het huidige jaar vergeleken met drie jaar ervoor, terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (`r vroegste_jaar`).
+
+Ten opzichte van de vorige rapportage (Mertens & Van Braeckel, 2022) is het **sublitoraal** ecotoop in `r laatste_jaar_BOZ` toegenomen met 1,9 ha (toename van 10,3 %; Tabel \@ref(tab:030-tabel-evolutie-Rupel)).
+Deze toename valt te wijten aan toenames in het ondiep - en matig diep subtidaal.
+
+In het **litoraal** is de totale oppervlakte aan zacht substraat met 2,2 hectare (5,6 %) gedaald in `r laatste_jaar_BOZ`.
+
+In het **supralitoraal** is er voor het schor en het hoog supralitoraal een toename in oppervlakte in vergelijking met vorig meetjaar van respectievelijk 1,3 en 0,1 ha.
+
+Het antropogeen hard substraat (breuksteen) is over alle ecotopen afgenomen met 1,4 hectare.
+
 
 ##### Durme ecotopen 1.0
 
-```{r 030-figuur-kaart-Durme, fig.cap=figuur_ecotopenkaart_Durme, out.width="100%"}
-# kaart wordt gemaakt in sjabloon_Durme.mxd met schaal 1 : 97 000  
+```{r 030-figuur-kaart-Durme, results='asis', echo=FALSE}
+# Caption text
+caption_tab <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Durme 1.0")  
 
-figuur_ecotopenkaart_Durme <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Durme 1.0")  
+# Path to image
+img_file <- paste0(pad_figuren, "030_figuur_Ecotoop_Durme_", laatste_jaar_BOZ, "_10.png")
 
-#knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_Durme_", laatste_jaar_BOZ, "_10.png")) 
+if (knitr::is_latex_output()) {
+  # When knitting to PDF, emit the full LaTeX code for landscape figure
+  # Emit LaTeX figure with landscape, full scaling, and caption
+cat(paste0(
+  "\\begin{landscape}\n",
+  "\\begin{figure}[H]\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.9\\linewidth,height=0.9\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{fig:030-figuur-kaart-Durme}\n",
+  "\\end{figure}\n",
+  "\\end{landscape}\n"
+))} else {
+  # When previewing in RStudio or knitting to HTML, show the image inline for quick preview
+  knitr::include_graphics(img_file)
+}
+
 ```
 
 \newpage
@@ -858,14 +983,53 @@ figtab(knitr::opts_current$get()$label,
 
 ##### Durme ecotopen 2.0
 
+De ecotopenkaart methode 2.0 van de Durme in `r laatste_jaar - 1` is te zien in Figuur \@ref(fig:030-figuur-kaart-Durme-20).
+
+Tabel \@ref(tab:030-tabel-oppervlakte-Durme-20) toont de oppervlaktes per ecotoop in de Rupel voor elk jaar vanaf 2019 in hectare (ha) en als percentage (%) van de totale oppervlakte.
+
+De korte en lange termijn evolutie van de ecotopen is opnieuw beschreven in Tabel \@ref(tab:030-tabel-evolutie-Durme-20) via de absolute verandering (ha) en de procentuele verandering (%) tussen 2019 en `r laatste_jaar_BOZ`.
+
+In het **sublitoraal** is een onderverdeling gemaakt tussen hoog- en laagdynamisch subtidaal, op basis van de maximale stroomsnelheid bij vloed.
+De tabel toont dat er grotendeels laagdynmaisch ondiep subtidaal voorkomt. Het voorkomen van matig diep- en diep subtidaal is beperkt op de Durme, waarbij het dan hoofdzakelijk om laagdynmaisch matig diep subtidaal gaat.
+<!--# Wat is er aan de hand met hoogdynamisch ondiep subtidaal? -->
+
+Bij de berekening van het **litoraal** zijn aangepaste grenzen gebruikt ten opzichte van ecotopen 1.0, afhankelijk van de saliniteitszone.
+Hierdoor is het aandeel middelhoog slik kleiner en het aandeel laag- en hoog slik groter dan bij het ecotopenstelsel 1.0.
+
+In de aangepaste methode wordt ook de helling van de slikken in rekening gebracht.
+De oppervlaktes per slikecotoop met een steile (\>25%) en zwakke (\<=25%) helling zijn beschreven in Tabel (\@ref(tab:030-tabel-oppervlakte-helling-Durme-20)).
+Het litoraal zacht substraat bestaat overwegend uit zwakke hellingen (ca. 75%). De steile zones in het litoraal zacht substraat zijn voornamelijk terug te vinden in het hoog slik.
+In het litoraal antropogeen hard substraat is er een hoger aandeel steile hellingen dan zwakke, namelijk 88% van het totaal oppervlak litoraal hard antropogeen.
+De overige 12% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad van kleiner dan of gelijk aan 25%.
+
+De ecotopen in het **supralitoraal** zijn hetzelfde gedefinieerd in ecotopen 2.0 als in ecotopen 1.0.
 \newpage
 
-```{r 030-figuur-kaart-Durme-20, fig.cap=figuur_ecotopenkaart_Durme_20, out.width="100%"}
-# kaart wordt gemaakt in sjabloon_Durme.mxd met schaal 1 : 97 000  
+```{r 030-figuur-kaart-Durme-20, results='asis', echo=FALSE}
 
-figuur_ecotopenkaart_Durme_20 <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Durme 2.0")  
+# Caption text
+caption_tab <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Durme 2.0")  
 
-# knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_Durme_", laatste_jaar_BOZ, "_20.png")) 
+# Path to image
+img_file <- paste0(pad_figuren, "030_figuur_Ecotoop_Durme_", laatste_jaar_BOZ, "_20.png") 
+
+if (knitr::is_latex_output()) {
+  # When knitting to PDF, emit the full LaTeX code for landscape figure
+  # Emit LaTeX figure with landscape, full scaling, and caption
+cat(paste0(
+  "\\newpage\n",
+  "\\begin{landscape}\n",
+  "\\begin{figure}[p]\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.9\\linewidth,height=0.9\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{fig:030-figuur-kaart-Durme-20}\n",
+  "\\end{figure}\n",
+  "\\end{landscape}\n"
+))} else {
+  # When previewing in RStudio or knitting to HTML, show the image inline for quick preview
+  knitr::include_graphics(img_file)
+}
 
 ```
 
@@ -895,8 +1059,6 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-<!--# er klopt iets niet met de tabel van de hellingen -->
-
 ```{r 030-tabel-oppervlakte-helling-Durme-20, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Oppervlaktes en percentages van steile en vlakke slikken in de Durme in ", laatste_jaar_BOZ, ", volgens de Zeeschelde ecotopen 2.0.")
@@ -915,12 +1077,46 @@ figtab(knitr::opts_current$get()$label,
 
 ##### Ringvaart en Tijarm Zwijnaarde ecotopen 1.0
 
-```{r 030-figuur-kaart-TijarmZwijnaarde, fig.cap=figuur_ecotopenkaart_TijarmZwijnaarde, out.width="100%"}
-# kaart wordt gemaakt in sjabloon_TijarmZwijnaarde.mxd met schaal 1 : 97 000  
+Dit is de rapportage voor de Ringvaart en Tijarm Zwijnaarde `r laatste_jaar_BOZ`. De ecotopenkaart methode 1.0 van `r laatste_jaar - 1` wordt weergegeven in Figuur \@ref(fig:030-figuur-kaart-TijarmZwijnaarde).
 
-figuur_ecotopenkaart_TijarmZwijnaarde <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Tijarm Zwijnaarde 1.0")  
+Tabel \@ref(tab:030-tabel-oppervlakte-TijarmZwijnaarde) toont de oppervlaktes per ecotoop in de Ringvaart en Tijarm Zwijnaarde voor elke drie jaar vanaf 2016 in hectare (ha) en als percentage (%) van de totale oppervlakte.
 
-#knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_TijarmZwijnaarde_", laatste_jaar_BOZ, "_10.png")) 
+De medio en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-tabel-evolutie-TijarmZwijnaarde) via de absolute verandering (ha) en de procentuele verandering (%) tussen de aangegeven jaren.
+Voor de medio termijn evolutie wordt het huidige jaar vergeleken met drie jaar ervoor, terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (2016).
+
+Ten opzichte van de vorige rapportage (Mertens & Van Braeckel, 2022) is het **sublitoraal** ecotoop in `r laatste_jaar_BOZ` toegenomen met 2,1 ha (toename van 8,5 %; Tabel \@ref(tab:030-tabel-evolutie-TijarmZwijnaarde)).
+Deze toename valt te wijten aan een toename in het matig diep subtidaal (6,5%) - de afname in het ondiep subtidaal (4,4%). Verder blijkt uit de tabel dat er geen diep subtidaal voorkomt op de Ringvaart en Tijarm Zwijnaarde.
+
+In het **litoraal** is er een afname van 1,2ha ofwel 23,6% in het aandeel van slik zacht substraat in `r laatste_jaar_BOZ`.
+
+In het **supralitoraal** is er voor de potentiële pionierzone en het hoog supralitoraal een afname in oppervlakte in vergelijking met vorig meetjaar van respectievelijk 0,1 en 0,4 ha.
+
+Het antropogeen hard substraat (breuksteen) is over alle ecotopen afgenomen met 0,8 hectare.
+
+
+```{r 030-figuur-kaart-TijarmZwijnaarde, results='asis', echo=FALSE}
+# Caption text
+caption_tab <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Tijarm Zwijnaarde 1.0")  
+# Path to image
+img_file <- paste0(pad_figuren, "030_figuur_Ecotoop_TijarmZwijnaarde_", laatste_jaar_BOZ, "_10.png")
+
+if (knitr::is_latex_output()) {
+  # When knitting to PDF, emit the full LaTeX code for landscape figure
+  # Emit LaTeX figure with landscape, full scaling, and caption
+cat(paste0(
+  "\\begin{landscape}\n",
+  "\\begin{figure}[htbp]\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.9\\linewidth,height=0.9\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{fig:030-figuur-kaart-TijarmZwijnaarde}\n",
+  "\\end{figure}\n",
+  "\\end{landscape}\n"
+))
+} else {
+  # When previewing in RStudio or knitting to HTML, show the image inline for quick preview
+  knitr::include_graphics(img_file)
+}
 ```
 
 \newpage
@@ -947,7 +1143,7 @@ figtab(knitr::opts_current$get()$label,
 
 ```{r 030-tabel-evolutie-TijarmZwijnaarde, results="asis", fig.show='hide', out.width="100%"}
 
-caption_tab <- str_c("Absolute verandering en procentuele verandering van de lange termijn evolutie (tussen ", vroegste_jaar, " en ", laatste_jaar_BOZ, ") en de medio termijn evolutie (tussen ", laatste_jaar_BOZ - 1, " en ", laatste_jaar_BOZ, ") in de Tijarm Zwijnaarde 1.0.")
+caption_tab <- str_c("Absolute verandering en procentuele verandering van de lange termijn evolutie (tussen 2016 en ", laatste_jaar_BOZ, ") en de medio termijn evolutie (tussen ", laatste_jaar_BOZ - 3, " en ", laatste_jaar_BOZ, ") in de Tijarm Zwijnaarde 1.0.")
 
 img_file <- paste0(pad_tabellen, "030_tabel_evolutie_TijarmZwijnaarde_", vroegste_jaar, "_", laatste_jaar_BOZ, "_10.PNG")
 
@@ -961,14 +1157,51 @@ figtab(knitr::opts_current$get()$label,
 
 ##### Ringvaart en Tijarm Zwijnaarde ecotopen 2.0
 
+De ecotopenkaart methode 2.0 van de Ringvaart en Tijarm Zwijnaarde in `r laatste_jaar - 1` is te zien in Figuur \@ref(fig:030-figuur-kaart-TijarmZwijnaarde-20).
+
+Tabel \@ref(tab:030-tabel-oppervlakte-TijarmZwijnaarde-20) toont de oppervlaktes per ecotoop in de Ringvaart en Tijarm Zwijnaarde voor elk jaar vanaf 2019 in hectare (ha) en als percentage (%) van de totale oppervlakte.
+
+De korte en lange termijn evolutie van de ecotopen is opnieuw beschreven in Tabel \@ref(tab:030-tabel-evolutie-TijarmZwijnaarde-20) via de absolute verandering (ha) en de procentuele verandering (%) tussen 2019 en `r laatste_jaar_BOZ`.
+
+In het **sublitoraal** is een onderverdeling gemaakt tussen hoog- en laagdynamisch subtidaal, op basis van de maximale stroomsnelheid bij vloed.
+De tabel toont dat er grotendeels laagdynmaisch ondiep subtidaal voorkomt in combinatie met laagdynmaisch matig diep subtidaal. Hoogdynamische zones kwamen in `r laatste_jaar_BOZ - 3` al zeer beperkt voor en zijn afwezig in `r laatste_jaar_BOZ`.
+
+Bij de berekening van het **litoraal** zijn aangepaste grenzen gebruikt ten opzichte van ecotopen 1.0, afhankelijk van de saliniteitszone.
+Hierdoor is het aandeel middelhoog slik kleiner en het aandeel laag- en hoog slik groter dan bij het ecotopenstelsel 1.0.
+
+In de aangepaste methode wordt ook de helling van de slikken in rekening gebracht.
+De oppervlaktes per slikecotoop met een steile (\>25%) en zwakke (\<=25%) helling zijn beschreven in Tabel (\@ref(tab:030-tabel-oppervlakte-helling-TijarmZwijnaarde-20)).
+Het litoraal zacht substraat bestaat overwegend uit zwakke hellingen (ca. 85%). 
+In het litoraal antropogeen hard substraat is er een hoger aandeel steile hellingen dan zwakke, namelijk 80% van het totaal oppervlak litoraal hard antropogeen.
+De overige 20% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad van kleiner dan of gelijk aan 25%.
+
+De ecotopen in het **supralitoraal** zijn hetzelfde gedefinieerd in ecotopen 2.0 als in ecotopen 1.0.
+
 \newpage
 
-```{r 030-figuur-kaart-TijarmZwijnaarde-20, fig.cap=figuur_ecotopenkaart_TijarmZwijnaarde_20, out.width="100%"}
-# kaart wordt gemaakt in sjabloon_TijarmZwijnaarde.mxd met schaal 1 : 97 000  
+```{r 030-figuur-kaart-TijarmZwijnaarde-20,  results='asis', echo=FALSE}
+# Caption text
+caption_tab <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Tijarm Zwijnaarde 2.0")  
+# Path to image
+img_file <- paste0(pad_figuren, "030_figuur_Ecotoop_TijarmZwijnaarde_", laatste_jaar_BOZ, "_20.png")
 
-figuur_ecotopenkaart_TijarmZwijnaarde_20 <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Tijarm Zwijnaarde 2.0")  
-
-# knitr::include_graphics(paste0(pad_figuren, "030_figuur_Ecotoop_TijarmZwijnaarde_", laatste_jaar_BOZ, "_20.png")) 
+if (knitr::is_latex_output()) {
+  # When knitting to PDF, emit the full LaTeX code for landscape figure
+  # Emit LaTeX figure with landscape, full scaling, and caption
+cat(paste0(
+  "\\begin{landscape}\n",
+  "\\begin{figure}[H]\n", # force figure here, no float page
+  "\\centering\n",
+  "\\includegraphics[width=0.9\\linewidth,height=0.9\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{fig:030-figuur-kaart-TijarmZwijnaarde-20}\n",
+  "\\end{figure}\n",
+  "\\end{landscape}\n"
+))
+} else {
+  # When previewing in RStudio or knitting to HTML, show the image inline for quick preview
+  knitr::include_graphics(img_file)
+}
 
 ```
 
@@ -998,8 +1231,6 @@ figtab(knitr::opts_current$get()$label,
 
 ```
 
-<!--# er klopt iets niet met de tabel van de hellingen -->
-
 ```{r 030-tabel-oppervlakte-helling-TijarmZwijnaarde-20, results="asis", fig.show='hide', out.width="100%"}
 
 caption_tab <- str_c("Oppervlaktes en percentages van steile en vlakke slikken in de Tijarm Zwijnaarde in ", laatste_jaar_BOZ, ", volgens de Zeeschelde ecotopen 2.0.")
@@ -1028,6 +1259,16 @@ Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats
 Rapporten van het Instituut voor Natuur‐ en Bosonderzoek 2022 (Rapporten van het Instituut voor Natuur‐ en Bosonderzoek 2022 (26)).
 Instituut voor Natuur‐ en Bosonderzoek, Brussel.
 DOI: [https://doi.org/10.21436/inbor.85928183](https://doi.org/10.21436/inbor.52484672){.uri}
+
+Mertens, A.
+& Van Braeckel A.
+(2024).
+Ecotopen *in* Van Ryckegem, G., Vanoverbeke, J., Van de Meutter, F., Vandevoorde, B., Mertens, A., Mertens, W., Van Braeckel, A., Van Thyune, G., Maesele, R., Smeekens, V., Thibau, K., Bezdenjesnji, O., Buerms, D., Coudenys, A., De Regge, N., Hessel, K., Lefranc, C., Soors, J., Van Lierop, F.
+(2024).
+MONEOS‐ Geïntegreerd datarapport INBO: Toestand Zeeschelde 2023. Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten. 
+Rapporten van het Instituut voor Natuur‐ en Bosonderzoek 2024 (Rapporten van het Instituut voor Natuur‐ en Bosonderzoek 2024 (67)). 
+Instituut voor Natuur‐ en Bosonderzoek, Brussel. 
+DOI: [https://doi.org/10.21436/inbor.116247067] {.uri} 
 
 Van Braeckel, A., Vanoverbeke, J., Van de Meutter, F., De Neve, L., Soors, J., Speybroeck, J., Van Ryckegem, G., & Van den Bergh, E.
 (2020).
