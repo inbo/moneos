@@ -627,7 +627,7 @@ De hogere delen van het slik blijven stabiel.
 Op het schorplateau is er in `r laatste_jaar` iets meer sedimentatie dan de voorgaande jaren, maar dit leidt niet tot een trendbreuk.
 Opvallend is ook dat het nabij de schorrand vooral om zandafzettingen gaat met microribbels (Figuur \@ref(fig:130-figuur-KPe-slik)).
 
-```{r 130-foto-KPe-schor, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
+```{r 130-figuur-KPe-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
 raai <- "KPe"
 sectie <- "BEZ"
@@ -1302,9 +1302,14 @@ knitr::include_graphics(paste0(pad_figuren, "early_warning/early_warning_slik_ZI
 
 <br/>
 
-```{r 130-figuur-trends-schor-ZIJ, eval=fig_shor_trends_ZIJ, fig.cap=caption_trend_schor_ZIJ, out.width="100%"}
+```{r 130-check-figuren-schor_ZIJ}
 
 fig_shor_trends_ZIJ <- length(raaien_trends_schor_ZIJ) > 0
+
+```
+
+
+```{r 130-figuur-trends-schor-ZIJ, eval=fig_shor_trends_ZIJ, fig.cap=caption_trend_schor_ZIJ, out.width="100%"}
 
 if(fig_shor_trends_ZIJ) {
   caption_trend_schor_ZIJ <- str_c("Trends (", laatste_jaar - 5, " - ", laatste_jaar - 1, ") en trendbreuken (", laatste_jaar, "; 95\\% betrouwbaarheidsinterval) op de schorplateaus in Rupel, Durme en zijrivieren.")
