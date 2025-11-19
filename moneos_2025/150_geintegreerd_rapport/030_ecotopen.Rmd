@@ -508,6 +508,8 @@ figtab(knitr::opts_current$get()$label,
 
 <br/>
 
+\newpage
+
 ### Ecotopen van de Boven-Zeeschelde in `r laatste_jaar_BOZ` {#BOZ}
 
 #### Boven-Zeeschelde ecotopen 1.0
@@ -544,7 +546,9 @@ caption_tab <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Boven-Zeeschelde 1.0"
 # Path to image
 img_file <- paste0(pad_figuren, "030_figuur_Ecotoop_BOZ_", laatste_jaar_BOZ, "_10.png")
 
-# Emit LaTeX figure with landscape, full scaling, and caption
+if (knitr::is_latex_output()) {
+  # When knitting to PDF, emit the full LaTeX code for landscape figure
+  # Emit LaTeX figure with landscape, full scaling, and caption
 cat(paste0(
   "\\newpage\n",
   "\\begin{landscape}\n",
@@ -555,7 +559,11 @@ cat(paste0(
   "\\label{fig:030-figuur-kaart-BOZ}\n",
   "\\end{figure}\n",
   "\\end{landscape}\n"
-))
+))} else {
+  # When previewing in RStudio or knitting to HTML, show the image inline for quick preview
+  knitr::include_graphics(img_file)
+}
+
 ```
 
 \newpage
@@ -667,7 +675,9 @@ img_file <- paste0(pad_figuren, "030_figuur_Ecotoop_BOZ_", laatste_jaar_BOZ, "_2
 caption_tab <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Boven-Zeeschelde 2.0")
 
 
-# Emit LaTeX figure with landscape, full scaling, and caption
+if (knitr::is_latex_output()) {
+  # When knitting to PDF, emit the full LaTeX code for landscape figure
+  # Emit LaTeX figure with landscape, full scaling, and caption
 cat(paste0(
   "\\newpage\n",
   "\\begin{landscape}\n",
@@ -678,7 +688,10 @@ cat(paste0(
   "\\label{fig:030-figuur-kaart-BOZ-20}\n",
   "\\end{figure}\n",
   "\\end{landscape}\n"
-))
+))} else {
+  # When previewing in RStudio or knitting to HTML, show the image inline for quick preview
+  knitr::include_graphics(img_file)
+}
 
 ```
 
@@ -722,6 +735,8 @@ figtab(knitr::opts_current$get()$label,
 
 <br/>
 
+\newpage
+
 ### Ecotopen van Rupel en Durme in `r laatste_jaar_BOZ`
 
 #### Rupel {#Rupel}
@@ -744,6 +759,8 @@ In het **litoraal** is de totale oppervlakte aan zacht substraat met 1,6 hectare
 In het **supralitoraal** is er voor het schor en het hoog supralitoraal een toename in oppervlakte in vergelijking met vorig meetjaar van respectievelijk 0,5 en 0,7 ha.
 
 Het antropogeen hard substraat (breuksteen) is over alle ecotopen afgenomen met 1,4 hectare.
+
+\newpage
 
 ```{r 030-figuur-kaart-Rupel, results='asis', echo=FALSE}
 caption_tab <- str_c("Ecotopenkaart ", laatste_jaar_BOZ, " Rupel 1.0")  
@@ -768,26 +785,48 @@ cat(paste0(
   knitr::include_graphics(img_file)
 }
 
-
 ```
 
-````{=tex}
-\begin{landscape}
+<!-- ````{=tex} -->
+<!-- \begin{landscape} -->
 
-```{r 030-tabel-oppervlakte-Rupel, results="asis", fig.show='hide', out.width="100%"}
+<!-- ```{r 030-tabel-oppervlakte-Rupel, results="asis", fig.show='hide', out.width="100%"} -->
+
+<!-- caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen Zeeschelde 1.0 in de Rupel.") -->
+
+<!-- img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_Rupel_", vroegste_jaar, "_", laatste_jaar_BOZ, "_10.PNG") -->
+
+<!-- figtab(knitr::opts_current$get()$label,  -->
+<!--        img_file, -->
+<!--        caption_tab) -->
+
+<!-- ``` -->
+
+<!-- \end{landscape} -->
+<!-- ```` -->
+
+
+\newpage
+
+```{r 030-tabel-oppervlakte-Rupel, results='asis', echo=FALSE}
 
 caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen Zeeschelde 1.0 in de Rupel.")
 
 img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_Rupel_", vroegste_jaar, "_", laatste_jaar_BOZ, "_10.PNG")
 
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
+cat(paste0(
+  "\\begin{landscape}\n",
+  "\\begin{table}[p]\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{tab:030-tabel-oppervlakte-BEZ}\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.98\\linewidth,height=0.98\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\end{table}\n",
+  "\\end{landscape}\n"
+))
+
 
 ```
-
-\end{landscape}
-````
 
 \newpage
 
@@ -896,7 +935,11 @@ figtab(knitr::opts_current$get()$label,
 
 <br/>
 
+<!-- \newpage -->
+
 #### Durme {#Durme}
+
+##### Durme ecotopen 1.0
 
 Dit is de rapportage voor de Durme `r laatste_jaar_BOZ`.
 De ecotopenkaart methode 1.0 van `r laatste_jaar - 1` wordt weergegeven in Figuur \@ref(fig:030-figuur-kaart-Durme).
@@ -917,7 +960,6 @@ In het **supralitoraal** is er voor het schor en het hoog supralitoraal een toen
 
 Het antropogeen hard substraat (breuksteen) is over alle ecotopen afgenomen met 0,7 hectare.
 
-##### Durme ecotopen 1.0
 
 ```{r 030-figuur-kaart-Durme, results='asis', echo=FALSE}
 # Caption text
@@ -947,23 +989,25 @@ cat(paste0(
 
 \newpage
 
-````{=tex}
-\begin{landscape}
-
-```{r 030-tabel-oppervlakte-Durme, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-oppervlakte-Durme, results='asis', echo=FALSE}
 
 caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen Zeeschelde 1.0 in de Durme.")
 
 img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_Durme_", vroegste_jaar, "_", laatste_jaar_BOZ, "_10.PNG")
 
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
+cat(paste0(
+  "\\begin{landscape}\n",
+  "\\begin{table}[p]\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{tab:030-tabel-oppervlakte-BEZ}\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.98\\linewidth,height=0.98\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\end{table}\n",
+  "\\end{landscape}\n"
+))
+
 
 ```
-
-\end{landscape}
-````
 
 \newpage
 
@@ -1069,6 +1113,8 @@ figtab(knitr::opts_current$get()$label,
 
 <br/>
 
+\newpage
+
 ### Ecotopen van de Ringvaart en Tijarm Zwijnaarde in `r laatste_jaar_BOZ` {#Tijarm}
 
 ##### Ringvaart en Tijarm Zwijnaarde ecotopen 1.0
@@ -1118,23 +1164,25 @@ cat(paste0(
 
 \newpage
 
-````{=tex}
-\begin{landscape}
-
-```{r 030-tabel-oppervlakte-TijarmZwijnaarde, results="asis", fig.show='hide', out.width="100%"}
+```{r 030-tabel-oppervlakte-TijarmZwijnaarde, results='asis', echo=FALSE}
 
 caption_tab <- str_c("Oppervlaktes en oppervlaktepercentages van ecotopen Zeeschelde 1.0 in de Tijarm Zwijnaarde.")
 
 img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_TijarmZwijnaarde_", vroegste_jaar, "_", laatste_jaar_BOZ, "_10.PNG")
 
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
+cat(paste0(
+  "\\begin{landscape}\n",
+  "\\begin{table}[p]\n",
+  "\\caption{", caption_tab, "}\n",
+  "\\label{tab:030-tabel-oppervlakte-BEZ}\n",
+  "\\centering\n",
+  "\\includegraphics[width=0.98\\linewidth,height=0.98\\textheight,keepaspectratio]{", img_file, "}\n",
+  "\\end{table}\n",
+  "\\end{landscape}\n"
+))
+
 
 ```
-
-\end{landscape}
-````
 
 \newpage
 
