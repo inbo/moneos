@@ -38,7 +38,7 @@ library(ggpubr)
 # pad naar tabellen : pad_tabellen
 # pad naar figuren : pad_figuren
 
-source(find_root_file("../pad.R", criterion = is_rstudio_project))
+source(find_root_file("pad.R", criterion = is_rstudio_project)) #../ weg gedaan want gaf foutpad na Gedeelde Drives?
 
 pad_data <- maak_pad(params$hoofdstuk, "data")
 pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
@@ -49,7 +49,7 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 ```{r data}
 #eerst recente kopie van op Amazon op G gezet
-MDB <- odbcConnectAccess2007("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/Benthos/HyperEpibenthos/DATA/HYPERBENTHOS_SCHELDEdec2024.accdb")
+MDB <- odbcConnectAccess2007("G:/Gedeelde drives/PRJ_SCHELDE/Benthos/HyperEpibenthos/DATA/HYPERBENTHOS_SCHELDEjuli2025.accdb")
 
 # querry met mulitply (substaal nr) al gebruikt voor aantal, WW en AFDW, daardoor is AFDW niet meer DW-AW in uiteindelijke tabel!
 sqlCode <- "
@@ -58,6 +58,8 @@ FROM tblStaalnameGebied INNER JOIN (tblCampagne INNER JOIN (tblTaxaList INNER JO
 GROUP BY tblSample.campagne, tblStaalnameGebied.Naam, tblSample.event_name, tblSample.datum, tblHyperBiot.fractie, tblTaxaList.hoger_taxon, tblHyperBiot.soort, tblTaxaList.vis_NL, tblTaxaList.exoot, tblHyperBiot.WW, tblHyperBiot.DW, tblHyperBiot.AW, tblSample.materiaal, tblHyperBiot.Invoerder, tblHyperBiot.Aanmaakdatum, tblHyperBiot.[Laatst gewijzigd], tblTaxaList.taxonredux, tblSample.repeat, tblHyperBiot.contaminatie
 HAVING (((tblTaxaList.taxonredux)='in') AND ((tblSample.repeat)=1) AND ((tblHyperBiot.contaminatie) Is Null));
 "
+
+
 #, tblTaxaList.exoot tblTaxaList.exoot
 
 tel.0 <- sqlQuery(channel = MDB, sqlCode, stringsAsFactors=FALSE)
@@ -66,25 +68,26 @@ moniloc <- c("Paardenschor","St-Anna","Ballooi","Dendermonde","Brede Schoren","R
 #data van BoVO campagnes, van 6 stations, dubbelcampagne van 2014 wegdoen
 tel <- tel.0 %>%
   dplyr::mutate(Jaar = year(datum),
-                Maand= month(datum)) %>% 
+                Maand = month(datum)) %>% 
   dplyr::mutate(gebied = if_else(gebied == "Konkelschoor - KS" & Jaar == 2013, "Brede Schoren", gebied),
                 gebied = if_else(gebied == "Vlassenbroek" & Jaar == 2013, "Dendermonde", gebied)) %>% 
   dplyr::filter(gebied %in% moniloc, str_detect(campagne, "BoVo")) %>%
   dplyr::filter(!str_detect(campagne,"_1")) %>% 
-  dplyr::filter(Jaar!=2024) %>% 
+  dplyr::filter(Jaar!=2025) %>% 
   rename(WW = WWs)
 
 
-jaarorder <- c("2013", "2014", "2015", "2016","2017","2018","2019", "2020", "2021", "2022", "2023")
+jaarorder <- c("2013", "2014", "2015", "2016","2017","2018","2019", "2020", "2021", "2022", "2023", "2024")
 
 
-tel %>%
+overzicht <- tel %>%
   distinct(datum, gebied, Maand, Jaar) %>% 
   count(gebied, Maand, Jaar) %>%
   dplyr::mutate(Jaar = ordered(Jaar, levels=jaarorder)) %>% 
   pivot_wider(names_from = Maand, values_from= n) %>% 
   knitr::kable()
 
+overzicht
 
 ```
 
@@ -93,8 +96,8 @@ tel %>%
 ```{r}
 # Correcties via groepsregressies WW-AFDW en n-AFDW voor niet-outliers, etc
 tel.1  <- tel %>%
-  group_by(soort) %>%
-  mutate(
+  dplyr::group_by(soort) %>%
+  dplyr::mutate(
     # Calculate WW/AFDW ratio
     ratio_WW_AFDW = WW / AFDW,
     
@@ -120,7 +123,7 @@ tel.1  <- tel %>%
   mutate(
     # Fit linear model for inliers only and extract slope
     slopeAFDW_WW = if (any(inlier_WW_AFDW, na.rm = TRUE)) {
-      as.numeric(coef(lm(AFDW ~ WW, data = cur_data()[inlier_WW_AFDW, , drop = FALSE]))[2])
+      as.numeric(coef(lm(AFDW ~ WW, data = pick(everything())[inlier_WW_AFDW, , drop = FALSE]))[2])
     } else {
       NA_real_
     }
@@ -214,7 +217,7 @@ for (soort in soort_lijst) {
     )
   
   # Save the plot to a JPG file
-  filename <- paste0("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/VNSC/Rapportage_INBO/2024/080_hyperbenthos/data/ratio_figuren_ww_afdw", "/", soort, "_plotWW_AFDW.jpg") # Create a filename
+  filename <- paste0("G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2025/080_hyperbenthos/data/ratio_figuren_ww_afdw", "/", soort, "_plotWW_AFDW.jpg") # Create a filename
   ggsave(filename, plot = plot, width = 6, height = 4, dpi = 300) # Save the plot
 }
 
