@@ -1,0 +1,261 @@
+---
+params:
+  hoofdstuk: "110_broedvogels"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "MONEOS broedvogel data"
+# date: '2024-09-05'
+date: '`r Sys.Date()`'
+output: 
+  bookdown::html_document2:
+      df_print: paged
+      toc: yes
+      toc_float: yes
+      toc_depth: 2
+      number_sections: yes
+      language:
+        label:
+        fig: 'Figuur '
+        tab: 'Tabel '
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(rprojroot)
+library(readxl)
+library(lubridate)
+library(sf)
+library(kableExtra)
+conflicted::conflicts_prefer(dplyr::filter)
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r read-data}
+# # oude dataset met totalen voor het Sigmagebied
+# Terr_Sigma_95_21 <- read_csv(str_c(pad_data, "dataSigma_sel2_2022.csv"), na = c("na")) %>% 
+#   select(-c(Doel, Biotoop, Voedsel)) %>% 
+#   pivot_longer(!Soort, names_to = "Jaar", values_to = "Aantal") %>% 
+#   mutate(Jaar = as.integer(Jaar))
+# 
+# # nieuwe dataset met aantallen per gebied
+# # er staan twe tabellen: Data_nieuwe_vorm_2024.xlsx en Data_nieuwe_vorm_2024_v2.xlsx. 
+# data2123 <- 
+#   read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024.xlsx"), range = "A1:G500") %>% 
+#   filter(!is.na(Soort))
+# data2123_v2 <- 
+#   read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2024_v2.xlsx"), 
+#             sheet = "Data") %>% 
+#   filter(!is.na(Soort))
+# data2123 %>% 
+#   group_by(Jaar) %>% 
+#   summarise(n_records = n(), n_birdsmin = sum(minimum), 
+#             nbirds_max = sum(maximum))
+# data2123_v2 %>% 
+#   group_by(Jaar) %>% 
+#   summarise(n_records = n(), n_birdsmin = sum(minimum), 
+#             nbirds_max = sum(maximum))
+# # v2 is aangevuld maar nog niet volledig
+# data2123 %>% 
+#   count(Gebied)
+# 
+# # tabel met data van 2021 tot 2023 die we zullen gebruiken
+data <- 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"), sheet = "Data") 
+
+data %>% 
+  filter(if_any(.cols = c(1:3), .fns = is.na) )
+
+soort <- 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"), 
+            sheet = "Soorten")[c(1,2, 4:7)]
+bb <- # lijst met bijzondere broedvogels (n=16)
+  soort %>% 
+  filter(BB == 1) %>% 
+  pull(Soort)
+ab <- # lijst met algemene broedvogels (n=5)
+  soort %>% 
+  filter(AB == 1) %>% 
+  pull(Soort)
+
+gebied <- 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"), 
+            sheet = "Gebieden")[c(1:5)]
+gebieden_ab <- 
+  read_csv(str_c(pad_data, "gebieden_AB.csv"))
+
+# (data <- # add data about species to dataframe
+#   data %>% 
+#   left_join(soort[c(1, 6, 3, 2)], by = c("Soort")))
+```
+
+# Omzetting broedvogeldata bestand in longfile.
+
+Ondertussen is de long file met de broedvogeldata volledig aangevuld.   
+Bij de omzetting zijn heel wat verbeteringen uitgevoerd en veel data aangevuld. Historische data van het Bijzonder Broedvogelproject en de Broedvogelatlas 2000-2002 werden gecontroleerd o.a met behulp van gbif-data), waar nodig verbeterd en indien mogelijk verbeterd. Daarnaast werd voor de bijzondere broedvogels de data in waarnemingen.be grondig geanalyseerd en met behulp van de [criteria van de SOVON-telrichtlijnen](https://stats.sovon.nl/stats/soorten), in de eerste plaats de datumgrenzen, werd een inschatting gemaakt van het de aanwezigheid van territoria en het aantal territoria. Hierbij werd tevens rekening gehouden met het aantal verwachte waarnemingen in een gebied. In een frequent geteld gebied zijn meer en vooral ook latere waarnemingen nodig om tot een territorium te besluiten dan in een sporadisch bezocht gebied.  
+
+Hierdoor is de volledigheid van de data voor de zeldzame soorten sterk verhoogd. Het aantal NA's in de dataset is aanzienlijk verminderd, zeker in de periode na 2002 (Atlaspperiode) en voor de soorten baardman, bruine kiekendief, grote karekiet en zomertaling. Een summiere vergelijking tussen beide datasets wordt gemaakt in C:/R/Projects/Broedvogels/scripts/checkDataNieuweVorm2025v1.html.
+<br/>
+
+```{r }
+data %>% 
+  head(n = 10) %>% 
+  kbl(caption = "Eerste 10 records van data") %>% 
+  kable_styling(full_width = FALSE)
+
+```
+<br/>
+
+
+# Berekening totalen 
+
+*Aandachtspunt*: In de oude dataset werd steeds het hoogste aantal van elk gebied genomen voor de berekening van het totaal. Dit script sommeert, nu voor de hele periode, per soort en jaar de minimum- en maximumaantallen en berekent vervolgens hiervan het gemiddelde berekend.
+
+```{r data_totaal}
+
+(Terr_Sigma <- 
+  data %>%  
+  summarise(.by = c(Jaar, Soort), 
+            Aantal = ceiling((sum(minimum) + sum(maximum))/2)) %>%  # aantal is het naar boven afgerond gemiddelde van min en max
+  arrange(Jaar, Soort))
+
+Terr_Sigma %>% 
+  write_csv(str_c(pad_data, "Territoria_totalen_1995_2024.csv"))
+```
+
+# Bijzondere broedvogels
+De dataset is verre van volledig voor de algemene soorten (niet elk gebied wordt elk jaar geteld). Voor de bijzondere broedvogels gaan we er van uit dat de gegevens (nagenoeg) volledig zijn omdat:
+
+  - vanaf 1995 de meeste soorten opgevolgd werden in het Bijzonder Broedvogelproject van het INBO
+  - vanaf 2008 waarnemingen.be werd opgestart waarin zowel nieuwe als oude waarnemingen worden ingevoerd. De bijzondere broedvogelsoorten zijn doorgaans opvallende en elk geval populaire (twitchbare) soorten die door vele waarnemers preferentieel ingevoerd worden.
+  
+We berekenen de totalen voor een set van 16 bijzondere broedvogelsoorten. 
+
+```{r}
+(Terr_Sigma_BB <- 
+  Terr_Sigma %>% 
+  filter(Soort %in% bb) %>% 
+  # complete(Soort, Jaar, fill = list(Aantal = 0))) # add zero's, this is wrong, should be na
+  complete(Soort, Jaar, fill = list(Aantal = NA_integer_)) %>% 
+# add species data (IHD, Biotoop, Voedselregime)
+  left_join(soort[c(1, 6, 3, 2)], by = c("Soort")))
+Terr_Sigma_BB %>% 
+  write_csv(str_c(pad_tabellen, "Terr_Sigma_BB.csv"))
+```
+<br/>
+
+# Algemene broedvogels
+
+```{r algemenesoorten}
+(Terr_Sigma_AB <- 
+  data %>% 
+  filter(Soort %in% ab) %>% 
+  mutate(Aantal = ceiling((minimum + maximum)/2)) %>% 
+  left_join(gebied, by = c("Gebied")) %>% 
+  filter(Gebiedscode %in% gebieden_ab$Gebied) %>% # subset van gebieden
+  left_join(soort, by = "Soort") %>% 
+  select(Soort, Gebied, Gebiedscode,  TypeGebied, Doel, Jaar, Aantal) ) # analyse gebeurt op selectie van goed getelde gebieden
+```
+
+```{r algemenesoorten tot}
+(Terr_Sigma_AB_tot <- 
+  data %>% 
+  filter(Soort %in% ab) %>% 
+  mutate(Aantal = ceiling((minimum + maximum)/2)) %>% 
+  left_join(gebied, by = c("Gebied")) %>% 
+  left_join(soort, by = "Soort") %>% 
+  select(Soort, Gebied, Gebiedscode,  TypeGebied, Doel, Jaar, Aantal) ) # analyse gebeurt op selectie van goed getelde gebieden
+```
+
+```{r check data}
+table(Terr_Sigma_AB$Gebied, Terr_Sigma_AB$Soort)
+table(Terr_Sigma_AB$TypeGebied, Terr_Sigma_AB$Soort)
+```
+
+```{r check data2}
+Terr_Sigma_AB_na2005 <- Terr_Sigma_AB %>% filter(Jaar > 2004)
+table(Terr_Sigma_AB_na2005$Gebied, Terr_Sigma_AB_na2005$Soort)
+table(Terr_Sigma_AB_na2005$TypeGebied, Terr_Sigma_AB_na2005$Soort)
+```
+
+Blokkersdijk is elk jaar (30 in totaal) geteld. Ketenisse (Estuaria buiten Sigma) maar 23 jaar. Voor de andere gebieden zijn de tijdreeksen korter en variabeler. De data in de jaren voorafgaand aan de monitoring op LO of in de Sigmagebieden is voor vele soorten afwezig en in geval er wel data is, zijn deze wellicht onvolledig.
+<br/>
+
+```{r plotnsoorten, fig.cap = cap}
+cap <- "Aantal getelde algemene broedvogelssoorten per gebied per jaar"
+Terr_Sigma_AB_na2005 %>% 
+  count(Gebied, Jaar) %>% 
+  ggplot(aes(x = Jaar, y = n)) +
+  geom_point(col = "red") +
+  facet_wrap(vars(Gebied))
+```
+
+```{r plotnterrit, fig.cap = cap}
+cap <- "Totaal aantal territoria van de 5 algemene broedvogels per gebied per jaar"
+Terr_Sigma_AB_na2005 %>% 
+  summarise(.by = c(Gebied, Jaar), n = sum(Aantal)) %>% 
+  ggplot(aes(x = Jaar, y = n)) +
+  geom_point(col = "red") +
+  facet_wrap(vars(Gebied))
+```
+
+De tijdreeksen zijn volledig voor Bergenmeersen, Blokkersdijk, KBR, Ketenisse, Weijmeerbroek, Wijmeers-noord en -zuid en Zennegat.  
+De aantallen van het noordelijk gebied worden vanaf 2007 gegeven per deelgebied (Doelpolder-noord, Prosperpolder-noord, Prosperpolder-zuid en Schor Ouden Doel. Territoria in de nog niet ingerichte delen van Doel- en Prosperpolder zijn nooit meegenomen, omdat die uit de monitoringsdata niet te scheiden zijn van andere polders (Doelpolde-zuid, Arenbergpolder...). Voor sommige soorten betekent dit een kleine  onderschatting.  
+Paardeweide is vanaf 2014 opgesplitst in Paardeweide oost en Paardeweide west.  
+Voor de Kalkense Meersen zijn er geen data van de jaren 2006 tot en met 2010. De algemene broedvogels kwamen hier wel voor, er kunnen dus geen aantallen op basis van de nulmeting aangevuld (geëxtrapoleerd) worden. **Overwegen of we dze jaren in de uiteindelijke grafiek weglaten**.  
+Voor sommige gebieden ontbreken enkele jaren omdat ze niet konden worden opgevolgd door inrichtingswerken. Wellicht broedden er die jaren vanwege de werken weinig, of toch minder, algemene soorten.
+anaf 2007.
+
+```{r save data}
+Terr_Sigma_AB_na2005 %>% 
+  write_csv(str_c(pad_tabellen, "Terr_Sigma_AB2005.csv"))
+Terr_Sigma_AB_tot %>% 
+  write_csv(str_c(pad_tabellen, "Terr_Sigma_AB_tot.csv"))
+Terr_Sigma_AB %>% 
+  write_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
+```
+
+```{r AB tot tabel}
+Terr_Sigma_AB_tot %>% 
+  summarise(.by = c(Soort, Jaar), Aantal = sum(Aantal, na.rm = TRUE)) %>% 
+  arrange((desc(Jaar)))
+
+```
+
+```{r AB tot tabel2}
+Terr_Sigma_AB_na2005 %>% 
+  filter(Soort == "Scholekster", Jaar %in% c(2020:2024)) %>% 
+  summarise(.by = c(Soort, Jaar, TypeGebied), Aantal = sum(Aantal, na.rm = TRUE)) %>% 
+  arrange((desc(Jaar))) %>% 
+  print(n = 20)
+
+```
+
