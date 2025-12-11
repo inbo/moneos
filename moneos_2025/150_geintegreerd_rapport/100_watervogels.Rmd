@@ -151,26 +151,28 @@ Fichenummer: FICHE S-DS-V-007c -- Vogeltellingen sigmagebieden (estuarien)
 ## Inleiding
 
 Overwinterende en doortrekkende watervogels kunnen indicatief zijn voor het estuarien ecosysteemfunctioneren.
-Veranderingen in aantallen watervogels kunnen echter veroorzaakt zijn door factoren zowel buiten (bijvoorbeeld klimaatverandering, Europese populatietrends, de situatie in broedgebieden...) als binnen het estuarium.
-Interne factoren zijn bijvoorbeeld wijzigingen in voedselaanbod, foerageerareaal, binnendijks habitat, verstoring,...
-. Trends moeten dus steeds in een ruimer kader en met de nodige omzichtigheid geëvalueerd worden.
+Veranderingen in aantallen watervogels kunnen echter veroorzaakt zijn door factoren van zowel binnen als zowel buiten het estuarium.
+Interne factoren zijn bijvoorbeeld wijzigingen in voedselaanbod, foerageerareaal, binnendijks habitat oppervlakte, verstoring en andere.
+Buiten het estuarium spelen andere factoren mee zoals bijvoorbeeld klimaatverandering, Europese populatietrends en de situatie in broedgebieden.
+Trends moeten dus steeds in een ruimer kader en met de nodige omzichtigheid geëvalueerd worden.
 
-De eerstelijnsrapportage beschrijft de aangeleverde watervogeldata van de Zeeschelde, de zijrivieren.
-De data van de estuariene natuurontwikkelingsprojecten wordt niet besproken in deze rapportage.De focus ligt op de verzamelde tellingen tot de winter van `r as.numeric(laatste_jaar) - 1` (eindigend in maart `r laatste_jaar`).
+De eerstelijnsrapportage beschrijft de aangeleverde watervogeldata van de Zeeschelde en de zijrivieren.
+De data van de estuariene natuurontwikkelingsprojecten wordt niet besproken in deze rapportage.
+De focus ligt op de vogeltellingen tot de winter van `r as.numeric(laatste_jaar) - 1` (eindigend in maart `r laatste_jaar`).
 De data werden gefilterd uit de INBO watervogeldatabank.
 
 De evaluatie heeft volgende informatie nodig: aantallen vogels per soort per maand per segment op niveau 2 en 3 (niveau 2 is som van de KRW waterlichamen; niveau 3 heeft betrekking op het KRW waterlichaam of de saliniteitszone (Evaluatiemethodiek, 2021).
-De getijdenetes worden hier niet mee gerapporteerd omdat ze geen apart afgebakend telgebied zijn in de INBO watervogeldatabank.
+De Getijdenetes worden hier niet mee gerapporteerd omdat ze geen apart afgebakend telgebied zijn in de INBO watervogeldatabank.
 
 Bij deze rapportage wordt 1 dataset voor de Zeeschelde en zijrivieren opgeleverd aan de Scheldemonitor.
-De eerste bevat de informatievelden KRW_zone, rivier, telseizoen, nednaam, aantal, maand, ruimtelijke niveau's, trofische groep en exoot.
+De eerste bevat de informatievelden KRW_zone, rivier, telseizoen, nednaam, aantal, ruimtelijke niveau's, maand, trofische_groep en exoot.
 
 -   KRW_zone: naam van het KRW waterlichaam
 -   rivier: het naamveld van de rivier (Zeeschelde, Durme, Rupel, Zenne, Dijle)
 -   telseizoen: een vogeltelseizoen loopt van juli jaar x tot en met juni jaar x+1.
 -   nednaam: Nederlandse naam van de vogelsoort
 -   aantal: de aantallen omvatten de som van de getelde vogels per soort, per maand, per rivier en deelzone niveau 1,2,3.
--   niveau's: indeling volgens Figuur 1.1.
+-   ruimtelijke niveau's: indeling volgens Figuur 1.1.
 -   maand: de maand van de telling
 -   trofische_groep: toekenning van de gebruikte trofische categorie in de Zeeschelde
 -   exoot: ja (= 1)
@@ -222,8 +224,8 @@ De geselecteerde teltrajecten van de zijrivieren (Watervogeldatabank, INBO) zijn
 Voor de Getijdenetes zijn geen afzonderlijke riviertellingen beschikbaar; voor de Getijdedijle is slechts een beperkte dataset beschikbaar (1996, 1999 en verder vanaf 2008).
 Eén teltraject in de Durme (Durmemonding tot Mirabrug) werd niet geteld in 2007-2008.
 
-
 <br/>
+
 ```{r 100-tabel-teltrajecten}
 
 tabel_teltrajecten <- read_excel(paste0(pad_tabellen, "100_Watervogels_tabellen.xlsx"), 
@@ -261,14 +263,13 @@ tabel_teltrajecten %>%
 *Ontbrekende data*:
 
 Deze eerstelijnsrapportage werkt met de effectieve data.
-Er gebeurde geen imputing van ontbrekende data.
+Er gebeurde geen imputatie van ontbrekende data.
 
 **2023/24**
 
 **INBO** Zeeschelde boottellingen zijn volledig uitgevoerd zoals gepland.
 
 **MIDMA** Alle januari tellingen werden uitgevoerd maar verschillende andere wintertellingen ontbreken voor telseizoen 2024/25 (Tabel \@ref(tab:100-tabel-ontbrekendedataMIDMA)).
-
 
 ```{r 100-tabel-ontbrekendedataMIDMA}
 
@@ -345,7 +346,6 @@ Daarna volgde net zoals in 2023/24 een zeer warme (eind) februari, tot meer dan 
 In totaal telde de winter 5 sneeuwdagen in januari en in totaal 4 vriesdagen (steeds min \< 0°C).
 Grotere waterpartijen vroren niet dicht in de Scheldevallei.
 De winter kende heel weinig zonnige dagen en een hoge gemiddelde windsnelheid.
-
 
 ## Exploratieve data-analyse watervogelaantallen
 
@@ -449,7 +449,6 @@ Over de korte termijn is geen trend aantoonbaar.
 De Wintertaling vertoont een significante afname die sterk is over de lange termijn, sinds 2009 matig sterke afname en een positief significante tendens in de korte termijn periode.
 Deze toename is te wijten aan de heel hoge aantallen die geteld worden op de Zeeschelde ter hoogte van de nieuwe ontpolderingen.
 
-
 ```{r 100-tabel-rtrim}
 
 tabel_rtrim <- read_excel(paste0(pad_tabellen, "trend_statstrend_rtrim_nietbroedvogels_zs.xlsx"), 
@@ -477,12 +476,12 @@ tabel_rtrim %>%
 
 <br/>
 
-**Trendindex wintermaximum** 
-Figuur \@ref(fig:100-figuur-index-niveau2) toont de trendindex op middellange termijn.
+**Trendindex wintermaximum** Figuur \@ref(fig:100-figuur-index-niveau2) toont de trendindex op middellange termijn.
 Een globaal dalende trend is zichtbaar voor de Zeeschelde en de zijrivieren tot 2019.
 De winterinflux van 2020 resulteerde in een duidelijke piek.
 Sinds winterseizoen 2023 is er een hogere winterindex.
-Beschouwen we de winterindex in meer detail op niveau 3 (saliniteitszones) (Figuur \@ref(fig:100-figuur-index-niveau3)) dan valt op dat winterseizoen 2022/23 een absoluut dieptepunt was, vooral in de zone zoet lang. Toen werden uitzonderlijk weinig watervogels geteld in deze zone - vooral de wilde eend nam onverklaarbaar en spectaculair af ((Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten)).
+Beschouwen we de winterindex in meer detail op niveau 3 (saliniteitszones) (Figuur \@ref(fig:100-figuur-index-niveau3)) dan valt op dat winterseizoen 2022/23 een absoluut dieptepunt was, vooral in de zone zoet lang.
+Toen werden uitzonderlijk weinig watervogels geteld in deze zone - vooral de wilde eend nam onverklaarbaar en spectaculair af ((Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten)).
 Dit komt sterk overeen met lage gemiddelde biomassa aan macrobenthos in 2022 maar niet uitzonderlijk laag sinds 2008.
 De index nam sterk toe in deze zone onder impuls van de ontpoldering Groot Schoor Hamme die heel veel overwinterende watervogels aantrok die ook tijdelijk op de Zeeschelde verblijven tijdens laag water.
 Positieve indexverandering is er ook in de zone met sterke saliniteitsgradiënt (impuls Prosperpolder- Hedwige ontpoldering) en in het Oligohalien.
@@ -545,7 +544,6 @@ Over de lange termijn zijn alle groepen behalve de viseters significant matig af
 Focussen we op de recente periode dan is er een significante matige toename van benthivore (steltlopers) soorten.
 Dit is vooral onder impuls van de ontwikkelingen in de zone sterke saliniteitsgradiënt.
 De overige groepen vertonen over laatste 6 jaar bekeken geen duidelijke trends.
-
 
 ```{r 100-tabel-rtrim-analyse-trofische-groepen}
 
@@ -647,7 +645,6 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_abundante_soor
 
 <br/>
 
-
 ```{r 100-figuur-aantallen-steltlopers, fig.cap=cap_aantallen_steltlopers, out.width="80%"}
 
 cap_aantallen_steltlopers <- "Trends in het gemiddeld aantal getelde wintervogels (okt.-mrt.) voor 6 abundante steltlopers (benthivoor) in de zone met sterke saliniteitsgradiënt."
@@ -666,7 +663,6 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_exoten.jpg"))
 
 ```
 
-
 <br/>
 
 ## Overwinterende watervogels in gebieden met estuariene natuurontwikkeling
@@ -676,11 +672,12 @@ Dit is ook merkbaar op de stukken van de rivier aanpalend deze gebieden.
 De gegevens met betrekking tot Prosperpolder zijn nog niet beschikbaar voor de INBO watervogeldatabank.
 Omdat hierdoor een onvolledig beeld is op de Sigmabijdrage werd er beslist om deze rapportage uit te werken volgend jaar.
 
-<br/> 
+<br/>
 
 ## Algemene conclusie
 
-Hoewel over de lange termijn de meeste overwinterende doelsoorten een negatieve trend vertonen is er de laatste 2-3 jaar een kentering. zichtbaar door significant matig toename van de bergeend, krakeend, tafeleend en wintertaling.
+Hoewel over de lange termijn de meeste overwinterende doelsoorten een negatieve trend vertonen is er de laatste 2-3 jaar een kentering.
+zichtbaar door significant matig toename van de bergeend, krakeend, tafeleend en wintertaling.
 Voor de pijlstaart is geen trend aantoonbaar.
 Beschouwen we de trends in de trofische groepen is er een signifcant matige toename van de bodemdieretende soorten (steltlopers).
 Dit is gecorreleerd met de toename van vooral scholekster welke op zijn beurt correleert met een toename aan schelpdieren (zie hoofdstuk Macrozoöbenthos).
@@ -699,7 +696,6 @@ Vogelnieuws 7: 28-30.
 Uitgave Instituut voor Natuur- en Bosonderzoek, Brussel.
 
 <br/>
-
 
 ```{r 100-tabel-trofischegroepsoorten}
 
