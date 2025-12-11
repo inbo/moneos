@@ -48,8 +48,9 @@ pad_data <- maak_pad(params$hoofdstuk, "data")
 pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
-source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/VNSC/Rapportage_INBO/2022/Function_CalculateShannonIndex.R")
+source("G:/.shortcut-targets-by-id/0B0xcP-eNvJ9dZDBwVVJOVk5Ld2s/PRJ_SCHELDE/MONEOS_rapportage/2022/Function_CalculateShannonIndex.R")
 ```
+
 # Wormendeterminatiejaar - alleen uit te voeren als er OID zijn verwerkt
 ```{r 070-Wormendeterminatiejaar - alleen uit te voeren als er OID zijn verwerkt}
 # determinaties omzetten naar densiteit en biomassa door ze te verdelen over de Oligochaeta sp (waarvoor deze wel bekend zijn, voor de determinaties w geen biomassa of densiteit bepaald)
@@ -62,11 +63,12 @@ oli_loc <-
   dplyr::distinct() %>% 
   dplyr::mutate(del = 1)
 
-#data van Oligochaeta sp in 2020 waarvoor een determinatie is gebeurd (om te marchen met de dets)
+#data van Oligochaeta sp in 2020 waarvoor een determinatie is gebeurd (om te matchen met de dets)
 oli2020 <- 
-  read_excel(paste0(pad_data, "macrobenthos_data_2008_2021OID.xlsx")) %>%
-  left_join(oli_loc, by = "locatie") %>% 
-  dplyr::filter(del == 1 & soort == "Oligochaeta sp") %>% 
+  read_excel(paste0(pad_data, "macrobenthos_data_2008_2021_OID.xlsx")) %>%
+  left_join(oli_loc, by = "locatie") 
+%>% 
+  dplyr::filter(del == 1 & Taxa_groep == "Oligochaeta") %>% 
   rename(soortGNOID = soort)
 
 # aantallen per wormensoort per staal van de OID
@@ -90,7 +92,8 @@ OID <- OID2020soortstaal %>%
   left_join(OID2020staal, by ="staal") %>% 
   dplyr::mutate(soortfractie = N/Nst) %>% 
   rename(locatie = staal) %>% 
-  left_join(oli2020, by = "locatie") %>% 
+  left_join(oli2020, by = "locatie") 
+%>% 
   dplyr::mutate(Densiteit = soortfractie*densiteit,
                 Biomassa = soortfractie*biomassa) %>% 
   dplyr::filter(!is.na(fysiotoop)) %>% 
