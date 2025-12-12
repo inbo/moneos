@@ -19,12 +19,12 @@ system("git merge 030_ecotopen")
 system("git push origin main")
 
 
-system("git checkout 040_vegetaatiekaart")
+system("git checkout 040_vegetatiekaart")
 system("git merge main")
-system("git push origin 040_vegetaatiekaart")
+system("git push origin 040_vegetatiekaart")
 
 system("git checkout main")
-system("git merge 040_vegetaatiekaart")
+system("git merge 040_vegetatiekaart")
 system("git push origin main")
 
 
