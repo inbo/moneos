@@ -37,6 +37,7 @@ library(rprojroot) ## workaround pad
 
 source(find_root_file("../pad.R", criterion = is_rstudio_project))
 
+
 pad_data <- maak_pad(hoofdstuk, "data")
 pad_figuren <- maak_pad(hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
@@ -132,10 +133,9 @@ knitr::include_graphics(paste0(pad_figuren, "030_voorbeeld_geomorf_2021.png"))
 ```
 
 <br/>
-
 ### Fysiotopenkaart
 
-De fysiotopenkaart bakent abiotische eenheden af op basis van overspoelingsregime in het litoraal en op basis van diepte (ecotopenstelsel *Zeeschelde 1.0)* en maximale stroomsnelheid bij vloed (ecotopenstelsel *Zeeschelde 2.0)* in het sublitoraal*.* De basisgegevens zijn een digitaal hoogtemodel, getijdata en berekende stroomsnelheden.
+De fysiotopenkaart bakent abiotische eenheden af op basis van overspoelingsregime in het litoraal en op basis van diepte (ecotopenstelsel *Zeeschelde 1.0*) en maximale stroomsnelheid bij vloed (ecotopenstelsel *Zeeschelde 2.0*) in het sublitoraal*.* De basisgegevens zijn een digitaal hoogtemodel, getijdata en berekende stroomsnelheden.
 
 -   Het digitaal hoogtemodel wordt samengesteld en aangeleverd door afdeling Maritieme Toegang.
     Het is een gecombineerd grid van lidar hoogtemetingen en multibeam bathymetriemetingen.
