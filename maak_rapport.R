@@ -10,12 +10,28 @@
 
 # Alternatief kan je onderstaande code runnen, die het rapport wel op de gewenste plaats opslaat
 
-old_wd <- getwd()
-
-setwd("150_geintegreerd_rapport")
 source("../pad.R")
-pad_output <- maak_pad("150_geintegreerd_rapport", "output")
 
-bookdown::render_book("index.Rmd", output_dir = pad_output)
+old_wd <- getwd()
+setwd("150_geintegreerd_rapport")
+
+default_output <- stringr::str_c("output/moneos_", jaar_moneos, ".pdf") 
+
+# pad_output <- maak_pad("150_geintegreerd_rapport", "output")
+pad_output <- stringr::str_c(pad_prj_schelde, pad_moneos, jaar_moneos, "/150_geintegreerd_rapport/")
+final_name <- stringr::str_c(pad_output, "moneos_integrale_rapportage_", jaar_moneos, ".pdf")
+
+try({
+  # Render the "site" (which now only sees one non-underscored Rmd)
+  rmarkdown::render_site(output_format = 'INBOmd::pdf_report', encoding = 'UTF-8')
+  
+  # Check if the output exists, then rename it
+  if (file.exists(default_output)) {
+    file.copy(default_output, final_name)
+    message(paste("Successfully created:", final_name))
+  } else {
+    warning(paste("Could not find default output file:", default_output))
+  }
+})
 
 setwd(old_wd)
