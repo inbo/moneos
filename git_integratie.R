@@ -26,12 +26,14 @@ update_main <-
       system(stringr::str_c("git pull origin ", branch))
       system("git merge main")
       system(stringr::str_c("git push origin ", branch))
+      system("git checkout main")
+      system("git merge 010_inleiding_en_overzicht")
       system("git push origin main")
       system(stringr::str_c("git checkout ", current))
     }
   }
 
 update_main(branches)
-update_main("010_inleiding_en_overzicht")
+# update_main("010_inleiding_en_overzicht")
 
 
