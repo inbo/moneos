@@ -38,6 +38,7 @@ update_main("010_inleiding_en_overzicht")
 
 
 
+
 system("git checkout 010_inleiding_en_overzicht")
 system("git merge main")
 system("git push origin 010_inleiding_en_overzicht")
