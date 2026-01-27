@@ -18,7 +18,7 @@ branches <-
 
 update_main <-
   function(branches) {
-    current <- system("git branch --show-current")
+    current <- system("git branch --show-current", intern = TRUE)
     for(branch in branches) {
       # system("git checkout main")
       system("git pull origin main")
