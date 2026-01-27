@@ -27,7 +27,7 @@ try({
   
   # Check if the output exists, then rename it
   if (file.exists(default_output)) {
-    file.copy(default_output, final_name)
+    file.copy(default_output, final_name, overwrite = TRUE)
     message(paste("Successfully created:", final_name))
   } else {
     warning(paste("Could not find default output file:", default_output))
