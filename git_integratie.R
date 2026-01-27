@@ -1,6 +1,39 @@
 
 # Note: You should be in the root directory of your RStudio project/Git repository
 
+branches <- 
+  c("010_inleiding_en_overzicht",
+    "030_ecotopen",
+    "040_vegetatiekaart",
+    "050_hogere_planten",
+    "060_sedimentkenmerken",
+    "070_macrozoobenthos",
+    "080_hyperbenthos",
+    "090_vissen",
+    "100_watervogels",
+    "110_broedvogels",
+    "120_zoogdieren",
+    "130_raaien",
+    "140_slik_schorrand")
+
+update_main <-
+  function(branches) {
+    for(branch in branches) {
+      system("git checkout main")
+      system("git pull origin main")
+      system(stringr::str_c("git checkout ", branch))
+      system(stringr::str_c("git pull origin ", branch))
+      system("git merge main")
+      system(stringr::str_c("git push origin ", branch))
+      system("git push origin main")
+    }
+  }
+
+update_main(branches)
+
+
+
+
 system("git checkout 010_inleiding_en_overzicht")
 system("git merge main")
 system("git push origin 010_inleiding_en_overzicht")
@@ -11,6 +44,7 @@ system("git push origin main")
 
 
 system("git checkout 030_ecotopen")
+system("git pull origin 030_ecotopen")
 system("git merge main")
 system("git push origin 030_ecotopen")
 
