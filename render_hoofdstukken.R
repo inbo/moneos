@@ -65,7 +65,7 @@ render_chapters <-
         
         # Check if the output exists, then rename it
         if (file.exists(default_output)) {
-          file.rename(default_output, final_name)
+          file.copy(default_output, final_name, overwrite = TRUE)
           message(paste("Successfully created:", final_name))
         } else {
           warning(paste("Could not find default output file:", default_output))
@@ -82,6 +82,7 @@ render_chapters <-
 
 
 # render_chapters(c("macrozoobenthos"))
+render_chapters(c("ecotopen"))
 # render_chapters(c("hyperbenthos"), out_dir = str_c(pad_prj_schelde, pad_moneos, jaar_moneos, "/150_geintegreerd_rapport/hoofdstukken/"))
 render_chapters(chapters, out_dir = str_c(pad_prj_schelde, pad_moneos, jaar_moneos, "/150_geintegreerd_rapport/hoofdstukken/"))
 
