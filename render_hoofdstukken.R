@@ -82,7 +82,9 @@ render_chapters <-
 
 
 # render_chapters(c("macrozoobenthos"))
-render_chapters(c("vissen"))
+# render_chapters(c("vissen"))
+render_chapters(c("sedimentatie_erosie"))
+
 # render_chapters(c("hyperbenthos"), out_dir = str_c(pad_prj_schelde, pad_moneos, jaar_moneos, "/150_geintegreerd_rapport/hoofdstukken/"))
 render_chapters(chapters, out_dir = str_c(pad_prj_schelde, pad_moneos, jaar_moneos, "/150_geintegreerd_rapport/hoofdstukken/"))
 
