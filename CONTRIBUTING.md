@@ -79,7 +79,7 @@
     -   100_watervogels
     -   110_broedvogels
     -   120_zoogieren
-    -   130_sedimentatie_erosie
+    -   130_raaien
     -   140_slik_schorrand
 -   Check in the git panel in Rstudio (or on github) if the chapter branch you want to work in already exists
 
@@ -114,20 +114,21 @@
 
 -   Go to the folder 'moneos/moneos_ZZZpreviousYearZZZ/chapterYYY', with *ZZZpreviousYearZZZ* the year you want to copy from and *chapterYYY* the chapter of interest.
 -   Copy the script files for data management and analysis to the folder 'moneos/moneos_XXXcurrentYearXXX/chapterYYY' you created earlier.\
--   Make sure that the yaml header at the top of these files (between ---) has the correct information. **!!This may change between years!!**
+-   Make sure that the yaml header at the top of these files (the part between ---) has the correct information. **!!This may change between years!!**
     -   You can check this in the templates for data preparation and analysis in the folder 'moneos/moneos_XXXcurrentYearXXX/000_template'.
     -   Make sure that 'hoofdstuk:' in the yaml header refers to the correct chapter.
     -   You can also specify a different 'title:'.
--   Check that the chunk named '{r pad} corresponds to the examples in the template directory.
+-   Check that the coding-chunk named '{r pad} corresponds to the examples in the template directory.
 
 ### Bookdown script for writing the chapter report
 
 -   Under 'moneos/moneos_XXXcurrentYearXXX/150_geintegreerd_rapport' copy the bookdown script file from a previous year.
 -   Make sure the file has the same name as the chapter branch.
--   Check that the chunks at the top of the file (chunks -hoofdstuk to -pad) correspond to the example as given in the '000_template.Rmd' file in the template directory ('moneos/moneos_XXXcurrentYearXXX/000_template'). **!!This may change between years!!**
+-   Check that the coding-chunks at the top of the file (chunks -hoofdstuk to -pad) correspond to the example as given in the '000_template.Rmd' file in the template directory ('moneos/moneos_XXXcurrentYearXXX/000_template'). **!!This may change between years!!**
 -   Make sure that the variable 'hoofstuk' in the top chunk is specified correctly for your chapter.
--   Make sure to start the name of all chunks with the number of the corresponding chapter:
+-   Make sure to start the name of all coding-chunks with the number of the corresponding chapter:
     -   {r XXX-chunkname} with XXX the number of the chapter (in the templates this number is 000)
+    -   **!**don't use underscore '\_' in chunknames. Always use '-' to separate words**!**
 
 ## Case 2: no scripting files exist yet for the current chapter
 
@@ -167,7 +168,7 @@
 
 ![image](https://user-images.githubusercontent.com/45075881/231722730-6ae5da1b-280e-45d9-8b3c-c12b7e209248.png)
 
--   To collapse (hide) the R code chunks you can choose `Collapse all` under `Edit` -\> `Folding`.
+-   To collapse (hide) the R code-chunks you can choose `Collapse all` under `Edit` -\> `Folding`.
 
 ![image](https://user-images.githubusercontent.com/45075881/231721255-b0a640de-bee7-4426-8b97-b4de27d18c45.png)
 
@@ -187,7 +188,7 @@
 
 # 7. Building the report pdf
 
--   To build the report, go to the tab 'Build'.
+-   To build the report, go to the tab 'Build' in the side panel.
 -   Make sure the 'pdf_report' is selected under 'build book'.
 -   Hit the build book button.
 
@@ -204,7 +205,10 @@
 
 ![image](https://user-images.githubusercontent.com/45075881/231728266-bf3428ca-81f7-45b1-b357-2c12335f8aec.png)
 
--   Don't use underscore '\_' in column names of tables.
+-   Don't use '&' in captions of figures and tables.
+-   Don't use underscore '\_' in column names in tables.
+-   don't use underscore '\_' in chunknames. Always use '-' to separate words.
+-   Don't manually number chapters, figures an tables. They are numbered automatically.
 
 # 8. Reviewing
 
