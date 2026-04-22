@@ -216,7 +216,7 @@
 
 -   To avoid that people work in parallel on a chapter (which can create github trouble), alert other authors of the chapter that you are going to review it.
 
--   Open the moneos project in Rstudio and select the git branch dedicated to the chapter you want to review. **!important: do not pull or work on chapters in other branches than the branch specific for that chapter!**
+-   Open the moneos project in Rstudio and select the git branch dedicated to the chapter you want to review. **!important: do not work on chapters in other branches than the branch specific for that chapter!**
 
 ![](images/clipboard-3459797584.png)
 
@@ -245,7 +245,7 @@
 ## **Checking a reviewed chapter**
 
 -   see first three steps of 'Reviewing a chapter'
--   Open the window to compare commits via `diff`
+-   Using `diff` , open the window to compare commits
 
 ![](images/clipboard-2460144022.png)
 
@@ -263,7 +263,7 @@
 
 ![](images/clipboard-331289192.png)
 
--   If you wish to check chnages made in an older commit, you can select the desired commited version in the upper panel
+-   If you wish to check changes made in an older commit, you can select the desired commited version in the upper panel
 
 ![](images/clipboard-1159019261.png)
 
