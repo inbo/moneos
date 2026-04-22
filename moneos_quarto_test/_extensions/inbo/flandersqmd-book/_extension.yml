@@ -1,0 +1,57 @@
+title: Corporate identity of the Flemish government quarto books
+author: Thierry Onkelinx
+version: 0.1.1
+quarto-required: ">=1.4.0"
+contributes:
+  project:
+    project:
+      type: book
+  format:
+    common:
+      knitr:
+        opts_chunk:
+          echo: false
+      lang: nl-BE
+      csl: research-institute-for-nature-and-forest.csl
+      number-sections: true
+      toc: true
+      html-math-method: katex
+      format-resources:
+        - filters/post_render.R
+      shortcodes:
+        - shortcodes/colophon.lua
+        - shortcodes/footer.lua
+    html:
+      css: [css/flanders_generic.css]
+      template-partials:
+        - "partials/metadata.html"
+        - "partials/title-block.html"
+      filters:
+        - filters/translations.lua
+    pdf:
+      template-partials:
+        - "partials/before-body.tex"
+        - "partials/doc-class.tex"
+      format-resources:
+        - img/cc-by.eps
+        - img/flanders-state-art.pdf
+        - img/inbo-logo.pdf
+        - img/orcid.eps
+        - img/vlaamse-overheid.pdf
+        - img/vlaanderen-wetenschap.pdf
+        - tex/report-generic.sty
+        - tex/report-language.sty
+      filters:
+        - filters/translations.lua
+        - filters/prepare_pdf.lua
+      shortcodes:
+        - shortcodes/colophon.lua
+        - shortcodes/footer.lua
+      pdf-engine: xelatex
+      toc: false
+      lof: false
+      lot: false
+      link-citations: true
+      keep-tex: true
+      mainfont: Calibri
+      monofont: Inconsolatazi4
