@@ -128,7 +128,7 @@
 -   Make sure that the variable 'hoofstuk' in the top chunk is specified correctly for your chapter.
 -   Make sure to start the name of all coding-chunks with the number of the corresponding chapter:
     -   {r XXX-chunkname} with XXX the number of the chapter (in the templates this number is 000)
-    -   **!**don't use underscore '\_' in chunknames. Always use '-' to separate words**!**
+    -   **!** don't use underscore '\_' in code-chunknames. Always use '-' to separate words **!**
 
 ## Case 2: no scripting files exist yet for the current chapter
 
