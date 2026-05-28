@@ -1,0 +1,451 @@
+---
+title: "visdata ankerkuil"
+output:
+  bookdown::word_document2: default
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(dbplyr)
+library(lubridate)
+library(readxl)
+library(writexl)
+library(inbodb)
+# library(tidyjson)
+library(jsonlite)
+
+
+library(rprojroot) ## workaround pad
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+run_pad <- function() {
+  
+  source(find_root_file("../pad.R", criterion = is_rstudio_project))
+  
+  pad_data <- maak_pad(params$hoofdstuk, "data")
+  pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+  pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+  
+  # print(ls())
+  
+  sapply(ls(), function(x) assign(x, get(x), .GlobalEnv))
+  
+}
+
+run_pad()
+
+```
+
+
+```{r variabelen}
+
+jaren <- 2025
+vangstmethode <- "Ankerkuil"
+methodecode <- c("AKE", "AKV")
+
+locatie_codes <-
+  c("85000170", "84200300", "81500140", "81300050") 
+# locatie_namen <- "Appels"
+
+
+run_variabelen <- 
+  function() {
+
+    jaren <- as.numeric(jaar_moneos) - 1
+    # jaren <- 2015:2023
+    vangstmethode <- c('Ankerkuil', 'Ankerkuil-vloed', 'Ankerkuil-eb')
+    
+    # Zeeschelde vissen
+    locaties_name <- "ankerkuil_Zeeschelde_locaties"
+    metadata_name <- "ankerkuil_Zeeschelde_metadata"
+    filename <- "ankerkuil_Zeeschelde"
+    
+    # zijrivieren vissen
+    # locaties_name <- "fuikvangsten_zijrivieren_locaties"
+    # metadata_name <- "fuikvangsten_zijrivieren_metadata"
+    # filename <- "fuikdata_zijrivieren"
+    
+    locaties <-
+      read_xlsx(str_c(pad_data, "metadata VLIZ/", locaties_name, ".xlsx"))
+    locatie_nrs <- locaties$locatiecode %>% as.character()
+    locatie_namen <- locaties$locatie
+
+    # print(ls())
+
+    sapply(ls(), function(x) assign(x, get(x), .GlobalEnv))
+    
+  }
+
+run_variabelen()
+
+```
+
+
+```{r connectie met databank}
+
+# VIS2 <- connect_inbo_dbase("D0147_00_Vis2")
+# VIS <- connect_inbo_dbase("W0001_00_Vis")
+VIS <- connect_inbo_dbase("W0001_10_Vis")
+
+```
+
+
+```{r bevraging afvissingen}
+
+DimWaarneming <- 
+    tbl(VIS, "DimWaarneming")
+DimVispunt <- 
+    tbl(VIS, "DimVispunt")
+DimDatum <- 
+    tbl(VIS, "DimDatum")
+# FactCPUE <- 
+#     tbl(VIS, "FactCPUE")
+DimMethode <-
+  tbl(VIS, "DimMethode")
+DimWaterkwaliteit <-
+  tbl(VIS, "DimWaterkwaliteit")
+
+
+tbl_campagnes <-
+  DimWaarneming %>% 
+  inner_join(DimVispunt, 
+             by = c("WaarnemingVispuntID" = "VispuntID")) %>% 
+  inner_join(DimDatum, 
+             by = c("WaarnemingDatumWID" = "DatumWID")) %>% 
+  inner_join(DimMethode, 
+             by = c("WaarnemingMethodeCode" = "MethodeCode")) %>% 
+  left_join(DimWaterkwaliteit,
+             by = c("WaarnemingWID" = "WaarnemingWID")) %>%
+  filter(Jaar %in% jaren,
+         VispuntCode %in% locatie_codes,
+         WaarnemingMethodeCode %in% methodecode,
+         WaarnemingStatusCode %in% c('VLD', 'ENT')
+         # ,
+         # NaamNL %in% soorten
+         ) %>% 
+  select(WaarnemingWID, WaarnemingID, WaarnemingVispuntID, Gebiedcode = VispuntCode, 
+         WaarnemingMethodeCode, MethodeOmschrijving, MethodeGroepOmschrijving,
+         Datum, Jaar,
+         WaarnemingCPUEParameters, WaarnemingStatusCode, WaarnemingCommentaar, 
+         Zuurstof, ZuurstofPerc, Temperatuur, Conductiviteit, PH, Turbiditeit, Saliniteit_PRM)
+
+
+# CPUE <- 
+#   tbl_campagnes %>% 
+#   collect() %>%
+#   filter(!is.na(WaarnemingCPUEParameters)) %>% 
+#   pull(WaarnemingCPUEParameters) %>% 
+#   spread_all() %>% 
+#   as_tibble()
+
+
+campagnes <-
+  tbl_campagnes %>% 
+  collect()
+
+camp_CPUE_NA <-
+  campagnes %>%
+  filter(is.na(WaarnemingCPUEParameters))
+
+campagnes_ankerkuil <-
+  campagnes %>% 
+  filter(!is.na(WaarnemingCPUEParameters)) %>% 
+  bind_cols(., .$WaarnemingCPUEParameters %>% 
+              tidyjson::spread_all() %>% 
+              # select(AantalUrenStuurboord, AantalUrenBakboord, AfgevistVolumeStuurboord, AfgevistVolumeBakboord) %>%
+              as_tibble()) %>% 
+  bind_rows(camp_CPUE_NA) %>%
+  select(-WaarnemingCPUEParameters) %>% 
+  mutate(Maand = month(Datum),
+         Seizoen = case_when(
+           Maand %in% c(3,4,5) ~ "voorjaar",
+           Maand %in%  c(6,7,8) ~ "zomer",
+           Maand %in%  c(9,10,11) ~ "najaar",
+           TRUE ~ "winter"),
+         Locatie = 
+           recode_values(Gebiedcode,
+                      "85000170" ~ "Doel",
+                      "84200300" ~ "Antwerpen",
+                      "81500140" ~ "Steendorp",
+                      "81300050" ~ "Branst"),
+         Locatie = factor(Locatie, levels = c("Doel", "Antwerpen", "Steendorp", "Branst")))
+
+campagnes_vis <-
+  campagnes_ankerkuil %>% 
+  select(WaarnemingWID, WaarnemingID, WaarnemingStatusCode, Gebiedcode, Locatie, MethodeCode = WaarnemingMethodeCode,
+         MethodeOmschrijving:Jaar, Maand, Seizoen, AantalUrenBakboord:EindStandStuurboord,
+         UE_bakboord = AfgevistVolumeBakboord, UE_stuurboord = AfgevistVolumeStuurboord, 
+         WaarnemingCommentaar, 
+         Zuurstof, ZuurstofPerc, Temperatuur, Conductiviteit, PH, Turbiditeit, Saliniteit_PRM) %>% 
+  mutate(UnitEffort = "volume")
+  
+```
+
+
+```{r bevraging data}
+
+DimWaarneming <- 
+    tbl(VIS, "DimWaarneming")
+DimVispunt <- 
+    tbl(VIS, "DimVispunt")
+DimDatum <- 
+    tbl(VIS, "DimDatum")
+FactMeting <- 
+    tbl(VIS, "FactMeting")
+DimTaxon <-
+  tbl(VIS, "DimTaxon")
+
+
+tbl_data <-
+  FactMeting %>% 
+  left_join(DimWaarneming %>% 
+              inner_join(DimVispunt, 
+                         by = c("WaarnemingVispuntID" = "VispuntID")) %>% 
+              inner_join(DimDatum, 
+                         by = c("WaarnemingDatumWID" = "DatumWID")),
+            by = "WaarnemingWID") %>% 
+  left_join(DimTaxon, 
+             by = "TaxonWID") %>% 
+  filter(Jaar %in% jaren,
+         VispuntCode %in% locatie_codes,
+         WaarnemingMethodeCode %in% methodecode,
+         WaarnemingStatusCode %in% c('VLD', 'ENT')
+         ,
+         # NaamNL %in% soorten
+         ) %>% 
+  select(WaarnemingWID, WaarnemingID, Gebiedcode = VispuntCode, WaarnemingMethodeCode, Datum, Jaar, 
+         Soort = NaamNL, Soort_wet = NaamWET, 
+         MetingID, MetingTaxonAantal, MetingTaxonGewicht, MetingTaxonLengteTotaal, MetingTaxonGeslacht, 
+         MetingTaxonCommentaar, Verdunningsfactor, LengtesGroepMeting, Schipzijde, MetingStatusCode)
+
+data_vis <-
+  tbl_data %>%
+  collect() %>% 
+  rename(MethodeCode = WaarnemingMethodeCode,
+         Aantal = MetingTaxonAantal,
+         Lengte = MetingTaxonLengteTotaal,
+         Gewicht = MetingTaxonGewicht,
+         Geslacht = MetingTaxonGeslacht,
+         Commentaar = MetingTaxonCommentaar) %>% 
+  janitor::clean_names() %>% 
+  mutate(locatie = 
+           recode_values(gebiedcode,
+                      "85000170" ~ "Doel",
+                      "84200300" ~ "Antwerpen",
+                      "81500140" ~ "Steendorp",
+                      "81300050" ~ "Branst"),
+         locatie = factor(locatie, levels = c("Doel", "Antwerpen", "Steendorp", "Branst")),
+         zijde = 
+           case_when(
+             is.na(schipzijde) ~ NA,
+             schipzijde ~ 'bakboord',
+             !schipzijde ~ 'stuurboord')) %>% 
+  select(-schipzijde)
+
+```
+
+
+```{r sluiten databank}
+
+dbDisconnect(VIS)
+# dbDisconnect(VIS2)
+
+```
+
+
+```{r hervariabel, ref.label=c('pad', 'variabelen')}
+
+rm(list = ls()[-which(ls() %in% c("data", "campagnes", "soorten", "params", "run_pad", "run_variabelen"))])
+
+run_pad()
+run_variabelen()
+
+```
+
+
+```{r data voor uitwisseling versie 2}
+
+campagnes_uit <-
+  campagnes_vis %>%
+  janitor::clean_names() %>% 
+  # select(trek_id = WaarnemingID, trek_status_code = WaarnemingStatusCode, location_code = Gebiedcode, location = Locatie,
+  #        tide = MethodeCode, date = Datum, year = Jaar, port_ue = UE_bakboord, starboard_ue = UE_stuurboord,
+  #        oxygen = Zuurstof, oxygen_perc = ZuurstofPerc, temperature = Temperatuur, ph = PH, conductivity = Conductiviteit,
+  #        turbidity = Turbiditeit, salinity_prm = Saliniteit_PRM, campaign_comment = WaarnemingCommentaar) %>% 
+  mutate(method = "ankerkuil", 
+         tide = recode_values(
+           methode_code,
+           "AKE" ~ "ebb",
+           "AKV" ~ "flood")) %>% 
+  relocate(method, .before = tide)
+
+locations <-
+  read_excel(path = "../data/template_metadata_ankerkuil.xlsx",
+             sheet = "locations") %>% 
+  mutate(location_code = as.character(location_code))
+
+nets_uit_stuurboord <-
+  campagnes_uit %>% 
+  select(!contains("bakboord")) %>% 
+  rename_with(\(x) str_remove(x, "_stuurboord")) %>% 
+  mutate(side = "starboard")
+
+nets_uit_bakboord <-
+  campagnes_uit %>% 
+  select(!contains("stuurboord")) %>% 
+  rename_with(\(x) str_remove(x, "_bakboord")) %>% 
+  mutate(side = "port")
+
+nets_uit <-
+  nets_uit_stuurboord %>% 
+  bind_rows(nets_uit_bakboord) %>% 
+  arrange(datum, waarneming_id, side) %>% 
+  mutate(trek_id = str_c(locatie, waarneming_id, jaar, side, sep = "_"),
+         section = "Zeeschelde",
+         net_surface = net_breedte*net_hoogte,
+         effort = net_surface/80*aantal_uren) %>% 
+  left_join(locations %>% 
+              select(gebiedcode = location_code, latitude = lat, longitude = long)) %>% 
+  select(trek_id, trek_status_code = waarneming_status_code, location_code = gebiedcode, location = locatie,
+         latitude, longitude, section, date = datum, year = jaar, method, tide, side, 
+         net_width = net_breedte, net_depth = net_hoogte, net_surface, 
+         duration_hours = aantal_uren, fished_meters = afgeviste_aantal_meter, effort, volume_ue = ue,
+         oxygen = zuurstof, oxygen_perc = zuurstof_perc, temperature = temperatuur, ph = ph, conductivity = conductiviteit,
+         turbidity = turbiditeit, salinity_prm = saliniteit_prm, campaign_comment = waarneming_commentaar)
+  
+
+
+data_uit_prep <-
+  data_vis %>% 
+  select(trek_id = waarneming_id, location_code = gebiedcode, location = locatie, tide = methode_code, date = datum, year = jaar, 
+         species_du = soort, species_sc = soort_wet, side = zijde, dilution_factor = verdunningsfactor, 
+         entry_id = meting_id, lengtes_groep_meting, count = aantal, length = lengte, weight = gewicht, sex = geslacht, 
+         entry_comment = commentaar) %>% 
+  mutate(tide = recode_values(
+           tide,
+           "AKE" ~ "ebb",
+           "AKV" ~ "flood"),
+         side = recode_values(
+           side,
+           "bakboord" ~ "port",
+           "stuurboord" ~ "starboard"),
+         trek_id = str_c(location, trek_id, year, side, sep = "_"),
+         section = "Zeeschelde",
+         species_sc = tolower(species_sc),
+         species_du = tolower(species_du)) %>% 
+  left_join(nets_uit %>% 
+              select(trek_id, location_code, effort, volume_ue)) %>% 
+  # mutate(volume_ue = 
+  #          recode_values(
+  #            side,
+  #            "port" ~ port_ue,
+  #            "starboard" ~ starboard_ue)) %>% 
+  # select(-port_ue, -starboard_ue) %>% 
+  relocate(volume_ue, .after = side)
+
+data_uit <-
+  data_uit_prep %>% 
+  rename(entry_type = lengtes_groep_meting) %>% 
+  mutate(entry_type = 
+           case_when(
+             count == 1 ~ "IND",
+             count > 1 & !is.na(entry_type) ~ "GROUP_LEN",
+             count > 1 & is.na(entry_type) ~ "GROUP"))
+
+groep_lengtes_uit <-  
+  data_uit_prep %>%
+  filter(!is.na(lengtes_groep_meting)) %>% 
+  group_by(trek_id, location_code, section, tide, side, effort, volume_ue, date, year, 
+         species_du, species_sc, dilution_factor, 
+         entry_id) %>% 
+  nest() %>% 
+  transmute(length = 
+              map(data, 
+                  \(x) map(x$lengtes_groep_meting, ~ fromJSON(.x)$Lengtes))) %>%
+  unnest_longer(length) %>%
+  #deze functie dient 2x uitgevoerd te worden om correct resultaat te krijgen 
+  unnest_longer(length) %>% 
+  ungroup() %>% 
+  mutate(entry_type = "GROUP_LEN_IND")
+
+data_uit <-
+  data_uit %>% 
+  bind_rows(groep_lengtes_uit) %>% 
+  arrange(date, trek_id, entry_id, entry_type) %>% 
+  select(trek_id, location_code, section, date, year, tide, side, effort, volume_ue, dilution_factor, everything())
+
+```
+
+
+```{r campagnes zonder vis}
+
+nets_wo_fish <-
+  nets_uit %>% 
+  anti_join(data_uit %>% 
+              distinct(trek_id, side))
+
+nets_not_fished <-
+  nets_wo_fish %>% 
+  filter(is.na(volume_ue))
+
+nets_uit <-
+  nets_uit %>% 
+  anti_join(nets_not_fished)
+
+# verwijder campagnes die niet gevist zijn
+nets_wo_fish_check <-
+  nets_uit %>% 
+  anti_join(data_uit %>% 
+              distinct(trek_id, side))
+
+
+vis_zonder_campagne <-
+  data_uit %>% 
+  distinct(pick(trek_id:volume_ue)) %>% 
+  anti_join(nets_uit %>% 
+              select(trek_id))
+
+# verwijder entries waarvoor geen campagne gegevens aanwezig zijn
+data_uit2 <-
+  data_uit %>%
+  anti_join(vis_zonder_campagne %>% 
+              select(trek_id))
+
+```
+
+
+```{r wegschrijven data voor uitwisseling}
+
+metadata <- 
+  read_excel(path = "../data/template_metadata_ankerkuil.xlsx",
+             sheet = "metadata")
+
+write_xlsx(list(metadata = metadata,
+                locations = locations,
+                treks = nets_uit,
+                data = data_uit2),
+           path = str_c(pad_data, filename, "_ruw_VIS_", str_c(unique(range(jaren)), collapse = "_"), ".xlsx"))
+
+```
+
+
