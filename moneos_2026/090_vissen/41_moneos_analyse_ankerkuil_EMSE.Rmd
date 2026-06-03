@@ -683,8 +683,9 @@ tabel_gevangen_soorten <-
   pivot_wider(id_cols = soort,
               names_from = seizoen_locatie, 
               values_from = aanwezig,
-              values_fill = "") %>% 
-  select(soort, all_of(levels_seizoen_locatie))
+              values_fill = "")
+# %>% 
+#   select(soort, all_of(levels_seizoen_locatie))
 
 knitr::kable(tabel_gevangen_soorten)
 
