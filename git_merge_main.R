@@ -32,7 +32,7 @@ merge_main_to_branch <-
     system(stringr::str_c("git checkout ", current))
   }
 
-update_main(branches)
+merge_main_to_branch(branches)
 # update_main("010_inleiding_en_overzicht")
 
 
