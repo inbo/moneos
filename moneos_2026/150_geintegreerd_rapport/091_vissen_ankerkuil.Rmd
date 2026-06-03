@@ -94,16 +94,31 @@ cap_gevangen_soorten <-
          laatste_jaar,
          ".")
 
+# tabel_gevangen_soorten  %>% 
+#   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
+#   mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
+#   knitr::kable(booktabs = TRUE,
+#                caption = cap_gevangen_soorten,
+#                align = c("l", rep("c", 12)),
+#                col.names = c("", rep(c("Doel", "Antw.", "Steend.", "Branst"), 3)),
+#                escape = FALSE,
+#                linesep = "") %>%
+#   add_header_above(c(" " = 1, "voorjaar" = 4, "zomer" = 4, "najaar" = 4)) %>%
+#   kable_styling("striped",
+#                 latex_options = c("striped", "scale_down"),
+#                 font_size = 15)
+
+#zonder zomer
 tabel_gevangen_soorten  %>% 
   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
   mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
   knitr::kable(booktabs = TRUE,
                caption = cap_gevangen_soorten,
-               align = c("l", rep("c", 12)),
-               col.names = c("", rep(c("Doel", "Antw.", "Steend.", "Branst"), 3)),
+               align = c("l", rep("c", 8)),
+               col.names = c("", rep(c("Doel", "Antw.", "Steend.", "Branst"), 2)),
                escape = FALSE,
                linesep = "") %>%
-  add_header_above(c(" " = 1, "voorjaar" = 4, "zomer" = 4, "najaar" = 4)) %>%
+  add_header_above(c(" " = 1, "voorjaar" = 4, "najaar" = 4)) %>%
   kable_styling("striped",
                 latex_options = c("striped", "scale_down"),
                 font_size = 15)
