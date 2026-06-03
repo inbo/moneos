@@ -19,15 +19,13 @@ branches <-
 merge_main_to_branch <-
   function(branches) {
     current <- system("git branch --show-current", intern = TRUE)
-    for (i in c(1,2)) {
-      for(branch in branches) {
-        # system("git checkout main")
-        system("git pull origin main")
-        system(stringr::str_c("git checkout ", branch))
-        system(stringr::str_c("git pull origin ", branch))
-        system("git merge main")
-        system(stringr::str_c("git push origin ", branch))
-      }
+    for(branch in branches) {
+      # system("git checkout main")
+      system("git pull origin main")
+      system(stringr::str_c("git checkout ", branch))
+      system(stringr::str_c("git pull origin ", branch))
+      system("git merge main")
+      system(stringr::str_c("git push origin ", branch))
     }
     system(stringr::str_c("git checkout ", current))
   }
