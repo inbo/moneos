@@ -170,6 +170,28 @@ WV_DB_noMS <- WV_DB %>%
           teldatum < "2025-04-01",        
          telseizoen1 > 1990 & telseizoen1 < 2024)
 
+### dataset Wijmeers
+# 
+# Tellingen_Wijmeers <- Tellingen_ZS_alles %>% 
+#   dplyr::filter(gebiedscode == "2090306") %>% 
+#   group_by(telseizoen,
+#            jaar,
+#            maand,
+#            nednaam,
+#            taxongroupcode,
+#            groep,
+#            exoot,
+#            trofische_groep,
+#            gebiedscode,
+#            zone,
+#            krwzone) %>% 
+#   summarise(aantal = sum(aantal)) %>% 
+#   ungroup()
+# 
+# Tellingen_Wijmeers %>% 
+# write_delim(paste0(pad_data, "Tellingen_Wijmeers.csv"),
+#               delim = ";")
+
 ### samenvatten dataset niveau 3 
 
 Tellingen_ZS_alles %>% distinct(gebiedsklassecode, zone, krwzone, niveau3)
