@@ -3,7 +3,7 @@
 -   working in Rstudio : <https://inbo.github.io/git-course/workflow_rstudio.html>
 -   collaboration : <https://inbo.github.io/git-course/workflow_review.html>
 
-# Update/add local 'moneos' folder on your pc
+# 1. Update/add local 'moneos' folder on your pc
 
 ## Case 1: you already have a local (git) folder 'moneos' on your computer
 
@@ -29,7 +29,7 @@
 
 ![image](https://user-images.githubusercontent.com/45075881/170995002-4847b3b7-d0c6-4aef-93c4-48b9470b032d.png)
 
-# Open and setup the moneos project for the current year in Rstudio
+# 2. Open and setup the moneos project for the current year in Rstudio
 
 -   select 'file' -\> 'open project'
 -   under the moneos folder, browse to the subfolder for the year of reporting (folder 'moneos_XXX' where XXX is the current year)
@@ -39,7 +39,7 @@
 
 -   under 'Tools' -\> 'Global Options'
     -   under 'R markdown'
-        -   check that 'evaluate chunks in directory' is set to 'Project' ![image](https://user-images.githubusercontent.com/45075881/171018619-bb8a6a2e-67b7-4990-9ed0-42a6d004bdcd.png)
+        -   check that 'evaluate chunks in directory' is set to 'Project' ![image](https://github.com/inbo/moneos/blob/main/images/Schermafbeelding%202026-04-22%20141557.png)
 -   under 'Tools' -\> 'Project Options'
     -   under 'Build Tools'
         -   check that 'Project Build Tools' is set to ''Website'
@@ -52,7 +52,7 @@
 -   copy the file '\_.Renviron' to the folder 'moneos/moneos_XXX'
 -   rename the '\_.Renviron' under 'moneos/moneos_XXX' to '.Renviron' (remove the underscore '\_')
 -   in a text editor or in Rstudio, open the '.Renviron' file and adjust the folder paths to the paths used on your local pc
--   if you are already working in Rstudio, close Rstudio and reopen it
+-   **Close Rstudio** and reopen it
 
 ## update the 'main' branch from github
 
@@ -62,7 +62,7 @@
 
 -   `pull` ![image](https://user-images.githubusercontent.com/45075881/231096746-42c55df8-61b7-4a54-86c8-9561f2158553.png) the latest version of 'main' from github.
 
-# Moneos chapter branch
+# 3. Moneos chapter branch
 
 -   For each chapter in the moneos report use a separate branch to work in.
 -   In doing so you can work independently of other chapters and avoid interference between work done on different chapters.
@@ -79,7 +79,7 @@
     -   100_watervogels
     -   110_broedvogels
     -   120_zoogieren
-    -   130_sedimentatie_erosie
+    -   130_raaien
     -   140_slik_schorrand
 -   Check in the git panel in Rstudio (or on github) if the chapter branch you want to work in already exists
 
@@ -98,7 +98,7 @@
 
 <img src="https://user-images.githubusercontent.com/45075881/230026926-905f1b81-51c3-452a-8c35-64dd1ca6fa61.png" alt="image" width="400"/>
 
-# Setup chapter R(md) files
+# 4. Setup chapter R(md) files
 
 -   While being in your chapter branch:
     -   Under the folder 'moneos/moneos_XXXcurrentYearXXX' create a subfolder for your chapter with the same name as the chapter.
@@ -114,26 +114,27 @@
 
 -   Go to the folder 'moneos/moneos_ZZZpreviousYearZZZ/chapterYYY', with *ZZZpreviousYearZZZ* the year you want to copy from and *chapterYYY* the chapter of interest.
 -   Copy the script files for data management and analysis to the folder 'moneos/moneos_XXXcurrentYearXXX/chapterYYY' you created earlier.\
--   Make sure that the yaml header at the top of these files (between ---) has the correct information. **!!This may change between years!!**
+-   Make sure that the yaml header at the top of these files (the part between ---) has the correct information. **!!This may change between years!!**
     -   You can check this in the templates for data preparation and analysis in the folder 'moneos/moneos_XXXcurrentYearXXX/000_template'.
     -   Make sure that 'hoofdstuk:' in the yaml header refers to the correct chapter.
     -   You can also specify a different 'title:'.
--   Check that the chunk named '{r pad} corresponds to the examples in the template directory.
+-   Check that the coding-chunk named '{r pad} corresponds to the examples in the template directory.
 
 ### Bookdown script for writing the chapter report
 
 -   Under 'moneos/moneos_XXXcurrentYearXXX/150_geintegreerd_rapport' copy the bookdown script file from a previous year.
 -   Make sure the file has the same name as the chapter branch.
--   Check that the chunks at the top of the file (chunks -hoofdstuk to -pad) correspond to the example as given in the '000_template.Rmd' file in the template directory ('moneos/moneos_XXXcurrentYearXXX/000_template'). **!!This may change between years!!**
+-   Check that the coding-chunks at the top of the file (chunks -hoofdstuk to -pad) correspond to the example as given in the '000_template.Rmd' file in the template directory ('moneos/moneos_XXXcurrentYearXXX/000_template'). **!!This may change between years!!**
 -   Make sure that the variable 'hoofstuk' in the top chunk is specified correctly for your chapter.
--   Make sure to start the name of all chunks with the number of the corresponding chapter:
+-   Make sure to start the name of all coding-chunks with the number of the corresponding chapter:
     -   {r XXX-chunkname} with XXX the number of the chapter (in the templates this number is 000)
+    -   **!** don't use underscore '\_' in code-chunknames. Always use '-' to separate words **!**
 
 ## Case 2: no scripting files exist yet for the current chapter
 
 -   follow the guidelines as above but use the template files in the folder 'moneos/moneos_XXXcurrentYearXXX/000_template' as a starting point.
 
-# Working on a chapter
+# 5. Working on a chapter
 
 -   The following applies both for data analysis as for writing the report.
 -   Make sure to be in the git branch for the chapter you want to work on.
@@ -157,7 +158,7 @@
 
 -   You can subsequently `push` ![image](https://user-images.githubusercontent.com/45075881/231096204-e9a59481-4790-4b8f-9545-3a9132750d23.png) the changes to github from the commit window or from the main github sidepanel.
 
-# Working in `Visual` mode
+# 6. Working in `Visual` mode
 
 -   To write the chapter report, it can be useful to use the `Visual` mode in the RStudio editing panel.
 
@@ -167,7 +168,7 @@
 
 ![image](https://user-images.githubusercontent.com/45075881/231722730-6ae5da1b-280e-45d9-8b3c-c12b7e209248.png)
 
--   To collapse (hide) the R code chunks you can choose `Collapse all` under `Edit` -\> `Folding`.
+-   To collapse (hide) the R code-chunks you can choose `Collapse all` under `Edit` -\> `Folding`.
 
 ![image](https://user-images.githubusercontent.com/45075881/231721255-b0a640de-bee7-4426-8b97-b4de27d18c45.png)
 
@@ -185,9 +186,9 @@
 
 ![image](https://user-images.githubusercontent.com/45075881/231726186-2f240adc-ce20-47ea-badd-ac210f3aad2b.png)
 
-# Building the report pdf
+# 7. Building the report pdf
 
--   To build the report, go to the tab 'Build'.
+-   To build the report, go to the tab 'Build' in the side panel.
 -   Make sure the 'pdf_report' is selected under 'build book'.
 -   Hit the build book button.
 
@@ -204,36 +205,18 @@
 
 ![image](https://user-images.githubusercontent.com/45075881/231728266-bf3428ca-81f7-45b1-b357-2c12335f8aec.png)
 
--   Don't use underscore '\_' in column names of tables.
+-   Don't use '&' in captions of figures and tables.
+-   Don't use underscore '\_' in column names in tables.
+-   don't use underscore '\_' in chunknames. Always use '-' to separate words.
+-   Don't manually number chapters, figures an tables. They are numbered automatically.
 
-# Merging your branch with the main branch (pull request)
-
--   make sure you merged the latest version of the main branch (potentially comprising already merged chapters) into your chapter branch before you make a pull request
-    -   to merge the latest version of the main branch
-        -   see <https://inbo.github.io/git-course/workflow_review.html#Merge_changes_to_main>
-        -   switch to the 'main' branch in Rstudio
-        -   hit the `pull` button ![image](https://user-images.githubusercontent.com/45075881/231096746-42c55df8-61b7-4a54-86c8-9561f2158553.png)
-        -   switch back to your chapter branch
-        -   open the (Git) terminal and enter the command: 'git merge main'
-
-![image](https://github.com/inbo/moneos/assets/45075881/185e1df6-6e21-4e23-b056-e04ff6472b66)
-
-![image](https://github.com/inbo/moneos/assets/45075881/d9bae55c-098c-45a0-ba1e-77d6cfa6d5f7)
-
--   create a pull request as explained in <https://inbo.github.io/git-course/workflow_review.html#Create_a_pull_request>
--   a reviewer is mandatory to make a pull request; choose Joost Vanoverbeke as reviewer
--   some checks are performed when you make a pull request. This may take a little time to finish
-
-![image](https://user-images.githubusercontent.com/45075881/171813020-738149a3-cb49-4e66-818d-77979a42e415.png)\
-![image](https://user-images.githubusercontent.com/45075881/171812792-974b89a7-fa56-48cf-ab1b-2a7b41b1494c.png)
-
-# Reviewing
+# 8. Reviewing
 
 ## Reviewing a chapter
 
 -   To avoid that people work in parallel on a chapter (which can create github trouble), alert other authors of the chapter that you are going to review it.
 
--   Open the moneos project in Rstudio and select the git branch dedicated to the chapter you want to review. **!important: do not pull or work on chapters in other branches than the branch specific for that chapter!**
+-   Open the moneos project in Rstudio and select the git branch dedicated to the chapter you want to review. **!important: do not work on chapters in other branches than the branch specific for that chapter!**
 
 ![](images/clipboard-3459797584.png)
 
@@ -262,7 +245,7 @@
 ## **Checking a reviewed chapter**
 
 -   see first three steps of 'Reviewing a chapter'
--   Open the window to compare commits via `diff`
+-   Using `diff` , open the window to compare commits
 
 ![](images/clipboard-2460144022.png)
 
@@ -280,13 +263,13 @@
 
 ![](images/clipboard-331289192.png)
 
--   If you wish to check chnages made in an older commit, you can select the desired commited version in the upper panel
+-   If you wish to check changes made in an older commit, you can select the desired commited version in the upper panel
 
 ![](images/clipboard-1159019261.png)
 
 -   after checking and further editing the reviewed chapter, follow the instructions to commit and push your changes to github
 
-# Avoiding GIT conflicts
+# 9. Avoiding GIT conflicts
 
 -   In the first phase, only work in your own branch and on your own chapter (chapter directory and chapter `.Rmd` files)
 -   if contribution to another chapter is needed
