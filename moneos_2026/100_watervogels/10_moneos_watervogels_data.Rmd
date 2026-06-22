@@ -307,9 +307,11 @@ WV_DB %>% group_by(Project) %>% summarise(N = n())
 scheldearm <- dplyr::filter(WV_DB, GebiedsCode == '2050810')
 
 verken <- dplyr::filter(WV_DB, GebiedsCode == "3156629" & 
-                          Telseizoen == "2024/25" &
+                          Telseizoen == "2025/26" &
                           Telling == "Oktober")
 
+verken <- dplyr::filter(WV_DB, GebiedsCode == "2091308" & 
+                          Telseizoen == "2024/25" )
 
 ```
 
@@ -612,8 +614,8 @@ Aantaltellingenpergebied0 <- WV_DB %>%
   mutate(maand = month(teldatum)) %>%
   dplyr::filter(!is.na(niveau3)) %>%
   dplyr::filter(maand %in% c(10:12, 1:3)) %>%
-    dplyr::filter (telseizoen == "2023/24"|
-                   telseizoen == "2024/25") %>%
+    dplyr::filter (telseizoen == "2024/25"|
+                   telseizoen == "2025/26") %>%
   distinct(krwzone, gebiedscode, gebied, telseizoen, teldatum) %>% 
   count(krwzone,gebiedscode, gebied, telseizoen)
 
