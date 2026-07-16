@@ -44,8 +44,55 @@ pad_tabellen <- "G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2026/080_hyper
 ```{r data}
 #Opgelet dit script gebruikt enkel de data van 2025 bij de opkuis. Deze worden toegevoegd aan de opgekuiste data van vorige rapportages. 
 
-hyper <- read_excel("G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2026/080_hyperbenthos/data/Qry hyper (1).xlsx") %>%
-  filter(is.na(contaminatie)) %>%
+# ------------------------------------------------------------------------------
+# Inlezen en taxonomische selectie
+# ------------------------------------------------------------------------------
+
+hyper_raw <- read_excel(
+  "G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2026/080_hyperbenthos/data/Qry hyper (1).xlsx"
+)
+
+taxa_uitsluiten <- c(
+  "Alitta succinea",
+  "Branchiura sowerbyi",
+  "Ceratopogonidae",
+  "Chironomidae",
+  "Culicidae sp.",
+  "Daphnia magna",
+  "Daphnia pulex",
+  "Diptera sp.",
+  "Heleobia charruana",
+  "Helobdella stagnalis",
+  "Jaera istri",
+  "Limnodrilus claparedianus",
+  "Limnodrilus hoffmeisteri",
+  "Marenzelleria neglecta",
+  "Megalopa krab sp.",
+  "Nais elinguis",
+  "Oligochaeta sp.",
+  "Potamothrix hammoniensis",
+  "Potamothrix moldaviensis",
+  "Psychodidae sp."
+)
+
+# Controle: records die worden uitgesloten
+taxa_verwijderd <- hyper_raw %>%
+  filter(
+    is.na(contaminatie),
+    soort %in% taxa_uitsluiten
+  )
+
+controle_taxa_verwijderd <- taxa_verwijderd %>%
+  count(soort, sort = TRUE)
+
+controle_taxa_verwijderd
+
+# Dataset voor verdere verwerking
+hyper <- hyper_raw %>%
+  filter(
+    is.na(contaminatie),
+    !soort %in% taxa_uitsluiten
+  ) %>%
   mutate(
     n = n * multiply,
     WWs = WW * multiply,
@@ -514,7 +561,78 @@ cat(
 
 ```
 
+```{r samenvoegen-data}
+# ------------------------------------------------------------------------------
+# Samenvoegen met historische dataset (2013-2024)
+# ------------------------------------------------------------------------------
+
+# Historische dataset
+data_2013_2024 <- read_excel(
+  file.path(
+    pad_data,
+    "hyperbenthos_data_revised2013_2024.xlsx"
+  )
+)
+
+# Historische WW hernoemen naar WWs
+data_2013_2024 <- data_2013_2024 %>%
+  rename(WWs = WW)
+
+# Kolommen tonen die nog verschillen
+cat("\nKolommen enkel in historische dataset:\n")
+print(setdiff(names(data_2013_2024), names(telc.1)))
+
+cat("\nKolommen enkel in 2025-dataset:\n")
+print(setdiff(names(telc.1), names(data_2013_2024)))
+
+# Enkel gemeenschappelijke kolommen behouden
+gemeenschappelijke_kolommen <- intersect(
+  names(data_2013_2024),
+  names(telc.1)
+)
+
+data_2013_2024 <- data_2013_2024 %>%
+  select(all_of(gemeenschappelijke_kolommen))
+
+data_2025 <- telc.1 %>%
+  select(all_of(gemeenschappelijke_kolommen))
+
+# Samenvoegen
+data_2013_2025 <- bind_rows(
+  data_2013_2024,
+  data_2025
+) %>%
+  arrange(Jaar, datum, gebied, soort)
+
+# Wegschrijven
+write_xlsx(
+  data_2013_2025,
+  file.path(
+    pad_data,
+    "hyperbenthos_data_revised2013_2025.xlsx"
+  )
+)
+```
+
+
+```{r check}
+cat("\n=====================================\n")
+cat("Datapreparatie succesvol afgerond\n")
+cat("=====================================\n\n")
+
+cat("Aantal records 2025:", nrow(telc.1), "\n")
+cat("Aantal records 2013-2024:", nrow(data_2013_2024), "\n")
+cat("Aantal records totaal:", nrow(data_2013_2025), "\n\n")
+
+cat("Jaren in finale dataset:\n")
+print(sort(unique(data_2013_2025$Jaar)))
+
+cat("\nBestanden aangemaakt:\n")
+cat("- hyperbenthos_data_revised_2025.xlsx\n")
+cat("- hyperbenthos_data_revised_2013_2025.xlsx\n")
+cat("- Hyperbenthos_records_NeedRevision_2025.xlsx\n")
+```
+
 Finale dataset weggeschreven naar `r file_name`.
 
 Controlebestand weggeschreven naar `r file_name1`.
-
