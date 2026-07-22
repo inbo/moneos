@@ -4,7 +4,7 @@ params:
 knit: (function(inputFile, ...) {
         rmarkdown::render(inputFile,
                           output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
-title: "Hyperbenthos data"
+title: "080_hyperbenthos_data"
 output: word_document
 editor_options: 
   chunk_output_type: console
