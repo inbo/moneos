@@ -1,0 +1,448 @@
+---
+params:
+  hoofdstuk: "070_macrozoobenthos"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "Macrozoöbenthos data"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(writexl)
+library(rprojroot)
+library(janitor)
+library(ggpmisc)
+
+```
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+#source("../pad.R")
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+pad_data
+```
+
+```{r data load}
+
+#1. Benthosdata--------------Voorverwerking van de benthosdata 2023 gebeurde in de map G:\\PRJ_SCHELDE\Benthos\Wet weight biomassa en conversies\02-Data.Cleaning.Moneos
+
+benthos23 <- read_excel(paste0(pad_data, "BenthosSpatial2023_klaar.vr.MONEOS.xlsx"), sheet = "Sheet1") 
+
+benthos23.analyt <- benthos23 %>% 
+  dplyr::mutate(tidaal = ifelse(str_detect(fysiotoop, "sub"), "subtidaal", "intertidaal"))  %>% 
+  dplyr::rename(waterloop = KRWzone) %>% 
+    dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde IV"= "Saliniteitsgradient", "Zeeschelde III"= "Oligohalien", "Zeeschelde II"= "Zoet lang verblijf", "Zeeschelde I"= "Zoet kort verblijf")) %>% 
+  dplyr::mutate(waterlichaam = 
+          ifelse(str_detect(locatie, "DD"), "Zeeschelde II", 
+          ifelse(str_detect(locatie, "DG"), "Zeeschelde I", 
+          ifelse(str_detect(locatie, "DI|ZG"), "Getijdedijle en -zenne", 
+          ifelse(str_detect(locatie, "DU"), "Getijdedurme", 
+          ifelse(str_detect(locatie, "GK"), "Zeeschelde IV", 
+          ifelse(str_detect(locatie, "KD"), "Zeeschelde III + Rupel", 
+          ifelse(str_detect(locatie, "NE"), "GetijdeNete", 
+          ifelse(str_detect(locatie, "RU"), "Zeeschelde III + Rupel", 
+          ifelse(str_detect(locatie, "ZE"), "Getijdedijle en -zenne", 
+          ifelse(str_detect(locatie, "TZ"), "Zeeschelde I", 
+          ifelse(str_detect(locatie, "GM"), "Zeeschelde I", "")))))))))))) %>% 
+  dplyr::mutate(waterloop2 = 
+          ifelse(str_detect(locatie, "DD"), "Zeeschelde II", 
+          ifelse(str_detect(locatie, "DG"), "Zeeschelde I", 
+          ifelse(str_detect(locatie, "DI|ZG"), "Dijle", 
+          ifelse(str_detect(locatie, "DU"), "Durme", 
+          ifelse(str_detect(locatie, "GK"), "Zeeschelde IV", 
+          ifelse(str_detect(locatie, "KD"), "Zeeschelde III", 
+          ifelse(str_detect(locatie, "NE"), "Nete", 
+          ifelse(str_detect(locatie, "RU"), "Rupel", 
+          ifelse(str_detect(locatie, "ZE"), "Zenne", 
+          ifelse(str_detect(locatie, "TZ"), "Zeeschelde I", 
+          ifelse(str_detect(locatie, "GM"), "Zeeschelde I", "")))))))))))) %>% 
+dplyr::mutate(systeem = 
+          ifelse(str_detect(locatie, "DD|DG|GK|KD|TZ|GM"), "Zeeschelde", 
+          ifelse(str_detect(locatie, "DI|ZG|DU|NE|RU|ZE"), "zijrivieren", "!!FOUT!!"))) %>% 
+  dplyr::select(jaar, waterlichaam, waterloop, waterloop2, systeem, tidaal, fysiotoop, locatie, soort, densiteit, biomassa, Taxa_groep) %>% 
+    dplyr::mutate(waterloop = ifelse(str_detect(waterloop, "trj_Ml"), "Zeeschelde I trj_Ml_Gb", ifelse(str_detect(waterloop, "tijarm Zw"), "Zeeschelde I tijarm Zwijnaarde", waterloop)))
+
+#ggplot(benthos23.analyt %>% dplyr::filter(Taxa_groep != "Bivalvia"), aes(x=densiteit, y=biomassa))+
+ # geom_point()
+
+unique(benthos23.analyt$waterloop)
+  
+#------------historisch file was corrupt - grote fout in gebeurd, dus terug naar onderstaande file en opnieuw alle correcties doorlopen
+
+benthos2008_heden <- read_excel(paste0(pad_data, "macrobenthos_data_2008_2022NIETAANTELEVEREN.xlsx"), sheet = "macrobenthos") %>% 
+  dplyr::mutate(densiteit = round(densiteit, 0)) %>% 
+  dplyr::mutate(biomassa2 = ifelse((biomassa == 0|is.na(biomassa)) & densiteit >0 & soort == "Oligochaeta", 0.000114*densiteit+0.166, biomassa)) %>% 
+  dplyr::mutate(densiteit2 = ifelse((densiteit == 0|is.na(densiteit)) & biomassa >0 & soort == "Oligochaeta", 5650*biomassa+4610, densiteit)) %>% 
+  dplyr::mutate(densiteit = ifelse(soort == "geen", NA, densiteit)) %>% 
+   dplyr::mutate(biomassa = ifelse(soort == "geen", NA, biomassa)) %>% 
+  dplyr::mutate(biomassa2 = ifelse(soort=="Acari" & densiteit > 0, 0.0314, biomassa)) %>% 
+  dplyr::mutate(densiteit2 = ifelse(densiteit2 == 0 & soort !="geen", 314, densiteit2)) %>% 
+  dplyr::mutate(biomassa2 = ifelse(densiteit2 <2000 & biomassa == 0, 0.0314, biomassa2)) %>% 
+  dplyr::mutate(biomassa2 = ifelse(soort == "Oligochaeta" & biomassa2 == 0, densiteit2*0.000114+0.166, biomassa2)) %>% 
+  dplyr::mutate(biomassa2 = ifelse(soort %in% c("Nematoda", "geen"), NA, biomassa2)) %>% 
+  dplyr::mutate(biomassa2 = ifelse(biomassa2 == 0 & soort %in% c("Manayunkia aestuarina", "Streblospio sp", "Streblospio benedicti"), densiteit2*0.0000308+0.031, biomassa2)) %>% 
+   dplyr::mutate(biomassa2 = ifelse(biomassa2 == 0 & soort %in% c("Collembola", "Onychiuridae"), 0.0314, biomassa2)) %>% 
+     dplyr::mutate(biomassa2 = ifelse(is.na(biomassa2) & soort %in% c("Collembola", "Onychiuridae", "Podura aquatica"), 0.0314, biomassa2)) %>% #halve biomassa van detectielimiet
+  dplyr::mutate(biomassa2 = ifelse(soort == "Apocorophium lacustre" & biomassa2>5 & densiteit2<1000, densiteit2*0.0000888+0.247, biomassa2)) %>% 
+  dplyr::mutate(biomassa2 = ifelse(str_detect(soort, "orophium|sellus|oreia|ammaru") & biomassa2 == 0, densiteit2*0.0000915+0.128, biomassa2)) %>% 
+  dplyr::mutate(biomassa2 = ifelse(biomassa2 == 0 & str_detect(soort, "Baetis|Chiro"), 0.0314, biomassa2)) %>% 
+    dplyr::mutate(densiteit2 = ifelse(soort %in% c("geen"), NA, densiteit2)) %>% 
+    dplyr::mutate(biomassa2 = ifelse(soort == "Oligochaeta" & is.na(biomassa2), densiteit2*0.000114+0.166, biomassa2)) %>%
+    dplyr::mutate(biomassa2 = ifelse(is.na(biomassa2) & soort %in% c("Manayunkia aestuarina", "Streblospio sp", "Streblospio benedicti", "Marenzelleria neglecta", "Pygospio elegans"), densiteit2*0.0000308+0.031, biomassa2)) %>% #regressie polych
+    dplyr::mutate(biomassa2 = ifelse(str_detect(soort, "orophium|sellus|oreia|ammaru") & is.na(biomassa2), densiteit2*0.0000915+0.128, biomassa2)) %>%
+    dplyr::mutate(biomassa2 = ifelse(soort == "Ceratopogonidae", densiteit2*0.00005+0.000145, biomassa2))  %>% 
+  dplyr::mutate(biomassa2 = ifelse(soort == "Corbicula fluminea" & (biomassa2 == 0.0314 | is.na(biomassa2)), 10, biomassa2)) %>% 
+  dplyr::mutate(biomassa2 = ifelse(soort == "Potamocorbula amurensis" & is.na(biomassa2), 10, biomassa2)) %>% 
+  dplyr::mutate(biomassa2 = ifelse(!soort %in% c("geen", "Nematoda") & is.na(biomassa2), 0.0314, biomassa2)) %>% 
+  dplyr::mutate(densiteit2 = ifelse(!soort %in% c("geen", "Nematoda") & is.na(densiteit2), 314, densiteit2)) %>% 
+  dplyr::mutate(waterloop = ifelse(str_detect(waterloop, "trj_Ml"), "Zeeschelde I trj_Ml_Gb", ifelse(str_detect(waterloop, "tijarm Zw"), "Zeeschelde I tijarm Zwijnaarde", waterloop))) %>% 
+  dplyr::mutate(waterlichaam = ifelse(waterlichaam %in% c("GetijdeDijle", "GetijdeZenne"), "Getijdedijle en -zenne", waterlichaam)) %>% 
+  dplyr::select(jaar, waterlichaam, waterloop, waterloop2, systeem, tidaal, fysiotoop, locatie, soort, densiteit = densiteit2, biomassa = biomassa2, Taxa_groep) %>%
+      dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde IV" = "Saliniteitsgradient", "Zeeschelde III"= "Oligohalien", "Zeeschelde II" = "Zoet lang verblijf", "Zeeschelde I"= "Zoet kort verblijf")) %>% 
+  dplyr::mutate(locatie = ifelse(str_detect(locatie, "DL20"), str_replace(locatie, "DL20", "DI20"), locatie)) #in 2020 DL ipv DI gebruikt voor Dijle -> aanpassen in benthos en locatie file!
+
+unique(benthos2008_heden$waterloop)
+
+unique(str_sort(benthos2008_heden$locatie %>% substr(0,2)))
+
+#data check - als je Bivalvia, Amphipoda en Decapoda uitsluit, dan is relatie zeer ok, dus data lijken logisch
+#Decapoda = Eriocheir sinensis -> eigenlijk geen macrobenthos dus best weg te laten bij berekeningen - geldt ook voor garnalen, aasgarnalen, maar ook bv voor meer terrestrische soorten en zeker voor adulte exs van Diptera etc!!
+benthos2008_heden %>%
+  dplyr::filter(!Taxa_groep %in% c("Bivalvia", "Amphipoda", "Decapoda")) %>% 
+  #dplyr::filter(densiteit2 <100000) %>% 
+  ggplot(aes(x=densiteit, y=biomassa)) +
+  #xlim(0,200000)+
+  #ylim(0,60)+
+  geom_point()+
+  stat_poly_line() +
+  stat_poly_eq(use_label(c("eq", "R2")))
+
+benthos2008_heden %>% 
+  #dplyr::filter(densiteit <1500000) %>%
+  dplyr::filter(!Taxa_groep %in% c("Bivalvia", "Amphipoda", "Decapoda")) %>% 
+  ggplot(aes(x=biomassa, y=densiteit)) +
+  xlim(0,50)+
+  ylim(0,200000)+
+  geom_point()+
+  stat_poly_line() +
+  stat_poly_eq(use_label(c("eq", "R2")))
+
+
+unique(benthos2008_heden$waterlichaam) #[benthos2008_heden$systeem == "Zeeschelde"]
+
+
+#--------------gezamenlijke dataframe maken - te gebruiken voor ANALYSE
+
+benthos2008_heden_vs2025 <- benthos2008_heden %>% 
+  dplyr::bind_rows(benthos23.analyt) %>% 
+  dplyr::mutate(waterlichaam = recode(waterlichaam, "Zeeschelde IV"= "Saliniteitsgradient", "Zeeschelde III"= "Oligohalien", "Zeeschelde II"= "Zoet lang verblijf", "Zeeschelde I"= "Zoet kort verblijf")) 
+
+
+write_xlsx(list(macrobenthos = benthos2008_heden_vs2025),
+path = paste0(pad_data, "Macrobenthos2008_heden_2025_ANALYSE.xlsx"))
+
+
+#2. Bestand maken voor datalevering-------------- De data moeten ook worden opgeleverd - daarvoor is een iets ander format nodig, en ook een sheet voor locaties
+# Hieronder zetten we eerst de locatie-gegevens samen, daarna passen we de benthosdata aan, daarna voegen we het samen
+
+###--locatie details met X,Y Lambert72 MAAR nog geen z berekeningen voor sub-stalen!!! Hier ook niet nodig maar wel nog todo. Locatie-info vorige campagnes in de overzichtsfile onder de sheet "locaties"
+
+locaties.23 <- read_excel(paste0(pad_data, "locaties2023_ONAF.xlsx"), sheet = "Sheet1") %>%
+dplyr::select(locatie = LocatieCode, campagne = CampagneCode, X=Lambert72XBegin, Y=Lambert72YBegin) %>%
+dplyr::filter(campagne == "Spatial2023") %>%
+dplyr::mutate(campagne = "spatial 2023")
+
+##checken dat alleen de juiste locaties erin zitten (geen NOP, raaien, fouten, etc) - klopt
+unique(str_sort(locaties.23$locatie %>% substr(0,2)))
+
+locaties_alltime <- read_excel(paste0(pad_data, "benthos_data2008-2022_rapportage2024.xlsx"), sheet = "locaties") %>%
+dplyr::mutate(locatie = ifelse(str_detect(locatie, "DL20"), str_replace(locatie, "DL20", "DI20"), locatie))
+
+##Daarin zitten de Dijle locaties nog als "DI" en "DL", wegens verkeerd geschreven in 2020. We passen dat hier aan; OPLETTEN! dat kan problemen geven voor de sediment, bulk en andere data van 2020 die dan niet meer linken met de benthosdata!!!
+unique(str_sort(locaties_alltime$locatie %>% substr(0,4))) #DI20 aanwezig, geen ZG in 20? mogelijk als DI of ZE?
+
+##-gezamenlijke locatiefile maken
+locaties2008_heden_vs2025 <- locaties_alltime %>%
+dplyr::bind_rows(locaties.23)
+
+
+
+###--benthosgegevens lichtjes aanpassen
+benthos2008_heden_vs2025.oplevering <- benthos2008_heden_vs2025 %>%
+dplyr::select(jaar, fysiotoop, locatie, soort, densiteit, biomassa, Taxa_groep, KRWzone = waterloop) %>%
+dplyr::mutate(KRW.waterlichaam = ifelse(KRWzone %in% c("Rupel", "Zeeschelde III"), "Zeeschelde III + Rupel", ifelse(str_detect(KRWzone, "tr|tijarm"), "Zoet kort verblijf", ifelse(str_detect(KRWzone, "Dijl|Zen"), "GetijdeDijle + GetijdeZenne", ifelse(KRWzone == "Nete", "GetijdeNetes", KRWzone))))) %>%
+dplyr::mutate(KRW.waterlichaam = recode(KRW.waterlichaam, "Saliniteitsgradient" = "Zeeschelde IV", "Oligohalien" = "Zeeschelde III", "Zeeschelde III + Rupel" = "Zeeschelde III", "Zoet lang verblijf" = "Zeeschelde II", "Zoet kort verblijf" = "Zeeschelde I"))
+
+unique(sort(benthos2008_heden_vs2025.oplevering$KRW.waterlichaam))
+
+
+###Data samen zetten in een excel
+write_xlsx(list(macrobenthos = benthos2008_heden_vs2025.oplevering, locaties = locaties2008_heden_vs2025),
+path = paste0(pad_data, "Macrobenthos2008_heden_rapportage2025.xlsx"))
+
+```
+
+
+```{r jaar}
+
+jaar_recent <- 
+  benthos23.analyt %>% 
+  distinct(jaar) %>% 
+  pull(jaar)
+
+```
+
+```{r controleren-fysiotoop}
+
+benthos23.analyt %>% 
+  distinct(tidaal, fysiotoop) %>% 
+  arrange(tidaal, fysiotoop)
+
+```
+
+##### aantal stalen:
+
+```{r aantal-stalen}
+
+aantal_stalen <- 
+  benthos23.analyt %>% 
+  distinct(locatie) %>% 
+  nrow()
+
+aantal_stalen_waterlichaam_fysiotoop <-
+  benthos23.analyt %>%
+  distinct(locatie, tidaal, fysiotoop, waterlichaam) %>%  
+  count(waterlichaam, tidaal, fysiotoop) %>% 
+  knitr::kable()
+
+aantal_stalen_waterlichaam_fysiotoop
+
+```
+
+-   Er zijn `r aantal_stalen` stalen in de dataset voor `r jaar_recent`
+-   het aantal stalen per waterlichaam en fysiotoop:
+
+`r aantal_stalen_waterlichaam_fysiotoop`
+
+##### lege stalen:
+
+```{r lege-stalen}
+
+lege_stalen_waterlichaam_fysiotoop <-
+  benthos23.analyt %>%
+  dplyr::filter(soort == "geen") %>%  
+  count(waterlichaam, tidaal, fysiotoop) %>% 
+  knitr::kable()
+
+lege_stalen_waterlichaam_fysiotoop
+
+lege_stalen <-
+  benthos23.analyt %>%
+  dplyr::filter(soort == "geen") %>% 
+  dplyr::select(locatie, soort)
+
+
+```
+
+-   er zijn `r nrow(lege_stalen)` lege stalen in de dataset
+
+`r knitr::kable(lege_stalen)`
+
+##### aantal soorten:
+
+```{r soorten-recent}
+soortendata <-  benthos23.analyt %>%
+  dplyr::filter(soort != "geen")
+
+soorten <- 
+  soortendata %>%
+  dplyr::filter(soort != "geen") %>% 
+  distinct(soort)
+
+soorten_per_waterlichaam <-
+  soortendata %>% 
+  distinct(waterlichaam, soort) %>% 
+  count(waterlichaam)
+
+soorten_per_waterlichaam
+```
+
+-   Er zijn `r nrow(soorten)` soorten(groepen) aangetroffen in de dataset
+    -   `r pull(soorten, soort)`
+-   Het aantal soorten per waterlichaam is:
+
+`r knitr::kable(soorten_per_waterlichaam)`
+
+##### biomassa versus densiteit
+
+```{r biomassa-vs-densiteit, fig.height=4, fig.width=6}
+
+benthos23.analyt %>%
+  dplyr::filter(!is.na(biomassa), !is.na(densiteit)) %>%
+  #dplyr::filter(Taxa_groep != "Bivalvia") %>% 
+  ggplot(aes(biomassa + min(biomassa[biomassa > 0]), densiteit + min(densiteit[densiteit > 0]))) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10()
+
+```
+
+##### data worden samengevoegd met historische gegevens
+
+```{r inlezen-checken-historische-data}
+
+#this has been done in pre-processing phase
+
+```
+
+##### biomassa versus densiteit historische gegevens
+
+```{r biomassa-vs-densiteit_historisch, fig.height=4, fig.width=6}
+
+benthos2008_heden_vs2025.analyt %>% 
+  ggplot(aes(densiteit, biomassa)) +
+  geom_point()
+
+benthos2008_heden_vs2025.analyt %>% 
+  ggplot(aes(densiteit + 1, biomassa + min(biomassa[biomassa > 0], na.rm = TRUE))) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10()
+
+zero_densiteit_nonzero_biomassa <-
+  benthos2008_heden_vs2025.analyt %>% 
+  filter(densiteit == 0,
+         biomassa != 0) %>% 
+  select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
+
+zero_biomassa_nonzero_densiteit <-
+  benthos2008_heden_vs2025.analyt %>% 
+  filter(densiteit != 0,
+         biomassa == 0) %>% 
+  select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
+
+negatieve_biomassa <-
+  data_macrobenthos_historisch.2 %>%
+  filter(biomassa < 0) %>%
+  select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
+  
+extreme_biomassa <-
+  data_macrobenthos_historisch.2 %>%
+  filter(biomassa > 200) %>%
+  select(locatie, waterlichaam, fysiotoop, soort, densiteit, biomassa)
+
+```
+
+-   Er zijn `r nrow(zero_densiteit_nonzero_biomassa)` cases van soorten met aantal = 0 en biomassa \> 0:
+
+-   Er zijn `r nrow(zero_biomassa_nonzero_densiteit)` cases van soorten met aantal \> 0 en biomassa = 0:
+
+<br/>
+
+-   Er zijn `r nrow(negatieve_biomassa)` cases van soorten met biomassa \< 0
+
+    -   negatieve biomassa wordt op NA gezet
+
+    `r knitr::kable(negatieve_biomassa)`
+
+<br/>
+
+-   Er is één outlier met extreem hoge biomassa
+
+    `r knitr::kable(extreme_biomassa)`
+
+```{r samenvoegen recent-historisch}
+
+
+data_macrobenthos2008_2022.0 <-
+  data_macrobenthos_historisch.2 %>% 
+  bind_rows(sheetmacrobenthos2022) %>% 
+  dplyr::mutate(tidaal = recode(tidaal, "inter" = "intertidaal", "sub"= "subtidaal", "subtidaal" = "subtidaal", "Intertidaal" = "intertidaal")) %>% 
+  dplyr::mutate(densiteit = round(densiteit,0)) %>% 
+  dplyr::distinct()
+                             
+# in sommige jaren is er "geen" behouden ook al zijn er andere soorten in het staal gevonden (vaak doordat geen op fractieniveau is toegekend en nadien bij een summarize behouden is) -> wegfilteren
+FALSEgeen <- data_macrobenthos2008_2022.0 %>%
+  dplyr::distinct() %>% 
+  dplyr::group_by(locatie) %>% 
+  dplyr::mutate(Nspecs = length(soort)) %>%
+  dplyr::ungroup() %>% 
+  dplyr::mutate(teveel = ifelse(soort == "geen" & Nspecs > 1, "Y", "N")) %>% 
+  dplyr::select(locatie, teveel) %>% 
+  dplyr::distinct() %>%
+  dplyr::group_by(locatie) %>% 
+  dplyr::mutate(dubbels = length(locatie)) %>% 
+  dplyr::filter(!(dubbels == 2 & teveel == "N"))
+  
+
+data_macrobenthos2008_2022 <- data_macrobenthos2008_2022.0 %>% 
+  left_join(FALSEgeen, by = "locatie") %>% 
+  dplyr::filter(!(soort == "geen" & teveel == "Y")) %>% 
+  dplyr::mutate(waterloop = recode(waterloop, "Zeeschelde I trj_Ml_Gb\n" = "Zeeschelde I trj_Ml_Gb",  "Zeeschelde I tijarm Zwijnaarde\n" = "Zeeschelde I tijarm Zwijnaarde" )) %>% 
+  dplyr::select(!c("teveel", "dubbels"))
+
+
+data_macrobenthos_locaties <- 
+  data_macrobenthos_historisch_locaties %>% 
+  bind_rows(sheetlocaties2022)
+
+
+```
+
+##### jaren in de finale dataset:
+
+```{r jaren}
+
+jaren <-
+  data_macrobenthos2008_2022 %>% 
+  distinct(jaar) %>% 
+  pull(jaar)
+
+jaar_range <-
+  range(jaren)
+
+```
+
+-   `r jaren`
+
+##### finale data weggeschreven naar:
+
+```{r filenames}
+
+file_name <-
+  paste0(paste0(pad_data, "/Nieuwe_datafile/"), "macrobenthos_data_", paste(jaar_range, collapse = "_"), "NIETAANTELEVEREN", ".xlsx")
+
+```
+
+-   `r file_name`
+
+```{r wegschrijven-data, eval=FALSE}
+
+write_xlsx(list(macrobenthos = data_macrobenthos2008_2022,
+                locaties = data_macrobenthos_locaties),
+           path = file_name)
+
+```
