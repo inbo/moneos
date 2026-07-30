@@ -2204,30 +2204,44 @@ volgorde_waterlopen_ZS <- c(
 data_macrobenthos_clean <-
   data_macrobenthos %>%
   dplyr::mutate(
-    # Fysiotoopnamen afstemmen op de oppervlaktegegevens
+    # Subtidale fysiotoopnamen afstemmen
     fysiotoop = dplyr::case_when(
       fysiotoop == "subtidaal indet." ~
         "ondiep subtidaal",
 
       stringr::str_detect(
         fysiotoop,
-        "matig"
+        stringr::regex(
+          "matig",
+          ignore_case = TRUE
+        )
       ) ~
         "matig diep subtidaal",
 
       stringr::str_detect(
         fysiotoop,
-        "zeer|ch diep"
+        stringr::regex(
+          "zeer|ch diep",
+          ignore_case = TRUE
+        )
       ) ~
         "diep subtidaal",
 
       stringr::str_detect(
         fysiotoop,
-        "ondiep"
+        stringr::regex(
+          "ondiep",
+          ignore_case = TRUE
+        )
       ) ~
         "ondiep subtidaal",
 
       TRUE ~ fysiotoop
+    ),
+
+    # Ook de intertidale fysiotoopnamen afstemmen op oppkoppel.ZS
+    fysiotoop = harmoniseer_fysiotoop(
+      fysiotoop
     ),
 
     # Waterloopnamen afstemmen op oppkoppel.ZS
@@ -2328,7 +2342,9 @@ data_macrobenthos.zs.zone.avg.0 <-
     .groups = "drop"
   ) %>%
   dplyr::mutate(
-    kaartjaar = as.integer(jaar)
+    kaartjaar = as.integer(
+      jaar
+    )
   )
 
 
@@ -3730,66 +3746,98 @@ bestand_densiteit_intertidaal
 # FIGUUR: GEMIDDELDE DENSITEIT SUBTIDAAL
 # -------------------------------------------------------------------------
 #
-# Oppervlaktegewogen gemiddelde densiteit per zone.
-# De horizontale stippellijnen geven de waarde van de LOESS-trend
-# in respectievelijk 2009 en 2015 weer.
+# Rode punten:
+#   geobserveerde oppervlaktegewogen gemiddelde densiteit.
+#
+# Blauwe volle lijn:
+#   actuele LOESS-trend, berekend met alle beschikbare jaren.
+#
+# Horizontale stippellijnen:
+#   vaste referentiewaarden voor 2009 en 2015.
+#   Deze worden berekend op basis van de historische gegevens t.e.m. 2022,
+#   zodat nieuwe meetjaren de referentiewaarden niet beïnvloeden.
+# -------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------
-# 1. Gegevens voorbereiden
+# 1. Subtidale gemiddelde densiteit berekenen
 # -------------------------------------------------------------------------
+#
+# data.MB.biom.m2 bevat geen kolom 'tidaal'.
+# Daarom wordt subtidaal geselecteerd via fysiotoop vóór de
+# oppervlaktegewogen aggregatie.
 
 data.MB.biom.m2.subtidaal <-
-  data.MB.biom.m2 %>%
+  data.MB.biom.opp %>%
   dplyr::filter(
-    tidaal == "subtidaal"
-  )
+    stringr::str_detect(
+      string = fysiotoop,
+      pattern = stringr::regex(
+        "sub",
+        ignore_case = TRUE
+      )
+    )
+  ) %>%
+  dplyr::group_by(
+    jaar,
+    waterloop
+  ) %>%
+  dplyr::summarise(
+    totopp = sum(
+      fysopp,
+      na.rm = TRUE
+    ),
 
+    densm2 = dplyr::if_else(
+      totopp > 0,
+      round(
+        sum(
+          densiteit * fysopp,
+          na.rm = TRUE
+        ) / totopp,
+        digits = 0
+      ),
+      NA_real_
+    ),
 
-# Dezelfde deelobjecten behouden als in het oude script
-mbzkv.m2 <-
-  data.MB.biom.m2.subtidaal %>%
-  dplyr::filter(
-    waterloop == "Zoet kort verblijf"
-  )
+    biomassam2 = dplyr::if_else(
+      totopp > 0,
+      sum(
+        biomassa * fysopp,
+        na.rm = TRUE
+      ) / totopp,
+      NA_real_
+    ),
 
-
-mbzlv.m2 <-
-  data.MB.biom.m2.subtidaal %>%
-  dplyr::filter(
-    waterloop == "Zoet lang verblijf"
-  )
-
-
-mbOL.m2 <-
-  data.MB.biom.m2.subtidaal %>%
-  dplyr::filter(
-    waterloop == "Oligohalien"
-  )
-
-
-mbSAL.m2 <-
-  data.MB.biom.m2.subtidaal %>%
-  dplyr::filter(
-    waterloop == "Saliniteitsgradient"
+    .groups = "drop"
   )
 
 
 # -------------------------------------------------------------------------
-# 2. Hulpfunctie voor één zonefiguur
+# 2. Vaste historische referentieperiode
+# -------------------------------------------------------------------------
+
+laatste_referentiejaar_densiteit_subtidaal <- 2022L
+
+
+# -------------------------------------------------------------------------
+# 3. Hulpfunctie voor één zonefiguur
 # -------------------------------------------------------------------------
 
 maak_densiteitsplot_subtidaal <- function(
     data,
     zonenaam,
-    annotatie_y
+    annotatie_y,
+    laatste_referentiejaar = 2022L
 ) {
 
   data_plot <-
     data %>%
     dplyr::filter(
       !is.na(jaar),
+      is.finite(jaar),
       !is.na(densm2),
+      is.finite(densm2),
       densm2 > 0
     ) %>%
     dplyr::arrange(
@@ -3797,7 +3845,117 @@ maak_densiteitsplot_subtidaal <- function(
     )
 
 
-  basisplot <-
+  # Historische dataset waarmee de vaste referentiewaarden
+  # voor 2009 en 2015 worden berekend.
+
+  data_referentie <-
+    data_plot %>%
+    dplyr::filter(
+      jaar <= laatste_referentiejaar
+    )
+
+
+  if (
+    nrow(data_referentie) < 4 ||
+      dplyr::n_distinct(data_referentie$jaar) < 4
+  ) {
+    stop(
+      "Onvoldoende historische gegevens om de vaste referenties ",
+      "te berekenen voor ",
+      zonenaam,
+      "."
+    )
+  }
+
+
+  # -----------------------------------------------------------------------
+  # Historische LOESS voor de vaste referentiewaarden
+  # -----------------------------------------------------------------------
+  #
+  # De figuur gebruikt een log10-schaal. Daarom wordt het model
+  # eveneens op log10(densm2) berekend.
+
+  model_referentie <-
+    stats::loess(
+      log10(densm2) ~ jaar,
+      data = data_referentie,
+      span = 2,
+      na.action = stats::na.exclude,
+      control = stats::loess.control(
+        surface = "direct"
+      )
+    )
+
+
+  referentiewaarden <-
+    tibble::tibble(
+      referentiejaar = c(
+        2009,
+        2015
+      )
+    ) %>%
+    dplyr::mutate(
+      log10_densiteit = as.numeric(
+        stats::predict(
+          model_referentie,
+          newdata = data.frame(
+            jaar = referentiejaar
+          )
+        )
+      ),
+
+      densiteit = 10^log10_densiteit,
+
+      zone = zonenaam,
+
+      laatste_referentiejaar =
+        laatste_referentiejaar
+    )
+
+
+  y_2009 <-
+    referentiewaarden %>%
+    dplyr::filter(
+      referentiejaar == 2009
+    ) %>%
+    dplyr::pull(
+      densiteit
+    )
+
+
+  y_2015 <-
+    referentiewaarden %>%
+    dplyr::filter(
+      referentiejaar == 2015
+    ) %>%
+    dplyr::pull(
+      densiteit
+    )
+
+
+  if (
+    length(y_2009) != 1 ||
+      !is.finite(y_2009) ||
+      length(y_2015) != 1 ||
+      !is.finite(y_2015)
+  ) {
+    stop(
+      "De referentiewaarden voor 2009 en/of 2015 konden niet ",
+      "worden berekend voor ",
+      zonenaam,
+      "."
+    )
+  }
+
+
+  # -----------------------------------------------------------------------
+  # Figuur
+  # -----------------------------------------------------------------------
+  #
+  # De volle LOESS gebruikt alle beschikbare jaren.
+  # Alleen deze lijn verandert wanneer nieuwe jaren worden toegevoegd.
+
+  figuur <-
     ggplot2::ggplot(
       data_plot,
       ggplot2::aes(
@@ -3808,6 +3966,26 @@ maak_densiteitsplot_subtidaal <- function(
     ggplot2::geom_point(
       colour = "red",
       size = 2
+    ) +
+    ggplot2::geom_smooth(
+      method = "loess",
+      formula = y ~ x,
+      span = 2,
+      se = TRUE,
+      colour = "blue",
+      linewidth = 1.2
+    ) +
+    ggplot2::geom_hline(
+      yintercept = y_2015,
+      linetype = "dashed",
+      colour = "red",
+      linewidth = 1
+    ) +
+    ggplot2::geom_hline(
+      yintercept = y_2009,
+      linetype = "dashed",
+      colour = "blue",
+      linewidth = 1
     ) +
     ggplot2::scale_y_log10() +
     ggplot2::annotate(
@@ -3825,122 +4003,77 @@ maak_densiteitsplot_subtidaal <- function(
     )
 
 
-  # Geen LOESS berekenen wanneer er onvoldoende unieke jaren zijn
-  if (
-    nrow(data_plot) < 4 ||
-      dplyr::n_distinct(data_plot$jaar) < 4
-  ) {
-    warning(
-      "Geen LOESS-trend berekend voor ",
-      zonenaam,
-      ": onvoldoende waarnemingen."
-    )
+  # De gebruikte referentiewaarden bewaren voor controle.
 
-    return(
-      basisplot
-    )
-  }
+  attr(
+    figuur,
+    "referentiewaarden"
+  ) <-
+    referentiewaarden
 
 
-  plot_met_trend <-
-    basisplot +
-    ggplot2::geom_smooth(
-      method = "loess",
-      span = 2,
-      linewidth = 1.2,
-      se = TRUE
-    )
-
-
-  smooth_df <-
-    ggplot2::ggplot_build(
-      plot_met_trend
-    )$data[[2]]
-
-
-  # Waarde van de LOESS-trend nabij 2015
-  y_2015_log <-
-    smooth_df %>%
-    dplyr::slice_min(
-      order_by = abs(x - 2015),
-      n = 1,
-      with_ties = FALSE
-    ) %>%
-    dplyr::pull(y)
-
-
-  y_2015_raw <-
-    10^y_2015_log
-
-
-  # Waarde van de LOESS-trend nabij 2009
-  y_2009_log <-
-    smooth_df %>%
-    dplyr::slice_min(
-      order_by = abs(x - 2009),
-      n = 1,
-      with_ties = FALSE
-    ) %>%
-    dplyr::pull(y)
-
-
-  y_2009_raw <-
-    10^y_2009_log
-
-
-  plot_met_trend +
-    ggplot2::geom_hline(
-      yintercept = y_2015_raw,
-      linetype = "dashed",
-      colour = "red",
-      linewidth = 1
-    ) +
-    ggplot2::geom_hline(
-      yintercept = y_2009_raw,
-      linetype = "dashed",
-      colour = "blue",
-      linewidth = 1
-    )
+  figuur
 }
 
 
 # -------------------------------------------------------------------------
-# 3. Figuren per zone
+# 4. Figuren per zone
 # -------------------------------------------------------------------------
 
 zkv.mean.dens.sub <-
+  data.MB.biom.m2.subtidaal %>%
+  dplyr::filter(
+    waterloop == "Zoet kort verblijf"
+  ) %>%
   maak_densiteitsplot_subtidaal(
-    data = mbzkv.m2,
     zonenaam = "Zoet kort verblijf",
-    annotatie_y = 40000
+    annotatie_y = 40000,
+    laatste_referentiejaar =
+      laatste_referentiejaar_densiteit_subtidaal
   )
 
 
 zlv.mean.dens.sub <-
+  data.MB.biom.m2.subtidaal %>%
+  dplyr::filter(
+    waterloop == "Zoet lang verblijf"
+  ) %>%
   maak_densiteitsplot_subtidaal(
-    data = mbzlv.m2,
     zonenaam = "Zoet lang verblijf",
-    annotatie_y = 18000
+    annotatie_y = 18000,
+    laatste_referentiejaar =
+      laatste_referentiejaar_densiteit_subtidaal
   )
 
 
 OL.mean.dens.sub <-
+  data.MB.biom.m2.subtidaal %>%
+  dplyr::filter(
+    waterloop == "Oligohalien"
+  ) %>%
   maak_densiteitsplot_subtidaal(
-    data = mbOL.m2,
     zonenaam = "Oligohalien",
-    annotatie_y = 180000
+    annotatie_y = 180000,
+    laatste_referentiejaar =
+      laatste_referentiejaar_densiteit_subtidaal
   )
 
 
 SAL.mean.dens.sub <-
+  data.MB.biom.m2.subtidaal %>%
+  dplyr::filter(
+    waterloop == "Saliniteitsgradient"
+  ) %>%
   maak_densiteitsplot_subtidaal(
-    data = mbSAL.m2,
     zonenaam = "Saliniteitsgradient",
-    annotatie_y = 12000
+    annotatie_y = 12000,
+    laatste_referentiejaar =
+      laatste_referentiejaar_densiteit_subtidaal
   )
 
 
-# Dezelfde definitieve objectnamen als in het oude script
+# Dezelfde definitieve objectnamen als in het oude script behouden.
+
 zkmds <- zkv.mean.dens.sub
 zlmds <- zlv.mean.dens.sub
 Omds  <- OL.mean.dens.sub
@@ -3948,7 +4081,48 @@ Smds  <- SAL.mean.dens.sub
 
 
 # -------------------------------------------------------------------------
-# 4. Vier panelen samenvoegen
+# 5. Vaste referentiewaarden controleren
+# -------------------------------------------------------------------------
+
+referentiewaarden_densiteit_subtidaal <-
+  dplyr::bind_rows(
+    attr(
+      zkv.mean.dens.sub,
+      "referentiewaarden"
+    ),
+
+    attr(
+      zlv.mean.dens.sub,
+      "referentiewaarden"
+    ),
+
+    attr(
+      OL.mean.dens.sub,
+      "referentiewaarden"
+    ),
+
+    attr(
+      SAL.mean.dens.sub,
+      "referentiewaarden"
+    )
+  ) %>%
+  dplyr::select(
+    zone,
+    referentiejaar,
+    densiteit,
+    laatste_referentiejaar
+  ) %>%
+  dplyr::arrange(
+    zone,
+    referentiejaar
+  )
+
+
+referentiewaarden_densiteit_subtidaal
+
+
+# -------------------------------------------------------------------------
+# 6. Vier panelen samenvoegen
 # -------------------------------------------------------------------------
 
 inter.mean.dens.sub <-
@@ -4012,10 +4186,8 @@ inter.mean.dens.sub.final
 
 
 # -------------------------------------------------------------------------
-# 5. Figuur opslaan
+# 7. Figuur opslaan
 # -------------------------------------------------------------------------
-#
-# Exact dezelfde uitvoerbestandsnaam als in het oude script.
 
 bestand_densiteit_subtidaal <-
   file.path(
@@ -4034,6 +4206,7 @@ ggplot2::ggsave(
 
 
 bestand_densiteit_subtidaal
+
 ```
 
 ```{r 070-figuur-densiteit-gemiddelde-Zeeschelde}
@@ -4995,11 +5168,24 @@ zs.biom.m2 <-
   ) +
   ggplot2::annotate(
     geom = "text",
-    x = 2016,
-    y = 10.5,
+    x = mean(
+      range(
+        data.MB.biom.m2.zs$jaar,
+        na.rm = TRUE
+      )
+    ),
+    y = max(
+      data.MB.biom.m2.zs$biomassam2,
+      na.rm = TRUE
+    ) * 1.12,
     label = "INTERTIDAAL",
     size = 5,
     fontface = "bold"
+  ) +
+  ggplot2::scale_y_continuous(
+    expand = ggplot2::expansion(
+      mult = c(0.05, 0.18)
+    )
   ) +
   ggplot2::theme_bw() +
   ggplot2::labs(
@@ -5064,11 +5250,24 @@ zs.biomS.m2 <-
   ) +
   ggplot2::annotate(
     geom = "text",
-    x = 2016,
-    y = 25,
+    x = mean(
+      range(
+        data.MB.biom.m2.zsS$jaar,
+        na.rm = TRUE
+      )
+    ),
+    y = max(
+      data.MB.biom.m2.zsS$biomassam2,
+      na.rm = TRUE
+    ) * 1.12,
     label = "SUBTIDAAL",
     size = 5,
     fontface = "bold"
+  ) +
+  ggplot2::scale_y_continuous(
+    expand = ggplot2::expansion(
+      mult = c(0.05, 0.18)
+    )
   ) +
   ggplot2::theme_bw() +
   ggplot2::labs(
@@ -5357,6 +5556,347 @@ ggplot2::ggsave(
 
 ```
 
+```{r 070-figuur-biomassa-totaal-zeeschelde, fig.height=6, fig.width=7}
+
+# -------------------------------------------------------------------------
+# FIGUUR: TOTALE BIOMASSA VOLLEDIGE ZEESCHELDE
+# -------------------------------------------------------------------------
+#
+# biomassa : g AFDW / m²
+# fysopp   : hectare
+#
+# Omrekening naar ton AFDW:
+#
+# g/m² × hectare × 10.000 m²/hectare ÷ 1.000.000 g/ton
+#
+# = biomassa × fysopp / 100
+#
+# De rode stippellijn is de vaste EMSE-grenswaarde van 30 ton AFDW.
+# -------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------
+# 1. Invoer controleren
+# -------------------------------------------------------------------------
+
+benodigde_kolommen_biomassa_totaal <-
+  c(
+    "jaar",
+    "fysiotoop",
+    "biomassa",
+    "fysopp"
+  )
+
+
+ontbrekende_kolommen_biomassa_totaal <-
+  setdiff(
+    benodigde_kolommen_biomassa_totaal,
+    names(data.MB.biom.opp)
+  )
+
+
+if (
+  length(ontbrekende_kolommen_biomassa_totaal) > 0
+) {
+  stop(
+    "De volgende vereiste kolommen ontbreken in data.MB.biom.opp: ",
+    paste(
+      ontbrekende_kolommen_biomassa_totaal,
+      collapse = ", "
+    )
+  )
+}
+
+
+# -------------------------------------------------------------------------
+# 2. Controle van ontbrekende oppervlaktes
+# -------------------------------------------------------------------------
+
+controle_ontbrekende_fysopp_biomassa_totaal <-
+  data.MB.biom.opp %>%
+  dplyr::mutate(
+    tidaal = dplyr::if_else(
+      stringr::str_detect(
+        fysiotoop,
+        stringr::regex(
+          "sub",
+          ignore_case = TRUE
+        )
+      ),
+      "subtidaal",
+      "intertidaal"
+    )
+  ) %>%
+  dplyr::filter(
+    !is.na(biomassa),
+    is.na(fysopp)
+  ) %>%
+  dplyr::count(
+    jaar,
+    tidaal,
+    fysiotoop,
+    name = "aantal_rijen"
+  ) %>%
+  dplyr::arrange(
+    jaar,
+    tidaal,
+    fysiotoop
+  )
+
+
+controle_ontbrekende_fysopp_biomassa_totaal
+
+
+if (
+  nrow(controle_ontbrekende_fysopp_biomassa_totaal) > 0
+) {
+  warning(
+    "Er zijn biomassa-observaties zonder gekoppelde fysopp. ",
+    "Deze rijen worden niet opgenomen in de totale biomassa. ",
+    "Bekijk controle_ontbrekende_fysopp_biomassa_totaal."
+  )
+}
+
+
+# -------------------------------------------------------------------------
+# 3. Totale biomassa per jaar en getijdenzone
+# -------------------------------------------------------------------------
+
+BIOM_ZS.zs <-
+  data.MB.biom.opp %>%
+  dplyr::mutate(
+    tidaal = dplyr::if_else(
+      stringr::str_detect(
+        fysiotoop,
+        stringr::regex(
+          "sub",
+          ignore_case = TRUE
+        )
+      ),
+      "subtidaal",
+      "intertidaal"
+    )
+  ) %>%
+  dplyr::filter(
+    !is.na(jaar),
+    !is.na(biomassa),
+    is.finite(biomassa),
+    !is.na(fysopp),
+    is.finite(fysopp),
+    fysopp > 0
+  ) %>%
+  dplyr::group_by(
+    jaar,
+    tidaal
+  ) %>%
+  dplyr::summarise(
+    # fysopp staat in hectare.
+    biomassat = sum(
+      biomassa * fysopp * 10000,
+      na.rm = TRUE
+    ) / 1e6,
+
+    opp_hectare = sum(
+      fysopp,
+      na.rm = TRUE
+    ),
+
+    aantal_fysiotooprijen = dplyr::n(),
+
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(
+    EMSE = 30
+  )
+
+
+# -------------------------------------------------------------------------
+# 4. Resultaten controleren
+# -------------------------------------------------------------------------
+
+controle_totale_biomassa_zeeschelde <-
+  BIOM_ZS.zs %>%
+  dplyr::arrange(
+    tidaal,
+    jaar
+  )
+
+
+controle_totale_biomassa_zeeschelde
+
+
+# Een snelle controle van de recente jaren.
+
+controle_totale_biomassa_zeeschelde %>%
+  dplyr::filter(
+    jaar >= 2020
+  )
+
+
+# -------------------------------------------------------------------------
+# 5. Hulpfunctie voor één paneel
+# -------------------------------------------------------------------------
+
+maak_totale_biomassaplot <- function(
+    data,
+    titel
+) {
+
+  data_plot <-
+    data %>%
+    dplyr::filter(
+      !is.na(jaar),
+      is.finite(jaar),
+      !is.na(biomassat),
+      is.finite(biomassat)
+    ) %>%
+    dplyr::arrange(
+      jaar
+    )
+
+
+  ggplot2::ggplot(
+    data_plot,
+    ggplot2::aes(
+      x = jaar,
+      y = biomassat
+    )
+  ) +
+    ggplot2::geom_line(
+      colour = "black",
+      linewidth = 0.7
+    ) +
+    ggplot2::geom_hline(
+      yintercept = 30,
+      linetype = "dotted",
+      colour = "red",
+      linewidth = 0.8
+    ) +
+    ggplot2::labs(
+      x = "Jaar",
+      y = NULL,
+      title = titel
+    ) +
+    ggplot2::scale_y_continuous(
+      expand = ggplot2::expansion(
+        mult = c(
+          0.04,
+          0.08
+        )
+      )
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(
+        hjust = 0.5,
+        face = "bold",
+        size = 18
+      )
+    )
+}
+
+
+# -------------------------------------------------------------------------
+# 6. Intertidaal
+# -------------------------------------------------------------------------
+
+ZSinter <-
+  BIOM_ZS.zs %>%
+  dplyr::filter(
+    tidaal == "intertidaal"
+  ) %>%
+  maak_totale_biomassaplot(
+    titel = "INTERTIDAAL"
+  )
+
+
+# -------------------------------------------------------------------------
+# 7. Subtidaal
+# -------------------------------------------------------------------------
+
+ZSsub <-
+  BIOM_ZS.zs %>%
+  dplyr::filter(
+    tidaal == "subtidaal"
+  ) %>%
+  maak_totale_biomassaplot(
+    titel = "SUBTIDAAL"
+  )
+
+
+# -------------------------------------------------------------------------
+# 8. Panelen combineren
+# -------------------------------------------------------------------------
+
+tot.Biom.EMS.ZS <-
+  ggpubr::ggarrange(
+    ZSinter +
+      ggpubr::rremove("xlab") +
+      ggpubr::font(
+        "xy.text",
+        size = 8
+      ),
+
+    ZSsub +
+      ggpubr::rremove("xlab") +
+      ggpubr::font(
+        "xy.text",
+        size = 8
+      ),
+
+    nrow = 2,
+    ncol = 1,
+    align = "v"
+  )
+
+
+tot.Biom.EMS.ZS.final <-
+  ggpubr::annotate_figure(
+    tot.Biom.EMS.ZS,
+
+    left = ggpubr::text_grob(
+      "Totale biomassa (ton AFDW) macrobenthos",
+      rot = 90,
+      vjust = 1,
+      size = 12
+    ),
+
+    bottom = ggpubr::text_grob(
+      "Jaar",
+      size = 12
+    )
+  )
+
+
+tot.Biom.EMS.ZS.final
+
+
+# -------------------------------------------------------------------------
+# 9. Figuur opslaan
+# -------------------------------------------------------------------------
+
+bestand_biomassa_totaal_zeeschelde <-
+  file.path(
+    pad_figuren,
+    "070-figuur-BIOMASSA.TOTAAL.ZEESCHELDE.jpg"
+  )
+
+
+ggplot2::ggsave(
+  filename = bestand_biomassa_totaal_zeeschelde,
+  plot = tot.Biom.EMS.ZS.final,
+  height = 6,
+  width = 7,
+  units = "in"
+)
+
+
+bestand_biomassa_totaal_zeeschelde
+
+```
+
+
+
 ```{r 070-figuur-biomassa-waterlichaam-alternatief, fig.height=8, fig.width=8}
 
 # -------------------------------------------------------------------------
@@ -5604,20 +6144,118 @@ ggplot2::ggsave(
 # -------------------------------------------------------------------------
 # TOTALE BIOMASSA PER WATERLOOP MET EMSE-GRENSWAARDEN
 # -------------------------------------------------------------------------
+#
+# biomassa : g AFDW / m²
+# fysopp   : hectare
+#
+# Omrekening naar ton AFDW:
+# biomassa × fysopp × 10.000 m²/ha ÷ 1.000.000 g/ton
+# -------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------
-# 1. Totale biomassa per jaar, waterloop en tidale zone
+# 1. Invoer controleren
 # -------------------------------------------------------------------------
 
-BIOM_ZS <-
+benodigde_kolommen_biomassa_waterloop <-
+  c(
+    "jaar",
+    "waterloop",
+    "fysiotoop",
+    "biomassa",
+    "fysopp"
+  )
+
+
+ontbrekende_kolommen_biomassa_waterloop <-
+  setdiff(
+    benodigde_kolommen_biomassa_waterloop,
+    names(data.MB.biom.opp)
+  )
+
+
+if (
+  length(ontbrekende_kolommen_biomassa_waterloop) > 0
+) {
+  stop(
+    "De volgende vereiste kolommen ontbreken in data.MB.biom.opp: ",
+    paste(
+      ontbrekende_kolommen_biomassa_waterloop,
+      collapse = ", "
+    )
+  )
+}
+
+
+# -------------------------------------------------------------------------
+# 2. Getijdenzone bepalen en ontbrekende oppervlaktes controleren
+# -------------------------------------------------------------------------
+
+data_biomassa_waterloop <-
   data.MB.biom.opp %>%
   dplyr::mutate(
     tidaal = dplyr::if_else(
-      stringr::str_detect(fysiotoop, "sub"),
+      stringr::str_detect(
+        fysiotoop,
+        stringr::regex(
+          "sub",
+          ignore_case = TRUE
+        )
+      ),
       "subtidaal",
       "intertidaal"
     )
+  )
+
+
+controle_ontbrekende_fysopp_biomassa_waterloop <-
+  data_biomassa_waterloop %>%
+  dplyr::filter(
+    !is.na(biomassa),
+    is.na(fysopp)
+  ) %>%
+  dplyr::count(
+    jaar,
+    waterloop,
+    tidaal,
+    fysiotoop,
+    name = "aantal_rijen"
+  ) %>%
+  dplyr::arrange(
+    waterloop,
+    tidaal,
+    jaar,
+    fysiotoop
+  )
+
+
+controle_ontbrekende_fysopp_biomassa_waterloop
+
+
+if (
+  nrow(controle_ontbrekende_fysopp_biomassa_waterloop) > 0
+) {
+  warning(
+    "Er zijn biomassa-observaties zonder gekoppelde oppervlakte. ",
+    "Bekijk controle_ontbrekende_fysopp_biomassa_waterloop."
+  )
+}
+
+
+# -------------------------------------------------------------------------
+# 3. Totale biomassa per jaar, waterloop en getijdenzone
+# -------------------------------------------------------------------------
+
+BIOM_ZS <-
+  data_biomassa_waterloop %>%
+  dplyr::filter(
+    !is.na(jaar),
+    !is.na(waterloop),
+    !is.na(biomassa),
+    is.finite(biomassa),
+    !is.na(fysopp),
+    is.finite(fysopp),
+    fysopp > 0
   ) %>%
   dplyr::group_by(
     jaar,
@@ -5625,20 +6263,18 @@ BIOM_ZS <-
     tidaal
   ) %>%
   dplyr::summarise(
-    # biomassa: g AFDW/m²
-    # fysopp: are
-    # × 100: are naar m²
-    # ÷ 1e6: gram naar ton
     biomassa.waterloop =
       sum(
-        biomassa * fysopp * 100,
+        biomassa * fysopp * 10000,
         na.rm = TRUE
       ) / 1e6,
 
-    opp = sum(
+    opp_hectare = sum(
       fysopp,
       na.rm = TRUE
     ),
+
+    aantal_rijen = dplyr::n(),
 
     .groups = "drop"
   ) %>%
@@ -5653,8 +6289,62 @@ BIOM_ZS <-
   )
 
 
+# Alleen de vier hoofdtrajecten opnemen waarvoor een EMSE-grens bestaat.
+
+waterlopen_emse <-
+  c(
+    "Saliniteitsgradient",
+    "Oligohalien",
+    "Zoet lang verblijf",
+    "Zoet kort verblijf"
+  )
+
+
+BIOM_ZS <-
+  BIOM_ZS %>%
+  dplyr::filter(
+    waterloop %in% waterlopen_emse
+  ) %>%
+  dplyr::mutate(
+    waterloop = factor(
+      waterloop,
+      levels = waterlopen_emse
+    )
+  )
+
+
 # -------------------------------------------------------------------------
-# 2. Eén referentielijn per waterloop en tidale zone
+# 4. Controle van de berekende waarden
+# -------------------------------------------------------------------------
+
+controle_biomassa_totaal_waterloop <-
+  BIOM_ZS %>%
+  dplyr::select(
+    jaar,
+    waterloop,
+    tidaal,
+    biomassa.waterloop,
+    opp_hectare,
+    EMSE
+  ) %>%
+  dplyr::arrange(
+    tidaal,
+    waterloop,
+    jaar
+  )
+
+
+controle_biomassa_totaal_waterloop
+
+
+controle_biomassa_totaal_waterloop %>%
+  dplyr::filter(
+    jaar >= 2020
+  )
+
+
+# -------------------------------------------------------------------------
+# 5. Eén referentielijn per waterloop en getijdenzone
 # -------------------------------------------------------------------------
 
 BIOM_ZS_EMSE <-
@@ -5670,7 +6360,7 @@ BIOM_ZS_EMSE <-
 
 
 # -------------------------------------------------------------------------
-# 3. Intertidale totale biomassa
+# 6. Intertidale totale biomassa
 # -------------------------------------------------------------------------
 
 totinter <-
@@ -5681,7 +6371,8 @@ totinter <-
   ggplot2::ggplot(
     mapping = ggplot2::aes(
       x = jaar,
-      y = biomassa.waterloop
+      y = biomassa.waterloop,
+      group = waterloop
     )
   ) +
   ggplot2::geom_line(
@@ -5698,11 +6389,12 @@ totinter <-
       colour = waterloop
     ),
     inherit.aes = FALSE,
-    linetype = "11",
+    linetype = "dotted",
     linewidth = 0.8
   ) +
   ggplot2::facet_grid(
-    ~waterloop
+    cols = ggplot2::vars(waterloop),
+    scales = "free_y"
   ) +
   ggplot2::labs(
     x = "Jaar",
@@ -5722,7 +6414,7 @@ totinter
 
 
 # -------------------------------------------------------------------------
-# 4. Subtidale totale biomassa
+# 7. Subtidale totale biomassa
 # -------------------------------------------------------------------------
 
 totsub <-
@@ -5733,7 +6425,8 @@ totsub <-
   ggplot2::ggplot(
     mapping = ggplot2::aes(
       x = jaar,
-      y = biomassa.waterloop
+      y = biomassa.waterloop,
+      group = waterloop
     )
   ) +
   ggplot2::geom_line(
@@ -5750,11 +6443,12 @@ totsub <-
       colour = waterloop
     ),
     inherit.aes = FALSE,
-    linetype = "11",
+    linetype = "dotted",
     linewidth = 0.8
   ) +
   ggplot2::facet_grid(
-    ~waterloop
+    cols = ggplot2::vars(waterloop),
+    scales = "free_y"
   ) +
   ggplot2::labs(
     x = "Jaar",
@@ -5774,7 +6468,7 @@ totsub
 
 
 # -------------------------------------------------------------------------
-# 5. Intertidaal en subtidaal combineren
+# 8. Intertidaal en subtidaal combineren
 # -------------------------------------------------------------------------
 
 tot.Biom.EMSE <-
@@ -5797,7 +6491,8 @@ tot.Biom.EMSE <-
 
     nrow = 2,
     common.legend = TRUE,
-    legend = "right"
+    legend = "right",
+    align = "v"
   )
 
 
@@ -5823,19 +6518,27 @@ tot.Biom.EMSE.final
 
 
 # -------------------------------------------------------------------------
-# 6. Figuur opslaan
+# 9. Figuur opslaan
 # -------------------------------------------------------------------------
 
-ggplot2::ggsave(
-  filename = file.path(
+bestand_biomassa_totaal_waterloop <-
+  file.path(
     pad_figuren,
     "070-figuur-BIOMASSA.TOTAAL.waterloop.jpg"
-  ),
+  )
+
+
+ggplot2::ggsave(
+  filename = bestand_biomassa_totaal_waterloop,
   plot = tot.Biom.EMSE.final,
   height = 6,
   width = 9,
   units = "in"
 )
+
+
+bestand_biomassa_totaal_waterloop
+
 ```
 
 ```{r 070-figuur-biomassagemiddelde-waterlichaam-alternatief, fig.height=8, fig.width=8}
@@ -6168,6 +6871,7 @@ waterlopen_soortenrijkdom <- c(
   "Zeeschelde I trj_Ml_Gb"
 )
 
+
 OID_jaren <- c(
   2008,
   2011,
@@ -6176,6 +6880,7 @@ OID_jaren <- c(
   2020,
   2023
 )
+
 
 referentiejaren <- c(
   2009,
@@ -6193,31 +6898,68 @@ harmoniseer_soortenrijkdom <- function(data) {
     dplyr::mutate(
       waterloop = dplyr::recode(
         waterloop,
+
         "Zeeschelde I trj_Ml_Gb\n" =
           "Zeeschelde I trj_Ml_Gb",
+
         "Zeeschelde I tijarm Zwijnaarde\n" =
           "Zeeschelde I tijarm Zwijnaarde",
+
         "Beneden_Dijle" =
           "Dijle",
+
         "Zeeschelde IV" =
           "Saliniteitsgradient",
+
         "Zeeschelde III" =
           "Oligohalien",
+
         "Zeeschelde II" =
           "Zoet lang verblijf",
+
         "Zeeschelde I" =
           "Zoet kort verblijf"
       ),
+
       fysiotoop = dplyr::case_when(
         fysiotoop == "subtidaal indet." ~
           "ondiep subtidaal",
-        stringr::str_detect(fysiotoop, "matig") ~
+
+        stringr::str_detect(
+          fysiotoop,
+          stringr::regex(
+            "matig",
+            ignore_case = TRUE
+          )
+        ) ~
           "matig diep subtidaal",
-        stringr::str_detect(fysiotoop, "zeer|ch diep") ~
+
+        stringr::str_detect(
+          fysiotoop,
+          stringr::regex(
+            "zeer|ch diep",
+            ignore_case = TRUE
+          )
+        ) ~
           "diep subtidaal",
-        stringr::str_detect(fysiotoop, "ondiep") ~
+
+        stringr::str_detect(
+          fysiotoop,
+          stringr::regex(
+            "ondiep",
+            ignore_case = TRUE
+          )
+        ) ~
           "ondiep subtidaal",
+
         TRUE ~ fysiotoop
+      ),
+
+      # Ook de intertidale fysiotopen harmoniseren:
+      # hoog slik, hoog intertidaal en middelhoog intertidaal
+      # worden middelhoog/hoog intertidaal.
+      fysiotoop = harmoniseer_fysiotoop(
+        fysiotoop
       )
     )
 }
@@ -6241,11 +6983,13 @@ Nspec <-
       waterloop,
       levels = waterlopen_soortenrijkdom
     ),
+
     is_soort = dplyr::if_else(
       soort == "geen",
       0L,
       1L
     ),
+
     OID.jaar = dplyr::if_else(
       jaar %in% OID_jaren,
       "ja",
@@ -6265,22 +7009,83 @@ Nspec <-
       na.rm = TRUE
     ),
     .groups = "drop"
-  ) %>%
+  )
+
+
+# -------------------------------------------------------------------------
+# Expliciete jaarlabels
+#
+# Het eerste jaar, de vijfjaarlijkse labels en altijd het laatste
+# beschikbare jaar worden weergegeven.
+# -------------------------------------------------------------------------
+
+eerste_jaar_soortenrijkdom <-
+  min(
+    Nspec$jaar,
+    na.rm = TRUE
+  )
+
+
+laatste_jaar_soortenrijkdom <-
+  max(
+    Nspec$jaar,
+    na.rm = TRUE
+  )
+
+
+jaar_breaks_soortenrijkdom <-
+  sort(
+    unique(
+      c(
+        eerste_jaar_soortenrijkdom,
+
+        seq(
+          from = 2010,
+          to = floor(
+            laatste_jaar_soortenrijkdom / 5
+          ) * 5,
+          by = 5
+        ),
+
+        laatste_jaar_soortenrijkdom
+      )
+    )
+  )
+
+
+# Voor de boxplots is jaar een discrete variabele
+Nspec <-
+  Nspec %>%
   dplyr::mutate(
-    jaar = ordered(jaar),
+    jaar = factor(
+      jaar,
+      levels = sort(
+        unique(
+          jaar
+        )
+      ),
+      ordered = TRUE
+    ),
+
     OID.jaar = factor(
       OID.jaar,
-      levels = c("nee", "ja")
+      levels = c(
+        "nee",
+        "ja"
+      )
     )
   )
 
 
 # Referentiemedianen van de niet-OID-jaren 2009 en 2015
-
 Nmed <-
   Nspec %>%
   dplyr::filter(
-    as.numeric(as.character(jaar)) %in% referentiejaren
+    as.integer(
+      as.character(
+        jaar
+      )
+    ) %in% referentiejaren
   ) %>%
   dplyr::group_by(
     jaar,
@@ -6297,30 +7102,22 @@ Nmed <-
   droplevels()
 
 
-# Afzonderlijke tabellen geven de referentiejaren vaste kleuren
-
 Nmed_2009 <-
   Nmed %>%
   dplyr::filter(
-    as.character(jaar) == "2009"
+    as.character(
+      jaar
+    ) == "2009"
   )
+
 
 Nmed_2015 <-
   Nmed %>%
   dplyr::filter(
-    as.character(jaar) == "2015"
+    as.character(
+      jaar
+    ) == "2015"
   )
-
-
-jaar_breaks_soortenrijkdom <-
-  pretty(
-    range(
-      data_macrobenthos$jaar,
-      na.rm = TRUE
-    ),
-    n = 6
-  ) %>%
-  as.character()
 
 
 fig_mediaan_soortenrijkdom <-
@@ -6353,7 +7150,10 @@ fig_mediaan_soortenrijkdom <-
   ) +
   ggsci::scale_fill_simpsons() +
   ggplot2::scale_x_discrete(
-    breaks = jaar_breaks_soortenrijkdom
+    breaks = as.character(
+      jaar_breaks_soortenrijkdom
+    ),
+    drop = FALSE
   ) +
   ggplot2::facet_wrap(
     tidaal ~ waterloop,
@@ -6410,6 +7210,7 @@ SR <-
       waterloop,
       levels = waterlopen_soortenrijkdom
     ),
+
     is_soort = 1L
   ) %>%
   dplyr::select(
@@ -6422,6 +7223,41 @@ SR <-
     )
   ) %>%
   dplyr::distinct()
+
+
+# Jaarlabels opnieuw baseren op de gegevens die werkelijk in SR zitten
+eerste_jaar_soortenrijkdom <-
+  min(
+    SR$jaar,
+    na.rm = TRUE
+  )
+
+
+laatste_jaar_soortenrijkdom <-
+  max(
+    SR$jaar,
+    na.rm = TRUE
+  )
+
+
+jaar_breaks_soortenrijkdom <-
+  sort(
+    unique(
+      c(
+        eerste_jaar_soortenrijkdom,
+
+        seq(
+          from = 2010,
+          to = floor(
+            laatste_jaar_soortenrijkdom / 5
+          ) * 5,
+          by = 5
+        ),
+
+        laatste_jaar_soortenrijkdom
+      )
+    )
+  )
 
 
 # =========================================================================
@@ -6457,6 +7293,7 @@ SR_referentie_2009 <-
     jaar == 2009
   )
 
+
 SR_referentie_2015 <-
   SR.waterloop %>%
   dplyr::filter(
@@ -6464,7 +7301,7 @@ SR_referentie_2015 <-
   )
 
 
-SR.plot <-
+fig_soortenrijkdom_tidaal <-
   ggplot2::ggplot(
     data = SR.waterloop,
     mapping = ggplot2::aes(
@@ -6505,6 +7342,20 @@ SR.plot <-
     colour = "red",
     linewidth = 0.8
   ) +
+  ggplot2::scale_x_continuous(
+    breaks = jaar_breaks_soortenrijkdom,
+    labels = jaar_breaks_soortenrijkdom,
+    limits = c(
+      eerste_jaar_soortenrijkdom,
+      laatste_jaar_soortenrijkdom
+    ),
+    expand = ggplot2::expansion(
+      mult = c(
+        0.02,
+        0.05
+      )
+    )
+  ) +
   ggplot2::facet_grid(
     tidaal ~ waterloop
   ) +
@@ -6524,7 +7375,7 @@ SR.plot <-
   )
 
 
-SR.plot
+fig_soortenrijkdom_tidaal
 
 
 ggplot2::ggsave(
@@ -6532,7 +7383,7 @@ ggplot2::ggsave(
     pad_figuren,
     "070-figuur-SOORTENRIJKDOM-waterloop.tidaal.jpg"
   ),
-  plot = SR.plot,
+  plot = fig_soortenrijkdom_tidaal,
   height = 6.5,
   width = 10,
   units = "in"
@@ -6545,7 +7396,6 @@ ggplot2::ggsave(
 
 # Totale soortenrijkdom per jaar en waterloop.
 # Deze tabel bevat bewust geen tidaal-indeling, zodat de join uniek is.
-
 SR.waterloop.totaal <-
   SR %>%
   dplyr::group_by(
@@ -6562,7 +7412,6 @@ SR.waterloop.totaal <-
 
 
 # Soortenrijkdom per fysiotoop, gevolgd door de verdeling over fysiotopen.
-
 SR.1 <-
   SR %>%
   dplyr::group_by(
@@ -6589,6 +7438,7 @@ SR.1 <-
         na.rm = TRUE
       )
     ),
+
     lwr1 = max(
       0,
       stats::quantile(
@@ -6598,6 +7448,7 @@ SR.1 <-
         names = FALSE
       )
     ),
+
     upr1 = max(
       0,
       stats::quantile(
@@ -6607,6 +7458,7 @@ SR.1 <-
         names = FALSE
       )
     ),
+
     lwr2 = max(
       0,
       stats::quantile(
@@ -6616,6 +7468,7 @@ SR.1 <-
         names = FALSE
       )
     ),
+
     upr2 = max(
       0,
       stats::quantile(
@@ -6625,6 +7478,7 @@ SR.1 <-
         names = FALSE
       )
     ),
+
     .groups = "drop"
   ) %>%
   dplyr::left_join(
@@ -6649,6 +7503,7 @@ SR1_referentie_2009 <-
     jaar == 2009
   )
 
+
 SR1_referentie_2015 <-
   SR.1 %>%
   dplyr::filter(
@@ -6656,7 +7511,7 @@ SR1_referentie_2015 <-
   )
 
 
-SR.plot <-
+fig_soortenrijkdom_totaal_mediaan <-
   ggplot2::ggplot(
     data = SR.1,
     mapping = ggplot2::aes(
@@ -6719,6 +7574,20 @@ SR.plot <-
     linetype = "dashed",
     colour = "black"
   ) +
+  ggplot2::scale_x_continuous(
+    breaks = jaar_breaks_soortenrijkdom,
+    labels = jaar_breaks_soortenrijkdom,
+    limits = c(
+      eerste_jaar_soortenrijkdom,
+      laatste_jaar_soortenrijkdom
+    ),
+    expand = ggplot2::expansion(
+      mult = c(
+        0.02,
+        0.05
+      )
+    )
+  ) +
   ggplot2::facet_grid(
     ~waterloop
   ) +
@@ -6740,7 +7609,7 @@ SR.plot <-
   )
 
 
-SR.plot
+fig_soortenrijkdom_totaal_mediaan
 
 
 ggplot2::ggsave(
@@ -6748,11 +7617,32 @@ ggplot2::ggsave(
     pad_figuren,
     "070-figuur-SOORTENRIJKDOM-waterloop.jpg"
   ),
-  plot = SR.plot,
+  plot = fig_soortenrijkdom_totaal_mediaan,
   height = 6.5,
   width = 10,
   units = "in"
 )
+
+
+# -------------------------------------------------------------------------
+# CONTROLE: welk laatste jaar wordt werkelijk gebruikt?
+# -------------------------------------------------------------------------
+
+cat(
+  "Laatste jaar in SR:",
+  laatste_jaar_soortenrijkdom,
+  "\n"
+)
+
+cat(
+  "Jaarlabels op de figuren:",
+  paste(
+    jaar_breaks_soortenrijkdom,
+    collapse = ", "
+  ),
+  "\n"
+)
+
 ```
 
 
