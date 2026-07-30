@@ -3276,79 +3276,202 @@ data.MB.biom.m2.Zeeschelde
 # FIGUUR: GEMIDDELDE DENSITEIT INTERTIDAAL
 # -------------------------------------------------------------------------
 #
-# Oppervlaktegewogen gemiddelde densiteit per zone.
-# De horizontale stippellijnen geven de waarde van de LOESS-trend
-# in respectievelijk 2009 en 2015 weer.
+# Rode punten:
+#   geobserveerde oppervlaktegewogen gemiddelde densiteit.
+#
+# Blauwe volle lijn:
+#   actuele LOESS-trend, berekend met alle beschikbare jaren.
+#
+# Horizontale stippellijnen:
+#   vaste referentiewaarden voor 2009 en 2015.
+#   Deze worden gereconstrueerd op basis van de gegevens t.e.m. 2022,
+#   zodat ze overeenkomen met de waarden uit de vorige rapportversie
+#   en in toekomstige rapporten niet meer veranderen.
+# -------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------
-# 1. Gegevens voorbereiden
+# 1. Intertidale gemiddelde densiteit berekenen
 # -------------------------------------------------------------------------
+#
+# data.MB.biom.m2 heeft geen kolom 'tidaal'.
+# Daarom wordt intertidaal hier, zoals in het oude script,
+# geselecteerd via fysiotoop vóór de oppervlakteweging.
 
 data.MB.biom.m2.intertidaal <-
-  data.MB.biom.m2 %>%
+  data.MB.biom.opp %>%
   dplyr::filter(
-    tidaal == "intertidaal"
-  )
+    !stringr::str_detect(
+      string = fysiotoop,
+      pattern = stringr::regex(
+        "sub",
+        ignore_case = TRUE
+      )
+    )
+  ) %>%
+  dplyr::group_by(
+    jaar,
+    waterloop
+  ) %>%
+  dplyr::summarise(
+    totopp = sum(
+      fysopp,
+      na.rm = TRUE
+    ),
 
+    densm2 = dplyr::if_else(
+      totopp > 0,
+      round(
+        sum(
+          densiteit * fysopp,
+          na.rm = TRUE
+        ) / totopp,
+        digits = 0
+      ),
+      NA_real_
+    ),
 
-# Dezelfde deelobjecten behouden als in het oude script
-mbzkv.m2 <-
-  data.MB.biom.m2.intertidaal %>%
-  dplyr::filter(
-    waterloop == "Zoet kort verblijf"
-  )
+    biomassam2 = dplyr::if_else(
+      totopp > 0,
+      sum(
+        biomassa * fysopp,
+        na.rm = TRUE
+      ) / totopp,
+      NA_real_
+    ),
 
-
-mbzlv.m2 <-
-  data.MB.biom.m2.intertidaal %>%
-  dplyr::filter(
-    waterloop == "Zoet lang verblijf"
-  )
-
-
-mbOL.m2 <-
-  data.MB.biom.m2.intertidaal %>%
-  dplyr::filter(
-    waterloop == "Oligohalien"
-  )
-
-
-mbSAL.m2 <-
-  data.MB.biom.m2.intertidaal %>%
-  dplyr::filter(
-    waterloop == "Saliniteitsgradient"
+    .groups = "drop"
   )
 
 
 # -------------------------------------------------------------------------
-# 2. Hulpfunctie voor één zonefiguur
+# 2. Vaste referentieperiode
 # -------------------------------------------------------------------------
 #
-# De referentielijnen worden, net als in het oude script, afgeleid
-# van de getekende LOESS-trend op de log10-schaal.
-#
-# Bij onvoldoende positieve waarnemingen wordt geen LOESS-trend
-# berekend en worden ook geen referentielijnen toegevoegd.
+# 2022 is het laatste jaar dat voor de oude referentielijnen wordt gebruikt.
+# Nieuwe jaren beïnvloeden hierdoor uitsluitend de actuele LOESS-lijn.
+
+laatste_referentiejaar_densiteit <- 2022L
+
+
+# -------------------------------------------------------------------------
+# 3. Hulpfunctie voor één zone
+# -------------------------------------------------------------------------
 
 maak_densiteitsplot_intertidaal <- function(
     data,
     zonenaam,
-    annotatie_y
+    annotatie_y,
+    laatste_referentiejaar = 2022L
 ) {
 
   data_plot <-
     data %>%
     dplyr::filter(
       !is.na(jaar),
+      is.finite(jaar),
       !is.na(densm2),
+      is.finite(densm2),
       densm2 > 0
     ) %>%
     dplyr::arrange(
       jaar
     )
 
-  basisplot <-
+
+  # Dataset waarmee de vaste referentiewaarden worden gereconstrueerd.
+
+  data_referentie <-
+    data_plot %>%
+    dplyr::filter(
+      jaar <= laatste_referentiejaar
+    )
+
+
+  if (
+    nrow(data_referentie) < 4 ||
+      dplyr::n_distinct(data_referentie$jaar) < 4
+  ) {
+    stop(
+      "Onvoldoende historische gegevens om de vaste referenties ",
+      "te berekenen voor ",
+      zonenaam,
+      "."
+    )
+  }
+
+
+  # -----------------------------------------------------------------------
+  # Vaste referentie-LOESS
+  # -----------------------------------------------------------------------
+  #
+  # De oude figuur gebruikte geom_smooth() in combinatie met scale_y_log10().
+  # Daarom wordt het referentiemodel op log10(densm2) berekend.
+
+  model_referentie <-
+    stats::loess(
+      log10(densm2) ~ jaar,
+      data = data_referentie,
+      span = 2,
+      na.action = stats::na.exclude,
+      control = stats::loess.control(
+        surface = "direct"
+      )
+    )
+
+
+  referentiewaarden <-
+    tibble::tibble(
+      referentiejaar = c(
+        2009,
+        2015
+      )
+    ) %>%
+    dplyr::mutate(
+      log10_densiteit = as.numeric(
+        stats::predict(
+          model_referentie,
+          newdata = data.frame(
+            jaar = referentiejaar
+          )
+        )
+      ),
+
+      densiteit = 10^log10_densiteit,
+
+      zone = zonenaam,
+      laatste_referentiejaar = laatste_referentiejaar
+    )
+
+
+  y_2009 <-
+    referentiewaarden %>%
+    dplyr::filter(
+      referentiejaar == 2009
+    ) %>%
+    dplyr::pull(
+      densiteit
+    )
+
+
+  y_2015 <-
+    referentiewaarden %>%
+    dplyr::filter(
+      referentiejaar == 2015
+    ) %>%
+    dplyr::pull(
+      densiteit
+    )
+
+
+  # -----------------------------------------------------------------------
+  # Figuur
+  # -----------------------------------------------------------------------
+  #
+  # De volle LOESS-lijn gebruikt alle beschikbare jaren.
+  # Alleen deze lijn zal dus veranderen wanneer nieuwe jaren bijkomen.
+
+  figuur <-
     ggplot2::ggplot(
       data_plot,
       ggplot2::aes(
@@ -3359,6 +3482,26 @@ maak_densiteitsplot_intertidaal <- function(
     ggplot2::geom_point(
       colour = "red",
       size = 2
+    ) +
+    ggplot2::geom_smooth(
+      method = "loess",
+      formula = y ~ x,
+      span = 2,
+      se = TRUE,
+      linewidth = 1.2,
+      colour = "blue"
+    ) +
+    ggplot2::geom_hline(
+      yintercept = y_2015,
+      linetype = "dashed",
+      colour = "red",
+      linewidth = 1
+    ) +
+    ggplot2::geom_hline(
+      yintercept = y_2009,
+      linetype = "dashed",
+      colour = "blue",
+      linewidth = 1
     ) +
     ggplot2::scale_y_log10() +
     ggplot2::annotate(
@@ -3375,112 +3518,76 @@ maak_densiteitsplot_intertidaal <- function(
       y = "gemiddelde densiteit macrobenthos / m² INTERTIDAAL"
     )
 
-  # LOESS vereist voldoende unieke jaren.
-  if (
-    nrow(data_plot) < 4 ||
-      dplyr::n_distinct(data_plot$jaar) < 4
-  ) {
-    warning(
-      "Geen LOESS-trend berekend voor ",
-      zonenaam,
-      ": onvoldoende waarnemingen."
-    )
 
-    return(basisplot)
-  }
-
-  plot_met_trend <-
-    basisplot +
-    ggplot2::geom_smooth(
-      method = "loess",
-      span = 2,
-      linewidth = 1.2,
-      se = TRUE
-    )
-
-  smooth_df <-
-    ggplot2::ggplot_build(
-      plot_met_trend
-    )$data[[2]]
-
-  # ggplot_build() geeft de y-waarden van de smoother hier terug
-  # op log10-schaal. Daarom worden ze opnieuw naar de ruwe schaal
-  # omgerekend voordat ze als geom_hline worden toegevoegd.
-  y_2015_raw <-
-    smooth_df %>%
-    dplyr::slice_min(
-      order_by = abs(x - 2015),
-      n = 1,
-      with_ties = FALSE
-    ) %>%
-    dplyr::pull(y) %>%
-    magrittr::raise_to_power(10)
+  attr(
+    figuur,
+    "referentiewaarden"
+  ) <-
+    referentiewaarden
 
 
-  y_2009_raw <-
-    smooth_df %>%
-    dplyr::slice_min(
-      order_by = abs(x - 2009),
-      n = 1,
-      with_ties = FALSE
-    ) %>%
-    dplyr::pull(y) %>%
-    magrittr::raise_to_power(10)
-
-
-  plot_met_trend +
-    ggplot2::geom_hline(
-      yintercept = y_2015_raw,
-      linetype = "dashed",
-      colour = "red",
-      linewidth = 1
-    ) +
-    ggplot2::geom_hline(
-      yintercept = y_2009_raw,
-      linetype = "dashed",
-      colour = "blue",
-      linewidth = 1
-    )
+  figuur
 }
 
 
 # -------------------------------------------------------------------------
-# 3. Figuren per zone
+# 4. Figuren per zone
 # -------------------------------------------------------------------------
 
 zkv.mean.dens <-
+  data.MB.biom.m2.intertidaal %>%
+  dplyr::filter(
+    waterloop == "Zoet kort verblijf"
+  ) %>%
   maak_densiteitsplot_intertidaal(
-    data = mbzkv.m2,
     zonenaam = "Zoet kort verblijf",
-    annotatie_y = 260000
+    annotatie_y = 260000,
+    laatste_referentiejaar =
+      laatste_referentiejaar_densiteit
   )
 
 
 zlv.mean.dens <-
+  data.MB.biom.m2.intertidaal %>%
+  dplyr::filter(
+    waterloop == "Zoet lang verblijf"
+  ) %>%
   maak_densiteitsplot_intertidaal(
-    data = mbzlv.m2,
     zonenaam = "Zoet lang verblijf",
-    annotatie_y = 100000
+    annotatie_y = 100000,
+    laatste_referentiejaar =
+      laatste_referentiejaar_densiteit
   )
 
 
 OL.mean.dens <-
+  data.MB.biom.m2.intertidaal %>%
+  dplyr::filter(
+    waterloop == "Oligohalien"
+  ) %>%
   maak_densiteitsplot_intertidaal(
-    data = mbOL.m2,
     zonenaam = "Oligohalien",
-    annotatie_y = 130000
+    annotatie_y = 130000,
+    laatste_referentiejaar =
+      laatste_referentiejaar_densiteit
   )
 
 
 SAL.mean.dens <-
+  data.MB.biom.m2.intertidaal %>%
+  dplyr::filter(
+    waterloop == "Saliniteitsgradient"
+  ) %>%
   maak_densiteitsplot_intertidaal(
-    data = mbSAL.m2,
     zonenaam = "Saliniteitsgradient",
-    annotatie_y = 50000
+    annotatie_y = 50000,
+    laatste_referentiejaar =
+      laatste_referentiejaar_densiteit
   )
 
 
-# De oude objectnamen voor de definitieve paneelfiguren behouden
+# Oude objectnamen behouden.
+
 zkmd <- zkv.mean.dens
 zlmd <- zlv.mean.dens
 Omd  <- OL.mean.dens
@@ -3488,7 +3595,48 @@ Smd  <- SAL.mean.dens
 
 
 # -------------------------------------------------------------------------
-# 4. Vier panelen samenvoegen
+# 5. Vaste referentiewaarden controleren
+# -------------------------------------------------------------------------
+
+referentiewaarden_densiteit_intertidaal <-
+  dplyr::bind_rows(
+    attr(
+      zkv.mean.dens,
+      "referentiewaarden"
+    ),
+
+    attr(
+      zlv.mean.dens,
+      "referentiewaarden"
+    ),
+
+    attr(
+      OL.mean.dens,
+      "referentiewaarden"
+    ),
+
+    attr(
+      SAL.mean.dens,
+      "referentiewaarden"
+    )
+  ) %>%
+  dplyr::select(
+    zone,
+    referentiejaar,
+    densiteit,
+    laatste_referentiejaar
+  ) %>%
+  dplyr::arrange(
+    zone,
+    referentiejaar
+  )
+
+
+referentiewaarden_densiteit_intertidaal
+
+
+# -------------------------------------------------------------------------
+# 6. Vier panelen samenvoegen
 # -------------------------------------------------------------------------
 
 inter.mean.dens <-
@@ -3552,10 +3700,8 @@ inter.mean.dens.final
 
 
 # -------------------------------------------------------------------------
-# 5. Figuur opslaan
+# 7. Figuur opslaan
 # -------------------------------------------------------------------------
-#
-# Exact dezelfde bestandsnaam als in het oude script.
 
 bestand_densiteit_intertidaal <-
   file.path(
@@ -3574,7 +3720,9 @@ ggplot2::ggsave(
 
 
 bestand_densiteit_intertidaal
+
 ```
+
 
 ```{r 070-figuur-densiteit-gemiddelde-subtidaal}
 
