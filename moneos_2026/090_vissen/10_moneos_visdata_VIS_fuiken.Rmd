@@ -79,8 +79,8 @@ run_variabelen <-
   function() {
 
     jaren <- as.numeric(jaar_moneos) - 1
-    vangstmethode <- c('Schietfuik')
-    methodecode <- "SF"
+    vangstmethode <- 'Schietfuik'
+    methodecode <- c("SF")
     
     # Zeeschelde vissen
     locaties_name <- "fuikvangsten_Zeeschelde_locaties"
@@ -146,7 +146,8 @@ tbl_campagnes <-
              by = c("WaarnemingWID" = "WaarnemingWID")) %>%
   filter(Jaar %in% jaren,
          VispuntCode %in% locatie_codes,
-         WaarnemingMethodeCode %in% methodecode,
+         # WaarnemingMethodeCode %in% methodecode,
+         # MethodeOmschrijving %like% vangstmethode,
          WaarnemingStatusCode %in% c('VLD', 'ENT')
          # ,
          # NaamNL %in% soorten
@@ -169,7 +170,8 @@ tbl_campagnes <-
 
 campagnes <-
   tbl_campagnes %>% 
-  collect()
+  collect() %>% 
+  filter(str_detect(WaarnemingMethodeCode, methodecode))
 
 camp_CPUE_NA <-
   campagnes %>%
@@ -235,7 +237,8 @@ tbl_data <-
              by = "TaxonWID") %>% 
   filter(Jaar %in% jaren,
          VispuntCode %in% locatie_codes,
-         WaarnemingMethodeCode %in% methodecode,
+         # WaarnemingMethodeCode %in% methodecode,
+         # MethodeOmschrijving %like% vangstmethode,
          WaarnemingStatusCode %in% c('VLD', 'ENT')
          ,
          # NaamNL %in% soorten
@@ -249,6 +252,7 @@ tbl_data <-
 data_vis <-
   tbl_data %>%
   collect() %>% 
+  filter(str_detect(WaarnemingMethodeCode, methodecode)) %>% 
   rename(MethodeCode = WaarnemingMethodeCode,
          Aantal = MetingTaxonAantal,
          Lengte = MetingTaxonLengteTotaal,
@@ -285,7 +289,8 @@ run_variabelen()
 campagnes_uit <-
   campagnes_vis %>%
   janitor::clean_names() %>% 
-  mutate(methode = "schietfuik") %>% 
+  mutate(methode = methode_omschrijving) %>% 
+  # mutate(methode = "schietfuik") %>% 
   relocate(methode, .after = methode_code)
 
 campagnes_uit <-

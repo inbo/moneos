@@ -193,7 +193,7 @@ aantal_NA_of_0_ruw <-
            near(aantal, 0)) %>% 
   select("meting_id", "waarneming_id", "gebiedcode", 
          "locatie", 
-         "datum", "jaar", "methode_code", 
+         "datum", "jaar", "methode_code", "getij", "zijde", 
          "volume_ue", 
          "soort", "meting_id", "entry_type",
          "aantal", "gewicht", "lengte", "verdunningsfactor")
@@ -204,7 +204,7 @@ gewicht_NA_of_0_ruw <-
            near(gewicht, 0)) %>% 
   select("meting_id", "waarneming_id", "gebiedcode", 
          "locatie", 
-         "datum", "jaar", "methode_code", 
+         "datum", "jaar", "methode_code", "getij", "zijde",
          "volume_ue", 
          "soort", "meting_id", "entry_type",
          "aantal", "gewicht", "lengte", "verdunningsfactor")

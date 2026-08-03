@@ -107,7 +107,6 @@ campagnes_recent <-
 locatie_nrs <- locaties$locatiecode
 locatie_namen <- locaties$locatie
 
-
 ```
 
 
@@ -283,9 +282,13 @@ data_per_datum <-
          seizoen = 
            case_when(
            maand %in% 3:5 ~ "voorjaar",
-           maand %in% 6:7 ~ "zomer",
-           maand %in% 8:10 ~ "najaar",
+           maand %in% 6:8 ~ "zomer",
+           maand %in% 9:11 ~ "najaar",
            maand %in% 12:2 ~ "winter"),
+           # maand %in% 3:5 ~ "voorjaar",
+           # maand %in% 6:7 ~ "zomer",
+           # maand %in% 8:10 ~ "najaar",
+           # maand %in% 12:2 ~ "winter"),
          soort = str_to_lower(soort)) %>% 
   group_by(waarneming_id, locatiecode, locatie, datum, jaar, maand, seizoen, soort) %>% 
   summarise(n = n(),
@@ -538,9 +541,13 @@ campagnes_recent <-
   mutate(maand = month(datum),
          seizoen = 
            case_when(
+             # maand %in% 3:5 ~ "voorjaar",
+             # maand %in% 6:7 ~ "zomer",
+             # maand %in% 8:10 ~ "najaar",
+             # maand %in% 12:2 ~ "winter")) %>% 
              maand %in% 3:5 ~ "voorjaar",
-             maand %in% 6:7 ~ "zomer",
-             maand %in% 8:10 ~ "najaar",
+             maand %in% 6:8 ~ "zomer",
+             maand %in% 9:11 ~ "najaar",
              maand %in% 12:2 ~ "winter")) %>% 
   arrange(datum, locatie) %>% 
   mutate(ID_afvissing = 1:n()) %>% 
