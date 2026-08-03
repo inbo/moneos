@@ -13,13 +13,11 @@ output:
   bookdown::word_document2: default
 ---
 
-
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 
 ```
-
 
 ```{r libraries}
 
@@ -36,7 +34,6 @@ library(jsonlite)
 library(rprojroot) ## workaround pad
 
 ```
-
 
 ```{r pad}
 
@@ -62,7 +59,6 @@ run_pad <- function() {
 run_pad()
 
 ```
-
 
 ```{r variabelen}
 
@@ -108,7 +104,6 @@ run_variabelen()
 
 ```
 
-
 ```{r connectie met databank}
 
 # VIS2 <- connect_inbo_dbase("D0147_00_Vis2")
@@ -116,7 +111,6 @@ run_variabelen()
 VIS <- connect_inbo_dbase("W0001_10_Vis")
 
 ```
-
 
 ```{r bevraging afvissingen}
 
@@ -205,7 +199,6 @@ campagnes_vis <-
   
 ```
 
-
 ```{r bevraging data}
 
 DimWaarneming <- 
@@ -265,14 +258,12 @@ data_vis <-
 
 ```
 
-
 ```{r sluiten databank}
 
 dbDisconnect(VIS)
 # dbDisconnect(VIS2)
 
 ```
-
 
 ```{r hervariabel, ref.label=c('pad', 'variabelen')}
 
@@ -282,7 +273,6 @@ run_pad()
 run_variabelen()
 
 ```
-
 
 ```{r data om weg te schrijven}
 
@@ -359,7 +349,6 @@ soorten_uit <-
 
 ```
 
-
 ```{r campagnes zonder vis}
 
 nets_wo_fish <-
@@ -396,7 +385,6 @@ data_uit2 <-
 
 ```
 
-
 ```{r wegschrijven data voor moneos}
 
 write_xlsx(list(campagnes = campagnes_uit,
@@ -405,5 +393,3 @@ write_xlsx(list(campagnes = campagnes_uit,
            path = str_c(pad_data, filename, "_ruw_VIS_", str_c(unique(range(jaren)), collapse = "_"), ".xlsx"))
 
 ```
-
-
