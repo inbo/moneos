@@ -273,12 +273,21 @@ load(file = str_c(pad_data, "soorten_kleur.RData"))
 #   c(soorten_kleur, "rest")
 
 
-  my_pal_wes <-
-    c(soorten_indeling_kleur$kleur, 
-      "azure",
-      "darkslategrey")
-  names(my_pal_wes) <-
-    c(soorten_indeling_kleur$soort, "haringachtigen", "rest")
+my_pal_wes <-
+  c(soorten_indeling_kleur$kleur, 
+    "khaki2",
+    "azure",
+    "darkslategrey")
+names(my_pal_wes) <-
+  c(soorten_indeling_kleur$soort, "grondel sp", "haringachtigen", "rest")
+
+colorKey = data.frame(colorName=names(my_pal_wes))
+ggplot(data=colorKey, aes(x=1:nrow(colorKey), y = 1, fill=colorName, label=colorName)) +
+  geom_tile() +
+  scale_fill_manual(values = my_pal_wes) +
+  theme_void() +
+  theme(legend.position="none") + 
+  geom_text(angle = 90)
 
 ```
 
