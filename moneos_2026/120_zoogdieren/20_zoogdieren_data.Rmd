@@ -1,9 +1,12 @@
 ---
 params:
   hoofdstuk: "120_zoogdieren"
-knit: (function(inputFile, ...) {
+knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
-                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+                          encoding=encoding,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          "/output")
+                          )})
 title: "MONEOS zoogdieren data"
 output: 
   bookdown::html_document2:
@@ -29,8 +32,7 @@ library(kableExtra)
 
 ```
 
-```{r pad}
-
+```{r pad, include=FALSE}
 # inlezen van variabelen
 # pad naar data : pad_data
 # pad naar tabellen : pad_tabellen
@@ -42,32 +44,88 @@ pad_data <- maak_pad(params$hoofdstuk, "data")
 pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
+if (!dir.exists(pad_data)) dir.create(pad_data) 
+if (!dir.exists(pad_figuren)) dir.create(pad_figuren) 
+if (!dir.exists(pad_tabellen)) dir.create(pad_tabellen) 
+
 ```
 
-```{r data}
-pad_data
-(files <- list.files(pad_data, full.names = TRUE, ))
-(rawfiles2024 <- files[str_detect(files, "xlsx")])
-# two tables delivered from waarningen.be, one with standard data, one with for which observer had to give consent
-# read the xlsx files
+```{r data, include=FALSE}
+(files2025 <- list.files(pad_data, full.names = TRUE, pattern = "INBODATAVR" ))
+# two tables delivered from waarningen.be, one with standard data, one with data for which observer had to give consent
 
-zoogdier_data <- 
-  map(rawfiles2024, read_xlsx)
+data_l <- 
+  map(files2025, read_csv)
+# in originele data zaten enkele problemen veroorzaakt door ' in het opmerkingenveld. Hierdoor wordt een extra " geplaatst, wat kolomverschuivingen in read_csv veroorzaakt. Dit werd in csv-bestand zelf verbeterd en gemeld aan Frederic P.
+problems(data_l[[1]])
+problems(data_l[[2]])
+sapply(data_l[[1]], class)
+sapply(data_l[[2]], class)
+# kolommen 5, 7, 25 en 31 zijn in de ene tibble character en de andere datum => eerst lezen als character en mbv van parse_date_time (lubridate) omzetten naar datum
+# kolommen met coördinaten zijn doubles, maar decimaal teken is "," terwijl ook het lijstscheidingsteken "," is. => eerst inlezen als character en vervolgens omzetten naar double, or numeric
+
+data_l <- 
+  map(
+  files2025, 
+  read_csv, 
+  # We lezen datumkolommen (5, 7 en 31) in als character ('c')
+  # col_types = "icccccciccccnnnncccccccccicdccccc" 
+    col_types = "iccccccicccccccccccccccccicdccccc" 
+) %>% 
+  map(~ .x %>% 
+        mutate(
+          across(
+            c(5, 7, 25, 31), # De kolommen met datums (of gebruik de kolomnamen)
+            ~ parse_date_time(.x, orders = c("dmy", "ymd")) # zet om naar datum
+          ),
+          across(
+            c(13:16),
+            ~ as.numeric(str_replace(.x,  ",", "."))
+          )))
+
+problems(data_l[[1]])
+problems(data_l[[2]])
 
 # check whether files have same structure
-ncol(zoogdier_data[[1]]) == ncol(zoogdier_data[[2]]) # same number of columns
-names(zoogdier_data[[1]]) == names(zoogdier_data[[2]]) # same column names
+class(data_l[[1]]) == class(data_l[[2]]) # same class
+ncol(data_l[[1]]) == ncol(data_l[[2]]) # same number of columns
+names(data_l[[1]]) == names(data_l[[2]]) # same column names
+str(data_l[[1]]) == str(data_l[[2]])
+sapply(data_l[[1]], class)
+sapply(data_l[[2]], class)
+# sapply(data_l[[1]], class) == sapply(data_l[[2]], class)
+# De functie sapply(..., class) geeft een lijst (list) terug en geen simpele vector. Dit komt omdat datumkolommen in R een "dubbele klasse" hebben, namelijk: c("POSIXct", "POSIXt")
+map_chr(data_l[[1]], ~ class(.x)[1]) == map_chr(data_l[[2]], ~ class(.x)[1])
 
 # combine list items to one tibble
-zoogdier_data <- 
-  zoogdier_data %>% 
+data_wnm <- 
+  data_l %>% 
   list_rbind()
+data_wnm %>% 
+  summarise(minlat = min(lat), maxlat = max(lat),
+            minlon = min(lon), maxlon = max(lon))
+
+# geografische check
+data_wnm_sf <- 
+  data_wnm %>% 
+  sf::st_as_sf(coords = c("lon", "lat"), crs = 4326)
+
+data_wnm_sf %>% 
+  leaflet::leaflet() %>% 
+  leaflet::addTiles() %>% 
+  leaflet::addCircleMarkers()
+# ziet er ok uit
+
+# data vanaf 2026 is niet alleen zoogdieren, maar ook vogels => filter
+zoogdier_data <- 
+  data_wnm  %>%  
+  filter(soortgroep == "Zoogdieren")
 
 ```
 
 # Soorten in aangeleverde data
 
-In de dataset zitten waarnemingen van 5 soorten en één verzamelsoort (zeehond onbekend).
+In de dataset zitten waarnemingen van 5 soorten. De verzamelsoort (zeehond onbekend) zit er niet meer in?.
 
 ```{r soorten}
 zoogdier_data %>% 
@@ -75,13 +133,31 @@ zoogdier_data %>%
   summarise() %>% 
   kbl(caption = "Soorten in dataset") %>% 
   kable_styling(full_width = FALSE, position = "left")
+table(zoogdier_data$naam_nl, year(zoogdier_data$datum))
 ```
+
+```{r}
+zoogdierdata2024 <- 
+  read_csv(str_c(
+    str_replace(pad_data, "2026", "2025"),
+    "zoogdier_data_2010_2024.csv"
+  ))
+list.files(str_replace(pad_data, "2026", "2025"))
+unique(zoogdierdata2024$naam_nl)
+table(zoogdierdata2024$naam_nl, year(zoogdierdata2024$datum))
+```
+
 
 # Jaren in aangeleverde data
 
-De dataset bevat alle waarnemingen uit de periode 2010- 2023.
+De dataset bevat ook waarnemingen voorafgaand aan de periode 1923 - 2026. We verwijderen alles voor 2010 en na 2025
 
 ```{r jaren}
+table(year(zoogdier_data$datum))
+zoogdier_data <- 
+  zoogdier_data %>% 
+  filter(year(datum) > 2009,
+         year(datum) < 2026)
 table(year(zoogdier_data$datum))
 ```
 
@@ -230,3 +306,4 @@ zoogdier_data %>%
   write_csv(paste0(pad_data, "zoogdier_data_2010_2023.csv"))
 
 ```
+
