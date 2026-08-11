@@ -12,13 +12,14 @@ output:
   bookdown::html_document2:
     toc: true
     toc_float: true
+    code_folding: "hide"
 editor_options: 
   chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+knitr::opts_chunk$set(echo = TRUE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
 options(knitr.kable.NA = '')
 ```
 
@@ -29,7 +30,7 @@ library(rprojroot)
 library(readxl)
 library(lubridate)
 library(kableExtra)
-
+library(sf)
 ```
 
 ```{r pad, include=FALSE}
@@ -48,11 +49,13 @@ if (!dir.exists(pad_data)) dir.create(pad_data)
 if (!dir.exists(pad_figuren)) dir.create(pad_figuren) 
 if (!dir.exists(pad_tabellen)) dir.create(pad_tabellen) 
 
+pad_geodata <- "I:/GIS/VNSC/"
+pad_geodata2 <- "Z:/VNSC/gebiedsindeling_schelde_draft112014/gebiedsindeling_schelde112014/"
 ```
 
 ```{r data, include=FALSE}
 (files2025 <- list.files(pad_data, full.names = TRUE, pattern = "INBODATAVR" ))
-# two tables delivered from waarningen.be, one with standard data, one with data for which observer had to give consent
+# two tables delivered from waarnemingen.be, one with standard data, one with data for which observer had to give consent
 
 data_l <- 
   map(files2025, read_csv)
@@ -123,28 +126,77 @@ zoogdier_data <-
 
 ```
 
+```{r data-otter-VBP}
+# Ook op het Vlaams Biodiversiteitsportaal (https://natuurdata.inbo.be/) worden waarnemingen van otter aangeboden.
+
+otter_VBP <- 
+  read_csv(str_c(pad_data, "otter_VBP_2026-08-10.CSV")) |> 
+  rename(naam_nl = `Vernacular name`,
+         datum = `Event Date`,
+         lat = `Decimal latitude (WGS84)`,
+         lon = `Decimal longitude (WGS84)`) |> 
+  # verwijder records zonder locatie
+  # verwijder records zonder datum
+  filter(if_all(c(lon , lat),
+         ~ !is.na(.x)),
+         !is.na(datum))
+otter_VBP |> 
+  distinct(`Collection Code`)
+otter_VBP |> 
+  distinct(datasetName )
+
+# filter data in Scheldevallei
+# obv utm1 hokken
+utm1 <- st_read(str_c(pad_geodata, "NOPplus_UTM1.shp"))
+
+otter_VBP_sf <- 
+  otter_VBP |> 
+  st_as_sf(coords = c("lon", "lat"),
+           crs = 4326) 
+# waarnemingen Vlaanderen, Walonie, Nederland en Duitsland
+otter_VBP_sf  |>  
+  leaflet::leaflet() |> 
+  leaflet::addTiles() |> 
+  leaflet::addCircleMarkers()
+# Spatial join + subsetting of data
+otter_VBP_moneos_sf <- 
+  st_join(otter_VBP_sf, st_transform(utm1, 4326), left = FALSE)
+
+otter_VBP_moneos_sf  |>  
+  leaflet::leaflet() |> 
+  leaflet::addTiles() |> 
+  leaflet::addCircleMarkers(label = ~TAG)
+```
+
+
 # Soorten in aangeleverde data
 
-In de dataset zitten waarnemingen van 5 soorten. De verzamelsoort (zeehond onbekend) zit er niet meer in?.
+In de dataset zitten waarnemingen van 5 soorten. De verzamelsoort (zeehond onbekend) zit er niet meer in.
 
-```{r soorten}
+```{r soorten, out.width="10cm"}
 zoogdier_data %>% 
   group_by(Soort = naam_nl) %>% 
   summarise() %>% 
   kbl(caption = "Soorten in dataset") %>% 
   kable_styling(full_width = FALSE, position = "left")
+```
+
+Er zitten waarnemingen in de dataset van 1923 tot 2026
+
+```{r soortenjaar}
 table(zoogdier_data$naam_nl, year(zoogdier_data$datum))
 ```
 
-```{r}
+```{r, include=FALSE}
+# even data van vorig jaar checken. 
 zoogdierdata2024 <- 
   read_csv(str_c(
     str_replace(pad_data, "2026", "2025"),
     "zoogdier_data_2010_2024.csv"
   ))
-list.files(str_replace(pad_data, "2026", "2025"))
 unique(zoogdierdata2024$naam_nl)
 table(zoogdierdata2024$naam_nl, year(zoogdierdata2024$datum))
+# hier zit Zeehond onbekend nog tussen, sommige jaren met aanzienlijk aandeel
 ```
 
 
@@ -163,7 +215,7 @@ table(year(zoogdier_data$datum))
 
 ```{r jarensoort}
 table(year(zoogdier_data$datum), zoogdier_data$naam_nl) %>% 
-  kable(caption = "Aantal waarnemingen per jaar per soort") %>% 
+  kbl(caption = "Aantal waarnemingen per jaar per soort") %>% 
   kableExtra::kable_paper()
 ```
 
@@ -174,15 +226,15 @@ Tot 2017 of 2018 werden waarnemingen van sporen (ook) als gedrag ingegeven. Vana
 ```{r gedrag}
 zoogdier_data %>% 
   count(gedrag) %>% 
-  knitr::kable(caption = "Gedrag in dataset") %>% 
+  kbl(caption = "Gedrag in dataset") %>% 
   kable_styling(full_width = FALSE, position = "left")
 ```
 
-```{r gedrag per jaar}
+```{r gedrag-per-jaar}
 zoogdier_data %>% 
   count(gedrag, Jaar = year(datum)) %>% 
   spread(key = Jaar, value = n) %>% 
-  knitr::kable(caption = "Gedrag per jaar in dataset") %>% 
+  kbl(caption = "Gedrag per jaar in dataset") %>% 
   kable_styling()
 ```
 
@@ -193,15 +245,15 @@ Tot 2017 werd waarnemingsmethode in de overgrote meerderheid van de waarneming n
 ```{r methode}
 zoogdier_data %>% 
   count(methode) %>% 
-  knitr::kable(caption = "Methode in dataset") %>% 
+  kbl(caption = "Methode in dataset") %>% 
   kable_styling(full_width = FALSE, position = "left")
 ```
 
-```{r methode per jaar}
+```{r methode-per-jaar}
 zoogdier_data %>% 
   count(methode, Jaar = year(datum)) %>% 
   spread(key = Jaar, value = n) %>% 
-  knitr::kable(caption = "Methode per jaar in dataset") %>% 
+  kbl(caption = "Methode per jaar in dataset") %>% 
   kable_styling()
 ```
 
@@ -213,7 +265,7 @@ Analyse is niet makkelijk voor bever. Combinatie gedrag - methode is niet echt l
 ```{r gedrag-methode}
 zoogdier_data %>% 
   count(gedrag, methode) %>% 
-  knitr::kable(caption = "Combinatie Gedrag-Methode in dataset") %>% 
+  kbl(caption = "Combinatie Gedrag-Methode in dataset") %>% 
   kable_styling(full_width = FALSE, position = "left")
 ```
 
@@ -221,7 +273,7 @@ zoogdier_data %>%
 zoogdier_data %>% 
   filter(str_detect(naam_nl, "Bever")) %>% 
   count(gedrag, methode) %>% 
-  knitr::kable(caption = "Combinatie Gedrag-Methode voor bever") %>% 
+  kbl(caption = "Combinatie Gedrag-Methode voor bever") %>% 
   kable_styling(full_width = FALSE, position = "left")
 ```
 
@@ -234,19 +286,22 @@ zoogdier_data %>%
            (gedrag == "ter plaatse" & methode == "onbekend")
          ) %>% 
   count(gedrag, methode, jaar = year(datum)) %>% 
-  knitr::kable(caption = ) %>% 
+  kbl(caption = ) %>% 
   kable_styling(full_width = FALSE, position = "left")
 
 ```
 
 
-Er zijn `r nrow(zoogdier_data[zoogdier_data$naam_nl == "Europese Bever" & zoogdier_data$gedrag == "overige" & is.na(zoogdier_data$methode),]) + nrow(zoogdier_data[zoogdier_data$naam_nl == "Europese Bever" & zoogdier_data$gedrag == "ter plaatse" & is.na(zoogdier_data$methode),])` waarnemingen van bever zonder specificatie (combinaties (gedrag = "overige" en methode = na), (gedrag = "ter plaatse" en methode = na) op een totaal van `r nrow(zoogdier_data[,2] == "Europese Bever")` waarnemingen. Gedrag = "ter plaatse" is de standaard instelling in ObsMap. Dit kan dus betekenen da het dier ter plaatse bleef maar ook dat het veld gedrag door de waarnemer niet werd ingevuld. Na 2017 komt de combinatie gedrag = "ter plaatse" en methode = na niet meer voor omdat een waarde voor methode moest worden ingevoerd, de standaardwaarde is vanaf toen "onbekend".
+<!-- Er zijn `r nrow(zoogdier_data[zoogdier_data$naam_nl == "Europese Bever" & zoogdier_data$gedrag == "overige" & is.na(zoogdier_data$methode),]) + nrow(zoogdier_data[zoogdier_data$naam_nl == "Europese Bever" & zoogdier_data$gedrag == "ter plaatse" & is.na(zoogdier_data$methode),])` waarnemingen van bever zonder specificatie (combinaties (gedrag = "overige" en methode = na), (gedrag = "ter plaatse" en methode = na) op een totaal van `r nrow(zoogdier_data[,2] == "Europese Bever")` waarnemingen. Gedrag = "ter plaatse" is de standaard instelling in ObsMap. Dit kan dus betekenen da het dier ter plaatse bleef maar ook dat het veld gedrag door de waarnemer niet werd ingevuld. Na 2017 komt de combinatie gedrag = "ter plaatse" en methode = na niet meer voor omdat een waarde voor methode moest worden ingevoerd, de standaardwaarde is vanaf toen "onbekend". -->
+<!-- methode == NA is vanaf nu vervangen door "onbekend" -->
+
+Er zijn `r nrow(zoogdier_data[zoogdier_data$naam_nl == "Europese Bever" & zoogdier_data$gedrag == "overige" & zoogdier_data$methode == "onbekend" ,]) + nrow(zoogdier_data[zoogdier_data$naam_nl == "Europese Bever" & zoogdier_data$gedrag == "ter plaatse" & zoogdier_data$methode == "onbekend",])` waarnemingen van bever zonder specificatie (combinaties (gedrag = "overige" en methode = "onbekend"), (gedrag = "ter plaatse" en methode = "onbekend") op een totaal van `r nrow(zoogdier_data[,2] == "Europese Bever")` waarnemingen. Gedrag = "ter plaatse" is de standaard instelling in ObsMap. Dit kan dus betekenen da het dier ter plaatse bleef maar ook dat het veld gedrag door de waarnemer niet werd ingevuld. 
 
 ```{r gedrag-methode-jaar}
 zoogdier_data %>% 
   count(gedrag, methode, Jaar = year(datum)) %>% 
   spread(key = Jaar, value = n) %>% 
-  knitr::kable() %>% 
+  kbl() %>% 
   kable_styling()
 ```
 
@@ -255,15 +310,15 @@ zoogdier_data %>%
 # Status
 
 De meeste waarnemingen zijn op één of andere wijze gevalideerd (`r round(sum(str_detect(zoogdier_data$status, "Goed"))/count(zoogdier_data)*100, 0)` %).\
-`r round(sum(zoogdier_data$status == "Onbehandeld")/count(zoogdier_data)*100, 0)` % van waarnemingen zijn niet gevalideerd, `r round(sum(str_detect(zoogdier_data$status, "Niet"))/count(zoogdier_data)*100, 1)` % van de waarnemingen zijn gecategoriseerd als "Niet te beoordelen".
+`r round(sum(zoogdier_data$status == "Onbehandeld")/count(zoogdier_data)*100, 0)` % van waarnemingen zijn niet gevalideerd.
 
-Als we dit per soort bekeken valt op dat voor bever, otter (en bruinvis) een groot deel van de waarnemingen gevalideerd zijn. Voor gewone en grijze zeehond en 'zeehond onbekend' is (sinds 2016) een aanzienlijk deel van de waarnemingen onbehandeld. Dit geldt ook voor alle waarnemingen van bruinvis ná 2015, maar dat zijn er erg weinig. Gebrek aan goed bewijsmateriaal van deze laatste soorten is een mogelijke reden hiervoor, maar ook mindere aandacht van de personen die moeten valideren is een mogelijke reden, zeker gezien ook bij 'zeehond onbekend' het overgrote deel van de waarnemingen onbehandeld is.
+Als we dit per soort bekijken valt op dat voor bever, otter (en bruinvis) een groot deel van de waarnemingen gevalideerd zijn. Voor gewone en grijze zeehond en 'zeehond onbekend' is (sinds 2016) een aanzienlijk deel van de waarnemingen onbehandeld. Dit geldt ook voor alle waarnemingen van bruinvis ná 2015, maar dat zijn er erg weinig. Gebrek aan goed bewijsmateriaal van deze laatste soorten is een mogelijke reden hiervoor, maar ook mindere aandacht van de personen die moeten valideren is een mogelijke reden, zeker gezien ook bij 'zeehond onbekend' het overgrote deel van de waarnemingen onbehandeld is.
 <br/>
 
 ```{r status}
 zoogdier_data %>% 
   count(status) %>% 
-  knitr::kable(caption = "Validatiestatus van de waarnemingen (totaal aantal in de dataset).") %>% 
+  kbl(caption = "Validatiestatus van de waarnemingen (totaal aantal in de dataset).") %>% 
   kable_styling(full_width = FALSE, position = "left")
 ```
 <br/>
@@ -272,7 +327,7 @@ zoogdier_data %>%
 zoogdier_data %>% 
   count(status, Jaar = year(datum)) %>% 
   spread(key = Jaar, value = n) %>% 
-  knitr::kable(caption = "Validatiestatus van de waarnemingen (totaal aantal per jaar).") %>% 
+  kbl(caption = "Validatiestatus van de waarnemingen (totaal aantal per jaar).") %>% 
   kable_styling(position = "left")
 ```
 <br/>
@@ -303,7 +358,7 @@ data weggeschreven naar `r paste0(pad_data, "template_data.csv")`
 ```{r wegschrijven-data}
 
 zoogdier_data %>% 
-  write_csv(paste0(pad_data, "zoogdier_data_2010_2023.csv"))
+  write_csv(paste0(pad_data, "zoogdier_data_2010_2025.csv"))
 
 ```
 
