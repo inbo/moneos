@@ -344,6 +344,19 @@ data_ankerkuil <-
 ```
 
 
+```{r salgroep en dieet grondel sp}
+
+soortenlijst %>% 
+  filter(soort %in% c("dikkopje", "brakwatergrondel"))
+
+data_ankerkuil <- 
+  data_ankerkuil %>% 
+  mutate(salgroep = if_else(soort == "grondel sp", "estuarien residenten", salgroep),
+         dieet = if_else(soort == "grondel sp", "benthivoren", dieet))
+
+```
+
+
 ```{r aantal-en-gewicht-per-kub}
 
 data_ankerkuil <- 
@@ -406,8 +419,10 @@ indeling_EMSE_missing <-
 soorten_niet_in_aantal <-
   c("grondel sp", "haringachtigen")
 
+# soorten_niet_in_funcgroep <-
+#   c("grondel sp")
 soorten_niet_in_funcgroep <-
-  c("grondel sp")
+  c()
 
 ```
 
