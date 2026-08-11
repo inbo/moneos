@@ -105,6 +105,18 @@ year_colors <-
 ```
 
 
+```{r selectie opmetingen met voldoende punten, eval =FALSE}
+
+data_MONEOS <-
+  data_MONEOS %>% 
+  group_by(REEKSCODE, DATUM) %>% 
+  mutate(n = n()) |> 
+  ungroup() |> 
+  filter(n > 5)
+
+```
+
+
 ```{r selectie vaste MONEOS raaien met metingen in laatste jaar}
 
 data_MONEOS <-
@@ -150,6 +162,22 @@ data_MONEOS <-
             TRUE ~ ecotoop)) %>% 
   select(-habpres)
 
+# data_MONEOS <-
+#   data_MONEOS %>%
+#   group_by(pick(Salzone:Campagne, MeetCampagneJaar, contains("waterstand_"), contains("afstand_"))) %>% 
+#   nest() |> 
+#   mutate(heeft_schor = map(data, \(d) any(!is.na(d$ecotoop) & d$ecotoop == "schor"))) |> 
+#   mutate(data = pmap(list(data, heeft_schor, afstand_slik, waterstand_HW85), 
+#                      \(d, hs, as, ws) 
+#                      if (!hs) 
+#                      {add_row(d, 
+#                               distance_prof = as,
+#                               HOOGTE__MT = ws,
+#                               ecotoop = "schor")}
+#                      else {d})) |> 
+#   unnest(cols = everything()) |> 
+#   ungroup() |> 
+#   select(-heeft_schor)
 
 ecotoopgrenzen <-
   data_MONEOS %>% 
@@ -361,11 +389,16 @@ fig_raai <-
 
 figuren_MONEOS <-
   data_MONEOS %>% 
+  # filter(year(DATUM) == 2017 & month(DATUM)) |> 
   group_by(REEKSCODE) %>% 
   nest() %>% 
   mutate(fig = map2(REEKSCODE, data, ~fig_raai(.x, .y)))
 
-figuren_MONEOS$fig[[1]]
+# figuren_MONEOS$fig[[1]]
+# 
+# {figuren_MONEOS |> 
+#   filter(REEKSCODE %in% c("GSb", "GSc"))} |> 
+#   pull(fig)
 
 walk2(figuren_MONEOS$REEKSCODE, figuren_MONEOS$fig, 
       ~ggsave(.y, file=str_c(pad_figuren, "vast/", .x, ".png"), 

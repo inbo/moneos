@@ -144,7 +144,7 @@ data_EW <-
   data_EW %>% 
   # left_join(ecotoopgrenzen) %>% 
   left_join(tbl_waterstanden) %>% 
-  filter(distance_prof >= afstand_slik)
+  filter(distance_prof >= afstand_slik - 1)
 
 ```
 
@@ -164,7 +164,27 @@ data_EW <-
   mutate(ecotoop = 
            case_when(
             HOOGTE__MT < waterstand_LW30 ~ "subtidaal",
-            TRUE ~ ecotoop)) %>% 
+            TRUE ~ ecotoop))
+
+data_EW <-
+  data_EW %>%
+  group_by(pick(Salzone:Campagne, MeetCampagneJaar, Year, contains("waterstand_"), contains("afstand_"))) %>% 
+  nest() |> 
+  mutate(heeft_schor = map(data, \(d) any(d$ecotoop == "schor"))) |> 
+  mutate(data = pmap(list(data, heeft_schor, afstand_slik, waterstand_HW85), 
+                     \(d, hs, as, ws) 
+                     if (!hs) 
+                     {add_row(d, 
+                              distance_prof = as,
+                              HOOGTE__MT = ws,
+                              ecotoop = "schor")}
+                     else {d})) |> 
+  unnest(cols = everything()) |> 
+  ungroup() |> 
+  select(-heeft_schor)
+
+data_EW <-
+  data_EW %>%
   mutate(ecotoop_slik = 
            case_when(
              Salzone == "Mesohalien" & HOOGTE__MT <= waterstand_DD_25 ~ "laag slik",
@@ -172,6 +192,8 @@ data_EW <-
              HOOGTE__MT >= waterstand_DD_60 ~ "hoog slik",
              TRUE ~ "middelhoog slik")) %>% 
   select(-habpres)
+
+
 
 
 ecotoopgrenzen <-
