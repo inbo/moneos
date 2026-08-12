@@ -1,0 +1,244 @@
+---
+params:
+  hoofdstuk: "110_broedvogels"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0(
+                          rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+                           
+title: "MONEOS analyse - broedvogels"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(INBOtheme)
+library(rprojroot)
+library(lubridate)
+library(kableExtra)
+library(readxl)
+library(tmap)
+conflicted::conflicts_prefer(dplyr::filter)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r data}
+Soorten <- read_xlsx(path = str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"),
+                   sheet = "Soorten")
+Terr_Sigma_BB <- 
+  read_csv(str_c(pad_tabellen, "Terr_Sigma_BB.csv"))
+Terr_Sigma_AB <- 
+  read_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
+Terr_Sigma_AB_na2005 <- 
+  read_csv(str_c(pad_tabellen, "Terr_Sigma_AB2005.csv"))
+Terr_Sigma_AB_tot <- 
+  read_csv(str_c(pad_tabellen, "Terr_Sigma_AB_tot.csv"))
+```
+
+
+# beschrijving van de data Terr_Sigma_BB
+
+  - Per waarneming zijn er `r ncol(Terr_Sigma_BB)` informatievelden
+  - In totaal bevat de dataset in 2022 `r nrow(Terr_Sigma_BB)` waarnemingen
+  - De dataset bevat waarnemingen van `r length(unique(Terr_Sigma_BB$Soort))` soorten.
+  - De dataset bevat waarnemingen van `r length(unique(Terr_Sigma_BB$Jaar))` jaren (1995 tot en met 2021).
+
+
+
+
+
+# Figuur bijzondere soorten
+
+```{r 110-plot-zeldzame-soorten, fig.height=8, fig.width=6, out.width="100%", fig.cap = cap_zeldzame_soorten}
+cap_zeldzame_soorten <-
+  "Evoluties in de broedvogelaantallen voor een selectie van soorten waarvoor de data-inzameling representatief is binnen IHD-gebied. Loess-smoother weergegeven. Rode horizontale lijn geeft de tot doel gestelde aantallen."
+
+Terr_Sigma_BB %>% 
+  filter(Soort != "Purperreiger") %>% 
+  ggplot() +
+  geom_point(aes(x = Jaar, y = Aantal))+
+  geom_smooth(aes(x = Jaar, y = Aantal), span = 0.6)+
+  geom_hline(aes(yintercept = Doel), size = 0.75, colour = "red") +
+  ylim(0, NA_integer_) +
+  facet_wrap (~Soort, scales = "free", ncol=3) +
+  labs(y = "Aantal territoria") +
+  theme(
+    strip.text = element_text(size = 9),
+    axis.title = element_text(size = 9),
+    axis.title.x = element_blank(),
+    axis.text = element_text(size = 7))
+
+ggsave(filename = str_c(pad_figuren, "110_fig3.jpg"), height=8, width=6)
+```
+<br/>
+<br/>
+
+# Figuur Algemene soorten
+
+```{r 110-plot-algemene-soorten, fig.height=5, fig.width=6, out.width="100%", fig.cap = cap_algemene_soorten}
+
+cap_algemene_soorten <-
+  "Evoluties in de broedvogelaantallen (territoria) voor een selectie van algemenere soorten voor een beperkt aantal gebieden die frequent worden geteld (BD (Blokkersdijk), K (Ketenisse), Sigma (Kalkense Meersen, Wijmeers, Bergenmeersen, Paardeweide, Weijmeerbroek en Polder van Kruibeke), Sigma\\_LO (= Noordelijke gebied = Doelpolder + Prosperpolder + Paardenschor + Schor Ouden Doel)). Rode horizontale lijn geeft de tot doel gestelde aantallen."
+
+Terr_Sigma_AB_na2005 %>% 
+  ggplot() +
+  geom_bar(aes(Jaar, weight = Aantal, fill = TypeGebied))+
+  geom_hline(aes(yintercept = Doel), size = 1, color = "red")+
+  facet_wrap (~Soort, scales = "free", ncol=2)+
+  scale_y_continuous(limits = c(0, NA))+
+  scale_x_continuous(breaks = c(2005,2010,2015, 2020)) +
+  labs(y = "Aantal territoria") + 
+  scale_fill_discrete(labels=c("Blokkersdijk", "Ketenisseschor", "Sigma", 
+                               "Sigma-Noordelijk gebied")) +
+  theme(
+    strip.text = element_text(size = 12),
+    axis.title = element_text(size = 11),
+    axis.title.x = element_blank(),
+    axis.text = element_text(size = 9),
+    legend.title = element_blank(),
+    legend.position = "bottom"
+  )
+
+ggsave(filename = str_c(pad_figuren, "110_fig4.jpg"), height=8, width=7)
+
+```
+
+
+```{r 110-plot-algemene-soorten-tot, fig.height=5, fig.width=6, out.width="100%", fig.cap = cap_algemene_soorten}
+
+cap_algemene_soorten <-
+  "Evoluties in de broedvogelaantallen (territoria) voor een selectie van algemenere soorten voor een beperkt aantal gebieden die frequent worden geteld (BD (Blokkersdijk), K (Ketenisse), Sigma (Kalkense Meersen, Wijmeers, Bergenmeersen, Paardeweide, Weijmeerbroek en Polder van Kruibeke), Sigma\\_LO (= Noordelijke gebied = Doelpolder + Prosperpolder + Paardenschor + Schor Ouden Doel)) tot en met 2020 en voor alle getelde gebieden sinds 2021. Rode horizontale lijn geeft de tot doel gestelde aantallen."
+
+Terr_Sigma_AB_tot %>% 
+  filter(Jaar > 2004) %>% 
+  ggplot() +
+  geom_bar(aes(Jaar, weight = Aantal, fill = TypeGebied))+
+  geom_hline(aes(yintercept = Doel), size = 1, color = "red")+
+  facet_wrap (~Soort, scales = "free", ncol=2)+
+  scale_y_continuous(limits = c(0, NA))+
+  scale_x_continuous(breaks = c(2005,2010,2015, 2020)) +
+  labs(y = "Aantal territoria") + 
+  scale_fill_discrete(labels=c("Blokkersdijk", "Ketenisse", "Sigma", 
+                               "Sigma_Noordelijk gebied")) +
+  theme(
+    strip.text = element_text(size = 12),
+    axis.title = element_text(size = 11),
+    axis.title.x = element_blank(),
+    axis.text = element_text(size = 9),
+    legend.title = element_blank(),
+    legend.position = "bottom"
+  )
+```
+
+```{r soortgrafiek per Typegebied, include = FALSE}
+Terr_Sigma_AB %>% 
+  filter(Soort == "Scholekster") %>%
+  group_by(Soort, TypeGebied, Jaar) %>% 
+  summarise(Aantal = sum(Aantal), .groups = "drop") %>% 
+  ggplot() +
+  geom_point(aes(x = Jaar, y = Aantal, color = TypeGebied))+
+  geom_line(aes(x = Jaar, y = Aantal, color = TypeGebied)) +
+  scale_y_continuous(limits = c(0, NA))+
+  scale_x_continuous(breaks = c(2005,2010,2015, 2020)) +
+  labs(y = "Aantal territoria") +
+  theme(
+    strip.text = element_text(size = 12),
+    axis.title = element_text(size = 11),
+    axis.title.x = element_blank(),
+    axis.text = element_text(size = 9),
+    legend.title = element_blank(),
+    legend.position = "bottom"
+  )
+```
+
+```{r totale aantammen per soort, include=FALSE}
+Terr_Sigma_AB %>% 
+  filter(Soort == "Scholekster") %>%
+  group_by(Soort, Jaar) %>% 
+  summarise(Aantal = sum(Aantal), .groups = "drop")
+```
+
+
+
+# Broedlocaties per soort
+
+Voor het schrijven van het hoofdstuk kan een jaarlijks overzicht van broedlocaties van de soorten handig zijn.
+
+```{r nested data 202122}
+data24 <- readxl::read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"),
+                            sheet = "Data", range = "R1C1:R10000C7") %>% 
+  filter(!is.na(Soort))
+# we nest data to make a table for each species-year by using a for loop
+# the result is a dataframe with columns Soort(chr), Jaar (num) en data(list). Each list item in data contains a dataframe with Gebied, minimum and maximum.
+data_nested <- 
+  data24  %>% 
+  arrange(Soort, Jaar) %>% 
+  nest(data = c(Gebied, minimum, maximum), .by = c(Soort, Jaar))
+# data_nested$data[1]
+# data_nested$data[data_nested$Soort == "Lepelaar"]
+# data_nested$data[data_nested$Soort == "Lepelaar" & data_nested$Jaar == 2021] %>% 
+#   kable() %>% 
+#   kable_paper()
+
+```
+
+```{r broedlocaties, results='asis'}
+# The nested data are used in a for loop to produce seperate table in de output html file, notice the use of results='asis' in the header! (without that kable does not work in a for loop)
+for(x in unique(data_nested$Soort)){
+  a <- data_nested %>% filter(Soort == x)
+  for(y in a$Jaar){
+    cap <- str_c(a$Soort[1], y, sep = " - ")
+    b <- 
+      a %>% filter(Jaar == y) %>% pull(data) %>% 
+      kable(caption = cap, align = "lcc")
+    print(b)
+    cat("\n")
+  }
+}
+```
+
+
+```{r broedlocaties2, results='asis'}
+for(x in unique(data_nested$Soort)){
+  a <- data_nested %>% filter(Soort == x) %>% unnest %>% 
+    pivot_wider(id_cols = Gebied, names_from = Jaar, values_from = maximum) %>% 
+    kable(caption = x, align = "lcc")
+  print(a)
+  cat("\n")
+}
+
+```
+<br/>
+<br/>
+
+
+
