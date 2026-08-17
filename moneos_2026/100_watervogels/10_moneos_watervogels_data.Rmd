@@ -8,7 +8,7 @@ knit: (function(inputFile, encoding) {
                           "/output")
                           )})
 
-title: "Watervogeldata - MONEOS 2026 - Nicolas Vanermen"
+title: "Watervogels - data - MONEOS 2026 - Nicolas Vanermen"
 output:
   bookdown::word_document2: default
 ---
@@ -27,9 +27,11 @@ library(inbodb)
 ### Read data from INBO databases (SQL Server) with R - see https://tutorials.inbo.be/tutorials/r_database_access/
 library(DBI) 
 ### A database interface definition for communication between R and relational database management systems. 
-library(rprojroot) ## workaround pad
+library(rprojroot)
 library(openxlsx)
 library(waldo)
+library(conflicted)
+conflict_prefer("filter", "dplyr")
 
 ```
 
@@ -161,8 +163,8 @@ WITH MIDMA AS (
   INNER JOIN DimSample S        ON F.samplekey = S.samplekey
   INNER JOIN DimTaxonWV T       ON T.taxonwvkey = F.taxonwvkey
   WHERE 1 = 1
-    AND S.samplestatus = 'CHECKED'          /**alleen gevalideerde records**/
-    AND S.samplestatus <> 'REJECTED'        /**alleen records van opgesplitste tellingen, cfr. Prosperpolder**/
+    /**AND S.samplestatus = 'CHECKED'**/          /**alleen gevalideerde records**/
+    AND S.samplestatus <> 'REJECTED'        /**inclusief data met status 'NEW' (nog niet gevalideerde tellingen)**/
     AND S.coveragecode not in ('-', 'N')    /**niet getelde tellingen zijn irrelevant**/
     AND F.taxoncount > 0
     AND F.Analysesetkey in (2, 3, 4)
@@ -292,7 +294,28 @@ Clusters_ZS <- dbGetQuery(con, "
 
 dbDisconnect(con)
 
-### Basisfiles opslaan
+# snelle verkenning:
+WV_DB %>% glimpse()
+# MONEOS 2026: 1.073.228 records en 17 kolommen
+# 1.073.368 records wanneer enkel S.samplestatus <> 'REJECTED' (140 extra records)
+WV_DB %>% group_by(ProjectCode, Project) %>% summarise(N = n()) 
+
+# specifieke verkenning:
+# scheldearm <- filter(WV_DB, 
+#                             GebiedsCode == '2050810')
+# 
+# verken1 <- filter(WV_DB, 
+#                          GebiedsCode == "3156629",
+#                          Telseizoen == "2025/26")
+# 
+# verken2 <- filter(WV_DB, 
+#                          GebiedsCode == "2091308",
+#                          Telseizoen == "2024/25" )
+
+```
+
+```{r basisfiles opslaan} 
+
 write_delim(WV_DB, file.path(pad_data, "WV_DB_prep.csv"), delim = ";")
 write_delim(WVgroep, file.path(pad_data, "WVgroep_prep.csv"), delim = ";")
 write_delim(Gebieden_ZS, file.path(pad_data, "Gebieden_ZS_prep.csv"), delim = ";")
@@ -308,25 +331,6 @@ write_delim(Clusters_Sigma, file.path(pad_data, "Clusters_Sigma_prep.csv"), deli
 # Gebieden_ZS <- read_delim(file.path(pad_data, "Gebieden_ZS_prep.csv"), delim = ";")
 # Clusters_ZS <- read_delim(file.path(pad_data, "Clusters_ZS_MONEOS_prep.csv"), delim = ";")
 # Clusters_Sigma <- read_delim(file.path(pad_data, "Clusters_Sigma_prep.csv"), delim = ";")
-
-```
-
-```{r verkenning}
-
-WV_DB %>% glimpse()
-# MONEOS 2026: 1.073.228 records en 17 kolommen
-WV_DB %>% group_by(ProjectCode, Project) %>% summarise(N = n()) 
-
-# scheldearm <- dplyr::filter(WV_DB, 
-#                             GebiedsCode == '2050810')
-# 
-# verken1 <- dplyr::filter(WV_DB, 
-#                          GebiedsCode == "3156629",
-#                          Telseizoen == "2025/26")
-# 
-# verken2 <- dplyr::filter(WV_DB, 
-#                          GebiedsCode == "2091308",
-#                          Telseizoen == "2024/25" )
 
 ```
 
@@ -349,7 +353,7 @@ WV_DB <- WV_DB %>%
 
 ### Lijst van soorten niet opgenomen in de trofische analyse van MONEOS 
 listspecies <- WV_DB %>%
-  dplyr::filter(is.na(trofische_groep)) %>%
+  filter(is.na(trofische_groep)) %>%
   distinct(NedNaam)
 # 94 soorten die in lage aantallen voorkomen en niet bepalend zijn voor de trofische trends
 
@@ -376,7 +380,7 @@ Gebiedsindeling_ltd <-
   rename(gebiedsgroep = krw) %>% 
   select("niveau1", "niveau2","niveau3", "gebiedsgroep", "rivier") %>% 
   distinct() %>% 
-  dplyr::filter(gebiedsgroep != "Getijdenete")
+  filter(gebiedsgroep != "Getijdenete")
 
 knitr::kable(Gebiedsindeling_ltd)
 
@@ -385,7 +389,7 @@ knitr::kable(Gebiedsindeling_ltd)
 
 # gebieden selecteren
 Gebieden_ZS_MONEOS <- Gebieden_ZS %>% 
-  dplyr::filter(LocationGroupNaam %in% c("Zeeschelde", "Zijrivieren Zeeschelde")) %>% 
+  filter(LocationGroupNaam %in% c("Zeeschelde", "Zijrivieren Zeeschelde")) %>% 
   mutate(rivier = case_when(
     LocationWVCode == "3121303" ~ "Rupel",
     LocationWVCode == "4140216" ~ "Rupel",
@@ -484,7 +488,7 @@ dubbels <- WV_DB  %>%
   group_by_at(vars(-Aantal)) %>% 
   mutate(n = n()) %>% 
   ungroup() %>% 
-  dplyr::filter(n > 1) %>% 
+  filter(n > 1) %>% 
   arrange(Gebied, Telseizoen, Telling, Teldatum, NedNaam, ProjectCode)
 
 ### Corrigeren voor dubbels
@@ -502,7 +506,7 @@ WV_DB <- WV_DB  %>%
 aantal_tellingen_gebied <- WV_DB %>%
   rename_all(tolower) %>%
   mutate(maand = month(teldatum)) %>%
-  dplyr::filter(!is.na(niveau3),
+  filter(!is.na(niveau3),
                 maand %in% c(10:12, 1:3),
                 telseizoen %in% c("2024/25", "2025/26")) %>%
   distinct(krwzone, gebiedscode, gebied, telseizoen, teldatum) %>% 
@@ -534,7 +538,7 @@ write_delim(Clusters_ZS_MONEOS, file.path(pad_data, "Clusters_ZS_ready.csv"), de
 WV_DB %>% 
   rename_all(tolower) %>% 
   mutate(maand = month(teldatum)) %>%
-  dplyr::filter(gebiedscode %in% Clusters_ZS_MONEOS$gebiedscode) %>% 
+  filter(gebiedscode %in% Clusters_ZS_MONEOS$gebiedscode) %>% 
   group_by(krwzone,
            rivier,
            telseizoen,
@@ -548,7 +552,7 @@ WV_DB %>%
            niveau3) %>%
   summarise(aantal = sum(aantal)) %>% 
   ungroup() %>% 
-  dplyr::select(-wetnaam)%>% 
+  select(-wetnaam)%>% 
   write_delim(paste0(pad_data, "Watervogels_ZeescheldeVLIZcheck.csv"),
               delim = ";")
 
@@ -571,10 +575,10 @@ WV_DB %>%
 
 ### 2.
 ### Lijn 375
-# dplyr::filter(gebiedsgroep != "Getijdenetes")
+# filter(gebiedsgroep != "Getijdenetes")
 # Typo?? 
 # Gewijzigd naar:
-# dplyr::filter(gebiedsgroep != "Getijdenete")
+# filter(gebiedsgroep != "Getijdenete")
  
 ### 3.
 ### Lijn 436
@@ -621,8 +625,8 @@ WV_DB %>%
 # 
 # StAmandstotOudeBriel2020 <-
 #   WV_DB %>% 
-#   dplyr::filter(GebiedsCode == 4143122) %>% 
-#   dplyr::filter(Telseizoen == "2020/21") 
+#   filter(GebiedsCode == 4143122) %>% 
+#   filter(Telseizoen == "2020/21") 
 # 
 # years <- years(1) 
 # StAmandstotOudeBriel2021false <-
@@ -647,12 +651,12 @@ WV_DB %>%
 # 
 # GrootSchorberekend2021 <- 
 #   WV_DB %>% 
-#   dplyr::filter(GebiedsCode == 4143122) %>% 
-#   dplyr::filter(Telseizoen == "2021/22") %>% 
+#   filter(GebiedsCode == 4143122) %>% 
+#   filter(Telseizoen == "2021/22") %>% 
 #   left_join(StAmandstotOudeBriel2020, by = c("NedNaam","Telling"), suffix = c("_winter2021", "_Baseline2020"),keep = TRUE) %>% 
 #   mutate(across(c(Aantal_Baseline2020), ~replace_na(., 0))) %>% 
 #   mutate(Aantal_diff = Aantal_winter2021 - Aantal_Baseline2020) %>% 
-#   dplyr::filter(Aantal_diff >= 0) %>% 
+#   filter(Aantal_diff >= 0) %>% 
 #   select(ends_with("winter2021"), Aantal_diff) %>% 
 #   select(-Aantal_winter2021) %>% 
 #   rename_with(~ str_remove(.x, "_winter2021")) %>% 
@@ -663,12 +667,12 @@ WV_DB %>%
 # 
 # GrootSchorberekend2022 <- 
 #   WV_DB %>% 
-#   dplyr::filter(GebiedsCode == 4143122) %>% 
-#   dplyr::filter(Telseizoen == "2022/23") %>% 
+#   filter(GebiedsCode == 4143122) %>% 
+#   filter(Telseizoen == "2022/23") %>% 
 #   left_join(StAmandstotOudeBriel2020, by = c("NedNaam","Telling"), suffix = c("_winter2021", "_Baseline2020"),keep = TRUE) %>% 
 #   mutate(across(c(Aantal_Baseline2020), ~replace_na(., 0))) %>% 
 #   mutate(Aantal_diff = Aantal_winter2021 - Aantal_Baseline2020) %>% 
-#   dplyr::filter(Aantal_diff >= 0) %>% 
+#   filter(Aantal_diff >= 0) %>% 
 #   select(ends_with("winter2021"), Aantal_diff) %>% 
 #   select(-Aantal_winter2021) %>% 
 #   rename_with(~ str_remove(.x, "_winter2021")) %>% 
@@ -679,12 +683,12 @@ WV_DB %>%
 # 
 # GrootSchorberekend2023 <- 
 #   WV_DB %>% 
-#   dplyr::filter(GebiedsCode == 4143122) %>% 
-#   dplyr::filter(Telseizoen == "2023/24") %>% 
+#   filter(GebiedsCode == 4143122) %>% 
+#   filter(Telseizoen == "2023/24") %>% 
 #   left_join(StAmandstotOudeBriel2020, by = c("NedNaam","Telling"), suffix = c("_winter2021", "_Baseline2020"),keep = TRUE) %>% 
 #   mutate(across(c(Aantal_Baseline2020), ~replace_na(., 0))) %>% 
 #   mutate(Aantal_diff = Aantal_winter2021 - Aantal_Baseline2020) %>% 
-#   dplyr::filter(Aantal_diff >= 0) %>% 
+#   filter(Aantal_diff >= 0) %>% 
 #   select(ends_with("winter2021"), Aantal_diff) %>% 
 #   select(-Aantal_winter2021) %>% 
 #   rename_with(~ str_remove(.x, "_winter2021")) %>% 
@@ -695,8 +699,8 @@ WV_DB %>%
 # 
 # 
 # datathvGrootschoor %>%
-#   dplyr::filter(!(GebiedsCode == 2091308 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen == "2023/24"))) %>%
-#   dplyr::filter(!(GebiedsCode == 4143122 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen == "2023/24"))) %>% 
+#   filter(!(GebiedsCode == 2091308 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen == "2023/24"))) %>%
+#   filter(!(GebiedsCode == 4143122 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen == "2023/24"))) %>% 
 #   bind_rows(GrootSchorberekend2021, GrootSchorberekend2022,GrootSchorberekend2023) %>%
 #   bind_rows(StAmandstotOudeBriel2021false, StAmandstotOudeBriel2022false,StAmandstotOudeBriel2023false) %>% 
 #     write_delim(paste0(pad_data, "datathvGrootSchoorHamme.csv"),
@@ -706,14 +710,14 @@ WV_DB %>%
 # 
 # WV_DB <-
 #   WV_DB %>% 
-#   dplyr::filter(!(GebiedsCode == 4143122 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen == "2023/24"))) %>% 
+#   filter(!(GebiedsCode == 4143122 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen == "2023/24"))) %>% 
 #   bind_rows(StAmandstotOudeBriel2021false, StAmandstotOudeBriel2022false,StAmandstotOudeBriel2023false) 
 #   
 # #### ook nog aanpassen in Sigmadataset voor rapportage!
 # 
 # WV_DB <-
 #   WV_DB %>% 
-#   dplyr::filter(!(GebiedsCode == 2091308 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen ==   "2023/24"))) %>% 
+#   filter(!(GebiedsCode == 2091308 & (Telseizoen == "2021/22" | Telseizoen == "2022/23" | Telseizoen ==   "2023/24"))) %>% 
 # bind_rows(GrootSchoorHamme)
 
 ```
