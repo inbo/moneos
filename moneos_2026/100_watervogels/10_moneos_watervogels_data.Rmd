@@ -3,10 +3,10 @@ params:
   hoofdstuk: "100_watervogels"
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
-                          encoding=encoding,
-                          "/output")
+                          encoding = encoding,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output")
                           )})
-                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, 
+                          
 title: "Watervogels - data - MONEOS 2026 - Nicolas Vanermen"
 output: word_document
 editor_options: 
@@ -351,10 +351,12 @@ data_trofische_groep <- data_trofische_groep %>%
               rename_all(tolower) %>% 
               rename(nednaam = species)
 
+
 ### Toevoegen trofisch groep aan dataset
 WV_DB <- WV_DB %>% 
   left_join(data_trofische_groep, by = c("NedNaam" = "nednaam"))
 # join resulteert in 21 kolommen
+
 
 ### Lijst van soorten niet opgenomen in de trofische analyse van MONEOS 
 listspecies <- WV_DB %>%
@@ -367,9 +369,10 @@ listspecies <- WV_DB %>%
 ### Gebiedsinfo toevoegen aan gebiedstabel & watervogeldata
 ```{r join voorbereiden van WV_DB met gebiedsindeling T2021}
 
+# gebiedsindeling inlezen
 Gebiedsindeling_T2021 <- read_delim(paste0(pad_data, "Gebiedsindeling_T2021.csv"), delim = ";")  
 
-# 'rivier' definiëren en aggregeren gebiedsindeling:
+# 'rivier' definiëren en aggregeren van gebiedsindeling:
 Gebiedsindeling_ltd <-
   Gebiedsindeling_T2021 %>% 
   mutate(rivier = case_when(
@@ -386,14 +389,8 @@ Gebiedsindeling_ltd <-
 
 view(Gebiedsindeling_ltd)
 
-# benaming uit Gebieden_ZS_KRW recupereren:
-Gebieden_ZS_KRW_ltd <- Gebieden_ZS_KRW %>% 
-  rename(LocationGroupCode_KRW = LocationGroupCode) %>% 
-  select(LocationWVCode, LocationGroupCode_KRW)
-
-# gebieden MONEOS selecteren (ZS & ZR, n = 113) en ook hier 'rivier' definiëren:
-Gebieden_ZS_MONEOS <- Gebieden_ZS %>% 
-  filter(LocationGroupCode %in% c("ZS", "ZR")) %>% 
+# 'rivier' definiëren voor gebieden MONEOS
+Gebieden_ZS_MONEOS <- Gebieden_ZS_KRW %>% 
   mutate(rivier = case_when(
     LocationWVCode == "3121303" ~ "Rupel",
     LocationWVCode == "4140216" ~ "Rupel",
@@ -410,10 +407,19 @@ Gebieden_ZS_MONEOS <- Gebieden_ZS %>%
     LocationWVCode == "3120103" ~ "Zenne",
     .default = "Zeeschelde")) 
 
-# benaming uit Gebieden_ZS_KRW toevoegen:
-Gebieden_ZS_MONEOS <- Gebieden_ZS_MONEOS %>%
-  left_join(Gebieden_ZS_KRW_ltd)
-# hieruit blijkt de selectie via 'KRW-zones Zeeschelde (analyse)' dezelfde gebieden op te leveren als 'ZS' & 'ZR'
+# de KRW selectie zou dezelfde moeten zijn als de selectie van ZS & ZR uit Gebieden_ZS
+# testen!
+Gebieden_ZS_MONEOS_controle1 <- Gebieden_ZS %>% 
+  filter(LocationGroupCode %in% c("ZS", "ZR")) %>% 
+  distinct(LocationWVNaam) %>% arrange(LocationWVNaam)
+
+Gebieden_ZS_MONEOS_controle2 <- Gebieden_ZS_MONEOS %>% 
+  distinct(LocationWVNaam) %>% arrange(LocationWVNaam)
+
+sum(Gebieden_ZS_MONEOS_controle1 == Gebieden_ZS_MONEOS_controle2)
+# uit deze 1 op 1 match blijkt inderdaad dat de selectie via 'KRW-zones Zeeschelde (analyse)' 
+# dezelfde gebieden oplevert als 'ZS' & 'ZR'
+rm(Gebieden_ZS_MONEOS_controle1, Gebieden_ZS_MONEOS_controle2)
 
 # niveau 3 definiëren in Gebieden_ZS_MONEOS
 Gebieden_ZS_MONEOS <- Gebieden_ZS_MONEOS %>% 
@@ -422,44 +428,42 @@ Gebieden_ZS_MONEOS <- Gebieden_ZS_MONEOS %>%
      rivier == "Durme" ~ "Durme",
      rivier == "Zenne"~ "Zoet zijrivier",
      rivier == "Dijle"~ "Zoet zijrivier",
-     LocationGroupCode_KRW == "ZS4" ~ "Saliniteitsgradient",
-     LocationGroupCode_KRW == "ZS3" ~ "Oligohalien",
-     LocationGroupCode_KRW == "ZS2" ~ "Zoet lang verblijf",
-     LocationGroupCode_KRW == "ZS1" ~ "Zoet kort verblijf",
-     .default = "nvt"))
+     LocationGroupCode == "ZS4" ~ "Saliniteitsgradient",
+     LocationGroupCode == "ZS3" ~ "Oligohalien",
+     LocationGroupCode == "ZS2" ~ "Zoet lang verblijf",
+     LocationGroupCode == "ZS1" ~ "Zoet kort verblijf",
+     .default = "NVT"))
 
 # join van Gebieden_ZS_MONEOS met gebiedsindeling (niveau 1 & 2!) via rivier & niveau3
 Gebieden_ZS_MONEOS <- Gebieden_ZS_MONEOS %>% 
   left_join(Gebiedsindeling_ltd) 
 
+
 ###  Gebieden_ZS_MONEOS finaliseren & opkuisen
 Gebieden_ZS_MONEOS <- Gebieden_ZS_MONEOS %>% 
   rename_all(tolower) %>% 
-  rename(krwcode_MONEOS = locationgroupcode,
-         krwzone_MONEOS = locationgroupnaam,
-         analyseset_MONEOS = locationgrouptypecode,
-         gebiedscode_MONEOS = locationwvcode,
-         gebied_MONEOS = locationwvnaam) %>% 
-  select(-c(locationgrouptypenaam, startdate, enddate))
+  rename(gebiedscode = locationwvcode,
+         krwcode = locationgroupcode,
+         krwzone = locationgroupnaam) %>% 
+  mutate(analyse_MONEOS = "TRUE") %>% 
+  select(gebiedscode, krwcode, krwzone, rivier, niveau1, niveau2, niveau3, analyse_MONEOS)
+
 
 ### Gebieden_ZS opkuisen (en nieuwe naam geven zodat chunk onafhankelijk is van basisfiles)
 Gebieden_ZS_clean <- Gebieden_ZS %>%
   rename_all(tolower) %>% 
-  rename(krwcode = locationgroupcode,
-         krwzone = locationgroupnaam,
-         analyseset = locationgrouptypecode,
-         gebiedscode = locationwvcode,
-         gebied = locationwvnaam) 
+  rename(gebiedscode = locationwvcode,
+         gebied = locationwvnaam) %>% 
+  mutate(analyse_ZS = "TRUE") %>% 
+  select(locationgroupcode, locationgroupnaam, gebiedscode, gebied, startdate, enddate, analyse_ZS)
+
 
 ### Samenvoegen van Gebieden_ZS met Gebieden_ZS_MONEOS voor alle gebiedsinfo
 Gebieden_ZS_clean <- Gebieden_ZS_clean %>% 
-  left_join(Gebieden_ZS_MONEOS, by = c("gebiedscode" = "gebiedscode_MONEOS")) %>% 
-  select(-c(locationgrouptypenaam, locationgroupcode_krw))
-
+  left_join(Gebieden_ZS_MONEOS)
 # OPGELET: alle 303 gebieden blijven behouden!
-# de niet-MONEOS gebieden krijgen een NA waarde in kolommen 8 tot 16; 
-# door in het analysescript bvb te groeperen op niveau 3 zullen weliswaar enkel de MONEOS data in de figuren komen; 
-# maar dit is weinig elegant; is het niet beter om de ZS + ZR selectie al vanaf de databevraging door te voeren?
+# de niet-MONEOS gebieden krijgen een NA waarde in kolommen 8 tot 14; 
+
 
 ### Check gebieden:
 check_gebieden <- Gebieden_ZS_clean %>%
@@ -472,15 +476,21 @@ knitr::kable(check_gebieden)
 
 ```
 
-``` {r join doorvoeren}
+```{r join doorvoeren}
 
 WV_DB <- WV_DB %>% 
   rename_all(tolower) %>% 
   left_join(Gebieden_ZS_clean) %>% 
-  mutate(niveau3 = fct_relevel(niveau3, 
-                               c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf",
-                                 "Zoet kort verblijf", "Rupel", "Durme", "Zoet zijrivier")))
-# join resulteert in 21 + (15 - 2) = 34 kolommen
+  mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf",
+                                          "Zoet kort verblijf", "Rupel", "Durme", "Zoet zijrivier")),
+         analyse_ZS = case_when(is.na(analyse_ZS) ~ "FALSE", .default = "TRUE"),
+         analyse_MONEOS = case_when(is.na(analyse_MONEOS) ~ "FALSE", .default = "TRUE"))   
+
+# join resulteert in 21 + (14 - 2) = 33 kolommen
+# OPGELET: alle data worden behouden, maar via analyse_ZS & analyse_MONEOS kan makkelijk gefilterd worden 4
+# op de juiste analyse-dataset
+WV_DB %>% count(analyse_ZS)
+WV_DB %>% count(analyse_MONEOS)
 
 ```
 
@@ -507,22 +517,45 @@ WV_DB <- WV_DB  %>%
 ### Controle op volledigheid
 ```{r controle volledigheid}
 
-aantal_tellingen_gebied <- WV_DB %>%
+# aantal tellingen in winterseizoen in MONEOS gebieden
+aantal_tellingen_MONEOS <- WV_DB %>%
   mutate(maand = month(teldatum)) %>%
-  filter(!is.na(gebied_MONEOS),
+  filter(analyse_MONEOS == TRUE,
          maand %in% c(10:12, 1:3),
          telseizoen %in% c("2024/25", "2025/26")) %>%
   distinct(krwzone, gebiedscode, gebied, telseizoen, teldatum) %>% 
   count(krwzone, gebiedscode, gebied, telseizoen) %>% 
   arrange(gebiedscode)
 
-aantal_tellingen_gebied %>% filter(telseizoen %in% c("2024/25"), n < 6) %>% nrow()
+aantal_tellingen_MONEOS %>% filter(telseizoen %in% c("2024/25"), n < 6) %>% nrow()
 # 19 gebieden 
-aantal_tellingen_gebied %>% filter(telseizoen %in% c("2025/26"), n < 6) %>% nrow()
+aantal_tellingen_MONEOS %>% filter(telseizoen %in% c("2025/26"), n < 6) %>% nrow()
 # 21 gebieden
 
-check_onvolledigheid <- aantal_tellingen_gebied %>% filter(n < 6) %>% 
+check_onvolledigheid <- aantal_tellingen_MONEOS %>% filter(n < 6) %>% 
   distinct(gebied)
+# 29 gebieden, beperkte overlap dus
+
+
+# zelfde oefening maar voor ruimere selectie ZS
+aantal_tellingen_ZS <- WV_DB %>%
+  mutate(maand = month(teldatum)) %>%
+  filter(analyse_ZS == TRUE,
+         maand %in% c(10:12, 1:3),
+         telseizoen %in% c("2024/25", "2025/26")) %>%
+  distinct(locationgroupnaam, gebiedscode, gebied, telseizoen, teldatum) %>% 
+  count(locationgroupnaam, gebiedscode, gebied, telseizoen) %>% 
+  arrange(gebiedscode)
+
+aantal_tellingen_ZS %>% filter(telseizoen %in% c("2024/25"), n < 6) %>% nrow()
+# 48 gebieden 
+aantal_tellingen_ZS %>% filter(telseizoen %in% c("2025/26"), n < 6) %>% nrow()
+# 64 gebieden
+
+check_onvolledigheid_2 <- aantal_tellingen_ZS %>% filter(n < 6) %>% 
+  distinct(gebied)
+# 87 gebieden, vrij veel overlap
+
 
 ### Open vraag: zijn dit niet getelde gebieden, of gebieden waar een nultelling plaatsvond???
 
@@ -539,7 +572,7 @@ write_delim(Gebieden_ZS_clean, file.path(pad_data, "Gebieden_ZS_ready.csv"), del
 
 WV_DB %>% 
   mutate(maand = month(teldatum)) %>%
-  filter(!is.na(gebied_MONEOS)) %>% 
+  filter(analyse_MONEOS == TRUE) %>% 
   group_by(krwzone,
            rivier,
            telseizoen,
@@ -553,7 +586,6 @@ WV_DB %>%
            niveau3) %>%
   summarise(aantal = sum(aantal)) %>% 
   ungroup() %>% 
-  select(-wetnaam)%>% 
   write_delim(paste0(pad_data, "Watervogels_ZeescheldeVLIZcheck.csv"), delim = ";")
 
 ```
