@@ -38,6 +38,8 @@ library(readxl)
 library(lubridate)
 library(sf)
 library(kableExtra)
+library(leaflet)
+library(htmltools)
 conflicted::conflicts_prefer(dplyr::filter)
 ```
 
@@ -61,12 +63,412 @@ if (!dir.exists(pad_tabellen)) dir.create(pad_tabellen)
 
 # Aanvullen basisdata
 
-Sinds 2025 een long file met de broedvogeldata voor de analyse ("Data_nieuwe_vorm_JAAR_vx.xlsx"). Deze moet jaarlijks worden aangevuld. Voor de Sigmagbieden gebeurt dit obv de broedvogelkarteringen van dat jaar (zie scripts onder "Q:/Projects/PRJ_Schelde/MonitoringSigmaplan/R/Projects/Broedvogels"). Voor andere gebieden werd tot 2025 de webapplicatie van Waarnemingen.be gebruikt om per soort de waaremingen tussen de SOVON-tijdsgrenzen te bekijken en op basis daarvan een inschatting te maken van het aantal territoria. In 2026 werden alle waarnemingen van de doelsoorten in waarnemingen.be opgevraagd en kan de inschatting geautomatiseerd worden in R, waardoor ze ook beter herhaalbaar en controleerbaar wordt.
+Sinds 2025 werken we met een long file met de broedvogeldata voor de analyse ("Data_nieuwe_vorm_JAAR_vx.xlsx"). Deze moet jaarlijks worden aangevuld. Voor de Sigmagbieden gebeurt dit obv de broedvogelkarteringen van dat jaar (zie scripts onder "Q:/Projects/PRJ_Schelde/MonitoringSigmaplan/R/Projects/Broedvogels"). Voor andere gebieden werd tot 2025 de webapplicatie van Waarnemingen.be gebruikt om per soort de waaremingen tussen de SOVON-tijdsgrenzen te bekijken en op basis daarvan een inschatting te maken van het aantal territoria. In 2026 werden alle waarnemingen van de doelsoorten in waarnemingen.be opgevraagd en kan de inschatting geautomatiseerd worden in R, waardoor ze ook beter herhaalbaar en controleerbaar wordt.
 
 ```{r dta-wnmbe}
+(files2025 <- list.files(pad_data, full.names = TRUE, pattern = "INBODATAVR" ))
+# two tables delivered from waarnemingen.be, one with standard data, one with data for which observer had to give consent
+# een paar problemen/verschillen tussen beide tabellen worden beschreven in het data script van zoogdieren (zie "C:\Users\wim_mertens\Documents\moneos\moneos_2026\120_zoogdieren\output\20_zoogdieren_data.html"). Dit leidde tot volgende inleesmethode.
+
+data_l <- 
+  map(
+  files2025, 
+  read_csv, 
+  # We lezen datumkolommen (5, 7 en 31) in als character ('c')
+  # col_types = "icccccciccccnnnncccccccccicdccccc" 
+    col_types = "iccccccicccccccccccccccccicdccccc" 
+) %>% 
+  map(~ .x %>% 
+        mutate(
+          across(
+            c(5, 7, 25, 31), # De kolommen met datums (of gebruik de kolomnamen)
+            ~ parse_date_time(.x, orders = c("dmy", "ymd")) # zet om naar datum
+          ),
+          across(
+            c(13:16),
+            ~ as.numeric(str_replace(.x,  ",", "."))
+          )))
+
+# combine list items to one tibble
+data_wnm <- 
+  data_l %>% 
+  list_rbind()
+
+# data vanaf 2026 is niet alleen zoogdieren, maar ook vogels => filter
+vogel_data <- 
+  data_wnm  %>%  
+  filter(soortgroep == "Vogels")
+```
+
+```{r datumgrenzen}
+p <- "I:/R/Projects/Broedvogels/data/IHD_broedvogels_datumgrens2026.txt"
+ihd_datumgrens <- 
+  read_csv(p)
+```
+
+```{r join-data}
+vogel_data |> distinct(naam_nl)
+ihd_datumgrens |> distinct(Soort)
+# add dates for current year
+ihd_datumgrens <- 
+  ihd_datumgrens |> 
+  mutate(date_min = 
+           as_date(str_c(2025, dg1_maand, dg1_dag, sep = "-")),
+         date_max = 
+           as_date(str_c(2025, dg2_maand, dg2_dag, sep = "-")))
+vogel_data |> 
+  anti_join(ihd_datumgrens, by = c("naam_nl" = "Soort")) |> 
+  distinct(naam_nl)
+# Ijslandse grutto en aantal ssp joinen niet => Ijslandse grutto verwijderen, subspecies omzetten
+str_split_i("Grutto ssp limosa", pattern = " ssp", 1)
+
+vogel_data <- 
+  vogel_data |> 
+  filter(naam_nl != "IJslandse Grutto") |> 
+  # splits naam-nl als ssp er in staat
+  mutate(naam_nl2 = str_split_i(naam_nl, pattern = " ssp", 1))
+
+vogel_data |> 
+  anti_join(ihd_datumgrens, by = c("naam_nl2" = "Soort")) |> 
+  distinct(naam_nl)
+# OK
 
 ```
 
+```{r kaartjes}
+broedvogeldata_2025 <- 
+  vogel_data |> 
+  left_join(ihd_datumgrens, by = c("naam_nl2" = "Soort")) |> 
+  filter(between(datum, date_min, date_max))
+broedvogel_2025_sf <- 
+  broedvogeldata_2025|> 
+  st_as_sf(coords = c("lon", "lat"), crs = 4326)
+# kaarten_per_soort <- 
+#   broedvogel_sf |> 
+#   group_split(naam_nl) |> 
+#   set_names(sort(unique(broedvogel_sf$naam_nl))) |> 
+#   map(\(df_soort) {
+#     leaflet(df_soort) |> 
+#       addTiles() |> 
+#       addCircleMarkers(popup = ~naam_nl)
+#   })
+kaarten_per_soort <- 
+  broedvogel_2025_sf |> 
+  group_split(naam_nl2) |> 
+  set_names(sort(unique(broedvogel_2025_sf$naam_nl2))) |> 
+  map(~ leaflet(.x) |> 
+      addTiles() |> 
+      addCircleMarkers(radius = 3,
+                       label = ~datum)
+  )
+kaarten_per_soort[["Woudaap"]]
+```
+
+```{r kaart}
+# 1. Converteer naar sf en bereid het label voor
+broedvogel_2025_sf <- broedvogeldata_2025 |> 
+  st_as_sf(coords = c("lon", "lat"), crs = 4326) |> 
+  mutate(
+    # Maak een tekstkolom met de gewenste informatie, gescheiden door een HTML break (<br>)
+    info_label = paste0(
+      "<b>Aantal:</b> ", aantal, "<br>",
+      "<b>Gedrag:</b> ", gedrag, "<br>",
+      "<b>Geslacht:</b> ", geslacht, "<br>",
+      "<b>Datum:</b> ", datum
+    )
+  )
+
+soorten <- sort(unique(broedvogel_2025_sf$naam_nl2))
+
+# 2. Bouw de basiskaart op
+kaart <- leaflet() |> 
+  addTiles()
+
+# 3. Voeg in een loop elke soort toe als aparte laag
+for (s in soorten) {
+  kaart <- kaart |> 
+    addCircleMarkers(
+      data = broedvogel_2025_sf |> filter(naam_nl == s),
+      group = s,
+      radius = 3, # Zet de grootte van de stip op 3
+      label = ~lapply(info_label, HTML) # Zorgt dat Leaflet de <br> en <b> tags netjes rendert
+    )
+}
+
+# 4. Voeg het menu toe en zet alle lagen uit, behalve de eerste
+jaar_titel <- "wnm_2025"
+kaart <- 
+  kaart |> 
+  addControl(
+    html = tags$div(
+      style = "padding: 6px 10px; font-weight: bold; font-size: 14px; background: white; ",
+      jaar_titel
+    ),
+    position = "topright"
+  ) |> 
+  addLayersControl(
+    overlayGroups = soorten,
+    options = layersControlOptions(collapsed = FALSE)
+  ) |> 
+  hideGroup(soorten[-1]) # Dit verbergt alle soorten, behalve het 1e element in 'soorten'
+kaart
+htmlwidgets::saveWidget(kaart, str_c(pad_figuren, "wnm2025.html"))
+```
+
+```{r kaart2024}
+ihd_datumgrens2024 <- 
+  ihd_datumgrens |> 
+  mutate(date_min = 
+           as_date(str_c(2024, dg1_maand, dg1_dag, sep = "-")),
+         date_max = 
+           as_date(str_c(2024, dg2_maand, dg2_dag, sep = "-")))
+
+broedvogeldata_2024 <- 
+  vogel_data |> 
+  left_join(ihd_datumgrens2024, by = c("naam_nl2" = "Soort")) |> 
+  filter(between(datum, date_min, date_max))
+# 1. Converteer naar sf en bereid het label voor
+broedvogel_2024_sf <- 
+  broedvogeldata_2024 |> 
+  st_as_sf(coords = c("lon", "lat"), crs = 4326) |> 
+  mutate(
+    # Maak een tekstkolom met de gewenste informatie, gescheiden door een HTML break (<br>)
+    info_label = paste0(
+      "<b>Aantal:</b> ", aantal, "<br>",
+      "<b>Gedrag:</b> ", gedrag, "<br>",
+      "<b>Geslacht:</b> ", geslacht, "<br>",
+      "<b>Datum:</b> ", datum
+    )
+  )
+
+# 2. Bouw de basiskaart op
+kaart <- leaflet() |> 
+  addTiles()
+
+# 3. Voeg in een loop elke soort toe als aparte laag
+# Filter de data vooraf per soort
+  sub_data <- broedvogel_2024_sf |> 
+    filter(naam_nl == s)
+  
+  # Voeg alleen lagen toe als er rijen zijn
+soorten <- sort(unique(broedvogel_2024_sf$naam_nl2))
+for (s in soorten) {
+  kaart <- kaart |> 
+    addCircleMarkers(
+      data = broedvogel_2024_sf |> filter(naam_nl == s),
+      group = s,
+      radius = 3, # Zet de grootte van de stip op 3
+      label = ~lapply(info_label, HTML) # Zorgt dat Leaflet de <br> en <b> tags netjes rendert
+    )
+}
+
+# 4. Voeg het menu toe en zet alle lagen uit, behalve de eerste
+jaar_titel <- "wnm_2024"
+kaart <- 
+  kaart |> 
+  addControl(
+    html = tags$div(
+      style = "padding: 6px 10px; font-weight: bold; font-size: 14px; background: white; ",
+      jaar_titel
+    ),
+    position = "topright"
+  ) |>
+  addLayersControl(
+    overlayGroups = soorten,
+    options = layersControlOptions(collapsed = FALSE)
+  ) |> 
+  hideGroup(soorten[-1]) # Dit verbergt alle soorten, behalve het 1e element in 'soorten'
+kaart
+htmlwidgets::saveWidget(kaart, str_c(pad_figuren, "wnm2024.html"))
+```
+
+
+```{r}
+ihd_datumgrens2023 <- 
+  ihd_datumgrens |> 
+  mutate(date_min = 
+           as_date(str_c(2023, dg1_maand, dg1_dag, sep = "-")),
+         date_max = 
+           as_date(str_c(2023, dg2_maand, dg2_dag, sep = "-")))
+
+broedvogeldata_2023 <- 
+  vogel_data |> 
+  left_join(ihd_datumgrens2023, by = c("naam_nl2" = "Soort")) |> 
+  filter(between(datum, date_min, date_max))
+# 1. Converteer naar sf en bereid het label voor
+broedvogel_2023_sf <- broedvogeldata_2023 |> 
+  st_as_sf(coords = c("lon", "lat"), crs = 4326) |> 
+  mutate(
+    # Maak een tekstkolom met de gewenste informatie, gescheiden door een HTML break (<br>)
+    info_label = paste0(
+      "<b>Aantal:</b> ", aantal, "<br>",
+      "<b>Gedrag:</b> ", gedrag, "<br>",
+      "<b>Geslacht:</b> ", geslacht, "<br>",
+      "<b>Datum:</b> ", datum
+    )
+  )
+# 2. Bouw de basiskaart op
+kaart <- leaflet() |> 
+  addTiles()
+# 3. Voeg in een loop elke soort toe als aparte laag
+# Filter de data vooraf per soort
+  sub_data <- broedvogel_2023_sf |> 
+    filter(naam_nl == s)
+  
+  # Voeg alleen lagen toe als er rijen zijn
+soorten <- sort(unique(broedvogel_2023_sf$naam_nl2))
+for (s in soorten) {
+  kaart <- kaart |> 
+    addCircleMarkers(
+      data = broedvogel_2023_sf |> filter(naam_nl == s),
+      group = s,
+      radius = 3, # Zet de grootte van de stip op 3
+      label = ~lapply(info_label, HTML) # Zorgt dat Leaflet de <br> en <b> tags netjes rendert
+    )
+}
+
+# 4. Voeg het menu toe en zet alle lagen uit, behalve de eerste
+jaar_titel <- "wnm_2023"
+kaart <- 
+  kaart |> 
+  addControl(
+    html = tags$div(
+      style = "padding: 6px 10px; font-weight: bold; font-size: 14px; background: white; ",
+      jaar_titel
+    ),
+    position = "topright"
+  ) |>
+  addLayersControl(
+    overlayGroups = soorten,
+    options = layersControlOptions(collapsed = FALSE)
+  ) |> 
+  hideGroup(soorten[-1]) # Dit verbergt alle soorten, behalve het 1e element in 'soorten'
+kaart
+htmlwidgets::saveWidget(kaart, str_c(pad_figuren, "wnm2023.html"))
+```
+
+```{r controle-versie-longfile}
+# er staat een versie op Q (".../R/Projects/Broedvogels/data/Data_nieuwe_vorm_2025_v2.xlsx - 2025-08-18) en één op G (...PRJ_SCHELDE/MONEOS_rapportage/2025/110_Broedvogels/data/Data_nieuwe_vorm_2025_v2.xlsx  - 2025-09-01)
+p1 <- "I:/R/Projects/Broedvogels/data/Data_nieuwe_vorm_2025_v2.xlsx"
+p2 <- "G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2025/110_broedvogels/data/Data_nieuwe_vorm_2025_v2.xlsx"
+long_Q <- readxl::read_xlsx(p1) 
+long_G <- readxl::read_xlsx(p2)
+names(long_Q)
+names(long_G)
+nrow(long_Q)
+nrow(long_G)
+long_G |> 
+  anti_join(long_Q, by = c("Jaar" = "Jaar", "Soort" = "Soort"))
+table(long_Q$Soort, long_Q$Jaar)
+table(long_G$Soort, long_G$Jaar)
+table(long_Q$Soort)
+table(long_G$Soort)
+table(long_Q$Jaar)
+table(long_G$Jaar)
+
+# long_G heeft in 2012 en 2018 aantallen voor Groot Buitenschoor (monitoring haven, avimap) die niet in long_Q staan, => long_G is vollediger
+# in 2022 staan er long_G dubbele aantallen voor Groot Buitenschoor (avimap en waarnemingen), die niet in long_Q staan (enkel waarnemingen) => long_G bevat foutjes in 2022
+
+# er is ook nog de aangeleverde data ("G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2025/110_broedvogels/data/dataleverving/BroedvogelsMONEOS_ruwedata2025.xlsx")
+p3 <- "G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2025/110_broedvogels/data/dataleverving/BroedvogelsMONEOS_ruwedata2025.xlsx"
+lever_G <- readxl::read_xlsx(p3)
+table(lever_G$Soort)
+table(lever_G$Jaar)
+table(lever_G$Soort, lever_G$Jaar)
+# in vergelijking met long_G in 2010 +1, 2016 -1, 2017 -1, 2020 -1
+# 2010: lepelaar op noordelijk eiland (wnm.be) die niet in andere files zit
+# 2016: roerdomp KBR niet in lever_G (monitoring_sigma), is wel correct
+# 2017: woudaap  KBR niet in lever_G (monitoring_sigma), is wel correct
+# 2020: lepelaar op noordelijk eiland (wnm.be) die niet in andere files zit, omgewisseld met 2010?
+vogel_data |> 
+  filter(naam_nl == "Lepelaar", year(datum) %in% c(2010, 2020),
+         month(datum) %in% c(4, 5, 6),
+         str_detect(gebied, "Eiland")) |> 
+  arrange(datum) |> 
+  select(datum, aantal, gedrag, kleed) |> 
+  print(n = 88)
+vogel_data |> 
+  filter(naam_nl == "Lepelaar",
+         str_detect(gebied, "Eiland"),
+         str_detect(gedrag, "nest")
+         ) |> 
+  select(datum, aantal, gedrag, kleed, gebied, bijzonderheden) |> 
+  arrange(datum)
+# er zijn meer nestgerelateerde waarnemingen in Noordelijk Eiland => aanpassen
+# we vertrekken van "G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2025/110_broedvogels/data/Data_nieuwe_vorm_2025_v2.xlsx" en voeren de nodige correcties uit:
+# - dubbel Groot Buitenschoor 2022
+# - aanvullen lepelaar Noordelijk Eiland
+
+```
+
+```{r}
+broedvogeldata_2025 |> 
+  filter(naam_nl == "Tureluur",
+         # str_detect(gebied, "Kruib"),
+         str_detect(gedrag, "balts")) |> 
+  select(datum, aantal, gedrag, geslacht, kleed, gebied, x) |> 
+  arrange(datum)
+
+# data van 2 plassen splitsen: x<145800 en x>145800
+broedvogeldata_2025 |> 
+  filter(naam_nl == "Kluut",
+         str_detect(gebied, "Eiland")) |> 
+  select(datum, aantal, gedrag, kleed, x) |>
+  mutate(plas = ifelse(x < 145800, "westelijke", "oostelijke")) |> 
+  filter(plas == "westelijke") |> 
+  arrange(datum) |> 
+  print(n = 75)
+```
+
+
+# Aanpassing aan basisdata
+
+we vertrekken van "G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2025/110_broedvogels/data/Data_nieuwe_vorm_2025_v2.xlsx" 
+Volgende zaken werden aangepast aan de aangeleverde data van 2025:
+
+  - KBR - 2016: 1 territorium roerdomp toegevoegd
+  - KBR - 2017: 2 territoria woudaap toegevoegd
+  - Dubbele records (enkel aanwezige soorten) Groot Buitenschoor 2022 verwijderd:
+    - Baardman 2022: avimap: 0, waarnemingen.be: 2 wnmen op 8 en 10/4, ook tijdens broedvogelkartering op 10/4 waargenomen, maar SOVON stelt dat een tweede waarneming noodzakelijk is => 0 territoria
+    - Blauwborst 2020: avimap: 14, haven: 12, bloijkbaar fout overgenomen uit avimap want is ook daar 12
+    - Bruine kiekendief, en Scholekster: een rij verwijderd (beide 1 territorium)
+  - Noordelijk Eiland - Lepelaar: territoria toegevoegd obv nestindicerende wnm op waarnemingen.be
+    - voor 2015, 2017, 2018, 2019, 2020, 2021 en 2022: lepelaar - noordelijk eiland toegevoegd, 0-0 territoria, maar in opmerkingenveld aangegeven dat er die jaren wel nestbouw was
+  - territoria 2025 toegevoegd
+    - Sigmagebieden
+      - KBR: 21 soorten
+      - Zennegat: ...
+      
+Dit wordt dan "pad_data/Data_nieuwe_vorm_2026.xlsx".
+      
+
+```{r controle jaar-gebied}
+data <- 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2026.xlsx"), sheet = "Data")
+  # om computerefficientieredenen heb ik een tijdje op de C-schijf gewerkt, maar finale versie  staat op G-schijf
+  # read_xlsx("C:/Users/wim_mertens/Documents/moneos/moneos_2026/110_broedvogels/Data_nieuwe_vorm_2026.xlsx",
+            # sheet = "Data") 
+data |> 
+  filter(Jaar > 2022) |> 
+  count(Gebied, Jaar) |> 
+  pivot_wider(id_cols = Gebied,
+              names_from = Jaar, values_from =n) |> 
+  print(n = 60)
+```
+
+```{r}
+# Hulp voor aanvullen Data_nieuwe_vorm_2026.xlsx met data haven LO
+p <- "G:/Gedeelde drives/PRJ_SCHELDE_HAVEN/Haven/Automatische rapportering/02 Broedvogels LO/Rapportage Broedvogels LO 2025/Data Imputatie Alle Broedvogels LO 2025/Deelgebied imputatie 2025.csv"
+data_haven <- 
+  read_csv2(p)
+unique(data_haven$Gebied)
+data_haven |> 
+  filter(
+    # str_detect(Gebied, "Doelp|Kete|Prosp|Ouden"),
+    str_detect(Gebied, "Ket"),
+    Jaar == 2025,
+    Soort %in% ihd_datumgrens$Soort)
+```
 
 
 
@@ -100,13 +502,13 @@ Sinds 2025 een long file met de broedvogeldata voor de analyse ("Data_nieuwe_vor
 # 
 # # tabel met data van 2021 tot 2023 die we zullen gebruiken
 data <- 
-  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"), sheet = "Data") 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2026.xlsx"), sheet = "Data") 
 
 data %>% 
   filter(if_any(.cols = c(1:3), .fns = is.na) )
 
 soort <- 
-  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"), 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2026.xlsx"), 
             sheet = "Soorten")[c(1,2, 4:7)]
 bb <- # lijst met bijzondere broedvogels (n=16)
   soort %>% 
@@ -118,7 +520,7 @@ ab <- # lijst met algemene broedvogels (n=5)
   pull(Soort)
 
 gebied <- 
-  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"), 
+  read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2026.xlsx"), 
             sheet = "Gebieden")[c(1:5)]
 gebieden_ab <- 
   read_csv(str_c(pad_data, "gebieden_AB.csv"))

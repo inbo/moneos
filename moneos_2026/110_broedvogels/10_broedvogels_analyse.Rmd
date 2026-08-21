@@ -36,7 +36,6 @@ conflicted::conflicts_prefer(dplyr::filter)
 
 
 ```{r pad}
-
 # inlezen van variabelen
 # pad naar data : pad_data
 # pad naar tabellen : pad_tabellen
@@ -48,14 +47,20 @@ pad_data <- maak_pad(params$hoofdstuk, "data")
 pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
 pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
+if (!dir.exists(pad_data)) dir.create(pad_data) 
+if (!dir.exists(pad_figuren)) dir.create(pad_figuren) 
+if (!dir.exists(pad_tabellen)) dir.create(pad_tabellen) 
+
 ```
 
 
 ```{r data}
-Soorten <- read_xlsx(path = str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"),
+Soorten <- read_xlsx(path = str_c(pad_data, "Data_nieuwe_vorm_2026.xlsx"),
                    sheet = "Soorten")
 Terr_Sigma_BB <- 
   read_csv(str_c(pad_tabellen, "Terr_Sigma_BB.csv"))
+Terr_Sigma_BB_gebiedstype <- 
+  read_csv(str_c(pad_tabellen, "Terr_Sigma_BB_gebiedstype.csv"))
 Terr_Sigma_AB <- 
   read_csv(str_c(pad_tabellen, "Terr_Sigma_AB.csv"))
 Terr_Sigma_AB_na2005 <- 
@@ -101,6 +106,60 @@ ggsave(filename = str_c(pad_figuren, "110_fig3.jpg"), height=8, width=6)
 ```
 <br/>
 <br/>
+
+```{r soortgrafiekBB per Typegebied, include = FALSE}
+Terr_Sigma_BB_gebiedstype %>%
+  filter(Soort == "Wespendief") %>%
+  group_by(Soort, TypeGebied, Jaar) %>%
+  summarise(Aantal = sum(Aantal), .groups = "drop") %>%
+  ggplot() +
+  geom_point(aes(x = Jaar, y = Aantal, color = TypeGebied))+
+  geom_line(aes(x = Jaar, y = Aantal, color = TypeGebied)) +
+  scale_y_continuous(limits = c(0, NA))+
+  scale_x_continuous(breaks = c(2005,2010,2015, 2020)) +
+  labs(y = "Aantal territoria") +
+  theme(
+    strip.text = element_text(size = 12),
+    axis.title = element_text(size = 11),
+    axis.title.x = element_blank(),
+    axis.text = element_text(size = 9),
+    legend.title = element_blank(),
+    legend.position = "bottom"
+  )
+# ggsave(filename = str_c(pad_figuren, "Scholekster_evolutie_gebiedstype.png"))
+
+# de purrr versie
+Terr_Sigma_BB_gebiedstype %>%
+  distinct(Soort) %>%
+  pull(Soort) %>%
+  walk(function(s) {
+    p <- Terr_Sigma_BB_gebiedstype %>%
+      filter(Soort == s) %>%
+      group_by(Soort, TypeGebied, Jaar) %>%
+      summarise(Aantal = sum(Aantal), .groups = "drop") %>%
+      ggplot(aes(x = Jaar, y = Aantal, color = TypeGebied)) +
+      geom_point() +
+      geom_line() +
+      scale_y_continuous(limits = c(0, NA)) +
+      scale_x_continuous(breaks = c(2005, 2010, 2015, 2020)) +
+      labs(y = "Aantal territoria", title = s) +
+      theme(
+        strip.text = element_text(size = 12),
+        axis.title = element_text(size = 11),
+        axis.title.x = element_blank(),
+        axis.text = element_text(size = 9),
+        legend.title = element_blank(),
+        legend.position = "bottom"
+      )
+
+    ggsave(
+      filename = str_c(pad_figuren, s, "_evolutie_gebiedstype.png"),
+      plot = p
+    )
+    p
+  })
+```
+
 
 # Figuur Algemene soorten
 
@@ -160,27 +219,31 @@ Terr_Sigma_AB_tot %>%
 ```
 
 ```{r soortgrafiek per Typegebied, include = FALSE}
-Terr_Sigma_AB %>% 
-  filter(Soort == "Scholekster") %>%
-  group_by(Soort, TypeGebied, Jaar) %>% 
-  summarise(Aantal = sum(Aantal), .groups = "drop") %>% 
-  ggplot() +
-  geom_point(aes(x = Jaar, y = Aantal, color = TypeGebied))+
-  geom_line(aes(x = Jaar, y = Aantal, color = TypeGebied)) +
-  scale_y_continuous(limits = c(0, NA))+
-  scale_x_continuous(breaks = c(2005,2010,2015, 2020)) +
-  labs(y = "Aantal territoria") +
-  theme(
-    strip.text = element_text(size = 12),
-    axis.title = element_text(size = 11),
-    axis.title.x = element_blank(),
-    axis.text = element_text(size = 9),
-    legend.title = element_blank(),
-    legend.position = "bottom"
-  )
+# Terr_Sigma_AB %>% 
+#   filter(Soort == "Scholekster") %>%
+#   group_by(Soort, TypeGebied, Jaar) %>% 
+#   summarise(Aantal = sum(Aantal), .groups = "drop") %>% 
+#   ggplot() +
+#   geom_point(aes(x = Jaar, y = Aantal, color = TypeGebied))+
+#   geom_line(aes(x = Jaar, y = Aantal, color = TypeGebied)) +
+#   scale_y_continuous(limits = c(0, NA))+
+#   scale_x_continuous(breaks = c(2005,2010,2015, 2020)) +
+#   labs(y = "Aantal territoria") +
+#   theme(
+#     strip.text = element_text(size = 12),
+#     axis.title = element_text(size = 11),
+#     axis.title.x = element_blank(),
+#     axis.text = element_text(size = 9),
+#     legend.title = element_blank(),
+#     legend.position = "bottom"
+#   )
+# ggsave(filename = str_c(pad_figuren, "Scholekster_evolutie_gebiedstype.png"))
+
+# de purrr versie
+
 ```
 
-```{r totale aantammen per soort, include=FALSE}
+```{r totale aantallen per soort, include=FALSE}
 Terr_Sigma_AB %>% 
   filter(Soort == "Scholekster") %>%
   group_by(Soort, Jaar) %>% 
@@ -194,13 +257,13 @@ Terr_Sigma_AB %>%
 Voor het schrijven van het hoofdstuk kan een jaarlijks overzicht van broedlocaties van de soorten handig zijn.
 
 ```{r nested data 202122}
-data24 <- readxl::read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2025_v2.xlsx"),
+data25 <- readxl::read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2026.xlsx"),
                             sheet = "Data", range = "R1C1:R10000C7") %>% 
   filter(!is.na(Soort))
 # we nest data to make a table for each species-year by using a for loop
 # the result is a dataframe with columns Soort(chr), Jaar (num) en data(list). Each list item in data contains a dataframe with Gebied, minimum and maximum.
 data_nested <- 
-  data24  %>% 
+  data25  %>% 
   arrange(Soort, Jaar) %>% 
   nest(data = c(Gebied, minimum, maximum), .by = c(Soort, Jaar))
 # data_nested$data[1]
