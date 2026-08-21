@@ -256,10 +256,10 @@ Terr_Sigma_AB %>%
 
 Voor het schrijven van het hoofdstuk kan een jaarlijks overzicht van broedlocaties van de soorten handig zijn.
 
-```{r nested data 202122}
+```{r nested data 2025}
 data25 <- readxl::read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2026.xlsx"),
                             sheet = "Data", range = "R1C1:R10000C7") %>% 
-  filter(!is.na(Soort))
+  filter(!is.na(Soort), Jaar == 2025)
 # we nest data to make a table for each species-year by using a for loop
 # the result is a dataframe with columns Soort(chr), Jaar (num) en data(list). Each list item in data contains a dataframe with Gebied, minimum and maximum.
 data_nested <- 
@@ -304,4 +304,49 @@ for(x in unique(data_nested$Soort)){
 <br/>
 
 
+```{r nested data allejaren}
+data_all <- readxl::read_xlsx(str_c(pad_data, "Data_nieuwe_vorm_2026.xlsx"),
+                            sheet = "Data", range = "R1C1:R10000C7") %>% 
+  filter(!is.na(Soort))
+# we nest data to make a table for each species-year by using a for loop
+# the result is a dataframe with columns Soort(chr), Jaar (num) en data(list). Each list item in data contains a dataframe with Gebied, minimum and maximum.
+data_nested <- 
+  data_all  %>% 
+  arrange(Soort, Jaar) %>% 
+  nest(data = c(Gebied, minimum, maximum), .by = c(Soort, Jaar))
+# data_nested$data[1]
+# data_nested$data[data_nested$Soort == "Lepelaar"]
+# data_nested$data[data_nested$Soort == "Lepelaar" & data_nested$Jaar == 2021] %>% 
+#   kable() %>% 
+#   kable_paper()
 
+```
+
+```{r broedlocaties alle jaren, results='asis'}
+# The nested data are used in a for loop to produce seperate table in de output html file, notice the use of results='asis' in the header! (without that kable does not work in a for loop)
+for(x in unique(data_nested$Soort)){
+  a <- data_nested %>% filter(Soort == x)
+  for(y in a$Jaar){
+    cap <- str_c(a$Soort[1], y, sep = " - ")
+    b <- 
+      a %>% filter(Jaar == y) %>% pull(data) %>% 
+      kable(caption = cap, align = "lcc")
+    print(b)
+    cat("\n")
+  }
+}
+```
+
+
+```{r broedlocaties2 alle jaren, results='asis'}
+for(x in unique(data_nested$Soort)){
+  a <- data_nested %>% filter(Soort == x) %>% unnest %>% 
+    pivot_wider(id_cols = Gebied, names_from = Jaar, values_from = maximum) %>% 
+    kable(caption = x, align = "lcc")
+  print(a)
+  cat("\n")
+}
+
+```
+<br/>
+<br/>

@@ -585,6 +585,19 @@ Terr_Sigma_BB %>%
 ```
 <br/>
 
+```{r}
+(Terr_Sigma_BB_gebiedstype <- 
+  data %>%  
+  filter(Soort %in% bb) %>%
+  left_join(gebied, by = c("Gebied")) %>% 
+  summarise(.by = c(Jaar, Soort, TypeGebied), 
+            Aantal = ceiling((sum(minimum) + sum(maximum))/2))) 
+Terr_Sigma_BB_gebiedstype %>% 
+  write_csv(str_c(pad_tabellen, "Terr_Sigma_BB_gebiedstype.csv"))
+
+```
+<br/>
+
 # Algemene broedvogels
 
 ```{r algemenesoorten}
