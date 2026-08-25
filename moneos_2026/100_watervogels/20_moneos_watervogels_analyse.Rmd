@@ -100,8 +100,8 @@ Tellingen_MONEOS <- WV_DB %>%
 # aantallen sommeren over niveau 3 en telmaand
 Tellingen_MONEOS_niv3 <- 
   Tellingen_MONEOS %>% 
-    group_by(locationgroupcode, locationgroupnaam, niveau2, rivier, krwcode, krwzone, niveau3, 
-             telseizoen, telseizoen_yr, jaar, maand, nednaam, taxongroupcode, exoot, trofische_groep) %>% 
+  group_by(locationgroupcode, locationgroupnaam, niveau2, rivier, krwcode, krwzone, niveau3, 
+           telseizoen, telseizoen_yr, jaar, maand, nednaam, taxongroupcode, exoot, trofische_groep) %>% 
   summarise(aantal = sum(aantal)) %>% 
   ungroup()
 
@@ -119,56 +119,6 @@ Tellingen_MONEOS_niv3 <- Tellingen_MONEOS_niv3 %>%
   mutate(niveau3 = factor(Tellingen_MONEOS_niv3$niveau3, 
                           levels = c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf",
                                      "Zoet kort verblijf", "Rupel", "Durme", "Zoet zijrivier")))
-
-```
-
-### Oppervlakte beschikbaar habitat
-```{r data oppervlakte slikken}
-
-data_opp_ecotoop <-
-  read_csv2(paste0(pad_data, "SpatialEcotopenOpp_INBO_2022.csv"))
-
-table(data_opp_ecotoop$waterloop)
-
-data_opp_ecotoop <- data_opp_ecotoop %>% 
-  mutate(niveau3 = case_when(
-    waterloop == "Zeeschelde IV" ~ "Saliniteitsgradient",
-    waterloop == "Zeeschelde III" ~"Oligohalien",
-    waterloop == "Zeeschelde II" ~ "Zoet lang verblijf",
-    waterloop == "Zeeschelde I" ~ "Zoet kort verblijf",
-    waterloop == "Rupel" ~ "Rupel",
-    waterloop == "Durme" ~ "Durme",
-    .default = NA))
-
-data_opp_ecotoop <- data_opp_ecotoop %>%
-  filter(!is.na(niveau3)) %>%
-  mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", 
-                                          "Zoet kort verblijf", "Rupel", "Durme")))
-
-### We selecteren de jaren met volledige kaart BEZ BOZ Rupel Durme
-data_opp_ecotoop <- data_opp_ecotoop %>% 
-  mutate(telseizoen = case_when(
-    jaar == "2001" ~ "2001/02",
-    jaar == "2010" ~ "2010/11",
-    jaar == "2013" ~ "2013/14",
-    jaar == "2016" ~ "2016/17",
-    jaar == "2019" ~ "2019/20",
-    jaar == "2022" ~ "2022/23",
-    .default = NA)) %>% 
-  filter(!is.na(telseizoen))
-
-data_opp_zachtslik_KRW_ZS <- data_opp_ecotoop %>% 
-  filter(str_detect(ecotoopruw, "zacht")) %>%
-  group_by(niveau3, jaar, telseizoen) %>% 
-  summarise(som_ha = sum(SomVanShape_Area)) %>%
-  ungroup()  
-  
-# correctie op 
-# (1) Durme slikoppervlakte : stroomopwaartse oppervlakte vanaf brug Waasmunster (4.8ha ongeveer) er vanaf getrokken
-# (2) uitbreidingen in 'zoet kort' vanaf telseizoen 2016: zacht slik - 12ha (niet te tellen vanaf boot)
-data_opp_zachtslik_KRW_ZS <- data_opp_zachtslik_KRW_ZS %>%
-  mutate(som_ha = case_when(niveau3 == "Durme" ~ som_ha - 4.8, .default = som_ha),
-         som_ha = case_when(niveau3 == "Zoet kort verblijf" & jaar > 2013 ~ som_ha - 12, .default = som_ha))
 
 ```
 
@@ -222,6 +172,11 @@ theme_with_legend <- theme(
   axis.text.y = element_text(size = 8),
   legend.title = element_blank())
 
+theme_with_legend_2 <- theme(
+  axis.text.x = element_text(size = 8),
+  axis.text.y = element_text(size = 8),
+  legend.title = element_blank())
+
 theme_with_title <- theme(
   axis.text.x = element_text(size = 8, angle = 45, hjust = 1, vjust = 1),
   axis.text.y = element_text(size = 8),
@@ -266,10 +221,10 @@ Tellingen_MONEOS_niv3 %>%
   geom_line(linewidth = 0.5) +
   scale_y_continuous(limits = c(0.75, 3.0), labels = label_marks) + 
   labs(x = "Telseizoen", 
-       y = "Shannon diversiteit H") +
+       y = "Shannon-index (soortendiversiteit)") +
   theme_with_legend
 
-ggsave(paste0(pad_figuren, "100_1a_figuur_ShannonDiversity_wintervogels_incl_meeuwen_niv3.jpg"), 
+ggsave(paste0(pad_figuren, "100_1a_Shannon_incl_MS_winter_niv3.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 
@@ -301,10 +256,10 @@ Tellingen_MONEOS_niv3 %>%
   geom_line(linewidth = 0.5) +
   scale_y_continuous(limits = c(1, 3.0), labels = label_marks) + 
   labs(x = "Telseizoen", 
-       y = "Shannon diversiteit H") +
+       y = "Shannon-index (soortendiversiteit)") +
   theme_with_legend 
  
-ggsave(paste0(pad_figuren, "100_1b_figuur_ShannonDiversity_wintervogels_incl_meeuwen_niv2.jpg"), 
+ggsave(paste0(pad_figuren, "100_1b_Shannon_incl_MS_winter_niv2.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 ```
@@ -333,7 +288,7 @@ Tellingen_MONEOS_niv3 %>%
        title = "Maandelijkse wintertotalen (Zeeschelde)") +
   theme_with_title
 
-ggsave(paste0(pad_figuren, "100_2a_figuur_maandelijkse_totalen_ZS_winter.jpg"), 
+ggsave(paste0(pad_figuren, "100_2a_maandelijkse_totalen_excl_MS_winter_ZS.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 # idem maar na 2007
@@ -341,9 +296,8 @@ Tellingen_MONEOS_niv3 %>%
   filter(rivier == "Zeeschelde",
          maand %in% c(10:12, 1:3),
          taxongroupcode != "MS") %>% # meeuwen en sternen worden pas sinds 1999 geteld
-  
   mutate(datum = ymd(paste(jaar, maand, "15", sep = "-"))) %>% 
-  filter(datum > "2007-09-30") %>%
+  filter(telseizoen_yr > 2006) %>%
   
   group_by(telseizoen, datum) %>% 
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
@@ -352,14 +306,14 @@ Tellingen_MONEOS_niv3 %>%
   ggplot(aes(datum, aantal)) + 
   geom_col() +
   geom_smooth(aes(), color = "red", fill = "red", linewidth = 0.5) +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0.02, 0.02)) +
   scale_y_continuous(labels = label_marks) +
   labs(x = "Jaar", 
        y = "Aantal watervogels", 
        title = "Maandelijkse wintertotalen (Zeeschelde)")  + 
   theme_with_title
 
-  ggsave(paste0(pad_figuren, "100_2b_figuur_maandelijkse_totalen_ZS_winter_post2007.jpg"), 
+  ggsave(paste0(pad_figuren, "100_2b_maandelijkse_totalen_excl_MS_winter_ZS.jpg"), 
        width = 8, height = 5, dpi = 300)
  
 ```
@@ -370,9 +324,7 @@ Tellingen_MONEOS_niv3 %>%
 Tellingen_MONEOS_niv3 %>%
   filter(krwcode == "ZS4",
          taxongroupcode != "MS") %>% # meeuwen en sternen worden pas sinds 1999 geteld
-  
   mutate(datum = ymd(paste(jaar, maand, "15", sep = "-"))) %>% 
-  filter(datum < "2026-04-01") %>% 
   
   group_by(telseizoen, datum) %>% 
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
@@ -381,25 +333,23 @@ Tellingen_MONEOS_niv3 %>%
   ggplot(aes(datum, aantal)) + 
   geom_col() +
   geom_smooth(aes(), color = "red", fill = "red", linewidth = 0.5) +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0.02, 0.02)) +
   scale_y_continuous(labels = label_marks) +
   labs(x = "Jaar", 
        y = "Aantal watervogels", 
        title = "Maandelijkse totalen ('saliniteitsgradiënt')")  + 
   theme_with_title
 
-ggsave(paste0(pad_figuren, "100_3a_figuur_maandelijkse_totalen_ZS_IV.jpg"), 
+ggsave(paste0(pad_figuren, "100_3a_maandelijkse_totalen_excl_MS_ZS4.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 # idem maar na 2007
 Tellingen_MONEOS_niv3 %>% 
   filter(krwcode == "ZS4",
-         taxongroupcode != "MS") %>% # meeuwen en sternen worden pas sinds 1999 geteld
-  
+         taxongroupcode != "MS", # meeuwen en sternen worden pas sinds 1999 geteld
+         telseizoen_yr > 2006) %>% 
   mutate(datum = ymd(paste(jaar, maand, "15", sep = "-"))) %>% 
-  filter(datum > "2007-09-30",
-         datum < "2026-04-01") %>%
-  
+ 
   group_by(telseizoen, datum) %>% 
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
   ungroup() %>% 
@@ -407,24 +357,23 @@ Tellingen_MONEOS_niv3 %>%
   ggplot(aes(datum, aantal)) + 
   geom_col() +
   geom_smooth(aes(), color = "red", fill = "red", linewidth = 0.5) +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0.02, 0.02)) +
   scale_y_continuous(labels = label_marks) +
   labs(x = "Jaar", 
        y = "Aantal watervogels", 
        title = "Maandelijkse totalen ('saliniteitsgradiënt')")  + 
   theme_with_title
 
-ggsave(paste0(pad_figuren, "100_3b_figuur_maandelijkse_totalen_ZS_IV_post2007.jpg"), 
+ggsave(paste0(pad_figuren, "100_3b_maandelijkse_totalen_excl_MS_ZS4.jpg"), 
        width = 8, height = 5, dpi = 300)
  
 # idem maar enkel voor scholekster
 Tellingen_MONEOS_niv3 %>% 
   filter(krwcode == "ZS4",
-         nednaam == "Scholekster") %>% 
+         nednaam == "Scholekster",
+         telseizoen_yr > 2006) %>% 
   
   mutate(datum = ymd(paste(jaar, maand, "15", sep = "-"))) %>% 
-  filter(datum > "2007-09-30",
-         datum < "2026-04-01") %>%
   
   group_by(telseizoen, datum) %>% 
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
@@ -433,24 +382,23 @@ Tellingen_MONEOS_niv3 %>%
   ggplot(aes(datum, aantal)) + 
   geom_col() +
   geom_smooth(aes(), color = "red", fill = "red", linewidth = 0.5) +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0.02, 0.02)) +
   scale_y_continuous(labels = label_marks) +
   labs(x = "Jaar", 
        y = "Aantal watervogels", 
        title = "Maandelijkse totalen Scholekster ('saliniteitsgradiënt')") + 
   theme_with_title
 
-ggsave(paste0(pad_figuren, "100_3c_figuur_maandelijkse_totalen_ZS_IV_post2007_scholekster.jpg"), 
+ggsave(paste0(pad_figuren, "100_3c_maandelijkse_totalen_scholekster_ZS4.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 # idem maar enkel voor bergeend
 Tellingen_MONEOS_niv3 %>% 
   filter(krwcode == "ZS4",
-         nednaam == "Bergeend") %>% 
+         nednaam == "Bergeend",
+         telseizoen_yr > 2006) %>% 
   
-  mutate(datum = ymd(paste(jaar, maand, "15", sep = "-"))) %>% 
-  filter(datum > "2007-09-30",
-         datum < "2026-04-01") %>%
+  mutate(datum = ymd(paste(jaar, maand, "15", sep = "-"))) %>%
   
   group_by(telseizoen, datum) %>% 
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
@@ -459,14 +407,14 @@ Tellingen_MONEOS_niv3 %>%
   ggplot(aes(datum, aantal)) + 
   geom_col() +
   geom_smooth(aes(), color = "red", fill = "red", linewidth = 0.5) +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0.02, 0.02)) +
   scale_y_continuous(labels = label_marks) +
   labs(x = "Jaar", 
        y = "Aantal watervogels", 
        title = "Maandelijkse totalen Bergeend ('saliniteitsgradiënt')") + 
   theme_with_title
 
-ggsave(paste0(pad_figuren, "100_3d_figuur_maandelijkse_totalen_ZS_IV_post2007_bergeend.jpg"), 
+ggsave(paste0(pad_figuren, "100_3d_maandelijkse_totalen_bergeend_ZS4.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 ```
@@ -477,11 +425,9 @@ ggsave(paste0(pad_figuren, "100_3d_figuur_maandelijkse_totalen_ZS_IV_post2007_be
 Tellingen_MONEOS_niv3 %>% 
   filter(krwcode == "ZS2",
          maand %in% c(10:12, 1:3),
-         taxongroupcode != "MS") %>% # meeuwen en sternen worden pas sinds 1999 geteld
-  
-  mutate(datum = ymd(paste(jaar, maand, "15", sep = "-"))) %>% 
-  filter(datum > "2007-09-30",
-         datum < "2026-04-01") %>%
+         taxongroupcode != "MS", # meeuwen en sternen worden pas sinds 1999 geteld
+         telseizoen_yr > 2006) %>% 
+  mutate(datum = ymd(paste(jaar, maand, "15", sep = "-"))) %>%
   
   group_by(telseizoen, datum) %>% 
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
@@ -490,25 +436,23 @@ Tellingen_MONEOS_niv3 %>%
   ggplot(aes(datum, aantal)) + 
   geom_col() +
   geom_smooth(aes(), color = "red", fill = "red", linewidth = 0.5) + 
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0.02, 0.02)) +
   scale_y_continuous(labels = label_marks) +
   labs(x = "Jaar", 
        y = "Aantal watervogels", 
-       title = "Maandelijkse totalen ('zoet lang' - boottellingen)") +
+       title = "Maandelijkse totalen ('zoet lang')") +
   theme_with_title
 
-ggsave(paste0(pad_figuren, "100_4a_figuur_maandelijkse_totalen_ZS_II_post2007.jpg"), 
+ggsave(paste0(pad_figuren, "100_4a_maandelijkse_totalen_excl_MS_winter_ZS2.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 # idem maar enkel voor bergeend
 Tellingen_MONEOS_niv3 %>% 
   filter(krwcode == "ZS2",
          maand %in% c(10:12, 1:3),
-         nednaam == "Bergeend") %>% # meeuwen en sternen worden pas sinds 1999 geteld
-  
+         nednaam == "Bergeend",
+         telseizoen_yr > 2006) %>% 
   mutate(datum = ymd(paste(jaar, maand, "15", sep = "-"))) %>% 
-  filter(datum > "2007-09-30",
-         datum < "2026-04-01") %>%
   
   group_by(telseizoen, datum) %>% 
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
@@ -517,14 +461,14 @@ Tellingen_MONEOS_niv3 %>%
   ggplot(aes(datum, aantal)) + 
   geom_col() +
   geom_smooth(aes(), color = "red", fill = "red", linewidth = 0.5) +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0.02, 0.02)) +
   scale_y_continuous(labels = label_marks) +
   labs(x = "Jaar", 
        y = "Aantal watervogels", 
-       title = "Maandelijkse totalen Bergeend ('zoet lang' - boottellingen)") + 
+       title = "Maandelijkse totalen Bergeend ('zoet lang')") + 
   theme_with_title
 
-ggsave(paste0(pad_figuren, "100_4b_figuur_maandelijkse_totalen_ZS_II_post2007_bergeend.jpg"), 
+ggsave(paste0(pad_figuren, "100_4b_maandelijkse_totalen_bergeend_winter_ZS2.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 ```
@@ -535,7 +479,7 @@ ggsave(paste0(pad_figuren, "100_4b_figuur_maandelijkse_totalen_ZS_II_post2007_be
 Tellingen_MONEOS_niv3 %>% 
   filter(maand %in% c(10:12, 1:3),
          taxongroupcode != "MS", # meeuwen en sternen worden pas sinds 1999 geteld
-         rivier =="Zeeschelde") %>% 
+         rivier == "Zeeschelde") %>% 
   
   group_by(telseizoen, niveau3) %>% 
   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
@@ -549,7 +493,7 @@ Tellingen_MONEOS_niv3 %>%
   labs(x = "Telseizoen", y = "") +
   theme_with_legend
 
-ggsave(paste0(pad_figuren, "100_5a_figuur_verhouding_aantallen_niv3_ZS.jpg"), 
+ggsave(paste0(pad_figuren, "100_5a_verhouding_aantallen_excl_MS_winter_ZS.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 ```
@@ -578,7 +522,7 @@ Tellingen_MONEOS_niv3 %>%
        title = "Wintermaxima (Zeeschelde)") +
   theme_with_title
 
-ggsave(paste0(pad_figuren, "100_6a_figuur_wintermaxima_Zeeschelde.jpg"), 
+ggsave(paste0(pad_figuren, "100_6a_wintermaxima_excl_MS_ZS.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 ```
@@ -608,15 +552,15 @@ Tellingen_MONEOS_niv3 %>%
        y = "Aantal watervogels", 
        title = "Wintermaxima per KRW/saliniteit-zone") +
   theme_with_title +
-  facet_wrap(~ niveau3, ncol = 2, scales = "free")
+  facet_wrap(~ niveau3, ncol = 2, dir = "v", scales = "free")
 
-ggsave(paste0(pad_figuren, "100_7a_figuur_wintermaxima_niv3.jpg"), 
+ggsave(paste0(pad_figuren, "100_7a_wintermaxima_excl_MS_facet_niv3.jpg"), 
        width = 8, height = 8, dpi = 300)
 
 ```
 
-### Wintermaxima zijrivieren
-```{r Wintermaxima zijrivieren}
+### Wintermaxima per traject
+```{r Wintermaxima per traject}
 
 Tellingen_MONEOS_niv3 %>% 
   filter(maand %in% c(10:12, 1:3),
@@ -641,8 +585,893 @@ Tellingen_MONEOS_niv3 %>%
   theme_with_title +
   facet_wrap(~ rivier, ncol = 2, scales = "free") 
 
-ggsave(paste0(pad_figuren, "100_8a_figuur_wintermaxima_rivier.jpg"), 
+ggsave(paste0(pad_figuren, "100_8a_wintermaxima_excl_MS_facet_rivier.jpg"), 
        width = 8, height = 8, dpi = 300)
+
+```
+
+### Indexberekeningen
+```{r indexberekening}
+
+# vergelijking van de relatieve verschillen in wintermaxima tussen jaren met 2009 als referentiejaar
+
+# index wintermaxima per niveau3-zone
+Data_watervogels_MONEOS_index <- Tellingen_MONEOS_niv3 %>%
+  filter(taxongroupcode != "MS", # zonder meeuwen en sternen
+         maand %in% c(10:12, 1:3)) %>%
+  
+  group_by(niveau3, telseizoen_yr, maand) %>%
+  summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>%
+  
+  group_by(niveau3, telseizoen_yr) %>% 
+  summarise(max_winter = max(maand_som, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  complete(niveau3, 
+           nesting(telseizoen_yr),
+           fill = list(max_winter = 0)) %>% 
+  
+  group_by(niveau3) %>%
+  mutate(rel_aantal = max_winter/max_winter[telseizoen_yr == 2009]) %>%
+  ungroup()
+
+# figuur: 
+Data_watervogels_MONEOS_index %>%
+  filter(telseizoen_yr > 2008,
+         niveau3 !="Durme") %>% 
+  # vertekend beeld voor de durme door inclusie oude durme in historische data
+  
+  ggplot(aes(telseizoen_yr, rel_aantal))+
+  geom_line(linewidth = 0.5, color = "red") +
+  geom_hline(yintercept = 1, linetype = 2, linewidth = 1) +
+  labs(x = "Telseizoen", 
+       y = "Index ") +
+  scale_y_log10(limits = c(0.1, 3), labels = label_marks) +
+  facet_wrap(~ niveau3) +
+  theme_with_legend_2
+
+ggsave(paste0(pad_figuren, "100_9a_index_excl_MS_winter_facet_niv3.jpg"), 
+       width = 8, height = 5, dpi = 300)
+
+# index wintermaxima per trofische groep
+Data_watervogels_MONEOS_index_trof <- Tellingen_MONEOS_niv3 %>%
+   filter(taxongroupcode != "MS",
+          maand %in% c(10:12, 1:3),
+          !is.na(trofische_groep),
+          rivier == "Zeeschelde") %>% 
+   
+  group_by(telseizoen_yr, maand, trofische_groep) %>%
+  summarise(maand_som = sum(aantal, na.rm = TRUE)) %>%
+  ungroup() %>%
+   
+  group_by(telseizoen_yr, trofische_groep) %>% 
+  summarise(max_winter = max(maand_som, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  complete(trofische_groep,
+           nesting(telseizoen_yr),
+           fill = list(max_winter = 0)) %>% 
+   
+  group_by(trofische_groep) %>%
+  mutate(rel_aantal = max_winter/max_winter[telseizoen_yr == 2009]) %>%
+  ungroup()
+
+# figuur:
+Data_watervogels_MONEOS_index_trof %>%
+  filter(telseizoen_yr > 2008) %>% 
+  
+  ggplot(aes(telseizoen_yr, rel_aantal))+
+  geom_line(linewidth = 0.5, color = "red") +
+  geom_hline(yintercept = 1, linetype = 2, linewidth = 1) +
+  labs(x = "Telseizoen", 
+       y = "Index ") +
+  scale_y_log10(limits = c(0.2, 3), labels = label_marks) +
+  facet_wrap(~ trofische_groep) +
+  theme_with_legend_2
+
+ ggsave(paste0(pad_figuren, "100_9b_index_excl_MS_winter_ZS_facet_trof.jpg"), 
+       width = 8, height = 5, dpi = 300)
+ 
+ # index wintermaxima per trofische groep en niveau3-zone
+ Data_watervogels_MONEOS_index_trofniv3 <- Tellingen_MONEOS_niv3 %>%
+   filter(taxongroupcode != "MS",
+          maand %in% c(10:12, 1:3),
+          !is.na(trofische_groep)) %>% 
+   
+   group_by(niveau3, telseizoen_yr, maand, trofische_groep) %>%
+   summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
+   ungroup() %>%
+   
+   group_by(niveau3, telseizoen_yr, trofische_groep) %>% 
+   summarise(max_winter = max(maand_som, na.rm = TRUE)) %>% 
+   ungroup() %>% 
+   
+   complete(niveau3,
+            nesting(telseizoen_yr, trofische_groep),
+            fill = list(max_winter = 0)) %>%
+   
+   group_by(trofische_groep, niveau3) %>%
+   mutate(rel_aantal = max_winter/max_winter[telseizoen_yr == 2009]) %>%
+   ungroup()
+
+## figuur
+Data_watervogels_MONEOS_index_trofniv3 %>%
+  filter(telseizoen_yr > 2008,
+         niveau3 !="Durme") %>% 
+  # vertekend beeld voor de durme door inclusie oude durme in historische data
+  
+  ggplot(aes(telseizoen_yr, rel_aantal, group = niveau3, color = niveau3)) +
+  geom_line(linewidth = 0.5) +
+  geom_hline(yintercept = 1, linetype = 2, linewidth = 1) +
+  labs(x = "Telseizoen", 
+       y = "Index ") +
+  scale_y_log10(limits = c(0.02, 12), labels = label_marks) +
+  facet_wrap(~ trofische_groep) +
+  theme_with_legend_2
+
+ ggsave(paste0(pad_figuren, "100_9c_index_excl_MS_winter_facet_trofniv3.jpg"), 
+       width = 8, height = 5, dpi = 300)
+ 
+ 
+# index wintermaxima per niveau2-zone
+Data_watervogels_MONEOS_index_niv2 <- Tellingen_MONEOS_niv3 %>%
+  filter(taxongroupcode != "MS", # zonder meeuwen en sternen
+         maand %in% c(10:12, 1:3)) %>%
+  
+  group_by(niveau2, telseizoen_yr, maand) %>%
+  summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>%
+  
+  group_by(niveau2, telseizoen_yr) %>% 
+  summarise(max_winter = max(maand_som, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  complete(niveau2, 
+           nesting(telseizoen_yr),
+           fill = list(max_winter = 0)) %>% 
+  
+  group_by(niveau2) %>%
+  mutate(rel_aantal = max_winter/max_winter[telseizoen_yr == 2009]) %>%
+  ungroup()
+
+# figuur: 
+Data_watervogels_MONEOS_index_niv2 %>%
+  filter(telseizoen_yr > 2008) %>% 
+  
+  ggplot(aes(telseizoen_yr, rel_aantal))+
+  geom_line(linewidth = 0.5, color = "red") +
+  geom_hline(yintercept = 1, linetype = 2, linewidth = 1) +
+  labs(x = "Telseizoen", 
+       y = "Index ") +
+  scale_y_log10(limits = c(0.2, 1.5), labels = label_marks) +
+  facet_wrap(~ niveau2) +
+  theme_with_legend_2
+ 
+ggsave(paste0(pad_figuren, "100_9d_index_excl_MS_winter_facet_niv2.jpg"), 
+       width = 8, height = 5, dpi = 300)
+```
+
+### Indexberekeningen rtrim (s-IHD soorten)
+```{r indexberekeningen rtrim}
+
+# pijlstaart:     winter seizoensgemiddelde telseizoen 2000/01 tot 2005/06
+# wintertaling:   winter seizoensgemiddelde telseizoen 1998/99 tot 2005/06
+# krakeend:       winter seizoensgemiddelde telseizoen 2002/03 tot 2006/07
+# tafeleend:      winter seizoensgemiddelde telseizoen 2001/02 tot 2006/07
+# bergeend:       winter seizoensgemiddelde telseizoen 1992/93 tot 2006/07
+
+df_doelsrt <- read_delim(paste0(pad_data, "ihd_nietbroedvogels_zs.csv"), delim = ";") %>%
+  select(-bron, -criterium) %>% 
+  mutate(soort_nl = str_to_title(soort_nl))
+# dit zijn iets andere cijfers dan hierboven berekend...?
+
+l_doel <- unique(df_doelsrt$soort_nl)
+
+d_mnd <- Tellingen_MONEOS_niv3 %>%
+  filter(nednaam %in% l_doel,
+         maand %in% c(10:12, 1:3)) %>%
+  group_by(niveau3, nednaam, telseizoen_yr, maand) %>%
+  summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>%
+  complete(telseizoen_yr, nednaam, maand, niveau3,
+           fill = list("maand_som" = 0))
+  
+# Calculate trend stats with packages rtrim
+# script T2021/06_Ecologie/08_Vogels/Zeeschelde/Scripts/d_plot/plot_zs_nietbroedvogels.R
+
+# longterm trend (since 1992)
+# middle longterm trend (since 2009)
+# shortterm trend (last 6 years)
+
+d_agg_trim <- d_mnd %>%
+  filter(telseizoen_yr > 1991) %>% 
+  rename(soort_nl = nednaam,
+         site = niveau3, 
+         count = maand_som,
+         year = telseizoen_yr)
+
+#
+#  long-term trend
+#
+
+# maak een df met alle soorten; als het model crasht krijg je NA's
+df_doel <- data.frame(soort_nl = l_doel)
+
+df_out <- NULL
+for(srt in l_doel){ #srt="tafeleend" #l_doel[1]
+  print(srt)
+  
+  df_tmp <- NULL
+  
+  d_sel <- d_agg_trim %>%
+    filter(soort_nl == srt,
+           year>=1991) %>%
+    group_by(soort_nl, year, 
+             # month,
+             site) %>%
+    summarise(count = sum(count)/6) %>%
+    mutate(count =   replace_na(count, 0)) # trim imputes NA
+  
+
+  m <- trim(object = d_sel,
+             count_col = "count",
+             year_col = "year", 
+             # month_col = "month",
+             site_col = "site",
+             model = 2,
+             # changepoints = "all",
+             overdisp = TRUE
+  )
+ 
+  # Create filename
+  filename <- paste0(pad_figuren, "100_10a_rtrim_long_", srt, "_winter.png")
+  
+  # Open PNG device, create plot, close device
+  png(filename, width = 16, height = 12, units = "cm", res = 300)
+  plot(overall(m))
+  dev.off()
+  
+  # Display plot in console/viewer (optional)
+  plot(overall(m), main = paste("Long-term trend:", srt))
+    
+  # Extract slope data
+  df_tmp <- overall(m)$slope %>% as.data.frame()
+  df_tmp$soort_nl <- srt
+  print(df_tmp)
+  df_out <- rbind(df_out, df_tmp)
+  
+  # Print summary
+  print(summary(m))
+}
+
+df_longterm <- df_doel %>% 
+  left_join(df_out) %>%
+  select(soort_nl, from, upto,p, meaning)
+
+#
+#  middlelong-term trend
+#
+
+df_out <- NULL
+
+for(srt in l_doel){
+  print(srt)
+  df_tmp <- NULL
+  d_sel <- d_agg_trim %>%
+    filter(soort_nl == srt,
+           year>=2009) %>%
+    group_by(soort_nl, year, site) %>%
+    summarise(count = sum(count)/6)
+  
+  try({
+    m <- trim(object = d_sel,
+              count_col = "count",
+              year_col = "year", 
+              # month_col = "month",
+              site_col = "site",
+              model = 2,
+              # changepoints = "all",
+              overdisp = TRUE
+    )
+     # Create filename
+  filename <- paste0(pad_figuren, "100_10b_rtrim_middle_", srt, "_winter.png")
+  
+  # Open PNG device, create plot, close device
+  png(filename, width = 16, height = 12, units = "cm", res = 300)
+  plot(overall(m))
+  dev.off()
+  
+  # Display plot in console/viewer (optional)
+  plot(overall(m), main = paste("Middlelong-term trend:", srt))
+    
+  # Extract slope data
+  df_tmp <- overall(m)$slope %>% as.data.frame()
+  df_tmp$soort_nl <- srt
+  print(df_tmp)
+  df_out <- rbind(df_out, df_tmp)
+  
+  # Print summary
+  print(summary(m))
+  })
+} 
+
+
+df_middlelongterm <- df_doel %>% 
+  left_join(df_out) %>%
+  select(soort_nl, from, upto,p, meaning)
+
+#
+#  short-term trend
+#
+
+df_out <- NULL
+
+for(srt in l_doel){
+  print(srt)
+  df_tmp <- NULL
+  d_sel <- d_agg_trim %>%
+    filter(soort_nl == srt,
+           year>=2018) %>%
+    group_by(soort_nl, year, site) %>%
+    summarise(count = sum(count)/6)
+  
+  try({
+    m <- trim(object = d_sel,
+              count_col = "count",
+              year_col = "year", 
+              # month_col = "month",
+              site_col = "site",
+              model = 2,
+              # changepoints = "all",
+              overdisp = TRUE
+    )
+     # Create filename
+  filename <- paste0(pad_figuren, "100_10c_rtrim_short_", srt, "_winter.png")
+  
+  # Open PNG device, create plot, close device
+  png(filename, width = 16, height = 12, units = "cm", res = 300)
+  plot(overall(m))
+  dev.off()
+  
+  # Display plot in console/viewer (optional)
+  plot(overall(m), main = paste("Short-term trend:", srt))
+    
+  # Extract slope data
+  df_tmp <- overall(m)$slope %>% as.data.frame()
+  df_tmp$soort_nl <- srt
+  print(df_tmp)
+  df_out <- rbind(df_out, df_tmp)
+  
+  # Print summary
+  print(summary(m))
+  })
+} 
+
+
+df_shortterm <- df_doel %>% 
+  left_join(df_out) %>%
+  select(soort_nl, from, upto,p, meaning)
+
+#
+#  export
+#
+
+meaning = c("Strong decrease", 
+            "Moderate decrease",
+            "Stable",
+            "Moderate increase",
+            "Strong increase",
+            "Uncertain")
+
+symbol = c("--",
+           "-",
+           "o",
+           "+",
+           "++",
+           "~")
+
+toelichting = c(
+  "Significant sterke afname van > 5% per jaar",
+  "Significant matige afname van < 5% per jaar",
+  "Stabiel, geen significante trend",
+  "Significant matige toename van < 5% per jaar",
+  "Significante sterke toename van > 5% per jaar",
+  "Onzeker, geen trend aantoonbaar")
+
+df_meaning <- data.frame(meaning, symbol, toelichting)
+
+# merge and remove sig level
+df_trim <- df_longterm %>% 
+  rbind(df_middlelongterm) %>%
+  rbind(df_shortterm) %>% 
+  mutate(across(meaning, str_replace, " \\(p<0.05\\)", '')) %>%
+  mutate(across(meaning, str_replace, " \\(p<0.01\\)", '')) %>% 
+  left_join(df_meaning)
+
+write_xlsx(df_trim,
+           paste0(pad_tabellen, paste0("trend_rtrim_sIHD_soorten_winter.xlsx")))
+
+```
+
+### Indexberekeningen rtrim (trofische groep)
+```{r indexberekeningen rtrim - trofische groep}
+
+l_doel <- unique(Tellingen_MONEOS_niv3$trofische_groep)
+
+d_mnd <- Tellingen_MONEOS_niv3 %>%
+  filter(trofische_groep %in% l_doel,
+         maand %in% c(10:12, 1:3)) %>%
+  group_by(niveau3, trofische_groep, telseizoen_yr, maand) %>%
+  summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>%
+  complete(telseizoen_yr, trofische_groep, maand, niveau3,
+           fill = list("maand_som" = 0))
+  
+# Calculate trend stats with packages rtrim
+# script T2021/06_Ecologie/08_Vogels/Zeeschelde/Scripts/d_plot/plot_zs_nietbroedvogels.R
+
+# longterm trend (since 1992)
+# middle longterm trend (since 2009)
+# shortterm trend (last 6 years)
+
+
+d_agg_trim <- d_mnd %>%
+  filter(telseizoen_yr>1991) %>% 
+  rename(soort_nl = trofische_groep,
+         site = niveau3, 
+         count = maand_som,
+         year = telseizoen_yr)
+#
+#  long-term trend
+#
+
+# maak een df met alle soorten. als het model is gecrashed dan zie je NA's.
+df_doel <- data.frame(soort_nl = l_doel)
+
+df_out <- NULL
+for(srt in l_doel){ #srt="tafeleend" #l_doel[1]
+  print(srt)
+  
+  df_tmp <- NULL
+  
+  d_sel <- d_agg_trim %>%
+    filter(soort_nl == srt,
+           year>=1991) %>%
+    group_by(soort_nl, year, 
+             # month,
+             site) %>%
+    summarise(count = sum(count)/6) %>%
+    mutate(count =   replace_na(count, 0)) # trim imputes NA
+  
+
+  m <- trim(object = d_sel,
+             count_col = "count",
+             year_col = "year", 
+             # month_col = "month",
+             site_col = "site",
+             model = 2,
+             # changepoints = "all",
+             overdisp = TRUE
+  )
+ 
+  # Create filename
+  filename <- paste0(pad_figuren, "100_11a_rtrim_long_", srt, "_winter.png")
+  
+  # Open PNG device, create plot, close device
+  png(filename, width = 16, height = 12, units = "cm", res = 300)
+  plot(overall(m))
+  dev.off()
+  
+  # Display plot in console/viewer (optional)
+  plot(overall(m), main = paste("Long-term trend:", srt))
+    
+# Extract slope data
+  df_tmp <- overall(m)$slope %>% as.data.frame()
+  df_tmp$soort_nl <- srt
+  print(df_tmp)
+  df_out <- rbind(df_out, df_tmp)
+  
+  # Print summary
+  print(summary(m))
+}
+
+df_longterm <- df_doel %>% 
+  left_join(df_out) %>%
+  select(soort_nl, from, upto,p, meaning)
+
+#
+#  middlelong-term trend
+#
+
+df_out <- NULL
+
+for(srt in l_doel){
+  print(srt)
+  df_tmp <- NULL
+  d_sel <- d_agg_trim %>%
+    filter(soort_nl == srt,
+           year>=2009) %>%
+    group_by(soort_nl, year, site) %>%
+    summarise(count = sum(count)/6)
+  
+  try({
+    m <- trim(object = d_sel,
+              count_col = "count",
+              year_col = "year", 
+              # month_col = "month",
+              site_col = "site",
+              model = 2,
+              # changepoints = "all",
+              overdisp = TRUE
+    )
+     # Create filename
+  filename <- paste0(pad_figuren, "100_11b_rtrim_middle_", srt, "_winter.png")
+  
+  # Open PNG device, create plot, close device
+  png(filename, width = 16, height = 12, units = "cm", res = 300)
+  plot(overall(m))
+  dev.off()
+  
+  # Display plot in console/viewer (optional)
+  plot(overall(m), main = paste("Middlelong-term trend:", srt))
+    
+# Extract slope data
+  df_tmp <- overall(m)$slope %>% as.data.frame()
+  df_tmp$soort_nl <- srt
+  print(df_tmp)
+  df_out <- rbind(df_out, df_tmp)
+  
+  # Print summary
+  print(summary(m))
+  })
+} 
+
+
+df_middlelongterm <- df_doel %>% 
+  left_join(df_out) %>%
+  select(soort_nl, from, upto,p, meaning)
+
+#  short-term trend
+#
+
+df_out <- NULL
+
+for(srt in l_doel){
+  print(srt)
+  df_tmp <- NULL
+  d_sel <- d_agg_trim %>%
+    filter(soort_nl == srt,
+           year>=2018) %>%
+    group_by(soort_nl, year, site) %>%
+    summarise(count = sum(count)/6)
+  
+  try({
+    m <- trim(object = d_sel,
+              count_col = "count",
+              year_col = "year", 
+              # month_col = "month",
+              site_col = "site",
+              model = 2,
+              # changepoints = "all",
+              overdisp = TRUE
+    )
+     # Create filename
+  filename <- paste0(pad_figuren, "100_11c_rtrim_short_", srt, "_winter.png")
+  
+  # Open PNG device, create plot, close device
+  png(filename, width = 16, height = 12, units = "cm", res = 300)
+  plot(overall(m))
+  dev.off()
+  
+  # Display plot in console/viewer (optional)
+  plot(overall(m), main = paste("Short-term trend:", srt))
+    
+# Extract slope data
+  df_tmp <- overall(m)$slope %>% as.data.frame()
+  df_tmp$soort_nl <- srt
+  print(df_tmp)
+  df_out <- rbind(df_out, df_tmp)
+  
+  # Print summary
+  print(summary(m))
+  })
+} 
+
+
+df_shortterm <- df_doel %>% 
+  left_join(df_out) %>%
+  select(soort_nl, from, upto,p, meaning)
+
+
+#
+#  export
+#
+meaning = c("Strong decrease", 
+            "Moderate decrease",
+            "Stable",
+            "Moderate increase",
+            "Strong increase",
+            "Uncertain")
+
+symbol = c("--",
+           "-",
+           "o",
+           "+",
+           "++",
+           "~")
+
+toelichting = c(
+  "Significant sterke afname van > 5% per jaar",
+  "Significant matige afname van < 5% per jaar",
+  "Stabiel, geen significante trend",
+  "Significant matige toename van < 5% per jaar",
+  "Significante sterke toename van > 5% per jaar",
+  "Onzeker, geen trend aantoonbaar")
+
+df_meaning <- data.frame(meaning, symbol, toelichting)
+
+# merge and remove sig level
+df_trim <- df_longterm %>% 
+  rbind(df_middlelongterm) %>%
+  rbind(df_shortterm) %>% 
+  mutate(across(meaning, str_replace, " \\(p<0.05\\)", '')) %>%
+  mutate(across(meaning, str_replace, " \\(p<0.01\\)", '')) %>% 
+  left_join(df_meaning)
+
+
+write_xlsx(df_trim, 
+           paste0(pad_tabellen, paste0("trend_rtrim_trof_groep_winter.xlsx")))
+
+```
+
+### Wintergemiddelde aantallen abundante soorten
+```{r wintergemiddelde aantallen abundante soorten}
+
+# Zeeschelde
+Tellingen_MONEOS_niv3 %>% 
+  filter(locationgroupnaam == "Zeeschelde",
+         nednaam %in% c("Bergeend", "Krakeend", "Wilde Eend", "Wintertaling"),
+         maand %in% c(10:12, 1:3),
+         telseizoen_yr > 2008) %>% 
+  
+  group_by(telseizoen, niveau3, nednaam, maand) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  group_by(telseizoen, niveau3, nednaam) %>% 
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
+  geom_point(aes(shape = niveau3)) +
+  geom_line(linewidth = 0.5) +
+  labs(x = "Telseizoen", 
+       y = "Gemiddeld winteraantal") +
+  scale_x_discrete(labels = skip_every_second_label)+
+  scale_y_continuous(labels = label_marks) +
+  facet_wrap(~ nednaam, 
+             scales = "free_y") +
+  theme_with_legend + 
+  theme(legend.position = "bottom")
+
+
+ggsave(paste0(pad_figuren, "100_12a_wintergemiddelde_ZS_facet_abundante_soorten.jpg"), 
+       width = 8, height = 5, dpi = 300)
+
+# Zijrivieren
+Tellingen_MONEOS_niv3 %>% 
+  filter(locationgroupnaam == "Zijrivieren Zeeschelde",
+         nednaam %in% c("Bergeend", "Krakeend", "Wilde Eend", "Wintertaling"),
+         maand %in% c(10:12, 1:3),
+         telseizoen_yr > 2008) %>% 
+  
+  group_by(telseizoen, niveau3, nednaam, maand) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  group_by(telseizoen, niveau3, nednaam) %>% 
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
+  geom_point(aes(shape = niveau3)) +
+  geom_line(linewidth = 0.5) +
+  labs(x = "Telseizoen", 
+       y = "Gemiddeld winteraantal") +
+  scale_x_discrete(labels = skip_every_second_label)+
+  scale_y_continuous(labels = label_marks) +
+  facet_wrap(~ nednaam, 
+             scales = "free_y") +
+  theme_with_legend + 
+  theme(legend.position = "bottom")
+
+
+ggsave(paste0(pad_figuren, "100_12b_wintergemiddelde_ZR_facet_abundante_soorten.jpg"), 
+       width = 8, height = 5, dpi = 300)
+```
+
+### Winter- en zomergemiddelde aantallen viseters
+```{r wintergemiddelde aantallen viseters}
+
+# Zeeschelde winter
+Tellingen_MONEOS_niv3 %>% 
+  filter(locationgroupnaam == "Zeeschelde",
+         nednaam %in% c("Aalscholver", "Fuut", "Blauwe Reiger", "Dodaars"),
+         maand %in% c(10:12, 1:3),
+         telseizoen_yr > 2008) %>% 
+  
+  group_by(telseizoen, niveau3, nednaam, maand) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  group_by(telseizoen, niveau3, nednaam) %>% 
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
+  geom_point(aes(shape = niveau3)) +
+  geom_line(linewidth = 0.5) +
+  labs(x = "Telseizoen", 
+       y = "Gemiddeld winteraantal") +
+  scale_x_discrete(labels = skip_every_second_label) +
+  scale_y_continuous(labels = label_marks) +
+  facet_wrap(~ nednaam, 
+             ncol = 2, 
+             scales = "free_y") +
+  theme_with_legend + 
+  theme(legend.position = "bottom")
+
+ggsave(paste0(pad_figuren, "100_13a_wintergemiddelde_ZS_facet_viseters.jpg"), 
+       width = 8, height = 5, dpi = 300)
+
+# Zijrivieren winter
+Tellingen_MONEOS_niv3 %>% 
+  filter(locationgroupnaam == "Zijrivieren Zeeschelde",
+         nednaam %in% c("Aalscholver", "Fuut", "Blauwe Reiger", "Dodaars"),
+         maand %in% c(10:12, 1:3),
+         telseizoen_yr > 2008) %>% 
+  
+  group_by(telseizoen, niveau3, nednaam, maand) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  group_by(telseizoen, niveau3, nednaam) %>% 
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
+  geom_point(aes(shape = niveau3)) +
+  geom_line(linewidth = 0.5) +
+  labs(x = "Telseizoen", 
+       y = "Gemiddeld winteraantal") +
+  scale_x_discrete(labels = skip_every_second_label) +
+  scale_y_continuous(labels = label_marks) +
+  facet_wrap(~ nednaam, 
+             scales = "free_y") +
+  theme_with_legend + 
+  theme(legend.position = "bottom")
+
+ggsave(paste0(pad_figuren, "100_13b_wintergemiddelde_ZR_facet_viseters.jpg"), 
+       width = 8, height = 5, dpi = 300)
+
+# Zeeschelde zomer
+Tellingen_MONEOS_niv3 %>% 
+  filter(locationgroupnaam == "Zeeschelde",
+         nednaam %in% c("Aalscholver", "Blauwe Reiger", "Visdief", "Lepelaar"),
+         maand %in% c(4:9),
+         telseizoen_yr > 2008) %>% 
+  
+  group_by(telseizoen, niveau3, nednaam, maand) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  group_by(telseizoen, niveau3, nednaam) %>% 
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
+  geom_point(aes(shape = niveau3)) +
+  geom_line(linewidth = 0.5) +
+  labs(x = "Telseizoen", 
+       y = "Gemiddeld zomeraantal") +
+  scale_x_discrete(labels = skip_every_second_label) +
+  scale_y_continuous(labels = label_marks) +
+  facet_wrap(~ nednaam, 
+             ncol = 2,
+             scales = "free_y") +
+  theme_with_legend + 
+  theme(legend.position = "bottom")
+
+ggsave(paste0(pad_figuren, "100_13c_zomergemiddelde_ZS_facet_viseters.jpg"), 
+       width = 8, height = 5, dpi = 300)
+
+```
+
+### Wintergemiddelde aantallen steltlopers
+```{r wintergemiddelde aantallen steltlopers}
+
+# Zeeschelde winter
+Tellingen_MONEOS_niv3 %>% 
+  filter(rivier %in% c("Rupel", "Zeeschelde"),
+         nednaam %in% c("Kluut", "Kievit", "Tureluur", "Wulp", "Scholekster", "Bonte Strandloper"),
+         maand %in% c(10:12, 1:3),
+         telseizoen_yr > 2008) %>% 
+  
+  group_by(telseizoen, niveau3, nednaam, maand) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  group_by(telseizoen, niveau3, nednaam) %>% 
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
+  geom_point(aes(shape = niveau3)) +
+  geom_line(linewidth = 0.5) +
+  labs(x = "Telseizoen", 
+       y = "Gemiddeld winteraantal") +
+  scale_x_discrete(labels = skip_every_second_label) +
+  scale_y_continuous(labels = label_marks) +
+  facet_wrap(~ nednaam, 
+             ncol = 2, 
+             scales = "free_y") +
+  theme_with_legend + 
+  theme(legend.position = "bottom")
+
+ggsave(paste0(pad_figuren, "100_14a_wintergemiddelde_ZS_RUP_facet_steltlopers.jpg"), 
+       width = 8, height = 8, dpi = 300)
+
+```
+
+### Wintergemiddelde aantallen exoten
+```{r exotentrends}
+
+Tellingen_MONEOS_niv3 %>% 
+  filter(rivier %in% c("Rupel", "Zeeschelde"),
+         nednaam %in% c("Nijlgans", "Grote Canadese Gans", "Boerengans", "Brandgans"),
+         maand %in% c(10:12, 1:3),
+         telseizoen_yr > 2008) %>% 
+  
+  group_by(telseizoen, niveau3, nednaam, maand) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  group_by(telseizoen, niveau3, nednaam) %>% 
+  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  
+  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
+  geom_point(aes(shape = niveau3)) +
+  geom_line(linewidth = 0.5) +
+  labs(x = "Telseizoen", 
+       y = "Gemiddeld winteraantal") +
+  scale_x_discrete(labels = skip_every_second_label) +
+  scale_y_continuous(labels = label_marks) +
+  facet_wrap(~ nednaam, 
+             ncol = 2, 
+             scales = "free_y") +
+  theme_with_legend + 
+  theme(legend.position = "bottom")
+
+ggsave(paste0(pad_figuren, "100_15a_wintergemiddelde_ZS_RUP_facet_exoten.jpg"), 
+       width = 8, height = 5, dpi = 300)
+
+```
+
+```{r meta-data}
+
+meta_data <- 
+  enframe(c(vroegste_telseizoen = vroegste_telseizoen, 
+            laatste_telseizoen = laatste_telseizoen, 
+            vroegste_jaar = vroegste_jaar,
+            laatste_jaar = laatste_jaar,
+            aantal_soorten = nrow(soortnamen)),
+          name = "naam", value = "waarde")
+
+meta_data %>% 
+  write_delim(paste0(pad_data, "meta_data_2026.csv"),
+              delim = ";")
 
 ```
 
@@ -662,7 +1491,7 @@ ggsave(paste0(pad_figuren, "100_8a_figuur_wintermaxima_rivier.jpg"),
 # kokmeeuw:     winter seizoensgemiddelde telseizoen 2001/02 tot 2006/07 
 #               (niet gespecifieerd in S-IHD rapport maar hier verondersteld)
 
-##### doelstellingen op basis van Zeeschelde + zijrivieren
+# doelstellingen op basis van Zeeschelde + zijrivieren
 doelpijlstaart <- Tellingen_MONEOS_niv3 %>%
   filter(nednaam == "Pijlstaart",
          telseizoen_yr %in% c(2000:2005),
@@ -735,1721 +1564,52 @@ doelbergeend <- Tellingen_MONEOS_niv3 %>%
 
 ```
 
-### Indexberekeningen
-```{r indexberekening}
-
-# vergelijking van de relatieve verschillen in wintermaxima tussen jaren met 2009 als referentiejaar
-
-# index wintermaxima per niveau3-zone
-Data_watervogels_MONEOS_index <- Tellingen_MONEOS_niv3 %>%
-  filter(taxongroupcode != "MS", # zonder meeuwen en sternen
-         maand %in% c(10:12, 1:3)) %>%
-  group_by(niveau3, telseizoen_yr, maand) %>%
-  summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  group_by(niveau3, telseizoen_yr) %>% 
-  summarise(max_winter = max(maand_som, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  complete(niveau3, 
-           nesting(telseizoen_yr),
-           fill = list(max_winter = 0)) %>% 
-  group_by(niveau3) %>%
-  mutate(rel_aantal = max_winter/max_winter[telseizoen_yr == 2009]) %>%
-  ungroup()
-
-# figuur: 
-Data_watervogels_MONEOS_index %>%
-  filter(telseizoen_yr > 2008,
-         niveau3 !="Durme") %>% 
-  # vertekend beeld voor de durme door inclusie oude durme in historische data
-  ggplot(aes(telseizoen_yr, rel_aantal))+
-  geom_line(linewidth = 0.5, color = "red") +
-  geom_hline(yintercept = 1, linetype = 2, linewidth = 1) +
-  labs(x = "Telseizoen", 
-       y = "Index ") +
-  scale_y_log10(limits = c(0.1, 3)) +
-  facet_wrap(~ niveau3)
-
-ggsave(paste0(pad_figuren, "100_9a_figuur_index_wintervogelaantallen_niv3.jpg"), 
-       width = 8, height = 5, dpi = 300)
-
-# index wintermaxima per trofische groep
-Data_watervogels_MONEOS_index_trof <- Tellingen_MONEOS_niv3 %>%
-   filter(taxongroupcode != "MS",
-          maand %in% c(10:12, 1:3),
-          !is.na(trofische_groep),
-          rivier == "Zeeschelde") %>% 
-   group_by(telseizoen_yr, maand, trofische_groep) %>%
-   summarise(maand_som = sum(aantal, na.rm = TRUE)) %>%
-   ungroup() %>%
-   group_by(telseizoen_yr, trofische_groep) %>% 
-   summarise(max_winter = max(maand_som, na.rm = TRUE)) %>% 
-   ungroup() %>% 
-   complete(trofische_groep,
-            nesting(telseizoen_yr),
-            fill = list(max_winter = 0)) %>% 
-   group_by(trofische_groep) %>%
-   mutate(rel_aantal = max_winter/max_winter[telseizoen_yr == 2009]) %>%
-   ungroup()
-
-# figuur:
-Data_watervogels_MONEOS_index_trof %>%
-  filter(telseizoen_yr > 2008) %>% 
-  ggplot(aes(telseizoen_yr, rel_aantal))+
-  geom_line(linewidth = 0.5, color = "red") +
-  geom_hline(yintercept = 1, linetype = 2, linewidth = 1) +
-  labs(x = "Telseizoen", 
-       y = "Index ") +
-  scale_y_log10(limits = c(0.2, 3)) +
-  facet_wrap(~ trofische_groep)
-
- ggsave(paste0(pad_figuren, "100_9b_figuur_index_wintervogelaantallen_trof.jpg"), 
-       width = 8, height = 5, dpi = 300)
- 
- # index wintermaxima per trofische groep en niveau3-zone
- Data_watervogels_MONEOS_index_trofniv3 <- Tellingen_MONEOS_niv3 %>%
-   filter(taxongroupcode != "MS",
-          maand %in% c(10:12, 1:3),
-          !is.na(trofische_groep)) %>% 
-  group_by(niveau3, telseizoen_yr, maand, trofische_groep) %>%
-  summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  group_by(niveau3, telseizoen_yr, trofische_groep) %>% 
-  summarise(max_winter = max(maand_som, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  complete(niveau3, 
-           nesting(telseizoen_yr, trofische_groep),
-           fill = list(max_winter = 0)) %>% 
-  group_by(trofische_groep, niveau3) %>%
-  mutate(rel_aantal = max_winter/max_winter[telseizoen_yr == 2009]) %>%
-  ungroup()
-
-## figuur
-Data_watervogels_MONEOS_index_trofniv3 %>%
-  filter(telseizoen_yr > 2008,
-         niveau3 !="Durme") %>% 
-  # vertekend beeld voor de durme door inclusie oude durme in historische data
-  ggplot(aes(telseizoen_yr, rel_aantal, group = niveau3, color = niveau3)) +
-  geom_line(linewidth = 0.5) +
-  geom_hline(yintercept = 1, linetype = 2, linewidth = 1) +
-  labs(x = "Telseizoen", 
-       y = "Index ") +
-  scale_y_log10(limits = c(0.02, 12)) +
-  facet_wrap(~ trofische_groep)
-
- ggsave(paste0(pad_figuren, "100_9c_figuur_index_wintervogelaantallen_trofniv3.jpg"), 
-       width = 8, height = 5, dpi = 300)
- 
- 
-# index wintermaxima per niveau2-zone
-Data_watervogels_MONEOS_index_niv2 <- Tellingen_MONEOS_niv3 %>%
-  filter(taxongroupcode != "MS", # zonder meeuwen en sternen
-         maand %in% c(10:12, 1:3)) %>%
-  group_by(niveau2, telseizoen_yr, maand) %>%
-  summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  group_by(niveau2, telseizoen_yr) %>% 
-  summarise(max_winter = max(maand_som, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  complete(niveau2, 
-           nesting(telseizoen_yr),
-           fill = list(max_winter = 0)) %>% 
-  group_by(niveau2) %>%
-  mutate(rel_aantal = max_winter/max_winter[telseizoen_yr == 2009]) %>%
-  ungroup()
-
-# figuur: 
-Data_watervogels_MONEOS_index_niv2 %>%
-  filter(telseizoen_yr > 2008) %>% 
-  ggplot(aes(telseizoen_yr, rel_aantal))+
-  geom_line(linewidth = 0.5, color = "red") +
-  geom_hline(yintercept = 1, linetype = 2, linewidth = 1) +
-  labs(x = "Telseizoen", 
-       y = "Index ") +
-  scale_y_log10(limits = c(0.2, 1.5)) +
-  facet_wrap(~ niveau2)
- 
-ggsave(paste0(pad_figuren, "100_9d_figuur_index_wintervogelaantallen_niv2.jpg"), 
-       width = 8, height = 5, dpi = 300)
-
-```
-
-### Indexberekeningen rtrim
-```{r indexberekeningen rtrim}
-
-# pijlstaart:     winter seizoensgemiddelde telseizoen 2000/01 tot 2005/06
-# wintertaling:   winter seizoensgemiddelde telseizoen 1998/99 tot 2005/06
-# krakeend:       winter seizoensgemiddelde telseizoen 2002/03 tot 2006/07
-# tafeleend:      winter seizoensgemiddelde telseizoen 2001/02 tot 2006/07
-# bergeend:       winter seizoensgemiddelde telseizoen 1992/93 tot 2006/07
-
-df_doelsrt <- read_delim(paste0(pad_data, "ihd_nietbroedvogels_zs.csv"), delim = ";") %>%
-  select(-bron, -criterium) %>% 
-  mutate(soort_nl = str_to_title(soort_nl))
-# dit zijn iets andere cijfers dan hierboven berekend...?
-
-l_doel <- unique(df_doelsrt$soort_nl)
-
-d_mnd <- Tellingen_MONEOS_niv3 %>%
-  filter(nednaam %in% l_doel,
-         maand %in% c(10:12, 1:3)) %>%
-  group_by(niveau3, nednaam, telseizoen_yr, maand) %>%
-  summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  complete(telseizoen_yr, nednaam, maand, niveau3,
-           fill = list("maand_som"=0))
-  
-# Calculate trend stats with packages rtrim
-# script T2021/06_Ecologie/08_Vogels/Zeeschelde/Scripts/d_plot/plot_zs_nietbroedvogels.R
-
-# longterm trend (since 1992)
-# middle longterm trend (since 2009)
-# shortterm trend (last 6 years)
-
-d_agg_trim <- d_mnd %>%
-  filter(telseizoen_yr > 1991) %>% 
-  rename(soort_nl = nednaam,
-         site = niveau3, 
-         count = maand_som,
-         year = telseizoen_yr)
-
-#
-#  long-term trend
-#
-
-# maak een df met alle soorten; als het model crasht krijg je NA's
-df_doel <- data.frame(soort_nl = l_doel)
-
-df_out <- NULL
-for(srt in l_doel){ #srt="tafeleend" #l_doel[1]
-  print(srt)
-  
-  df_tmp <- NULL
-  
-  d_sel <- d_agg_trim %>%
-    filter(soort_nl == srt,
-           year>=1991) %>%
-    group_by(soort_nl, year, 
-             # month,
-             site) %>%
-    summarise(count = sum(count)/6) %>%
-    mutate(count =   replace_na(count, 0)) # trim imputes NA
-  
-
-  m <- trim(object = d_sel,
-             count_col = "count",
-             year_col = "year", 
-             # month_col = "month",
-             site_col = "site",
-             model = 2,
-             # changepoints = "all",
-             overdisp = TRUE
-  )
- 
-  # Create filename
-  filename <- paste0(pad_figuren, "trend_trim_long_", srt, "_zs.png")
-  
-  # Open PNG device, create plot, close device
-  png(filename, width = 16, height = 12, units = "cm", res = 300)
-  plot(overall(m))
-  dev.off()
-  
-  # Display plot in console/viewer (optional)
-  plot(overall(m), main = paste("Long-term trend:", srt))
-    
-  # Extract slope data
-  df_tmp <- overall(m)$slope %>% as.data.frame()
-  df_tmp$soort_nl <- srt
-  print(df_tmp)
-  df_out <- rbind(df_out, df_tmp)
-  
-  # Print summary
-  print(summary(m))
-}
-
-df_longterm <- df_doel %>% 
-  left_join(df_out) %>%
-  select(soort_nl, from, upto,p, meaning)
-
-#
-#  middlelong-term trend
-#
-
-df_out <- NULL
-
-for(srt in l_doel){
-  print(srt)
-  df_tmp <- NULL
-  d_sel <- d_agg_trim %>%
-    filter(soort_nl == srt,
-           year>=2009) %>%
-    group_by(soort_nl, year, site) %>%
-    summarise(count = sum(count)/6)
-  
-  try({
-    m <- trim(object = d_sel,
-              count_col = "count",
-              year_col = "year", 
-              # month_col = "month",
-              site_col = "site",
-              model = 2,
-              # changepoints = "all",
-              overdisp = TRUE
-    )
-     # Create filename
-  filename <- paste0(pad_figuren, "trend_trim_middle_", srt, "_zs.png")
-  
-  # Open PNG device, create plot, close device
-  png(filename, width = 16, height = 12, units = "cm", res = 300)
-  plot(overall(m))
-  dev.off()
-  
-  # Display plot in console/viewer (optional)
-  plot(overall(m), main = paste("Middlelong-term trend:", srt))
-    
-  # Extract slope data
-  df_tmp <- overall(m)$slope %>% as.data.frame()
-  df_tmp$soort_nl <- srt
-  print(df_tmp)
-  df_out <- rbind(df_out, df_tmp)
-  
-  # Print summary
-  print(summary(m))
-  })
-} 
-
-
-df_middlelongterm <- df_doel %>% 
-  left_join(df_out) %>%
-  select(soort_nl, from, upto,p, meaning)
-
-#
-#  short-term trend
-#
-
-df_out <- NULL
-
-for(srt in l_doel){
-  print(srt)
-  df_tmp <- NULL
-  d_sel <- d_agg_trim %>%
-    filter(soort_nl == srt,
-           year>=2018) %>%
-    group_by(soort_nl, year, site) %>%
-    summarise(count = sum(count)/6)
-  
-  try({
-    m <- trim(object = d_sel,
-              count_col = "count",
-              year_col = "year", 
-              # month_col = "month",
-              site_col = "site",
-              model = 2,
-              # changepoints = "all",
-              overdisp = TRUE
-    )
-     # Create filename
-  filename <- paste0(pad_figuren, "trend_trim_short_", srt, "_zs.png")
-  
-  # Open PNG device, create plot, close device
-  png(filename, width = 16, height = 12, units = "cm", res = 300)
-  plot(overall(m))
-  dev.off()
-  
-  # Display plot in console/viewer (optional)
-  plot(overall(m), main = paste("Short-term trend:", srt))
-    
-  # Extract slope data
-  df_tmp <- overall(m)$slope %>% as.data.frame()
-  df_tmp$soort_nl <- srt
-  print(df_tmp)
-  df_out <- rbind(df_out, df_tmp)
-  
-  # Print summary
-  print(summary(m))
-  })
-} 
-
-
-df_shortterm <- df_doel %>% 
-  left_join(df_out) %>%
-  select(soort_nl, from, upto,p, meaning)
-
-#
-#  export
-#
-
-meaning = c("Strong decrease", 
-            "Moderate decrease",
-            "Stable",
-            "Moderate increase",
-            "Strong increase",
-            "Uncertain")
-
-symbol = c("--",
-           "-",
-           "o",
-           "+",
-           "++",
-           "~")
-
-toelichting = c(
-  "Significant sterke afname van > 5% per jaar",
-  "Significant matige afname van < 5% per jaar",
-  "Stabiel, geen significante trend",
-  "Significant matige toename van < 5% per jaar",
-  "Significante sterke toename van > 5% per jaar",
-  "Onzeker, geen trend aantoonbaar")
-
-df_meaning <- data.frame(meaning, symbol, toelichting)
-
-# merge and remove sig level
-df_trim <- df_longterm %>% 
-  rbind(df_middlelongterm) %>%
-  rbind(df_shortterm) %>% 
-  mutate(across(meaning, str_replace, " \\(p<0.05\\)", '')) %>%
-  mutate(across(meaning, str_replace, " \\(p<0.01\\)", '')) %>% 
-  left_join(df_meaning)
-
-write_xlsx(df_trim, 
-           paste0(pad_tabellen, "trend_stats", paste0("trend_rtrim_nietbroedvogels_zs.xlsx")))
-
-```
-
-###### TOT HIER 24/08, 16u50
-
-```{r 100-trend-rtrim-trofischegroep, fig.height=6, fig.width=8}
-
-l_doel <- unique(Tellingen_MONEOS_niv3$trofische_groep)
-
-# pijlstaart : winter seizoensgemiddelde telseizoen 2000/01 tot 2005/06
-# wintertaling : winter seizoensgemiddelde telseizoen 1998/99 tot 2005/06
-# krakeend: winter seizoensgemiddelde telseizoen 2002/03 tot 2006/07
-# tafeleend: winter seizoensgemiddelde telseizoen 2001/02 tot 2006/07
-# bergeend: winter seizoensgemiddelde telseizoen 1992/93 tot 2006/07
-
-d_mnd <- Tellingen_MONEOS_niv3 %>%
-  filter(trofische_groep %in% l_doel) %>%
-  mutate(telseizoen_yr = as.numeric(str_sub(telseizoen, 1, 4))) %>%
-  filter(maand %in% c(10:12, 1:3)) %>%
-  group_by(niveau3, trofische_groep, telseizoen_yr, maand) %>%
-  summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  complete(telseizoen_yr, trofische_groep, maand, niveau3,
-           fill = list("maand_som"=0))
-  
-##Calculate trend stats with packages rtrim
-# script T2021 T2021/06_Ecologie/08_Vogels/Zeeschelde/Scripts/d_plot
-#/plot_zs_nietbroedvogels.R
-#
-
-# long term trend (vanaf telseizoen 1992)
-# Middlelongterm trend (Since 2009)
-# Shortterm trend (last 6 yearperiod)
-
-d_agg_trim <- d_mnd %>%
-  filter(telseizoen_yr>1991) %>% 
-  rename(soort_nl = trofische_groep,
-         site = niveau3, 
-         count = maand_som,
-         year = telseizoen_yr)
-#
-#  long-term trend
-#
-
-# maak een df met alle soorten. als het model is gecrashed dan zie je NA's.
-df_doel <- data.frame(soort_nl = l_doel)
-
-df_out <- NULL
-for(srt in l_doel){ #srt="tafeleend" #l_doel[1]
-  print(srt)
-  
-  df_tmp <- NULL
-  
-  d_sel <- d_agg_trim %>%
-    filter(soort_nl == srt,
-           year>=1991) %>%
-    group_by(soort_nl, year, 
-             # month,
-             site) %>%
-    summarise(count = sum(count)/6) %>%
-    mutate(count =   replace_na(count, 0)) # trim imputes NA
-  
-
-  m <- trim(object = d_sel,
-             count_col = "count",
-             year_col = "year", 
-             # month_col = "month",
-             site_col = "site",
-             model = 2,
-             # changepoints = "all",
-             overdisp = TRUE
-  )
- 
-  # Create filename
-  filename <- paste0(pad_figuren, "trend_trim_long_", srt, "_zs.png")
-  
-  # Open PNG device, create plot, close device
-  png(filename, width = 16, height = 12, units = "cm", res = 300)
-  plot(overall(m))
-  dev.off()
-  
-  # Display plot in console/viewer (optional)
-  plot(overall(m), main = paste("Long-term trend:", srt))
-    
-# Extract slope data
-  df_tmp <- overall(m)$slope %>% as.data.frame()
-  df_tmp$soort_nl <- srt
-  print(df_tmp)
-  df_out <- rbind(df_out, df_tmp)
-  
-  # Print summary
-  print(summary(m))
-}
-
-df_longterm <- df_doel %>% 
-  left_join(df_out) %>%
-  select(soort_nl, from, upto,p, meaning)
-
-#
-#  middlelong-term trend
-#
-
-df_out <- NULL
-
-for(srt in l_doel){
-  print(srt)
-  df_tmp <- NULL
-  d_sel <- d_agg_trim %>%
-    filter(soort_nl == srt,
-           year>=2009) %>%
-    group_by(soort_nl, year, site) %>%
-    summarise(count = sum(count)/6)
-  
-  try({
-    m <- trim(object = d_sel,
-              count_col = "count",
-              year_col = "year", 
-              # month_col = "month",
-              site_col = "site",
-              model = 2,
-              # changepoints = "all",
-              overdisp = TRUE
-    )
-     # Create filename
-  filename <- paste0(pad_figuren, "trend_trim_middle_", srt, "_zs.png")
-  
-  # Open PNG device, create plot, close device
-  png(filename, width = 16, height = 12, units = "cm", res = 300)
-  plot(overall(m))
-  dev.off()
-  
-  # Display plot in console/viewer (optional)
-  plot(overall(m), main = paste("Middlelong-term trend:", srt))
-    
-# Extract slope data
-  df_tmp <- overall(m)$slope %>% as.data.frame()
-  df_tmp$soort_nl <- srt
-  print(df_tmp)
-  df_out <- rbind(df_out, df_tmp)
-  
-  # Print summary
-  print(summary(m))
-  })
-} 
-
-
-df_middlelongterm <- df_doel %>% 
-  left_join(df_out) %>%
-  select(soort_nl, from, upto,p, meaning)
-
-#  short-term trend
-#
-
-df_out <- NULL
-
-for(srt in l_doel){
-  print(srt)
-  df_tmp <- NULL
-  d_sel <- d_agg_trim %>%
-    filter(soort_nl == srt,
-           year>=2018) %>%
-    group_by(soort_nl, year, site) %>%
-    summarise(count = sum(count)/6)
-  
-  try({
-    m <- trim(object = d_sel,
-              count_col = "count",
-              year_col = "year", 
-              # month_col = "month",
-              site_col = "site",
-              model = 2,
-              # changepoints = "all",
-              overdisp = TRUE
-    )
-     # Create filename
-  filename <- paste0(pad_figuren, "trend_trim_short_", srt, "_zs.png")
-  
-  # Open PNG device, create plot, close device
-  png(filename, width = 16, height = 12, units = "cm", res = 300)
-  plot(overall(m))
-  dev.off()
-  
-  # Display plot in console/viewer (optional)
-  plot(overall(m), main = paste("Short-term trend:", srt))
-    
-# Extract slope data
-  df_tmp <- overall(m)$slope %>% as.data.frame()
-  df_tmp$soort_nl <- srt
-  print(df_tmp)
-  df_out <- rbind(df_out, df_tmp)
-  
-  # Print summary
-  print(summary(m))
-  })
-} 
-
-
-df_shortterm <- df_doel %>% 
-  left_join(df_out) %>%
-  select(soort_nl, from, upto,p, meaning)
-
-
-#
-#  export
-#
-meaning = c("Strong decrease", 
-            "Moderate decrease",
-            "Stable",
-            "Moderate increase",
-            "Strong increase",
-            "Uncertain")
-
-symbol = c("--",
-           "-",
-           "0",
-           "+",
-           "++",
-           "~")
-
-toelichting = c(
-  "significant sterke afname van >5% per jaar",
-  "significant matige afname van < 5% per jaar",
-  "stabiel, geen significante trend",
-  "significant matige toename van < 5% per jaar",
-  "significante sterke toename van >5% per jaar",
-  "onzeker, geen trend aantoonbaar")
-
-df_meaning <- data.frame(meaning, symbol, toelichting)
-
-# merge and remove sig level
-df_trim <- df_longterm %>% 
-  rbind(df_middlelongterm) %>%
-  rbind(df_shortterm) %>% 
-  mutate(across(meaning, str_replace, " \\(p<0.05\\)", '')) %>%
-  mutate(across(meaning, str_replace, " \\(p<0.01\\)", '')) %>% 
-  left_join(df_meaning)
-
-
-write_xlsx(df_trim, 
-           paste0(pad_tabellen, "trend_stats", paste0("trend_rtrim_trofischegroepen_zs.xlsx")))
-
-
-
-```
-
-
-#### Multispecies_index
-
-```{r 100-multispeciesindex-niveau2, fig.height=6, fig.width=8}
-
-# aangepast naar: T2021/06_Ecologie/08_Vogels/Zeeschelde/Scripts/d_plot
-#/plot_zs_multispecies_index.R
-library(scales)
-
-
-------------------------------------------------------------------------------
-#####  functions  
-------------------------------------------------------------------------------
-
-f.geom_mean <- function(x){
-  exp(mean(log(x)))
-  # prod(x)^(1/length(x))
-}
-
-f.geom_mean_correctzero <- function(x){
-  exp(mean(log(x+1)))-1
-  # prod(x)^(1/length(x))
-}
-
-df_doelsrt <- read_delim(paste0(pad_data, "ihd_nietbroedvogels_zs.csv"),
-              delim = ";") %>%
-  select(-bron, -criterium) %>% 
-  mutate(soort_nl = str_to_title(soort_nl))
-l_doel <- unique(df_doelsrt$soort_nl)
-
-------------------------------------------------------------------------------
-#####  dataset  
-------------------------------------------------------------------------------
-
-d_mnd_n2 <- Tellingen_MONEOS_niv3 %>%
-  filter(nednaam %in% l_doel) %>%
-  mutate(telseizoen_yr = as.numeric(str_sub(telseizoen, 1, 4))) %>%
-  filter(maand %in% c(10:12, 1:3)) %>%
-  filter(niveau2 =="Zeeschelde") %>% #voor de Zeeschelde alleen te berekenen, dataset zijrivieren is onvolledig
-  group_by(nednaam, telseizoen_yr, maand) %>%
-  summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  group_by(nednaam, telseizoen_yr) %>%
-  summarise(n_mean = mean(maand_som, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  complete(telseizoen_yr, nednaam,
-           fill = list("n_mean"=0))
-
-
-------------------------------------------------------------------------------
-#####  Analyse: bepaal index per soort op n2
-------------------------------------------------------------------------------
-
-# filterstappen
-# - alleen soorten die ingedeeld kunnen worden in een voedselgroep
-# - alleen soorten die in het referentie jaar zijn waargenomen
-# - alleen soorten met een instandhoudings doel (slechts berekend op basis van 5 soorten dus)
-
-df_nietbrdvgl <- d_mnd_n2   
-
-
-# het referentiejaar
-
-#check volledigheid tellingen 1991 vs 1992
-
-check_telling <- Tellingen_MONEOS %>% 
-  filter(telseizoen %in% c("1991/92", "1992/93")) %>% 
-  filter(rivier == "Zeeschelde") 
-
-all_combinations <- expand_grid(
-  gebied = unique(check_telling$gebied),
-  telseizoen_yr = c(1991, 1992),
-  maand = (1:3 & 10:12)
-)
-
-check <- check_telling %>% 
-  group_by(gebied, telseizoen_yr, maand) %>% 
-  summarise(n_records = n(), .groups = 'drop') %>%
-  right_join(all_combinations, by = c("gebied", "telseizoen_yr", "maand")) %>%
-  mutate(n_records = replace_na(n_records, 0)) 
-
-##voor de Zeeschelde is de dataset goed maar opgelet: de Rupel werd nog niet geteld dus index is te maken op niveau 2 enkel op de rivier Zeeschelde (zonder deel Rupel). Deze selectie was foutief voor T2021.
-
-year_idx100 = 1991
-
-# lijst met soorten die in indexjaar zijn waargenomen
-indexyr_ngr0 <- df_nietbrdvgl %>% 
-  filter(telseizoen_yr %in% year_idx100) %>%
-  filter(n_mean >0) %>% 
-  mutate(aanwezig_refjaar = 1,
-         n100 = n_mean) %>%
-  select(nednaam, aanwezig_refjaar, n100) 
-
-##alle 5 de IHD soorten werden waargenomen in referentiejaar
-
-# index bepalen mbv het referentiejaar
-df_index_n2 <- df_nietbrdvgl %>% 
-  left_join(indexyr_ngr0) %>%
-  filter(aanwezig_refjaar ==1) %>% 
-  mutate(index = n_mean  / n100 *100)%>%
-  mutate(index = if_else(index <1, 1, index)) 
-
-# bereken geometrisch gemiddelde index (met correctie voor nullen)
-df_geomindex_n2 <- df_index_n2 %>% 
-  group_by(telseizoen_yr) %>%
-  summarise(geom_idx = f.geom_mean_correctzero(index), 
-            gem_idx = mean(index) ) %>%
-  ungroup()
-
-
-------------------------------------------------------------------------------
-#####  plot  
-------------------------------------------------------------------------------
-
-# maakt het uit of index 1 of 100 is? Ja! 
-# in het geval van nullen wordt er truc +1 en -1 toegepast.
-# dit heeft een groot effect wanneer referentie op 1 wordt gezet ipv 100
-
-
-ggplot(data=df_geomindex_n2) +
-  geom_line(aes(x=telseizoen_yr, y=geom_idx), color = "blue") +
-  coord_cartesian(ylim = c(0,NA)) +
-  # facet_wrap(~niveau2, scales = "free") +  
-  # scale_y_continuous(trans = log10_trans()) +
-  geom_hline(yintercept = 100, color = "black" ) +
-  geom_vline(xintercept = year_idx100, color = "red" ) +
-  labs(title = "Multi-species index niveau2",
-       y = "index") 
- 
-ggsave(paste0(pad_figuren, "100-figuur_multispeciesindex_niv2.jpg"))
-
-```
-
-
-
-##### figuur wintergemiddelde aantallen per KRWzone
-
-```{r 100-figuur-aantallen-niveau3, fig.height=6, fig.width=8}
-
-
-# figuur met gemiddelde over tellingen per seizoen en gebiedsgroep 
-
-#variant1
-Tellingen_MONEOS_niv3 %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  mutate(telseizoen_yr = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
-  filter(telseizoen_yr > 2008) %>% 
-  filter(krwzone != "Getijdedurme" | telseizoen_yr > 2012) %>%
-  filter(taxongroupcode != "MS") %>% # meeuwen en sternen worden pas sinds 1999 geteld
-  group_by(telseizoen_yr, niveau3, maand) %>% 
-  summarise(som = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  group_by(telseizoen_yr, niveau3) %>% 
-  summarise(aantal = mean(som, na.rm = TRUE)) %>% 
-  ggplot(aes(ordered(telseizoen_yr), aantal)) + 
-  geom_col() +
-  labs(x = "winter telseizoen", 
-       y = "wintergemiddeld aantal watervogels") +
-  facet_wrap(~niveau3,
-             ncol = 2, scales = "free") +
-  theme(axis.text.x = element_text(angle = 90))
- 
- ggsave(paste0(pad_figuren, "100_figuur_meanwinter_niveau3.jpg"))
-
-Tellingen_MONEOS_niv3 %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(taxongroepcode != "MS") %>% # meeuwen en sternen worden pas sinds 1999 geteld
-    group_by(telseizoen, gebiedsgroep, maand) %>% 
-  summarise(som = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  group_by(telseizoen, gebiedsgroep) %>% 
-  summarise(aantal = mean(som, na.rm = TRUE)) %>% 
-  ggplot(aes(ordered(telseizoen), aantal)) + 
-  geom_col() +
-  labs(x = "telseizoen", 
-       y = "wintergemiddeld aantal watervogels") +
-  facet_wrap(~gebiedsgroep,
-             ncol = 2) +
-  theme(axis.text.x = element_text(angle = 90))
-
-#variant2 inzoemen vanaf telseizoen 2009
-Tellingen_MONEOS_niv3 %>% 
-  filter(maand %in% c(10:12, 1:3)) %>%
-  mutate(telseizoen_yr = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
-  filter(gebiedsgroep != "Getijdedurme" | telseizoen_yr > 2012) %>%
-filter(taxongroepcode != "MS") %>% # meeuwen en sternen worden pas sinds 1999 geteld
-    filter(teldatum > "2009-06-01") %>% 
-    group_by(telseizoen, gebiedsgroep, maand) %>% 
-  summarise(som = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  group_by(telseizoen, gebiedsgroep) %>% 
-  summarise(aantal = mean(som, na.rm = TRUE)) %>% 
-  ggplot(aes(ordered(telseizoen), aantal)) + 
-  geom_col() +
-  labs(x = "telseizoen", 
-       y = "wintergemiddeld aantal watervogels") +
-  facet_wrap(~gebiedsgroep,
-             ncol = 2, scales = "free") +
-  theme(axis.text.x = element_text(angle = 90))
-
-
-# dit is de oorspronkelijke figuur met de som over alle tellingen 
-# Tellingen_MONEOS_niv3 %>% 
-#   filter(maand %in% c(10:12, 1:3)) %>% 
-#   group_by(telseizoen, gebiedsgroep) %>% 
-#   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   ggplot(aes(ordered(telseizoen), aantal)) + 
-#   geom_col() +
-#   labs(x = "telseizoen", 
-#        y = "Aantal watervogels") +
-#   facet_wrap(~gebiedsgroep, scales = "free_y") +
-#   theme(axis.text.x = element_text(angle = 90))
-
-```
-
-##### figuur wintergemiddelde aantallen per zijrivier
-
-```{r 100-figuur-aantallen-zijrivieren, fig.height=4, fig.width=12}
-
-# figuur met gemiddelde over tellingen per seizoen en zijrivier 
-Tellingen_MONEOS_niv3 %>% 
-  filter(maand %in% c(10:12, 1:3),
-         rivier %in% c("Dijle", "Zenne")) %>% 
-filter(taxongroepcode != "MS") %>% # meeuwen en sternen worden pas sinds 1999 geteld
-    group_by(rivier,telseizoen, maand) %>% 
-   summarise(som = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  group_by(telseizoen, rivier) %>% 
-  summarise(aantal = mean(som, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen), aantal)) + 
-  geom_col() +
-  labs(x = "telseizoen", 
-       y = "gemiddeld per maand aantal watervogels per winterseizoen") +
-  facet_wrap(~rivier, scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90))
-
-ggsave(paste0(pad_figuren, "100_figuur_aantallen_zijrivieren.jpg"))
-
-Tellingen_MONEOS_niv3 %>% 
-  filter(maand %in% c(10:12, 1:3),
-         rivier %in% c("Rupel","Zeeschelde")) %>% 
-filter(taxongroepcode != "MS") %>% # meeuwen en sternen worden pas sinds 1999 geteld
-    group_by(rivier,telseizoen_yr, maand) %>% 
-   summarise(som = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>%
-  group_by(telseizoen_yr, rivier) %>% 
-  summarise(aantal = mean(som, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen_yr), aantal)) + 
-  geom_col() +
-  geom_smooth(aes(color = "trendlijn")) +
-  labs(x = "telseizoen", 
-       y = "gemiddeld per maand aantal watervogels per winterseizoen") +
-  facet_wrap(~rivier) +
-  theme(axis.text.x = element_text(angle = 90))
-
-# dit is de oorspronkelijke figuur met de som over alle tellingen 
-# Tellingen_MONEOS_niv3 %>% 
-#   filter(maand %in% c(10:12, 1:3),
-#          rivier %in% c("Dijle", "Rupel", "Zenne")) %>% 
-#   group_by(telseizoen, rivier) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   ggplot(aes(ordered(telseizoen), aantal)) + 
-#   geom_col() +
-#   labs(x = "telseizoen", 
-#        y = "Aantal watervogels") +
-#   facet_wrap(~rivier, scales = "free_y") +
-#   theme(axis.text.x = element_text(angle = 90))
-
-```
-
-##### figuur wintergemiddelde aantallen per trofische groep
-
-```{r 100-figuur-aantallen-trofische-groep, fig.height=5, fig.width=7}
-
-# figuur met gemiddelde over tellingen per seizoen, gebiedsgroep en trofische groep
-# Tellingen_MONEOS_niv3 %>% 
-#   filter(maand %in% c(10:12, 1:3)) %>% 
-#   filter(str_detect(krwcode, "ZS")) %>% 
-#   filter(jaar >= 2009,
-#          telseizoen != "2008/09") %>% 
-#   filter(!is.na(trofische_groep)) %>% 
-#   group_by(telseizoen, teldatum, trofische_groep, gebiedsgroep, rivier) %>% 
-#   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, trofische_groep, gebiedsgroep, rivier) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, gebiedsgroep, trofische_groep) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) + 
-#   geom_point(aes(shape = gebiedsgroep)) +
-#   geom_line() +
-#   labs(x = "telseizoen", 
-#        y = "Aantal watervogels") +
-#   facet_wrap(~trofische_groep,
-#              scales = "free_y") +
-#   theme(axis.text.x = element_text(angle = 90),
-#         legend.position = "bottom",
-#         legend.title = element_blank())
-
-Tellingen_MONEOS_niv3 %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  # filter(str_detect(krwcode, "ZS")) %>% 
-  filter(jaar >= 2009,
-         telseizoen != "2008/09") %>% 
-  filter(!is.na(trofische_groep)) %>% 
-  group_by(telseizoen, maand, trofische_groep, niveau3) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, trofische_groep, niveau3) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
-  geom_point(aes(shape = niveau3)) +
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "wintergemiddelde") +
-  facet_wrap(~trofische_groep,
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-ggsave(paste0(pad_figuren, "100_figuur_aantallen_trofische_groep_niveau3.jpg"))
-
-
-###facet_wrap op niveau 3
-Tellingen_MONEOS_niv3 %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  # filter(str_detect(krwcode, "ZS")) %>% 
-  filter(jaar >= 2009,
-         telseizoen != "2008/09") %>% 
-  filter(!is.na(trofische_groep)) %>% 
-  filter(trofische_groep == "Nomn" | trofische_groep == "Nherb") %>% 
-  group_by(telseizoen, maand, trofische_groep, niveau3) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, trofische_groep, niveau3) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen), aantal, group = trofische_groep, color = trofische_groep)) + 
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "wintergemiddelde") +
-  facet_wrap(~niveau3,
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-###facet_wrap op niveau 3
-Tellingen_MONEOS_niv3 %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  # filter(str_detect(krwcode, "ZS")) %>% 
-  filter(jaar >= 2009,
-         telseizoen != "2008/09") %>% 
-  filter(!is.na(trofische_groep)) %>% 
-  filter(trofische_groep == "Nomn") %>% 
-  group_by(telseizoen, maand, trofische_groep, niveau3) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, trofische_groep, niveau3) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen), aantal, group = trofische_groep, color = trofische_groep)) + 
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "wintergemiddelde") +
-  facet_wrap(~niveau3,
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-
-
-##welke soorten -- achtergrond bespreking
-Tellingen_MONEOS_niv3 %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(str_detect(gebiedsklassecode, "ZS")) %>% 
-  filter(jaar >= 2012,
-         telseizoen != "2011/12") %>% 
-  filter(!is.na(trofische_groep)) %>%
-  filter(trofische_groep=="Nomn") %>%
-  # filter(nednaam %in% c("Kokmeeuw")) %>% 
-  group_by(telseizoen, maand, trofische_groep, krwzone, nednaam) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, trofische_groep, krwzone, nednaam) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-ggplot(aes(ordered(telseizoen), aantal, group = krwzone, color = krwzone)) + 
-  geom_point(aes(shape = krwzone)) +
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "Aantal watervogels") +
-  facet_wrap(~nednaam) +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-Tellingen_MONEOS_niv3 %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(str_detect(gebiedsklassecode, "ZS")) %>% 
-  filter(jaar >= 2012,
-         telseizoen != "2011/12") %>% 
-  filter(!is.na(trofische_groep)) %>%
-  filter(trofische_groep=="Nherb") %>% 
-  # filter(nednaam %in% c("xxxxx")) %>%
-    group_by(telseizoen, maand, trofische_groep, krwzone, nednaam) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, trofische_groep, krwzone, nednaam) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-ggplot(aes(ordered(telseizoen), aantal, group = krwzone, color = krwzone)) + 
-  geom_point(aes(shape = krwzone)) +
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "Aantal watervogels") +
-  facet_wrap(~nednaam) +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-
-```
-
-##### figuur abundante soorten met \> 5% per KRWzone voor en na 2009
-
-```{r 100-figuur-abundante-soorten, fig.height=5, fig.width=7}
-
-abundante_wintervogels <- Tellingen_MONEOS_niv3 %>% 
-    # filter(str_detect(krwcode, "ZS")) %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(telseizoen == "2020/21") %>% 
-     group_by(niveau3, nednaam) %>% 
-  mutate(totaal = sum(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  group_by(niveau3) %>% 
-  mutate(totaalgebiedsgroep = sum(aantal, na.rm = TRUE)) %>% 
-  mutate(perc = (totaal/totaalgebiedsgroep)*100) %>% 
-  filter(perc > 5) %>% 
-  ungroup() %>% 
-  select(nednaam,niveau3, perc) %>%
-  distinct(nednaam,niveau3, perc) %>% 
-  arrange(niveau3) 
-
-# #Create a custom color scale for species: 10 colors needed and order of color must be the same for each species
-# library(RColorBrewer)
-# myColors <- brewer.pal(10,"Set3")
-# names(myColors) <- levels(abundante_wintervogels$nednaam)
-# colScale <- scale_colour_manual(name = "nednaam",values = myColors)
-# # lukt me niet om dit te doen werken
-
-
-Tellingen_MONEOS_niv3 %>% 
-    # filter(str_detect(krwcode, "ZS")) %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(telseizoen >= "2009/10") %>% 
-   group_by(niveau3, nednaam) %>% 
-  mutate(totaal = sum(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  group_by(niveau3) %>% 
-  mutate(totaalgebiedsgroep = sum(aantal, na.rm = TRUE)) %>% 
-  mutate(perc = (totaal/totaalgebiedsgroep)*100) %>% 
-  filter(perc > 5) %>%
-  ggplot(aes(ordered(niveau3), aantal, fill = nednaam)) + 
-  geom_col(position = "fill") +
-  scale_y_continuous(breaks = seq(0,1,0.1), labels = paste0(seq(0,100,10),"%")) +
-   scale_fill_manual(values=c("#CC0000", "#006600", "#669999", "#00CCCC",
-                              "#660099", "#CC0066", "#FF9999", "#FF9900",
-                              "black", "red", "green", "blue", "yellow")) +
-  labs(x = "Niveau3 zones", 
-       y = "") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank()) 
-  
-
-
-ggsave(paste0(pad_figuren, "100_figuur_abundante_soortenna2009.jpg"))
-
-
-
-Tellingen_MONEOS_niv3 %>% 
-    # filter(str_detect(krwcode, "ZS")) %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(jaar <= 2009,
-         telseizoen != "2009/10") %>% 
-   group_by(niveau3, nednaam) %>% 
-  mutate(totaal = sum(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  group_by(niveau3) %>% 
-  mutate(totaalgebiedsgroep = sum(aantal, na.rm = TRUE)) %>% 
-  mutate(perc = (totaal/totaalgebiedsgroep)*100) %>% 
-  filter(perc > 5) %>%
-  ggplot(aes(ordered(niveau3), aantal, fill = nednaam)) + 
-  geom_col(position = "fill") +
-  scale_y_continuous(breaks = seq(0,1,0.1), labels = paste0(seq(0,100,10),"%"))+
-  scale_fill_manual(values=c("#CC0000", "#006600", "#669999", "#00CCCC",
-                             "#660099", "#CC0066", "#FF9999", "#FF9900",
-                             "black", "red", "green", "blue", "yellow")) +
-  labs(x = "Niveau3 zones", 
-       y = "") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-
-ggsave(paste0(pad_figuren, "100_figuur_abundante_soortenvoor2009.jpg"))
-
-
-
-
-
-Tellingen_MONEOS_niv3 %>% 
-    # filter(str_detect(krwcode, "ZS")) %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(telseizoen >= "2009/10") %>%
-  filter(niveau3 != 'Saliniteitsgradient') %>%
-  filter(niveau2 == 'Zeeschelde') %>%
-  arrange(nednaam) %>%
-  group_by(nednaam) %>% 
-  mutate(totaal = sum(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  group_by(niveau2) %>% 
-  mutate(totaalgebiedsgroep = sum(aantal, na.rm = TRUE)) %>% 
-  mutate(perc = (totaal/totaalgebiedsgroep)*100) %>% 
-  filter(perc > 10) %>%
-  mutate(soort = fct_reorder2(nednaam, niveau2, perc)) %>%
-  ggplot(aes(ordered(niveau2), aantal, fill = soort)) + 
-  geom_col(position = "fill") +
-  # scale_y_continuous(breaks = seq(0,1,0.1), labels = paste0(seq(0,100,10),"%")) +
-  #  scale_fill_manual(values=c("#CC0000", "#006600", "#669999", "#00CCCC",
-  #                             "#660099", "#CC0066", "#FF9999", "#FF9900",
-  #                             "black", "red", "green", "blue", "yellow")) +
-  labs(x = "", 
-       y = "") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank()) 
-
-Tellingen_MONEOS_niv3 %>% 
-    # filter(str_detect(krwcode, "ZS")) %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(telseizoen < "2009/10") %>%
-  filter(niveau3 != 'Saliniteitsgradient') %>%
-  filter(niveau2 == 'Zeeschelde') %>%
-  arrange(nednaam) %>% 
-  group_by(nednaam) %>% 
-  mutate(totaal = sum(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  group_by(niveau2) %>% 
-  mutate(totaalgebiedsgroep = sum(aantal, na.rm = TRUE)) %>% 
-  mutate(perc = (totaal/totaalgebiedsgroep)*100) %>% 
-  filter(perc > 10) %>%
-  mutate(soort = fct_reorder2(nednaam, niveau2, perc)) %>%
-  ggplot(aes(ordered(niveau2), aantal, fill = soort)) + 
-  geom_col(position = "fill") +
-  # scale_y_continuous(breaks = seq(0,1,0.1), labels = paste0(seq(0,100,10),"%")) +
-  #  scale_fill_manual(values=c("#CC0000", "#006600", "#669999", "#00CCCC",
-  #                             "#660099", "#CC0066", "#FF9999", "#FF9900",
-  #                             "black", "red", "green", "blue", "yellow")) +
-  labs(x = "", 
-       y = "") +
-  theme(axis.text.x = element_text(angle = 0),
-        legend.position = "bottom",
-        legend.title = element_blank()) 
-
-
-```
-
-##### figuur wintergemiddelde aantallen voor abundante soorten Zeeschelde
-
-```{r 100-figuur-aantallen-abundante-soorten, fig.height=5, fig.width=7}
-
-# Tellingen_MONEOS_niv3 %>% 
-#   filter(nednaam %in% c("Bergeend", "Krakeend", "Wilde Eend", "Wintertaling")) %>% 
-#   filter(str_detect(krwcode, "ZS")) %>% 
-#   filter(maand %in% c(10:12, 1:3)) %>% 
-#   filter(jaar >= 2009,
-#          telseizoen != "2008/09") %>% 
-#   group_by(telseizoen, gebiedsgroep, nednaam, rivier) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, gebiedsgroep, nednaam) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) + 
-#   geom_point(aes(shape = gebiedsgroep)) +
-#   geom_line() +
-#   labs(x = "telseizoen", 
-#        y = "Aantal watervogels") +
-#   facet_wrap(~nednaam, 
-#              scales = "free_y") +
-#   theme(axis.text.x = element_text(angle = 90),
-#         legend.position = "bottom",
-#         legend.title = element_blank())
-
-Tellingen_MONEOS_niv3 %>% 
-  filter(nednaam %in% c("Bergeend", "Krakeend", "Wilde Eend", "Wintertaling")) %>% 
-  # filter(rivier == "Zeeschelde") %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(jaar >= 2009,
-         telseizoen != "2008/09") %>% 
-  group_by(telseizoen, niveau3, nednaam, maand) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, niveau3, nednaam) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
-  geom_point(aes(shape = niveau3)) +
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "gemiddeld aantal") +
-  facet_wrap(~nednaam, 
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-
-ggsave(paste0(pad_figuren, "100_figuur_aantallen_abundante_soorten_niveau3.jpg"))
-
-```
-
-##### figuur wintergemiddelde aantallen voor viseters en steltlopers
-
-```{r 100-figuur-aantallen-visetend-en-steltlopers, fig.height=5, fig.width=7}
-
-Tellingen_MONEOS_niv3 %>%
-  filter(nednaam %in% c("Aalscholver", "Fuut", "Blauwe Reiger")) %>%
-  # filter(str_detect(krwcode, "ZS")) %>%
-  filter(maand %in% c(10:12, 1:3)) %>%
-  filter(jaar >= 2009,
-         telseizoen != "2008/09") %>%
-  group_by(telseizoen, niveau3, nednaam, rivier) %>%
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  group_by(telseizoen, niveau3, nednaam) %>%
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) +
-  geom_point(aes(shape = niveau3)) +
-  geom_line() +
-  labs(x = "telseizoen",
-       y = "gemiddeld aantal") +
-  facet_wrap(~nednaam,
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-ggsave(paste0(pad_figuren, "100_figuur_aantallen_viseters_niveau3.jpg"))
-
-Tellingen_MONEOS_niv3 %>%
-  filter(nednaam %in% c("Aalscholver", "Fuut", "Visdief", "Blauwe Reiger")) %>%
-  filter(str_detect(krwcode, "ZS")) %>%
-  filter(maand %in% c(4:9)) %>%
-  filter(jaar >= 2009,
-         telseizoen != "2008/09") %>%
-  group_by(telseizoen, gebiedsgroep, nednaam, rivier) %>%
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  group_by(telseizoen, gebiedsgroep, nednaam) %>%
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) +
-  geom_point(aes(shape = gebiedsgroep)) +
-  geom_line() +
-  labs(x = "telseizoen",
-       y = "gemiddeld aantal zomer") +
-  facet_wrap(~nednaam,
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-ggsave(paste0(pad_figuren, "100_figuur_gemid_aantallenzomer_viseters.jpg"))
-
-Tellingen_MONEOS_niv3 %>%
-  filter(nednaam %in% c("Aalscholver", "Fuut", "Visdief", "Blauwe Reiger")) %>%
-  # filter(str_detect(krwcode, "ZS")) %>%
-  filter(maand %in% c(4:9)) %>%
-  filter(jaar >= 2009,
-         telseizoen != "2008/09") %>%
-  group_by(telseizoen, niveau3, nednaam, rivier) %>%
-  summarise(aantal = max(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  group_by(telseizoen, niveau3, nednaam) %>%
-  summarise(aantal = max(aantal, na.rm = TRUE)) %>%
-  ungroup() %>%
-  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) +
-  geom_point(aes(shape = niveau3)) +
-  geom_line() +
-  labs(x = "telseizoen",
-       y = "max aantal zomer") +
-  facet_wrap(~nednaam,
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-Tellingen_MONEOS_niv3 %>% 
-  filter(nednaam %in% c("Kluut", "Kievit", "Tureluur", "Wulp", "Scholekster", "Bonte Strandloper")) %>% 
-  filter(trofische_groep == "Nbenth") %>% 
-  filter(str_detect(krwcode, "ZS4")) %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(jaar >= 2009,
-         telseizoen != "2008/09") %>% 
-  group_by(telseizoen, niveau3, nednaam, maand) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, niveau3, nednaam) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
-  geom_point(aes(shape = niveau3)) +
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "gemiddeld aantal") +
-  facet_wrap(~nednaam, 
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-Tellingen_MONEOS_niv3 %>% 
-  filter(nednaam %in% c( "Kievit", "Tureluur", "Wulp", "Scholekster")) %>% 
-  filter(trofische_groep == "Nbenth") %>% 
-  filter(str_detect(krwcode, "ZS4")) %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(jaar >= 2005,
-         telseizoen != "2004/05") %>% 
-  group_by(telseizoen, niveau3, nednaam, maand) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, niveau3, nednaam) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
-  geom_point(aes(shape = niveau3)) +
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "gemiddeld aantal") +
-  facet_wrap(~nednaam, 
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-# Tellingen_MONEOS_niv3 %>% 
-#   filter(nednaam %in% c("Scholekster")) %>% 
-#   filter(trofische_groep == "Nbenth") %>% 
-#   filter(str_detect(krwcode, "ZS4")) %>% 
-#   filter(maand %in% c(10:12, 1:3)) %>% 
-#   filter(jaar >= 2019,
-#          telseizoen != "2004/05") %>% 
-#   group_by(telseizoen, gebiedsgroep, nednaam, maand) %>%
-#   summarise(aantal = sum(aantal, na.rm = TRUE)) %>%
-#   ungroup() %>%
-#   # group_by(telseizoen, gebiedsgroep, nednaam) %>% 
-#   # summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   # ungroup() %>% 
-#   ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) + 
-#   geom_point(aes(shape = gebiedsgroep)) +
-#   geom_line() +
-#   labs(x = "telseizoen", 
-#        y = "gemiddeld aantal") +
-#   facet_wrap(~nednaam, 
-#              scales = "free_y") +
-#   theme(axis.text.x = element_text(angle = 90),
-#         legend.position = "bottom",
-#         legend.title = element_blank())
+### Oppervlakte beschikbaar habitat
+```{r data oppervlakte slikken}
+
+# data_opp_ecotoop <-
+#   read_csv2(paste0(pad_data, "SpatialEcotopenOpp_INBO_2022.csv"))
 # 
+# table(data_opp_ecotoop$waterloop)
 # 
-# Tellingen_MONEOS_niv3 %>% 
-#   filter(nednaam %in% c("Aalscholver", "Fuut", "Tureluur", "Wulp")) %>% 
-#   filter(str_detect(krwcode, "ZS")) %>% 
-#   filter(maand %in% c(10:12, 1:3)) %>% 
-#   filter(jaar >= 2005,
-#          telseizoen != "2004/05") %>% 
-#   group_by(telseizoen, gebiedsgroep, nednaam, maand) %>% 
-#   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, gebiedsgroep, nednaam) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   ggplot(aes(ordered(telseizoen), aantal, group = gebiedsgroep, color = gebiedsgroep)) + 
-#   geom_point(aes(shape = gebiedsgroep)) +
-#   geom_line() +
-#   labs(x = "telseizoen", 
-#        y = "gemiddeld aantal") +
-#   facet_wrap(~nednaam, 
-#              scales = "free_y") +
-#   theme(axis.text.x = element_text(angle = 90),
-#         legend.position = "bottom",
-#         legend.title = element_blank())
-
-ggsave(paste0(pad_figuren, "100_figuur_aantallen_steltlopers.jpg"))
-
-```
-
-##### figuur wintergemiddelde vogeldichtheid per zones
-
-```{r dichtheden winter watervogels per zone}
-
-
-
-  Tellingen_MONEOS_niv3 %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  # filter(str_detect(krwcode, "ZS")) %>% 
-  filter(niveau3 != "Zoet zijrivier") %>% 
-  filter(telseizoen %in% c("2001/02","2010/11","2013/14","2016/17","2019/20","2022/23")) %>%
-  filter(nednaam != "Tafeleend" & nednaam != "Kuifeend") %>%
-  filter(trofische_groep != "Npisc" & trofische_groep != "Nherb") %>% 
-  left_join(data_opp_zachtslik_KRW_ZS, by = c("niveau3","telseizoen")) %>% 
-  group_by(telseizoen, maand, niveau3, som_ha) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, niveau3, som_ha) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, niveau3, som_ha) %>% 
-  summarise(dichtheid = mean(aantal/som_ha, na.rm = TRUE)) %>% 
-  ggplot(aes(ordered(telseizoen), dichtheid, group = niveau3, color = niveau3)) + 
-  geom_point(aes(shape = niveau3)) +
-  geom_line() + 
-    labs(x = "telseizoen", 
-       y = "dichtheid overwinterende watervogel (#/ha)") +
-    theme(axis.text.x = element_text(angle = 0),
-        legend.position = "bottom",
-        legend.title = element_blank())+
-  scale_y_continuous(breaks = seq(0,140,20))
-
-ggsave(paste0(pad_figuren, "100_figuur_dichtheid.jpg"))
-
-# Tellingen_MONEOS_niv3 %>% 
-#   filter(maand %in% c(10:12, 1:3)) %>% 
-#   # filter(str_detect(krwcode, "ZS")) %>% 
-#   filter(niveau3 != "Zoet zijrivier") %>%
-#   filter(niveau3 != "Rupel") %>%
-#   filter(niveau3 != "Saliniteitsgradient") %>%
-#   filter(niveau3 != "Zoet kort verblijf") %>%
-#   filter(telseizoen %in% c("2001/02","2010/11","2013/14","2016/17","2019/20")) %>%
-#   filter(nednaam != "Tafeleend" & nednaam != "Kuifeend") %>%
-#   filter(trofische_groep != "Npisc" & trofische_groep != "Nherb") %>% 
-#   left_join(data_opp_zachtslik_KRW_ZS, by = c("niveau3","telseizoen")) %>% 
-#   group_by(telseizoen, maand, niveau3, som_ha) %>% 
-#   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, niveau3, som_ha) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, niveau3, som_ha) %>% 
-#   summarise(dichtheid = mean(aantal/som_ha, na.rm = TRUE)) %>% 
-#   ggplot(aes(ordered(telseizoen), dichtheid, group = niveau3, color = niveau3)) + 
-#   geom_point(aes(shape = niveau3)) +
-#   geom_line() + 
-#     labs(x = "telseizoen", 
-#        y = "dichtheid overwinterende watervogel (#/ha)") +
-#     theme(axis.text.x = element_text(angle = 0),
-#         legend.position = "bottom",
-#         legend.title = element_blank())+
-#   scale_y_continuous(breaks = seq(0,140,20))
+# data_opp_ecotoop <- data_opp_ecotoop %>% 
+#   mutate(niveau3 = case_when(
+#     waterloop == "Zeeschelde IV" ~ "Saliniteitsgradient",
+#     waterloop == "Zeeschelde III" ~"Oligohalien",
+#     waterloop == "Zeeschelde II" ~ "Zoet lang verblijf",
+#     waterloop == "Zeeschelde I" ~ "Zoet kort verblijf",
+#     waterloop == "Rupel" ~ "Rupel",
+#     waterloop == "Durme" ~ "Durme",
+#     .default = NA))
 # 
-# ggsave(paste0(pad_figuren, "100_figuur_dichtheidDurme.jpg"))
+# data_opp_ecotoop <- data_opp_ecotoop %>%
+#   filter(!is.na(niveau3)) %>%
+#   mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf", 
+#                                           "Zoet kort verblijf", "Rupel", "Durme")))
 # 
-# ##Zeeschelde IV wintertrends
-# Tellingen_MONEOS_niv3 %>% 
-#   filter(str_detect(krwcode, "ZS4")) %>% 
-#   filter(maand %in% c(10:12, 1:3)) %>% 
-#   filter(telseizoen %in% c("2001/02","2010/11","2012/13","2013/14","2014/15","2015/16","2016/17","2017/18","2018/19","2019/20","2020/21",
-#                            "2021/22")) %>%
-#   filter(nednaam != "Tafeleend" & nednaam != "Kuifeend") %>%
-#   filter(trofische_groep != "Npisc" & trofische_groep != "Nherb") %>% 
-#   left_join(data_opp_zachtslik_KRW_ZS, by = c("niveau3","telseizoen")) %>% 
-#   group_by(telseizoen, maand, niveau3, som_ha) %>% 
-#   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, niveau3, som_ha) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, niveau3, som_ha) %>% 
-#   summarise(dichtheid = mean(aantal/som_ha, na.rm = TRUE)) %>% 
-#   ggplot(aes(ordered(telseizoen), dichtheid, group = niveau3, color = niveau3)) + 
-#   geom_point(aes(shape = niveau3)) +
-#   geom_line() + 
-#     labs(x = "telseizoen", 
-#        y = "dichtheid overwinterende watervogel (#/ha)") +
-#     theme(axis.text.x = element_text(angle = 0),
-#         legend.position = "bottom",
-#         legend.title = element_blank())+
-#   scale_y_continuous(breaks = seq(0,20,2))
+# ### We selecteren de jaren met volledige kaart BEZ BOZ Rupel Durme
+# data_opp_ecotoop <- data_opp_ecotoop %>% 
+#   mutate(telseizoen = case_when(
+#     jaar == "2001" ~ "2001/02",
+#     jaar == "2010" ~ "2010/11",
+#     jaar == "2013" ~ "2013/14",
+#     jaar == "2016" ~ "2016/17",
+#     jaar == "2019" ~ "2019/20",
+#     jaar == "2022" ~ "2022/23",
+#     .default = NA)) %>% 
+#   filter(!is.na(telseizoen))
 # 
-# ggsave(paste0(pad_figuren, "100_figuur_dichtheidZS4.jpg"))
-# 
-# ##Zeeschelde IV wintertrends trofische groepen
-# 
-# Tellingen_MONEOS_niv3 %>% 
-#   filter(str_detect(krwcode, "ZS4")) %>% 
-#   filter(maand %in% c(10:12, 1:3)) %>% 
-#   filter(telseizoen %in% c("2001/02","2010/11","2012/13","2013/14","2014/15","2015/16","2016/17","2017/18","2018/19","2019/20","2020/21",
-#                            "2021/22", "2022/23")) %>%
-#   filter(nednaam != "Tafeleend" & nednaam != "Kuifeend") %>%
-#   filter(trofische_groep != "Npisc" & trofische_groep != "Nherb") %>% 
-#   left_join(data_opp_zachtslik_KRW_ZS, by = c("niveau3","telseizoen")) %>%  
-#   group_by(telseizoen, maand, niveau3, som_ha,trofische_groep) %>% 
-#   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, niveau3, som_ha,trofische_groep) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, niveau3, som_ha,trofische_groep) %>% 
-#   summarise(dichtheid = mean(aantal/som_ha, na.rm = TRUE)) %>% 
-#   ggplot(aes(ordered(telseizoen), dichtheid, group = trofische_groep, color = trofische_groep)) + 
-#   geom_point(aes(shape = niveau3)) +
-#   geom_line() + 
-#     labs(x = "telseizoen", 
-#        y = "dichtheid overwinterende watervogel (#/ha)") +
-#     theme(axis.text.x = element_text(angle = 0),
-#         legend.position = "bottom",
-#         legend.title = element_blank())+
-#   scale_y_continuous(breaks = seq(0,20,2))
-# 
-# 
-# 
-# ##Zeeschelde IV jaartrends telseizoen
-# Tellingen_MONEOS_niv3 %>% 
-#   filter(str_detect(krwcode, "ZS4")) %>% 
-#   # filter(maand %in% c(10:12, 1:3)) %>% 
-#   filter(telseizoen %in% c("2001/02","2010/11","2012/13","2013/14","2014/15","2015/16","2016/17","2017/18","2018/19","2019/20","2020/21",
-#                            "2021/22","2022/23")) %>%
-#   filter(nednaam != "Tafeleend" & nednaam != "Kuifeend") %>%
-#   filter(trofische_groep != "Npisc" & trofische_groep != "Nherb") %>% 
-#   left_join(data_opp_zachtslik_KRW_ZS, by = c("niveau3","telseizoen")) %>% 
-#   group_by(telseizoen, maand, niveau3, som_ha) %>% 
-#   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, niveau3, som_ha) %>% 
-#   summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-#   ungroup() %>% 
-#   group_by(telseizoen, niveau3, som_ha) %>% 
-#   summarise(dichtheid = mean(aantal/som_ha, na.rm = TRUE)) %>% 
-#   ggplot(aes(ordered(telseizoen), dichtheid, group = niveau3, color = niveau3)) + 
-#   geom_point(aes(shape = niveau3)) +
-#   geom_line() + 
-#     labs(x = "telseizoen", 
-#        y = "dichtheid overwinterende watervogel (#/ha)") +
-#     theme(axis.text.x = element_text(angle = 0),
-#         legend.position = "bottom",
-#         legend.title = element_blank())+
-#   scale_y_continuous(breaks = seq(0,20,2))
-# 
-# # oppervlakte veranderingen exclusief uitbreidingen (enge planimetrie)
-# 
-# Tellingen_MONEOS_niv3 %>% 
-#   # filter(str_detect(krwcode, "ZS")) %>% 
-#   filter(telseizoen %in% c("2001/02","2010/11","2013/14","2016/17","2019/20")) %>%
-#   left_join(data_opp_zachtslik_KRW_ZS, by = c("niveau3","telseizoen")) %>% 
-#   filter(!is.na(som_ha)) %>%
-#   group_by(telseizoen, niveau3, som_ha) %>% 
-#   ggplot(aes(ordered(telseizoen), som_ha, group = niveau3, color = niveau3)) + 
-#   geom_point(aes(shape = niveau3)) +
-#   geom_line() + 
-#     labs(x = "telseizoen", 
-#        y = "Oppervlakte slik zacht substraat (ha)")+
-#     theme(axis.text.x = element_text(angle = 0),
-#         legend.position = "bottom",
-#         legend.title = element_blank())
+# data_opp_zachtslik_KRW_ZS <- data_opp_ecotoop %>% 
+#   filter(str_detect(ecotoopruw, "zacht")) %>%
+#   group_by(niveau3, jaar, telseizoen) %>% 
+#   summarise(som_ha = sum(SomVanShape_Area)) %>%
+#   ungroup()  
 #   
-# ggsave(paste0(pad_figuren, "100_figuur_habitatoppervlakte.jpg"))
-# 
-
-```
-
-##### figuur exotentrends
-
-```{r 100-figuur-exotentrends, fig.height=5, fig.width=7}
-
-
-Tellingen_MONEOS_niv3 %>% 
-  filter(nednaam %in% c("Nijlgans", "Canadese Gans", "Soepeend", "Boerengans")) %>% 
-  filter(str_detect(krwcode, "ZS")) %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter(jaar >= 2009,
-          telseizoen != "2008/09") %>% 
-  group_by(telseizoen, niveau3, nednaam, maand) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen, niveau3, nednaam) %>% 
-  summarise(aantal = mean(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen), aantal, group = niveau3, color = niveau3)) + 
-  geom_point(aes(shape = niveau3)) +
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "gemiddeld aantal") +
-  facet_wrap(~nednaam, 
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-ggsave(paste0(pad_figuren, "100_figuur_aantallen_exoten.jpg"), width = 20, height = 12, units = "cm")
-
-Tellingen_MONEOS_niv3 %>% 
-  filter(exoot == 1) %>% 
-  mutate(telseizoen_yr = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
-  filter(str_detect(krwcode, "ZS")) %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter (telseizoen_yr > 2008) %>% 
-  group_by(telseizoen_yr, niveau3, nednaam, maand) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen_yr, niveau3, nednaam) %>% 
-  summarise(totaal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen_yr), totaal, group = niveau3, color = niveau3)) + 
-  geom_point(aes(shape = niveau3)) +
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "totaal aantal per winter") +
-  facet_wrap(~nednaam, 
-             scales = "free_y") +
-  theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-Tellingen_MONEOS_niv3 %>% 
-  mutate(telseizoen_yr = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
-  filter(exoot == 1) %>% 
-  filter(str_detect(krwcode, "ZS")) %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter (telseizoen_yr > 2008) %>% 
-  group_by(telseizoen_yr, niveau3, maand) %>% 
-  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen_yr, niveau3) %>% 
-  summarise(totaal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen_yr), totaal, group = niveau3, color = niveau3)) + 
-  geom_point(aes(shape = niveau3)) +
-  geom_line() +
-  labs(x = "telseizoen", 
-       y = "totaal aantal exoten per winter") +
-    theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-ggsave(paste0(pad_figuren, "100_figuur_totaalaantal_exoten_niveau3.jpg"))
-
-Tellingen_MONEOS_niv3 %>% 
-  mutate(telseizoen_yr = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
-  filter(exoot == 1) %>% 
-  filter(str_detect(krwcode, "ZS")) %>% 
-  filter(maand %in% c(10:12, 1:3)) %>% 
-  filter (telseizoen_yr > 2008) %>% 
-  group_by(telseizoen_yr) %>% 
-  summarise(totaal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  ggplot(aes(ordered(telseizoen_yr), totaal)) + 
-  geom_col() +
-  labs(x = "telseizoen", 
-       y = "totaal aantal exoten per winter") +
-    theme(axis.text.x = element_text(angle = 90),
-        legend.position = "bottom",
-        legend.title = element_blank())
-
-ggsave(paste0(pad_figuren, "100_figuur_totaalaantal_exoten.jpg"))
-
-```
-
-```{r meta-data}
-
-meta_data <- 
-  enframe(c(vroegste_telseizoen = vroegste_telseizoen, 
-            laatste_telseizoen = laatste_telseizoen, 
-            vroegste_jaar = vroegste_jaar,
-            laatste_jaar = laatste_jaar,
-            aantal_soorten = nrow(soortnamen)),
-          name = "naam", value = "waarde")
-
-meta_data %>% 
-  write_delim(paste0(pad_data, "meta_data.csv"),
-              delim = ";")
+# # correctie op 
+# # (1) Durme slikoppervlakte : stroomopwaartse oppervlakte vanaf brug Waasmunster (4.8ha ongeveer) er vanaf getrokken
+# # (2) uitbreidingen in 'zoet kort' vanaf telseizoen 2016: zacht slik - 12ha (niet te tellen vanaf boot)
+# data_opp_zachtslik_KRW_ZS <- data_opp_zachtslik_KRW_ZS %>%
+#   mutate(som_ha = case_when(niveau3 == "Durme" ~ som_ha - 4.8, .default = som_ha),
+#          som_ha = case_when(niveau3 == "Zoet kort verblijf" & jaar > 2013 ~ som_ha - 12, .default = som_ha))
 
 ```
