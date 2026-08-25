@@ -86,6 +86,32 @@ calc_shannon_index <- function(value) {
   return(shannon_index)
 }
 
+
+# ----------------------------------------------------------
+# Hulpfunctie: fysiotoopnamen harmoniseren
+# ----------------------------------------------------------
+
+harmoniseer_fysiotoop <- function(x) {
+
+  x <- stringr::str_squish(x)
+
+  dplyr::recode(
+    x,
+
+    "hoog slik" =
+      "middelhoog/hoog intertidaal",
+
+    "hoog intertidaal" =
+      "middelhoog/hoog intertidaal",
+
+    "middelhoog intertidaal" =
+      "middelhoog/hoog intertidaal",
+
+    .default = x
+  )
+}
+
+
 ```
 
 ```{r 070-pad}
@@ -8497,10 +8523,9 @@ shan.zs.dens
 # -------------------------------------------------------------------------
 # Figuren combineren
 # -------------------------------------------------------------------------
-
 Shan.zs <-
   ggpubr::ggarrange(
-    shan.zs.biom +
+    shan.zs.dens +
       ggpubr::rremove("xlab") +
       ggpubr::rremove("ylab") +
       ggpubr::font(
@@ -8508,7 +8533,7 @@ Shan.zs <-
         size = 8
       ),
 
-    shan.zs.dens +
+    shan.zs.biom +
       ggpubr::rremove("xlab") +
       ggpubr::rremove("ylab") +
       ggpubr::font(
@@ -8527,7 +8552,7 @@ Shan.zs.final <-
     Shan.zs,
 
     left = ggpubr::text_grob(
-      "Gemiddelde Shannnon diversiteit per sample alle data",
+      "Gemiddelde Shannon-diversiteit per staal, alle data",
       rot = 90,
       vjust = 1,
       size = 14
@@ -8538,6 +8563,7 @@ Shan.zs.final <-
       size = 14
     )
   )
+
 
 Shan.zs.final
 
