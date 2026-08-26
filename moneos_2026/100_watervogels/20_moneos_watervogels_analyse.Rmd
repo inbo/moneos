@@ -164,6 +164,107 @@ knitr::kable(tabel_trofische_groep)
 
 ```
 
+### Verkennende tabellen
+```{r verkennende tabellen}
+
+# overzichtstabel van de opdeling in deelzones
+tabel_deelzones <- Gebieden_ZS %>% 
+  filter(analyse_MONEOS == TRUE) %>% 
+  distinct(niveau1, niveau2, rivier, krwzone, niveau3) %>% 
+  arrange(niveau1, niveau2, rivier, krwzone, niveau3)
+colnames(tabel_deelzones) <- c("Niveau 1", "Niveau 2", "Rivier", "KRW-zone", "Niveau 3")
+
+write_xlsx(tabel_deelzones, paste0(pad_tabellen, paste0("100_watervogels_deelzones.xlsx")))
+
+# overzichtstabel van de gebieden geteld via MIDMA
+gebieden_MIDMA <- WV_DB %>% 
+  filter((projectcode == "MIDMA" &
+         analyse_MONEOS == TRUE &
+         telseizoen == "2025/26") |
+         (gebiedscode == "2091301")) %>% 
+  distinct(gebiedscode, gebied)
+# ik snap niet waarom het traject Wintam-sas tot brug Boom hier niet in zit... 
+# is dit agv nultellingen??
+# durme + oude durme actief toegevoegd! 
+# buitenschoor??
+
+gebieden_MIDMA_yrs <- WV_DB %>% 
+  filter(gebied %in% gebieden_MIDMA$gebied,
+         telseizoen_yr > 1990,
+         maand %in% c(1:3, 10:12)) %>% 
+  
+  group_by(rivier, gebied, gebiedscode) %>% 
+  mutate(data_vanaf = min(telseizoen_yr),
+         data_tot = max(telseizoen_yr)) %>%
+  ungroup() %>% 
+  
+  group_by(rivier, gebied, gebiedscode, data_vanaf, data_tot) %>% 
+  summarise(aantal_telseizoenen = n_distinct(telseizoen)) %>%
+  ungroup() %>% 
+  
+  arrange(rivier, data_vanaf) %>% 
+  
+  rename("Riviertraject" = rivier,
+         "Gebiedsnaam" = gebied,
+         "Gebiedscode" = gebiedscode,
+         "Eerste telseizoen" = data_vanaf,
+         "Laatste telseizoen" = data_tot,
+         "Aantal telseizoenen" = aantal_telseizoenen) %>% 
+  
+  mutate(Telgebied = 
+           case_when(Gebiedsnaam == "Dijle Netemonding - Mechelen" ~ "monding Dijle/Nete - Mechelen",
+                     Gebiedsnaam == "Durme monding - Mira-brug TIELRODE" ~ "monding Durme - Mira-brug Tielrode",
+                     Gebiedsnaam == "Oude Durme + Durme HAMME" ~ "Oude Durme + Durme Hamme",
+                     Gebiedsnaam == "Durme brug Waasmunster - Mirabrug" ~ "Durme brug Waasmunster - Mira-brug Tielrode",
+                     Gebiedsnaam == "Tijarm (tot ringvaart) ZWIJNAARDE" ~  "Tijarm Zwijnaarde - Ringvaart",
+                     Gebiedsnaam == "Zenne Zennegat - Hombeekbrug MECHELEN" ~ "Zenne Zennegat - Hombeekbrug Mechelen",
+                     Gebiedsnaam == "Zenne ZEMST(brug Brusselse Steenweg) - HOMBEEK (Eglegemvijver)" ~ "Zenne brug Brusselse Steenweg Zemst - Eglegemvijver Hombeek",
+                     .default = Gebiedsnaam))
+
+write_xlsx(gebieden_MIDMA_yrs, paste0(pad_tabellen, paste0("100_watervogels_gebieden_MIDMA_yrs.xlsx")))
+
+
+# overzichtstabel van ontbrekende MIDMA tellingen 2025-2026
+data_available <- WV_DB %>% 
+  filter(projectcode == "MIDMA",
+         telseizoen =="2025/26",
+         analyse_MONEOS == TRUE,
+         maand %in% c(10:12, 1:3)) %>% 
+  distinct(rivier, gebied, telling) %>% 
+  mutate(data_available = TRUE)
+  
+alle_combinaties <- expand_grid(
+  gebied = unique(data_selectie$gebied),
+  telling = unique(data_selectie$telling)) %>% 
+  inner_join(data_selectie %>% distinct(gebied, rivier))
+
+tabel_ontbrekende_data <- left_join(alle_combinaties, data_available) %>% 
+  mutate(data_available = case_when(is.na(data_available) ~ FALSE, .default = TRUE)) %>% 
+  pivot_wider(
+    names_from = telling,
+    values_from = data_available,
+    values_fill = FALSE) %>% 
+  
+  select("Riviertraject" = rivier, "Gebied" = gebied, "Oktober", "November", "December", "Januari", "Februari", "Maart") %>% 
+  cbind(., Som = rowSums(.[,3:8])) %>% 
+  
+  mutate(Telgebied = case_when(
+    Gebied == "Dijle Netemonding - Mechelen" ~ "monding Dijle/Nete - Mechelen",
+    Gebied == "Durme monding - Mira-brug TIELRODE" ~ "monding Durme - Mira-brug Tielrode",
+    Gebied == "Oude Durme + Durme HAMME" ~ "Oude Durme + Durme Hamme",
+    Gebied == "Durme brug Waasmunster - Mirabrug" ~ "brug Waasmunster - Mira-brug Tielrode",
+    Gebied == "Tijarm (tot ringvaart) ZWIJNAARDE" ~  "Tijarm Zwijnaarde - Ringvaart",
+    Gebied == "Zenne Zennegat - Hombeekbrug MECHELEN" ~ "Zennegat - Hombeekbrug Mechelen",
+    Gebied == "Zenne ZEMST(brug Brusselse Steenweg) - HOMBEEK (Eglegemvijver)" ~ "brug Brusselse Steenweg Zemst - Eglegemvijver Hombeek",
+    .default = Gebied)) %>% 
+  relocate(Telgebied, .before = "Oktober") %>% 
+  arrange(Riviertraject, Som) %>% 
+  select(-Gebied)
+
+write_xlsx(tabel_ontbrekende_data, paste0(pad_tabellen, paste0("100_watervogels_ontbrekende_MIDMA_data.xlsx")))
+
+```
+
 ### Themes & labels
 ```{r themes & labels definiëren voor grafieken}
 
@@ -750,6 +851,7 @@ Data_watervogels_MONEOS_index_niv2 %>%
  
 ggsave(paste0(pad_figuren, "100_9d_index_excl_MS_winter_facet_niv2.jpg"), 
        width = 8, height = 5, dpi = 300)
+
 ```
 
 ### Indexberekeningen rtrim (s-IHD soorten)
