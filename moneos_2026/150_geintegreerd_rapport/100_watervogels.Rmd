@@ -8,7 +8,7 @@ editor_options:
   chunk_output_type: inline
 ---
 
-```{r 100-hoofdstuk, include=FALSE}
+```{r 100-hoofdstuk, include = FALSE}
 
 hoofdstuk <- "100_watervogels"
 
@@ -16,7 +16,7 @@ hoofdstuk <- "100_watervogels"
 
 ```{r 100-setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = FALSE, message=FALSE, cache=FALSE, fig.pos = "H", out.extra = '')
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, cache = FALSE, fig.pos = "H", out.extra = '')
 knitr::opts_knit$set(eval.after = "fig.cap")
 
 ```
@@ -42,88 +42,14 @@ pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
 
 ```
 
-```{r 100-meta_data}
+```{r 100-benodigde-data-inlezen}
 
-meta_data <- 
-  read_delim(paste0(pad_data, "meta_data_2026.csv"),
-             delim = ";")
+meta_data <- read_delim(paste0(pad_data, "meta_data_2026.csv"), delim = ";")
   
 for(i in 1:nrow(meta_data)){
-  ##first extract the object value
-  tempobj=meta_data$waarde[i]
-  ##now create a new variable with the original name of the list item
-  eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+  tempobj = meta_data$waarde[i]
+  eval(parse(text = paste(meta_data$naam[i], "= tempobj")))
 }
-
-```
-
-```{r data-watervogels inlezen en voorbereiden voor analyse}
-
-# WV_DB <- 
-#   read_delim(paste0(pad_data, "WV_DB.csv"),
-#               delim = ";")
-# 
-# WV_DB <- WV_DB %>% 
-#   rename_all(tolower) %>% 
-#   mutate(telseizoen1 = as.numeric(str_sub(telseizoen, 1, 4))) %>% 
-#   dplyr::filter(telseizoen1 > 1990)
-# 
-# 
-# Gebieden_ZS <- 
-#   read_delim(paste0(pad_data, "Gebieden_ZS.csv"),
-#               delim = ";")
-# 
-# 
-# # toevoegen jaar en maand
-# WV_DB <- 
-#   WV_DB %>% 
-#   mutate(jaar = teldatum %>% 
-#            ymd() %>% 
-#            year(),
-#          maand = teldatum %>% 
-#            ymd() %>% 
-#            month())
-# # vroegste en meest recente telseizoen
-# vroegste_telseizoen <- 
-#   WV_DB %>% 
-#   pull(telseizoen) %>% 
-#   unique() %>% 
-#   sort() %>% 
-#   first()
-# 
-# laatste_telseizoen <- 
-#   WV_DB %>% 
-#   pull(telseizoen) %>% 
-#   unique() %>% 
-#   sort() %>% 
-#   last()
-# 
-# 
-# # vroegste en meest recente jaar
-# vroegste_jaar <- 
-#   WV_DB %>% 
-#   pull(jaar) %>% 
-#   unique() %>% 
-#   sort() %>% 
-#   first()
-# 
-# laatste_jaar <- 
-#   WV_DB %>% 
-#   pull(jaar) %>% 
-#   unique() %>% 
-#   sort() %>% 
-#   last()
-# 
-# 
-# ### selecteren van de tellingen in de relevante telgebieden NOPzoneplus
-# Tellingen_ZS_alles <- WV_DB %>% right_join(Gebieden_ZS, by = c("gebiedscode"),suffix = c("", ""))
-# 
-# 
-# ### selecteren periode 1991/92 -> 2023/24; meeuwen Wel of niet betrokken in de analyse
-# Tellingen_ZS_alles <- Tellingen_ZS_alles %>% 
-#   dplyr::filter(teldatum < "2025-04-01") %>% 
-# # dplyr::filter(groep != "Meeuwen en Sternen") %>% 
-#   dplyr::filter(telseizoen1 > 1990)
 
 ```
 
@@ -131,7 +57,7 @@ for(i in 1:nrow(meta_data)){
 
 Fichenummer: FICHE S-DS-V-007a -- Maandelijkse vogeltellingen\
 Fichenummer: FICHE S-DS-V-007b -- Vogeltellingen zijrivieren\
-Fichenummer: FICHE S-DS-V-007c -- Vogeltellingen sigmagebieden (estuarien) **(niet opgenomen, verwijderen?)**
+Fichenummer: FICHE S-DS-V-007c -- Vogeltellingen sigmagebieden (estuarien) **(niet opgenomen -\> verwijderen?)**
 
 **Nicolas Vanermen**, Gunther Van Ryckegem, Jan Soors, Nico De Regge
 
@@ -162,8 +88,32 @@ Deze bevat de volgende informatievelden:
 - wetnaam: wetenschappelijke soortnaam
 - trofische_groep: de toegepaste trofische categorie in de Zeeschelde (piscivoor, herbivoor, omnivoor en benthivoor)
 - exoot: exoten krijgen de waarde '1'
-- ruimtelijke niveaus 1, 2 en 3: indeling volgens **Figuur 1.1 (checken!)**.
+- ruimtelijke niveaus 1, 2 en 3: indeling volgens Tabel \@ref(tab:100-tabel-deelzones)
 - aantal: som van de getelde vogels per soort, per maand, per rivier en per deelzone (niveau 1, 2 en 3)
+
+<br/>
+
+```{r 100-tabel-deelzones}
+
+tabel_deelzones <- read_xlsx(paste0(pad_tabellen, paste0("100_watervogels_deelzones.xlsx")))
+
+cap_tabel_deelzones <- "Indeling van het Schelde-estuarium in deelzones zoals toegepast in de exploratieve data-analyse."
+
+tabel_deelzones %>% 
+  # mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
+  # mutate(across(everything(), ~cell_spec(., color = "black")))  %>%
+  knitr::kable(
+    # caption = cap_teltrajecten,
+               # "html",
+               booktabs = TRUE,
+               escape = FALSE,
+               caption = cap_tabel_deelzones) %>%
+  kableExtra::kable_styling(latex_options = c("scale_down"),
+                font_size = 12)
+
+```
+
+<br/>
 
 ## Materiaal en methode
 
@@ -181,7 +131,7 @@ Sinds het telseizoen 2018/19 zijn de maandelijkse zomertellingen (april-septembe
 Duikers, futen, aalscholvers, reigers, zwanen, ganzen, eenden, steltlopers en rallen worden geteld sinds het begin van de tellingen.
 Sinds oktober 1999 worden ook de meeuwen en sternen geteld.
 
-*Zijrivieren*
+*Midmaandelijkse watervogeltellingen*
 
 Watervogels langs de zijrivieren (behalve van de Rupelmonding tot het sas van Wintam) en het traject Melle-Gentbrugge worden door vrijwilligers geteld als onderdeel van de midmaandelijkse watervogeltellingen.
 Deze tellingen gebeuren vanaf de oever en vinden enkel plaats in de winter (oktober-maart).
@@ -189,143 +139,103 @@ Meeuwen, sternen, steltlopers en rallen worden langs de zijrivieren meegeteld si
 
 #### Ruimtelijke en temporele afbakening data
 
-De opgevraagde data lopen van oktober 1991 tot en met maart `r laatste_jaar`.
+*Boottellingen*
 
-*Zeeschelde*
+De opgevraagde data lopen van oktober `r vroegste_jaar` tot en met maart `r laatste_jaar`.
 
-De data omvatten de aantallen watervogels die op de Zeeschelde en de Rupel geteld werden tijdens de boottellingen uitgevoerd door INBO.
-Daaraan zijn de aantallen toegevoegd die vanop de dijk geteld werden op het traject van Melle tot in Gent tijdens de midmaandelijkse watervogeltellingen.
-Om de data voor het KRW-waterlichaam 'ZSIII+Rupel' te vervolledigen zijn ook de dijktellingen langs de Rupel stroomopwaarts van het sas van Wintam toegevoegd aan de dataset.
-**De zone oligohalien omvat enkel de boottellingen op de Zeeschelde zonder die op de Rupel. De teltrajecten met als code '9999999' en '9999998' zijn gelegen op Nederlands grondgebied en werden niet mee opgenomen in de data.**
+Deze data omvatten de aantallen watervogels die op de Zeeschelde en de Rupel (tot het sas van Wintam) geteld werden tijdens de boottellingen uitgevoerd door INBO.
 
-*Zijrivieren*
+*Midmaandelijkse watervogeltellingen*
 
-De geselecteerde teltrajecten van de zijrivieren (Watervogeldatabank, INBO) zijn weergegeven in Tabel \@ref(tab:100-tabel-teltrajecten).
-Voor de Getijdenetes zijn geen afzonderlijke riviertellingen beschikbaar; voor de Getijdedijle is slechts een beperkte dataset beschikbaar (1996, 1999 en verder vanaf 2008).
-Eén teltraject in de Durme (Durmemonding tot Mirabrug) werd niet geteld in 2007-2008.
+De resultaten van de boottellingen werden aangevuld met tellingen uitgevoerd vanaf de dijk tijdens de midmaandelijkse watervogeltellingen.
+Om de data voor de Rupel te vervolledigen zijn bijvoorbeeld de dijktellingen stroomopwaarts van het sas van Wintam toegevoegd aan de dataset.
+Alle toegevoegde teltrajecten zijn weergegeven in Tabel \@ref(tab:100-tabel-teltrajecten), met ook het eerste telseizoen en het aantal telseizoenen sinds 1991.
+Hieruit blijkt dat nogal wat telgebieden lang niet jaarlijks werden geteld, meer bepaald langs de Dijle en de Zenne, alsook langs de tijarm van Zwijnaarde.
+Merk op dat voor de Getijdenetes geen afzonderlijke telgebieden en telresultaten beschikbaar zijn (deze data zijn daarom niet mee opgenomen in deze rapportage).
 
 <br/>
 
 ```{r 100-tabel-teltrajecten}
 
-# tabel_teltrajecten <- read_excel(paste0(pad_tabellen, "100_Watervogels_tabellen.xlsx"), 
-#     sheet = "teltrajecten", .name_repair = "minimal") %>%
-#   mutate_all(~replace_na(., ""))
-# 
-# 
-# cap_teltrajecten <- "Geselecteerde teltrajecten van de zijrivieren opgenomen in de exploratieve data-analyse en in de data-aanlevering."
-# 
-# footnote_text <- "Opgelet dit teltraject omvat data van zowel de getijgebonden Durme als van de afgesneden ‘oude’ Durme-arm. Sinds oktober 2012 wordt de getijgebonden Durme afzonderlijk geteld."
-# 
-# tabel_teltrajecten %>%
-#   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
-#   mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
-#   {.[3,4] <- paste0(.[3,4],
-#                     footnote_marker_number(1))
-#   .} %>%
-#   knitr::kable(
-#     # caption = cap_teltrajecten,
-#                # "html",
-#                booktabs = TRUE,
-#                escape = FALSE,
-#                caption = cap_teltrajecten) %>%
-#   kableExtra::kable_styling(latex_options = c("scale_down"),
-#                 font_size = 15) %>%
-#   # kable_styling(latex_options = c("scale_down")) %>%
-#   footnote(number = footnote_text, 
-#            escape = FALSE,
-#            threeparttable = TRUE)
+gebieden_MIDMA_yrs <- read_xlsx(paste0(pad_tabellen, paste0("100_watervogels_gebieden_MIDMA_yrs.xlsx"))) %>% 
+  select("Riviertraject","Telgebied","Gebiedscode","Eerste telseizoen","Laatste telseizoen","Aantal telseizoenen")
+
+cap_teltrajecten <- "Overzicht van de telgebieden die geteld werden tijdens de midmaandelijkse watervogeltellingen (na 1990) en mee opgenomen zijn in deze rapportage."
+
+footnote_text <- "Dit teltraject omvat data van zowel de getijgebonden Durme als van de afgesneden 'Oude Durme'; sinds oktober 2012 wordt de getijgebonden Durme afzonderlijk geteld."
+
+# DUS: dat betekent dat de Oude Durme sinds 2012 niet meer mee in de databevraging zit?
+
+gebieden_MIDMA_yrs %>%
+  {.[3,2] <- paste0(.[3,2],
+                    footnote_marker_number(1))
+  .} %>%
+  # mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
+  # mutate(across(everything(), ~cell_spec(., color = "black")))  %>%
+  knitr::kable(booktabs = TRUE,
+               escape = FALSE,
+               caption = cap_teltrajecten) %>%
+  
+  kableExtra::kable_styling(latex_options = c("scale_down"),
+                font_size = 12) %>% 
+  footnote(number = footnote_text, 
+           escape = FALSE,
+           threeparttable = TRUE)
 
 ```
 
 <br/>
 
-*Ontbrekende data*:
+#### Ontbrekende data
 
-Deze eerstelijnsrapportage werkt met de effectieve data.
-Er gebeurde geen imputatie van ontbrekende data.
+Deze eerstelijnsrapportage (**wat wordt hier eigenlijk mee bedoeld?**) werkt met de effectief getelde aantallen.
+Er gebeurde dus geen imputatie van ontbrekende data.
 
-**2023/24**
+*Boottellingen*
 
-**INBO** Zeeschelde boottellingen zijn volledig uitgevoerd zoals gepland.
+De boottellingen op de Zeeschelde zijn volledig uitgevoerd zoals gepland.
 
-**MIDMA** Alle januari tellingen werden uitgevoerd maar verschillende andere wintertellingen ontbreken voor telseizoen 2024/25 (Tabel \@ref(tab:100-tabel-ontbrekendedataMIDMA)).
+*Midmaandelijkse watervogeltellingen*
+
+In 4 van de 9 telgebieden werden alle wintertellingen uitgevoerd, terwijl in het Zennegat slechts 3 tellingen plaatsvonden en langs de tijarmen stroomopwaarts van de monding van de Ringvaart telkens 4 (Tabel \@ref(tab:100-tabel-ontbrekendedataMIDMA)).
+
+<br/>
 
 ```{r 100-tabel-ontbrekendedataMIDMA}
 
-####dataset nog inlezen####
+tabel_ontbrekende_data <- read_xlsx(paste0(pad_tabellen, "100_watervogels_ontbrekende_MIDMA_data.xlsx"))
 
-d_ontbrekend <- Tellingen_ZS_alles %>% 
-  filter(projectcode == "MIDMA") %>% 
-  filter(telseizoen =="2024/25") %>%
-  filter(gebiedsklasse == "Estuarium") %>% 
-  dplyr::filter(maand %in% c(10:12, 1:3)) %>% 
-  mutate(telseizoen1 = 2024)
-  
-all_combi <- expand_grid(
-  gebied = unique(d_ontbrekend$gebied),
-  telseizoen1 = c(2024),
-  maand = c(1,2,3,10,11,12) 
-) 
-# all_combi <- all_combi %>% 
-#   rename(maand_1 = maand) %>% 
-#   rename(maand_2 = "2") %>% 
-#   rename(maand_3 = "3") %>% 
-#   rename(maand_10 = "10") %>% 
-#   rename(maand_11 = "11") %>% 
-#   rename(maand_12 = "12")
+cap_ontbrekendedata <- "Overzicht van de uitgevoerde midmaandelijkse tellingen door vrijwilligers in telseizoen 2025/26 (FALSE = geen data beschikbaar; TRUE = data beschikbaar)"
 
-tabel_ontbrekendedata <- 
-  d_ontbrekend %>% 
-  group_by(gebied, maand) %>% 
-  summarise(n_records = n(), .groups = 'drop') %>%
-  right_join(all_combi, by = c("gebied", "maand")) %>%  # Join works now
-  mutate(
-    n_records = replace_na(n_records, 0),
-    data_available = n_records > 0
-  ) %>%
-  select(gebied, maand, data_available) %>%
-  pivot_wider(
-    names_from = maand,
-    names_prefix = "maand_",
-    values_from = data_available,
-    values_fill = FALSE
-  ) %>%
-  # Ensure all columns appear in the right order
-  select(gebied, maand_10, maand_11, maand_12, maand_1, maand_2, maand_3) %>% 
-  write_delim(paste0(pad_tabellen, "ontbrekendetellingen.csv"),
-               delim = ";") %>% 
-  rename_with(\(x) str_replace(x, "_", "-"))
-
-cap_ontbrekendedata <- "Overzicht uitgevoerde Midmaandelijkse tellingen vrijwilligers in telseizoen 2024/25. FALSE = geen data beschikbaar voor teltraject; TRUE = data beschikbaar."
-
-# footnote_text <- "."
-
-tabel_ontbrekendedata %>%
-  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
-  mutate(across(everything(), ~cell_spec(., color = "black")))  %>%
-  knitr::kable(
-    # caption = ontbrekendedata,
-               # "html",
-               booktabs = TRUE,
+tabel_ontbrekende_data %>%
+  knitr::kable(booktabs = TRUE,
                escape = FALSE,
                caption = cap_ontbrekendedata) %>%
   kableExtra::kable_styling(latex_options = c("scale_down"),
-                font_size = 15) 
+                font_size = 12) 
 
 ```
 
 <br/>
 
-*Winterkarakteristiek telseizoen 2024/25*:
+#### Winterkarakteristiek telseizoen 2025/26 ([Ukkel - winter 2025](https://www.meteo.be/nl/klimaat/klimaat-van-belgie/klimatologisch-overzicht/2025/winter)):
 
-De winter van 2024/25 was klimatologisch nat.
-Vooral in januari was er meer dan gemiddeld neerslag (waaronder ook enkele cm sneeuw).
-Er was één langere koude periode van 3 tot 22 januari 2025.
-Daarna volgde net zoals in 2023/24 een zeer warme (eind) februari, tot meer dan 19°C.
-In totaal telde de winter 5 sneeuwdagen in januari en in totaal 4 vriesdagen (steeds min \< 0°C).
-Grotere waterpartijen vroren niet dicht in de Scheldevallei.
-De winter kende heel weinig zonnige dagen en een hoge gemiddelde windsnelheid.
+Na twee wintermaanden was het al duidelijk dat de winter van 2025/26 voor het achtste seizoen op rij meer neerslag zou tonen dan gemiddeld.
+December 2024 was nochtans een drogere maand dan gemiddeld, maar werd gevolgd door een zeer natte maand januari (met een evenaring van het record van 2004).
+Daarna volgde er terug een drogere maand februari.
+In totaal viel er 278,3 mm neerslag in Ukkel (normaal: 228,6 mm).
+
+Er viel tijdens 5 dagen neerslag die geheel of gedeeltelijk uit sneeuw bestond (normaal: 12,6 dagen).
+Dit zorgde voor een maximale sneeuwdikte van 8 cm op 9 januari.
+
+Zowel in december als in januari liet de zon zich maar weinig zien.
+De zonnigere maand februari kon niet voorkomen dat de winter in zijn totaal een stuk somberder was dan gemiddeld.
+Uiteindelijk scheen de zon in Ukkel slechts 143u45' (normaal: 180u17').
+
+De hele winter door wisselden warmere en koudere perioden elkaar af.
+Daardoor ligt de uiteindelijke gemiddelde temperatuur van dit seizoen dicht bij de normale waarde: 4,2°C (normaal: 4,1°C).
+
+# TOT HIER 26/08 18u30
 
 ## Exploratieve data-analyse watervogelaantallen
 
@@ -391,11 +301,11 @@ De vogelaantallen namen verhoudingsgewijs in winterseizoen 2023 en 2024 sterk to
 
 ```{r 100-figuur-maandelijkse-totalen-winter-Zeeschelde, fig.cap=cap_maandelijkse_totalen,out.height="40%"}
 
-cap_maandelijkse_totalen <- paste0("Maandelijkse wintertotalen van de watervogels langsheen de Zeeschelde sinds oktober 1991 tot ", 
-                                  laatste_jaar, 
-                                  " (exclusief zijrivieren; exclusief meeuwen en sternen).")
-
-knitr::include_graphics(paste0(pad_figuren, "100_figuur_maandelijkse_totalen_ZSwinter.jpg"))
+# cap_maandelijkse_totalen <- paste0("Maandelijkse wintertotalen van de watervogels langsheen de Zeeschelde sinds oktober 1991 tot ", 
+#                                   laatste_jaar, 
+#                                   " (exclusief zijrivieren; exclusief meeuwen en sternen).")
+# 
+# knitr::include_graphics(paste0(pad_figuren, "100_figuur_maandelijkse_totalen_ZSwinter.jpg"))
 
 ```
 
@@ -403,11 +313,11 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_maandelijkse_totalen_ZSw
 
 ```{r 100-figuur-verhouding-aantallen, fig.cap=cap_verhouding_aantallen, out.width="80%"}
 
-cap_verhouding_aantallen <- paste0("De verhouding per zone (niveau 3) van de totale aantallen watervogels geteld langsheen de Zeeschelde (winter 1991 - ", 
-                                  laatste_jaar, 
-                                  ") (winterdata okt – mrt).")
-
-knitr::include_graphics(paste0(pad_figuren, "100_figuur_verhouding_aantallen_niveau3Zeeschelde.jpg"))
+# cap_verhouding_aantallen <- paste0("De verhouding per zone (niveau 3) van de totale aantallen watervogels geteld langsheen de Zeeschelde (winter 1991 - ", 
+#                                   laatste_jaar, 
+#                                   ") (winterdata okt – mrt).")
+# 
+# knitr::include_graphics(paste0(pad_figuren, "100_figuur_verhouding_aantallen_niveau3Zeeschelde.jpg"))
 
 ```
 
@@ -431,65 +341,65 @@ Deze toename is te wijten aan de heel hoge aantallen die geteld worden op de Zee
 
 ```{r 100-tabel-rtrim}
 
-tabel_rtrim <- read_excel(paste0(pad_tabellen, "trend_statstrend_rtrim_nietbroedvogels_zs.xlsx"), 
-    sheet = "Sheet1", .name_repair = "minimal") %>% 
-  rename_with(\(x) str_replace(x, "_", "-")) %>%
-  mutate_all(~replace_na(., ""))
-
-
-cap_rtrim <- "Trendberekening met behulp van Rtrim voor S-IHD soorten voor de lange termijn vanaf 1992, voor de middellange termijn vanaf 2009 en voor de korte termijn (laatste 6 telseizoenen)."
-
-tabel_rtrim %>%
-  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
-  mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
-  arrange(`soort-nl`) %>% 
-  knitr::kable(
-    # caption = cap_rtrim,
-               # "html",
-               booktabs = TRUE,
-               escape = FALSE,
-               caption = cap_rtrim) %>%
-  kableExtra::kable_styling(latex_options = c("scale_down"),
-                font_size = 15) 
-
-```
-
-<br/>
-
-**Trendindex wintermaximum** Figuur \@ref(fig:100-figuur-index-niveau2) toont de trendindex op middellange termijn.
-Een globaal dalende trend is zichtbaar voor de Zeeschelde en de zijrivieren tot 2019.
-De winterinflux van 2020 resulteerde in een duidelijke piek.
-Sinds winterseizoen 2023 is er een hogere winterindex.
-Beschouwen we de winterindex in meer detail op niveau 3 (saliniteitszones) (Figuur \@ref(fig:100-figuur-index-niveau3)) dan valt op dat winterseizoen 2022/23 een absoluut dieptepunt was, vooral in de zone zoet lang.
-Toen werden uitzonderlijk weinig watervogels geteld in deze zone - vooral de wilde eend nam onverklaarbaar en spectaculair af ((Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten)).
-Dit komt sterk overeen met een lage gemiddelde biomassa aan macrozoöbenthos in 2022, maar vergeleken met de biomassa's sinds 2008 niet uitzonderlijk laag om de grote daling in watervogels te kunnen verklaren.
-De index nam sterk toe in deze zone onder impuls van de ontpoldering Groot Schoor Hamme die heel veel overwinterende watervogels aantrok die ook tijdelijk op de Zeeschelde verblijven tijdens laag water.
-Positieve indexverandering is er ook in de zone met sterke saliniteitsgradiënt (impuls Prosperpolder- Hedwige ontpoldering) en in het Oligohalien.
-Deze trends correleren ook met een algemeen toenemende biomassa aan bodemdieren in 2023 (zie hoofdstuk macrozoöbenthos).
-
-De watervogels op de **Rupel** volgen sinds 2009 een dalende trend met een absoluut dieptepunt in het winterseizoen 2019.
-Er lijkt ook hier de voorbije 2 winters een beperkte verbetering zichtbaar.
-
-De trends in de **Getijdedurme** tonen lagere aantallen gedurende de baggerperiode en hogere aantallen in daaropvolgend sterke sedimentatieperiode (2013-2017).
-Daarna namen de aantallen af om de laatste jaren opnieuw wat te stijgen.
-De laatste winters (2021-2023) werden hoge wintermaxima geteld in het Klein Broek en Meulendijkbroek langsheen de Durme rond de 800-1000 ex..
-Deze twee gebieden kenden toen een tijdelijk wetland vernattingsbeheer wat zeer succesvol was voor de watervogels.
-
-**Zoet zijrivier** omvat voor de watervogelevaluatie de **Zenne** en **Dijle**.
-Deze waren tot 2007 nagenoeg 'vogel-leeg'.
-De hoogste aantallen werden op de Dijle en Zenne slikken respectievelijk geteld in de de winter van 2007 en 2008.
-Op de **Dijle** was de piek van vogelaantallen van korte duur.
-De laatste jaren worden slechts enkele tientallen vogels gemiddeld per winterseizoen geteld op de slikken van de Dijle.
-De wintermaxima in het GGG Zennegat schommelen de laatste jaren rond de 700 watervogels, een factor 10 hoger dan het aantal vogels geteld op de Dijle zelf.
-Op de **Zenne** fluctueerden de aantallen sterk tussen 2008 en 2016 om dan af te nemen tot 2019.
-Sindsdien zijn de aantallen relatief stabiel.
-
-```{r 100-figuur-index-niveau2, fig.cap=cap_index_niveau2, out.width="80%"}
-
-cap_index_niveau2 <- paste0("Index van de maximale wintervogelaantallen in de Zeeschelde en zijrivieren (2009/10 – ",laatste_telseizoen, 
-                                "). Index gestandaardiseerd naar winter 2009/10.")
-
-knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen_niv2.jpg"))
+# tabel_rtrim <- read_excel(paste0(pad_tabellen, "trend_statstrend_rtrim_nietbroedvogels_zs.xlsx"), 
+#     sheet = "Sheet1", .name_repair = "minimal") %>% 
+#   rename_with(\(x) str_replace(x, "_", "-")) %>%
+#   mutate_all(~replace_na(., ""))
+# 
+# 
+# cap_rtrim <- "Trendberekening met behulp van Rtrim voor S-IHD soorten voor de lange termijn vanaf 1992, voor de middellange termijn vanaf 2009 en voor de korte termijn (laatste 6 telseizoenen)."
+# 
+# tabel_rtrim %>%
+#   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
+#   mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
+#   arrange(`soort-nl`) %>% 
+#   knitr::kable(
+#     # caption = cap_rtrim,
+#                # "html",
+#                booktabs = TRUE,
+#                escape = FALSE,
+#                caption = cap_rtrim) %>%
+#   kableExtra::kable_styling(latex_options = c("scale_down"),
+#                 font_size = 15) 
+# 
+# ```
+# 
+# <br/>
+# 
+# **Trendindex wintermaximum** Figuur \@ref(fig:100-figuur-index-niveau2) toont de trendindex op middellange termijn.
+# Een globaal dalende trend is zichtbaar voor de Zeeschelde en de zijrivieren tot 2019.
+# De winterinflux van 2020 resulteerde in een duidelijke piek.
+# Sinds winterseizoen 2023 is er een hogere winterindex.
+# Beschouwen we de winterindex in meer detail op niveau 3 (saliniteitszones) (Figuur \@ref(fig:100-figuur-index-niveau3)) dan valt op dat winterseizoen 2022/23 een absoluut dieptepunt was, vooral in de zone zoet lang.
+# Toen werden uitzonderlijk weinig watervogels geteld in deze zone - vooral de wilde eend nam onverklaarbaar en spectaculair af ((Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten)).
+# Dit komt sterk overeen met een lage gemiddelde biomassa aan macrozoöbenthos in 2022, maar vergeleken met de biomassa's sinds 2008 niet uitzonderlijk laag om de grote daling in watervogels te kunnen verklaren.
+# De index nam sterk toe in deze zone onder impuls van de ontpoldering Groot Schoor Hamme die heel veel overwinterende watervogels aantrok die ook tijdelijk op de Zeeschelde verblijven tijdens laag water.
+# Positieve indexverandering is er ook in de zone met sterke saliniteitsgradiënt (impuls Prosperpolder- Hedwige ontpoldering) en in het Oligohalien.
+# Deze trends correleren ook met een algemeen toenemende biomassa aan bodemdieren in 2023 (zie hoofdstuk macrozoöbenthos).
+# 
+# De watervogels op de **Rupel** volgen sinds 2009 een dalende trend met een absoluut dieptepunt in het winterseizoen 2019.
+# Er lijkt ook hier de voorbije 2 winters een beperkte verbetering zichtbaar.
+# 
+# De trends in de **Getijdedurme** tonen lagere aantallen gedurende de baggerperiode en hogere aantallen in daaropvolgend sterke sedimentatieperiode (2013-2017).
+# Daarna namen de aantallen af om de laatste jaren opnieuw wat te stijgen.
+# De laatste winters (2021-2023) werden hoge wintermaxima geteld in het Klein Broek en Meulendijkbroek langsheen de Durme rond de 800-1000 ex..
+# Deze twee gebieden kenden toen een tijdelijk wetland vernattingsbeheer wat zeer succesvol was voor de watervogels.
+# 
+# **Zoet zijrivier** omvat voor de watervogelevaluatie de **Zenne** en **Dijle**.
+# Deze waren tot 2007 nagenoeg 'vogel-leeg'.
+# De hoogste aantallen werden op de Dijle en Zenne slikken respectievelijk geteld in de de winter van 2007 en 2008.
+# Op de **Dijle** was de piek van vogelaantallen van korte duur.
+# De laatste jaren worden slechts enkele tientallen vogels gemiddeld per winterseizoen geteld op de slikken van de Dijle.
+# De wintermaxima in het GGG Zennegat schommelen de laatste jaren rond de 700 watervogels, een factor 10 hoger dan het aantal vogels geteld op de Dijle zelf.
+# Op de **Zenne** fluctueerden de aantallen sterk tussen 2008 en 2016 om dan af te nemen tot 2019.
+# Sindsdien zijn de aantallen relatief stabiel.
+# 
+# ```{r 100-figuur-index-niveau2, fig.cap=cap_index_niveau2, out.width="80%"}
+# 
+# cap_index_niveau2 <- paste0("Index van de maximale wintervogelaantallen in de Zeeschelde en zijrivieren (2009/10 – ",laatste_telseizoen, 
+#                                 "). Index gestandaardiseerd naar winter 2009/10.")
+# 
+# knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen_niv2.jpg"))
 
 ```
 
@@ -497,10 +407,10 @@ knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantall
 
 ```{r 100-figuur-index-niveau3, fig.cap=cap_index_niveau3, out.width="80%"}
 
-cap_index_niveau3 <- paste0("Index van de maximale wintervogelaantallen in de verschillende zones (2009/10 – ",laatste_telseizoen, 
-                                "). Index gestandaardiseerd naar winter 2009/10.")
-
-knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen.jpg"))
+# cap_index_niveau3 <- paste0("Index van de maximale wintervogelaantallen in de verschillende zones (2009/10 – ",laatste_telseizoen, 
+#                                 "). Index gestandaardiseerd naar winter 2009/10.")
+# 
+# knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen.jpg"))
 
 ```
 
@@ -528,49 +438,49 @@ De overige groepen vertonen over laatste 6 jaar bekeken geen duidelijke trends.
 
 ```{r 100-tabel-rtrim-analyse-trofische-groepen}
 
-tabel_rtrim_trof <- read_excel(paste0(pad_tabellen, "trend_statstrend_rtrim_trofischegroepen_zs.xlsx"), 
-    sheet = "Sheet1", .name_repair = "minimal") %>% 
-  rename_with(\(x) str_replace(x, "_", "-")) %>%
-  mutate_all(~replace_na(., ""))
-
-
-cap_rtrim_trof <- "Trendberekening met behulp van Rtrim voor de trofische groepen (NPisc = viseter; Nomn = alleseters; Nbenth : bodemdiereters; Nherb = planteneters) voor de lange termijn vanaf 1992, voor de middellange termijn vanaf 2009 en voor de korte termijn (laatste 6 telseizoenen)."
-
-tabel_rtrim_trof %>%
-  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
-  mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
-  knitr::kable(
-    # caption = cap_rtrim,
-               # "html",
-               booktabs = TRUE,
-               escape = FALSE,
-               caption = cap_rtrim_trof) %>%
-  kableExtra::kable_styling(latex_options = c("scale_down"),
-                font_size = 15) 
-
-```
-
-<br/>
-
-```{r 100-figuur-aantallen-trofische-groep-indexZS, fig.cap=cap_aantallen_trofische_groep_indexZS, out.width="80%"}
-
-cap_aantallen_trofische_groep_indexZS <- paste0("Trendindex wintermaxima per zone (winter 2009/10 – ",
-                                        laatste_telseizoen, 
-                                        ") opgedeeld volgens de trofische indicatorgroepen (Nbenth: benthivoren, Nherb: herbivoren, Nomn: omnivoren en Npisc: piscivoren). Deze figuur is inclusief de meeuwen en sternen.")
-
-knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen_trofischegroepZS.jpg"))
-
-```
-
-<br/>
-
-```{r 100-figuur-aantallen-trofische-groep-index, fig.cap=cap_aantallen_trofische_groep_index, out.width="80%"}
-
-cap_aantallen_trofische_groep_index <- paste0("Trendindex wintermaxima per zone (winter 2009/10 – ",
-                                        laatste_telseizoen, 
-                                        ") opgedeeld volgens de trofische indicatorgroepen (Nbenth: benthivoren, Nherb: herbivoren, Nomn: omnivoren en Npisc: piscivoren). Deze figuur is inclusief de meeuwen en sternen.")
-
-knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen_trofischegroepZSniv3.jpg"))
+# tabel_rtrim_trof <- read_excel(paste0(pad_tabellen, "trend_statstrend_rtrim_trofischegroepen_zs.xlsx"), 
+#     sheet = "Sheet1", .name_repair = "minimal") %>% 
+#   rename_with(\(x) str_replace(x, "_", "-")) %>%
+#   mutate_all(~replace_na(., ""))
+# 
+# 
+# cap_rtrim_trof <- "Trendberekening met behulp van Rtrim voor de trofische groepen (NPisc = viseter; Nomn = alleseters; Nbenth : bodemdiereters; Nherb = planteneters) voor de lange termijn vanaf 1992, voor de middellange termijn vanaf 2009 en voor de korte termijn (laatste 6 telseizoenen)."
+# 
+# tabel_rtrim_trof %>%
+#   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
+#   mutate(across(everything(), ~cell_spec(., color = "black"))) %>%
+#   knitr::kable(
+#     # caption = cap_rtrim,
+#                # "html",
+#                booktabs = TRUE,
+#                escape = FALSE,
+#                caption = cap_rtrim_trof) %>%
+#   kableExtra::kable_styling(latex_options = c("scale_down"),
+#                 font_size = 15) 
+# 
+# ```
+# 
+# <br/>
+# 
+# ```{r 100-figuur-aantallen-trofische-groep-indexZS, fig.cap=cap_aantallen_trofische_groep_indexZS, out.width="80%"}
+# 
+# cap_aantallen_trofische_groep_indexZS <- paste0("Trendindex wintermaxima per zone (winter 2009/10 – ",
+#                                         laatste_telseizoen, 
+#                                         ") opgedeeld volgens de trofische indicatorgroepen (Nbenth: benthivoren, Nherb: herbivoren, Nomn: omnivoren en Npisc: piscivoren). Deze figuur is inclusief de meeuwen en sternen.")
+# 
+# knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen_trofischegroepZS.jpg"))
+# 
+# ```
+# 
+# <br/>
+# 
+# ```{r 100-figuur-aantallen-trofische-groep-index, fig.cap=cap_aantallen_trofische_groep_index, out.width="80%"}
+# 
+# cap_aantallen_trofische_groep_index <- paste0("Trendindex wintermaxima per zone (winter 2009/10 – ",
+#                                         laatste_telseizoen, 
+#                                         ") opgedeeld volgens de trofische indicatorgroepen (Nbenth: benthivoren, Nherb: herbivoren, Nomn: omnivoren en Npisc: piscivoren). Deze figuur is inclusief de meeuwen en sternen.")
+# 
+# knitr::include_graphics(paste0(pad_figuren, "100-figuur_Index_wintervogelaantallen_trofischegroepZSniv3.jpg"))
 
 ```
 
@@ -607,9 +517,9 @@ Zie rapportage vorig jaar.
 
 ```{r 100-figuur-ShannonDiversity-metmeeuwen, fig.cap=cap_shannon_diversiteit, out.width="80%"}
 
-cap_shannon_diversiteit <- "Shannon diversiteitsindex per zone (niveau 3). Winterdata inclusief meeuwen en sternen."
-
-knitr::include_graphics(paste0(pad_figuren, "100_figuur_ShannonDiversity_wintervogels_metmeeuwen.jpg"))
+# cap_shannon_diversiteit <- "Shannon diversiteitsindex per zone (niveau 3). Winterdata inclusief meeuwen en sternen."
+# 
+# knitr::include_graphics(paste0(pad_figuren, "100_figuur_ShannonDiversity_wintervogels_metmeeuwen.jpg"))
 
 ```
 
@@ -617,9 +527,9 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_ShannonDiversity_winterv
 
 ```{r 100-figuur-aantallen-abundante-soorten, fig.cap=cap_aantallen_abundante_soorten, out.width="80%"}
 
-cap_aantallen_abundante_soorten <- "Trends in het gemiddelde aantal wintervogels (okt.-mrt.) voor 4 abundante soorten in de deelzones Zeeschelde (niveau 3)."
-
-knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_abundante_soorten_niveau3.jpg"))
+# cap_aantallen_abundante_soorten <- "Trends in het gemiddelde aantal wintervogels (okt.-mrt.) voor 4 abundante soorten in de deelzones Zeeschelde (niveau 3)."
+# 
+# knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_abundante_soorten_niveau3.jpg"))
 
 ```
 
@@ -627,9 +537,9 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_abundante_soor
 
 ```{r 100-figuur-aantallen-steltlopers, fig.cap=cap_aantallen_steltlopers, out.width="80%"}
 
-cap_aantallen_steltlopers <- "Trends in het gemiddeld aantal getelde wintervogels (okt.-mrt.) voor 6 abundante steltlopers (benthivoor) in de zone met sterke saliniteitsgradiënt."
-
-knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_steltlopers.jpg"))
+# cap_aantallen_steltlopers <- "Trends in het gemiddeld aantal getelde wintervogels (okt.-mrt.) voor 6 abundante steltlopers (benthivoor) in de zone met sterke saliniteitsgradiënt."
+# 
+# knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_steltlopers.jpg"))
 
 ```
 
@@ -637,9 +547,9 @@ knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_steltlopers.jp
 
 ```{r 100-figuur-exotentrends, fig.cap=cap_exotentrends, out.width="80%"}
 
-cap_exotentrends <- "Trends sinds 2009 in het gemiddeld aantal getelde wintervogels (okt.-mrt.) voor 4 abundante exoten/verwilderde vogels in de zones van de Zeeschelde en zijrivieren."
-                                            
-knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_exoten.jpg"))
+# cap_exotentrends <- "Trends sinds 2009 in het gemiddeld aantal getelde wintervogels (okt.-mrt.) voor 4 abundante exoten/verwilderde vogels in de zones van de Zeeschelde en zijrivieren."
+#                                             
+# knitr::include_graphics(paste0(pad_figuren, "100_figuur_aantallen_exoten.jpg"))
 
 ```
 
@@ -679,20 +589,20 @@ Uitgave Instituut voor Natuur- en Bosonderzoek, Brussel.
 
 ```{r 100-tabel-trofischegroepsoorten}
 
-tabel_trofischegroep <- 
-  read_delim(paste0(pad_tabellen, "Soorten_EMSE_analyse.csv"),
-              delim = ";")
-
-cap_trofischegroepsoorten <- "Vogelsoorten (met meer dan 30 waarnemingen) werden ingedeeld in 4 groepen: benthoseters (NBenth) (omvatten: schelpdiereters, wormeneters, hyperbenthoseters en epibenthoseters), viseters (NPisc), herbivoren (Nherb) en omnivoren (Nomn). Soorten die beschouwd worden als exoten geselecteerd."
-
-tabel_trofischegroep  %>%
-  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
-  knitr::kable(booktabs = TRUE,
-               escape = FALSE,
-               longtable = TRUE, 
-               caption = cap_trofischegroepsoorten) %>%
-  kableExtra::kable_styling(latex_options = c("scale_down"),
-                            font_size = 8) 
+# tabel_trofischegroep <- 
+#   read_delim(paste0(pad_tabellen, "Soorten_EMSE_analyse.csv"),
+#               delim = ";")
+# 
+# cap_trofischegroepsoorten <- "Vogelsoorten (met meer dan 30 waarnemingen) werden ingedeeld in 4 groepen: benthoseters (NBenth) (omvatten: schelpdiereters, wormeneters, hyperbenthoseters en epibenthoseters), viseters (NPisc), herbivoren (Nherb) en omnivoren (Nomn). Soorten die beschouwd worden als exoten geselecteerd."
+# 
+# tabel_trofischegroep  %>%
+#   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
+#   knitr::kable(booktabs = TRUE,
+#                escape = FALSE,
+#                longtable = TRUE, 
+#                caption = cap_trofischegroepsoorten) %>%
+#   kableExtra::kable_styling(latex_options = c("scale_down"),
+#                             font_size = 8) 
 
 ```
 
