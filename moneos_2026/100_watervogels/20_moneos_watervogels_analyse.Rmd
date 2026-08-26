@@ -215,10 +215,10 @@ gebieden_MIDMA_yrs <- WV_DB %>%
            case_when(Gebiedsnaam == "Dijle Netemonding - Mechelen" ~ "monding Dijle/Nete - Mechelen",
                      Gebiedsnaam == "Durme monding - Mira-brug TIELRODE" ~ "monding Durme - Mira-brug Tielrode",
                      Gebiedsnaam == "Oude Durme + Durme HAMME" ~ "Oude Durme + Durme Hamme",
-                     Gebiedsnaam == "Durme brug Waasmunster - Mirabrug" ~ "Durme brug Waasmunster - Mira-brug Tielrode",
+                     Gebiedsnaam == "Durme brug Waasmunster - Mirabrug" ~ "brug Waasmunster - Mira-brug Tielrode",
                      Gebiedsnaam == "Tijarm (tot ringvaart) ZWIJNAARDE" ~  "Tijarm Zwijnaarde - Ringvaart",
-                     Gebiedsnaam == "Zenne Zennegat - Hombeekbrug MECHELEN" ~ "Zenne Zennegat - Hombeekbrug Mechelen",
-                     Gebiedsnaam == "Zenne ZEMST(brug Brusselse Steenweg) - HOMBEEK (Eglegemvijver)" ~ "Zenne brug Brusselse Steenweg Zemst - Eglegemvijver Hombeek",
+                     Gebiedsnaam == "Zenne Zennegat - Hombeekbrug MECHELEN" ~ "Zennegat - Hombeekbrug Mechelen",
+                     Gebiedsnaam == "Zenne ZEMST(brug Brusselse Steenweg) - HOMBEEK (Eglegemvijver)" ~ "brug Brusselse Steenweg Zemst - Eglegemvijver Hombeek",
                      .default = Gebiedsnaam))
 
 write_xlsx(gebieden_MIDMA_yrs, paste0(pad_tabellen, paste0("100_watervogels_gebieden_MIDMA_yrs.xlsx")))
@@ -234,9 +234,9 @@ data_available <- WV_DB %>%
   mutate(data_available = TRUE)
   
 alle_combinaties <- expand_grid(
-  gebied = unique(data_selectie$gebied),
-  telling = unique(data_selectie$telling)) %>% 
-  inner_join(data_selectie %>% distinct(gebied, rivier))
+  gebied = unique(data_available$gebied),
+  telling = unique(data_available$telling)) %>% 
+  inner_join(data_available %>% distinct(gebied, rivier))
 
 tabel_ontbrekende_data <- left_join(alle_combinaties, data_available) %>% 
   mutate(data_available = case_when(is.na(data_available) ~ FALSE, .default = TRUE)) %>% 
