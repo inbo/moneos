@@ -90,6 +90,7 @@ knitr::kable(
 ```
 
 ### Dataset aanmaken voor MONEOS rapportage
+
 ```{r dataset maken voor trends volledige Zeeschelde alluvium - NOPzoneplus}
 
 ### Selecteren watervogels Zeeschelde MONEOS-rapport
@@ -123,6 +124,7 @@ Tellingen_MONEOS_niv3 <- Tellingen_MONEOS_niv3 %>%
 ```
 
 ### Soorten in de dataset
+
 ```{r soorten}
 
 # opgelet: voor de natuurindicator werken we met alle soorten
@@ -165,6 +167,7 @@ knitr::kable(tabel_trofische_groep)
 ```
 
 ### Verkennende tabellen
+
 ```{r verkennende tabellen}
 
 # overzichtstabel van de opdeling in deelzones
@@ -174,7 +177,22 @@ tabel_deelzones <- Gebieden_ZS %>%
   arrange(niveau1, niveau2, rivier, krwzone, niveau3)
 colnames(tabel_deelzones) <- c("Niveau 1", "Niveau 2", "Rivier", "KRW-zone", "Niveau 3")
 
-write_xlsx(tabel_deelzones, paste0(pad_tabellen, paste0("100_watervogels_deelzones.xlsx")))
+write_xlsx(tabel_deelzones, paste0(pad_tabellen, paste0("100_1a_watervogels_deelzones.xlsx")))
+
+# functie voor het hernoemen van de telgebieden
+hernoem_telgebieden <- function(x){
+  case_when(
+    x == "Dijle Netemonding - Mechelen" ~ "monding Dijle/Nete - Mechelen",
+    x == "Durme monding - Mira-brug TIELRODE" ~ "monding Durme - Mira-brug Tielrode",
+    x == "Oude Durme + Durme HAMME" ~ "Oude Durme + Durme Hamme",
+    x == "Durme brug Waasmunster - Mirabrug" ~ "brug Waasmunster - Mira-brug Tielrode",
+    x == "Rupel brug Boom - monding Dijle/Nete" ~ "brug Boom - monding Dijle/Nete",
+    x == "Tijarm (tot ringvaart) ZWIJNAARDE" ~  "tijarm Zwijnaarde - monding Ringvaart",
+    x == "Tijgebonden Oude Schelde Gent - monding Ringvaart" ~ "tijgebonden Oude Schelde Gent - monding Ringvaart",
+    x == "Zenne Zennegat - Hombeekbrug MECHELEN" ~ "Zennegat - Hombeekbrug Mechelen",
+    x == "Zenne ZEMST(brug Brusselse Steenweg) - HOMBEEK (Eglegemvijver)" ~ "brug Brusselse Steenweg Zemst - Eglegemvijver Hombeek",
+    .default = x)
+}
 
 # overzichtstabel van de gebieden geteld via MIDMA
 gebieden_MIDMA <- WV_DB %>% 
@@ -211,19 +229,9 @@ gebieden_MIDMA_yrs <- WV_DB %>%
          "Laatste telseizoen" = data_tot,
          "Aantal telseizoenen" = aantal_telseizoenen) %>% 
   
-  mutate(Telgebied = 
-           case_when(Gebiedsnaam == "Dijle Netemonding - Mechelen" ~ "monding Dijle/Nete - Mechelen",
-                     Gebiedsnaam == "Durme monding - Mira-brug TIELRODE" ~ "monding Durme - Mira-brug Tielrode",
-                     Gebiedsnaam == "Oude Durme + Durme HAMME" ~ "Oude Durme + Durme Hamme",
-                     Gebiedsnaam == "Durme brug Waasmunster - Mirabrug" ~ "brug Waasmunster - Mira-brug Tielrode",
-                     Gebiedsnaam == "Rupel brug Boom - monding Dijle/Nete" ~ "brug Boom - monding Dijle/Nete",
-                     Gebiedsnaam == "Tijarm (tot ringvaart) ZWIJNAARDE" ~  "tijarm Zwijnaarde - monding Ringvaart",
-                     Gebiedsnaam == "Tijgebonden Oude Schelde Gent - monding Ringvaart" ~ "tijgebonden Oude Schelde Gent - monding Ringvaart",
-                     Gebiedsnaam == "Zenne Zennegat - Hombeekbrug MECHELEN" ~ "Zennegat - Hombeekbrug Mechelen",
-                     Gebiedsnaam == "Zenne ZEMST(brug Brusselse Steenweg) - HOMBEEK (Eglegemvijver)" ~ "brug Brusselse Steenweg Zemst - Eglegemvijver Hombeek",
-                     .default = Gebiedsnaam))
+  mutate(Telgebied = hernoem_telgebieden(Gebiedsnaam))
 
-write_xlsx(gebieden_MIDMA_yrs, paste0(pad_tabellen, paste0("100_watervogels_gebieden_MIDMA_yrs.xlsx")))
+write_xlsx(gebieden_MIDMA_yrs, paste0(pad_tabellen, paste0("100_1b_watervogels_gebieden_MIDMA_yrs.xlsx")))
 
 
 # overzichtstabel van ontbrekende MIDMA tellingen 2025-2026
@@ -241,33 +249,37 @@ alle_combinaties <- expand_grid(
   inner_join(data_available %>% distinct(gebied, rivier))
 
 tabel_ontbrekende_data <- left_join(alle_combinaties, data_available) %>% 
-  mutate(data_available = case_when(is.na(data_available) ~ FALSE, .default = TRUE)) %>% 
+  mutate(data_available = coalesce(data_available, FALSE)) %>% 
   pivot_wider(
     names_from = telling,
     values_from = data_available,
     values_fill = FALSE) %>% 
-  
-  select("Riviertraject" = rivier, "Gebied" = gebied, "Oktober", "November", "December", "Januari", "Februari", "Maart") %>% 
+  select("Riviertraject" = rivier, 
+         "Gebied" = gebied, 
+         "Oktober", "November", "December", "Januari", "Februari", "Maart") %>% 
   cbind(., Som = rowSums(.[,3:8])) %>% 
-  
-  mutate(Telgebied = case_when(
-    Gebied == "Dijle Netemonding - Mechelen" ~ "monding Dijle/Nete - Mechelen",
-    Gebied == "Durme monding - Mira-brug TIELRODE" ~ "monding Durme - Mira-brug Tielrode",
-    Gebied == "Oude Durme + Durme HAMME" ~ "Oude Durme + Durme Hamme",
-    Gebied == "Durme brug Waasmunster - Mirabrug" ~ "brug Waasmunster - Mira-brug Tielrode",
-    Gebied == "Rupel brug Boom - monding Dijle/Nete" ~ "brug Boom - monding Dijle/Nete",
-    Gebied == "Tijarm (tot ringvaart) ZWIJNAARDE" ~  "tijarm Zwijnaarde - monding Ringvaart",
-    Gebied == "Tijgebonden Oude Schelde Gent - monding Ringvaart" ~ "tijgebonden Oude Schelde Gent - monding Ringvaart",
-    Gebied == "Zenne Zennegat - Hombeekbrug MECHELEN" ~ "Zennegat - Hombeekbrug Mechelen",
-    Gebied == "Zenne ZEMST(brug Brusselse Steenweg) - HOMBEEK (Eglegemvijver)" ~ "brug Brusselse Steenweg Zemst - Eglegemvijver Hombeek",
-    .default = Gebied)) %>% 
+  mutate(Telgebied = hernoem_telgebieden(Gebied)) %>% 
   relocate(Telgebied, .before = "Oktober") %>% 
   arrange(Riviertraject, Som) %>% 
   select(-Gebied)
 
-write_xlsx(tabel_ontbrekende_data, paste0(pad_tabellen, paste0("100_watervogels_ontbrekende_MIDMA_data.xlsx")))
+write_xlsx(tabel_ontbrekende_data, paste0(pad_tabellen, paste0("100_1c_watervogels_ontbrekende_MIDMA_data.xlsx")))
 
-# hier volgt even een kleine zijsprong:
+
+# overzichtstabel van de opgenomen soorten en trofische groepen
+tabel_trofische_groep_overzicht <- Tellingen_MONEOS_niv3 %>%
+  filter(!is.na(trofische_groep)) %>%
+  distinct(trofische_groep, nednaam, exoot) %>% 
+  arrange(nednaam) %>% 
+  rename(Soort = nednaam,
+         "Trofische groep" = trofische_groep,
+         Exoot = exoot) %>%
+  mutate(Exoot = case_when(Exoot == 1 ~ TRUE, .default = NA)) %>% 
+  relocate(Soort, .before = NULL)
+
+write_xlsx(tabel_trofische_groep_overzicht, paste0(pad_tabellen, paste0("100_1d_watervogels_tabel_trofische_groep.xlsx")))
+
+# hier volgt even een kleine zijsprong ivm onderscheid nultellingen & ontbrekende tellingen:
 
 ### Connectie met WV databank:
 # con <- inbodb::connect_inbo_dbase("W0004_00_Waterbirds")
@@ -327,6 +339,7 @@ write_xlsx(tabel_ontbrekende_data, paste0(pad_tabellen, paste0("100_watervogels_
 ```
 
 ### Themes & labels
+
 ```{r themes & labels definiëren voor grafieken}
 
 theme_with_legend <- theme(
@@ -353,6 +366,7 @@ skip_every_second_label <- function(x){
 ```
 
 ### Shannon diversity
+
 ```{r Shannon index}
 
 # grafiek wintervogels niveau 3: inclusief exoten, inclusief meeuwen en sternen  
@@ -427,6 +441,7 @@ ggsave(paste0(pad_figuren, "100_1b_Shannon_incl_MS_winter_niv2.jpg"),
 ```
 
 ### Maandelijkse totalen wintervogels Zeeschelde
+
 ```{r maandelijkse totalen winter Zeeschelde}
 
 Tellingen_MONEOS_niv3 %>%
@@ -443,7 +458,7 @@ Tellingen_MONEOS_niv3 %>%
   ggplot(aes(datum, aantal)) + 
   geom_col() +
   geom_smooth(aes(), color = "red", fill = "red", linewidth = 0.5) + 
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0.02, 0.02)) +
   scale_y_continuous(labels = label_marks) +
   labs(x = "Jaar", 
        y = "Aantal watervogels", 
@@ -481,6 +496,7 @@ Tellingen_MONEOS_niv3 %>%
 ```
 
 ### Maandelijkse totalen vogels Zeeschelde IV - Saliniteitsgradiënt
+
 ```{r maandelijkse totalen Zeeschelde IV}
 
 Tellingen_MONEOS_niv3 %>%
@@ -582,6 +598,7 @@ ggsave(paste0(pad_figuren, "100_3d_maandelijkse_totalen_bergeend_ZS4.jpg"),
 ```
 
 ### Maandelijkse totalen vogels Zeeschelde II - Zoet lang
+
 ```{r maandelijkse totalen Zeeschelde II}
 
 Tellingen_MONEOS_niv3 %>% 
@@ -636,6 +653,7 @@ ggsave(paste0(pad_figuren, "100_4b_maandelijkse_totalen_bergeend_winter_ZS2.jpg"
 ```
 
 ### Verhouding aantallen
+
 ```{r verhouding aantallen}
 
 Tellingen_MONEOS_niv3 %>% 
@@ -661,6 +679,7 @@ ggsave(paste0(pad_figuren, "100_5a_verhouding_aantallen_excl_MS_winter_ZS.jpg"),
 ```
 
 ### Wintermaxima Zeeschelde
+
 ```{r wintermaxima Zeeschelde}
 
 Tellingen_MONEOS_niv3 %>% 
@@ -690,6 +709,7 @@ ggsave(paste0(pad_figuren, "100_6a_wintermaxima_excl_MS_ZS.jpg"),
 ```
 
 ### Wintermaxima KRW
+
 ```{r Wintermaxima KRWzones}
 
 Tellingen_MONEOS_niv3 %>% 
@@ -722,6 +742,7 @@ ggsave(paste0(pad_figuren, "100_7a_wintermaxima_excl_MS_facet_niv3.jpg"),
 ```
 
 ### Wintermaxima per traject
+
 ```{r Wintermaxima per traject}
 
 Tellingen_MONEOS_niv3 %>% 
@@ -753,6 +774,7 @@ ggsave(paste0(pad_figuren, "100_8a_wintermaxima_excl_MS_facet_rivier.jpg"),
 ```
 
 ### Indexberekeningen
+
 ```{r indexberekening}
 
 # vergelijking van de relatieve verschillen in wintermaxima tussen jaren met 2009 als referentiejaar
@@ -916,6 +938,7 @@ ggsave(paste0(pad_figuren, "100_9d_index_excl_MS_winter_facet_niv2.jpg"),
 ```
 
 ### Indexberekeningen rtrim (s-IHD soorten)
+
 ```{r indexberekeningen rtrim}
 
 # pijlstaart:     winter seizoensgemiddelde telseizoen 2000/01 tot 2005/06
@@ -1158,6 +1181,7 @@ write_xlsx(df_trim,
 ```
 
 ### Indexberekeningen rtrim (trofische groep)
+
 ```{r indexberekeningen rtrim - trofische groep}
 
 l_doel <- unique(Tellingen_MONEOS_niv3$trofische_groep)
@@ -1389,6 +1413,7 @@ write_xlsx(df_trim,
 ```
 
 ### Wintergemiddelde aantallen abundante soorten
+
 ```{r wintergemiddelde aantallen abundante soorten}
 
 # Zeeschelde
@@ -1455,6 +1480,7 @@ ggsave(paste0(pad_figuren, "100_12b_wintergemiddelde_ZR_facet_abundante_soorten.
 ```
 
 ### Winter- en zomergemiddelde aantallen viseters
+
 ```{r wintergemiddelde aantallen viseters}
 
 # Zeeschelde winter
@@ -1552,6 +1578,7 @@ ggsave(paste0(pad_figuren, "100_13c_zomergemiddelde_ZS_facet_viseters.jpg"),
 ```
 
 ### Wintergemiddelde aantallen steltlopers
+
 ```{r wintergemiddelde aantallen steltlopers}
 
 # Zeeschelde winter
@@ -1588,6 +1615,7 @@ ggsave(paste0(pad_figuren, "100_14a_wintergemiddelde_ZS_RUP_facet_steltlopers.jp
 ```
 
 ### Wintergemiddelde aantallen exoten
+
 ```{r exotentrends}
 
 Tellingen_MONEOS_niv3 %>% 
@@ -1639,6 +1667,7 @@ meta_data %>%
 ```
 
 ### Soortdoelstellingen S-IHD besluit
+
 ```{r berekening s-IHD soortdoelstellingen}
 
 # populatiedoelstellingen te bepalen obv dataset IHD-Z werkingsgebied: Zeeschelde + zijrivieren + Sigmagebieden + exclusief rest-IHD-gebied/vallei wat geen deel is van S-IHD
@@ -1728,6 +1757,7 @@ doelbergeend <- Tellingen_MONEOS_niv3 %>%
 ```
 
 ### Oppervlakte beschikbaar habitat
+
 ```{r data oppervlakte slikken}
 
 # data_opp_ecotoop <-
