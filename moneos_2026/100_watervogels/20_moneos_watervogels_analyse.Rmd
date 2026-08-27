@@ -861,7 +861,8 @@ Data_watervogels_MONEOS_index_trof %>%
  Data_watervogels_MONEOS_index_trofniv3 <- Tellingen_MONEOS_niv3 %>%
    filter(taxongroupcode != "MS",
           maand %in% c(10:12, 1:3),
-          !is.na(trofische_groep)) %>% 
+          !is.na(trofische_groep),
+          rivier == "Zeeschelde") %>% 
    
    group_by(niveau3, telseizoen_yr, maand, trofische_groep) %>%
    summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
@@ -882,7 +883,7 @@ Data_watervogels_MONEOS_index_trof %>%
 ## figuur
 Data_watervogels_MONEOS_index_trofniv3 %>%
   filter(telseizoen_yr > 2008,
-         niveau3 !="Durme") %>% 
+         !niveau3 %in% c("Durme", "Rupel", "Zoet zijrivier")) %>% 
   # vertekend beeld voor de durme door inclusie oude durme in historische data
   
   ggplot(aes(telseizoen_yr, rel_aantal, group = niveau3, color = niveau3)) +
@@ -894,7 +895,7 @@ Data_watervogels_MONEOS_index_trofniv3 %>%
   facet_wrap(~ trofische_groep) +
   theme_with_legend_2
 
- ggsave(paste0(pad_figuren, "100_9c_index_excl_MS_winter_facet_trofniv3.jpg"), 
+ ggsave(paste0(pad_figuren, "100_9c_index_excl_MS_winter_ZS_facet_trofniv3_edit.jpg"), 
        width = 8, height = 5, dpi = 300)
  
  
