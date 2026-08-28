@@ -924,7 +924,7 @@ Data_watervogels_MONEOS_index_niv2 <- Tellingen_MONEOS_niv3 %>%
 Data_watervogels_MONEOS_index_niv2 %>%
   filter(telseizoen_yr > 2008) %>% 
   
-  ggplot(aes(telseizoen_yr, rel_aantal))+
+  ggplot(aes(telseizoen_yr, rel_aantal)) +
   geom_line(linewidth = 0.5, color = "red") +
   geom_hline(yintercept = 1, linetype = 2, linewidth = 1) +
   labs(x = "Telseizoen", 
@@ -934,7 +934,7 @@ Data_watervogels_MONEOS_index_niv2 %>%
   theme_with_legend_2
  
 ggsave(paste0(pad_figuren, "100_9d_index_excl_MS_winter_facet_niv2.jpg"), 
-       width = 8, height = 5, dpi = 300)
+       width = 8, height = 3, dpi = 300)
 
 ```
 
