@@ -279,63 +279,6 @@ tabel_trofische_groep_overzicht <- Tellingen_MONEOS_niv3 %>%
 
 write_xlsx(tabel_trofische_groep_overzicht, paste0(pad_tabellen, paste0("100_1d_watervogels_tabel_trofische_groep.xlsx")))
 
-# hier volgt even een kleine zijsprong ivm onderscheid nultellingen & ontbrekende tellingen:
-
-### Connectie met WV databank:
-# con <- inbodb::connect_inbo_dbase("W0004_00_Waterbirds")
-
-### Watervogeldata opvragen:
-# WV_DB <- dbGetQuery(con, "
-# WITH MIDMA AS (
-#   SELECT 
-#     SU.SurveyCode               AS ProjectCode
-#     , SU.SurveyNaam             AS Project
-#     , L.RegioWVCode             AS RegioCode
-#     , L.RegioWVNaam             AS Regio
-#     , L.LocationWVCode          AS GebiedsCode
-#     , L.LocationWVNaam          AS Gebied
-#     , SS.Seasonname             AS Telseizoen
-#     , E.EventCode               AS TellingCode
-#     , E.EventLabel              AS Telling
-#     , E.SortOrder               AS TellingSortOrder
-#     , S.sampleDate              AS Teldatum
-#     , S.CoverageCode            AS Telvolledigheid
-#     , T.TaxonGroupCode
-#     , T.TaxonGroupDescription
-#     , T.Commonname              AS NedNaam
-#     , T.scientificname          AS WetNaam
-#     , F.Taxoncount              AS Aantal
-#   FROM FactAnalyseSetOccurrence F
-#   
-#   INNER JOIN DimSurvey SU       ON SU.surveykey = F.surveykey
-#   --INNER JOIN DimLocationWV L    ON L.locationwvkey = F.locationwvkey    /** ... gedeactiveerd ten voordele van ... **/
-#   INNER JOIN DimSeason SS       ON SS.Seasonkey = F.seasonkey
-#   INNER JOIN DimEvent E         ON E.eventkey = F.eventkey
-#   INNER JOIN DimSample S        ON F.samplekey = S.samplekey
-#   INNER JOIN DimLocationWV L    ON L.locationwvkey = S.locationwvkey      /** ... deze lijn - dit lost de mismatch in nieuwe gebieden op! **/
-#   INNER JOIN DimTaxonWV T       ON T.taxonwvkey = F.taxonwvkey
-#   WHERE 1 = 1
-#     AND L.LocationWVCode in (3120101,3121003,3121303,3121412,3153801,2050810,2051504,2080605,2091301,2091305)
-#     AND S.samplestatus = 'CHECKED'               /**alleen gevalideerde records**/
-#     /**AND S.samplestatus <> 'REJECTED'**/       /**inclusief data met status 'NEW' (nog niet gevalideerde tellingen)**/
-#     AND S.coveragecode not in ('-', 'N')         /**niet getelde tellingen zijn irrelevant**/
-#     /**AND F.taxoncount > 0**/
-#     AND F.Analysesetkey in (2, 3, 4)
-# )
-# SELECT * FROM MIDMA;
-# ")
-# 
-# dbDisconnect(con)
-# 
-# test <- WV_DB %>% 
-#   group_by(GebiedsCode, Teldatum) %>% 
-#   summarise(N = n_distinct(Aantal))
-# 
-# test2 <- test %>% filter(N == 1)
-
-# test2 toont nultellingen, geen hiervan viel voor in de voorbije 2 telseizoenen, zodoende zijn de FALSE waarden in de tabel
-# wel degelijk missende tellingen
-
 ```
 
 ### Themes & labels
@@ -895,7 +838,7 @@ Data_watervogels_MONEOS_index_trofniv3 %>%
   facet_wrap(~ trofische_groep) +
   theme_with_legend_2
 
- ggsave(paste0(pad_figuren, "100_9c_index_excl_MS_winter_ZS_facet_trofniv3_edit.jpg"), 
+ggsave(paste0(pad_figuren, "100_9c_index_excl_MS_winter_ZS_facet_trofniv3.jpg"), 
        width = 8, height = 5, dpi = 300)
  
  
@@ -1151,19 +1094,14 @@ meaning = c("Strong decrease",
             "Strong increase",
             "Uncertain")
 
-symbol = c("--",
-           "-",
-           "o",
-           "+",
-           "++",
-           "~")
+symbol = c("↓↓", "↓", "•", "↑", "↑↑", "?")
 
 toelichting = c(
-  "Significant sterke afname van > 5% per jaar",
-  "Significant matige afname van < 5% per jaar",
+  "Significant sterke afname van > 5\\% per jaar",
+  "Significant matige afname van < 5\\% per jaar",
   "Stabiel, geen significante trend",
-  "Significant matige toename van < 5% per jaar",
-  "Significante sterke toename van > 5% per jaar",
+  "Significant matige toename van < 5\\% per jaar",
+  "Significante sterke toename van > 5\\% per jaar",
   "Onzeker, geen trend aantoonbaar")
 
 df_meaning <- data.frame(meaning, symbol, toelichting)
@@ -1382,19 +1320,14 @@ meaning = c("Strong decrease",
             "Strong increase",
             "Uncertain")
 
-symbol = c("--",
-           "-",
-           "o",
-           "+",
-           "++",
-           "~")
+symbol = c("↓↓", "↓", "•", "↑", "↑↑", "?")
 
 toelichting = c(
-  "Significant sterke afname van > 5% per jaar",
-  "Significant matige afname van < 5% per jaar",
+  "Significant sterke afname van > 5\\% per jaar",
+  "Significant matige afname van < 5\\% per jaar",
   "Stabiel, geen significante trend",
-  "Significant matige toename van < 5% per jaar",
-  "Significante sterke toename van > 5% per jaar",
+  "Significant matige toename van < 5\\% per jaar",
+  "Significante sterke toename van > 5\\% per jaar",
   "Onzeker, geen trend aantoonbaar")
 
 df_meaning <- data.frame(meaning, symbol, toelichting)
