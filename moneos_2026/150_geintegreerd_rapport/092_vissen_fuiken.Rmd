@@ -361,7 +361,7 @@ Van de estuariene en mariene soorten komen brakwatergrondel, zeebaars en schol v
 
 -   Dikkopje bevindt zich gemiddeld meer stroomafwaarts en is normaalgezien veel minder talrijk aanwezig dan brakwatergrondel in de fuiken. In `r laatste_jaar` werden recordaantallen (\>900 gemiddeld aantal individuen per fuikdag) gevangen met de fuiken in de zone met sterke saliniteit. <!--# klopt deze identificatie? Ik zou hier vooral brakwatergrondel verwachten? -->
 
--   Schol komt voor in de zone met sterke saliniteitsgradiënt.Vrij goede aantallen schol werd geobserveerd in de fuikvangsten in `r laatste_jaar in de zone met sterke saliniteitsgradiënt.
+-   Schol komt voor in de zone met sterke saliniteitsgradiënt.Vrij goede aantallen schol werd geobserveerd in de fuikvangsten in `r laatste_jaar` in de zone met sterke saliniteitsgradiënt.
 
 -   Zeebaars is hoofdzakelijk aanwezig in de zone met sterke saliniteitsgradiënt.
     Ook in `r laatste_jaar` werden goede aantallen zeebaars gevangen met fuiken.
@@ -539,29 +539,22 @@ We berekenen de indexwaarden voor alle beschikbare gegevens (Tabel \@ref(tab:092
 De evolutie van de visindex in de Zeeschelde is ook één van de INBO natuurindicatoren (<https://www.vlaanderen.be/inbo/indicatoren/trend-visindex-zeeschelde>)
 
 In de periode 2011-2020 was deze indicator redelijk stabiel in vergelijking tot het decennium dat daaraan voorafging: De zoete zone scoorde doorgaans beter dan de zone met sterke saliniteitsgradiënt en de oligohaliene zone had meestal de laagste score.
-De laatste twee jaren daalde de EQR van de zoete zone echter van goed ecologisch potentieel in 2020 over matig in 2021 naar ontoereikend vanaf 2022 tot slechte toestand in `r laatste_jaar`.
-De EQR van de matig brakke zone verbeterd sinds vorig jaar en bereikt een matige toestand.
-De zone met sterke saliniteitsgradiënt blijft in `r laatste_jaar`ontoereikend zoals in 2023.
+De volgende jaren daalde de EQR van de zoete zone echter van goed ecologisch potentieel in 2020 over matig in 2021 naar ontoereikend vanaf 2022 tot slechte toestand in 2023.In 2025 stijgt de EQR terug. De EQR van de oligohaliene zone en de sterke saliniteitsgradient verbeterden de laatste jaren gestaag en bereiken een matige toestand.
 
 Figuur \@ref(fig:092-figuur-spindiagram) geeft voor elke zone een indicatie van de ecologische aspecten die minder en beter scoren in `r laatste_jaar`.
 Zie Tabel \@ref(tab:090-tabel-metrieken-visindex) voor verklaring van de afkortingen.
 
-In de zoetwaterzone scoren alle metrieken slecht en ook het totaal aantal soorten en het aantal individuen per fuikdag zijn in `r laatste_jaar` minder hoog dan in 2023.
-Het relatief percentage diadrome vissen, gespecialiseerde paaiers, piscivoren en benthische soorten scoren anno 2024 nog lager dan in 2023 zodat in deze zone een ‘slechte kwaliteit’ wordt gehaald.
+In de zoetwaterzone scoren alle metrieken in 2025 beter dan vorige jaren, enkel de metriek met betrekking tot het aantal intolerante soorten (MnsInt) blijft dalen en de metriek omtrent het aantal piscivore vissen blijft laag (MnsPis). Het relatief percentage diadrome vissen, gespecialiseerde paaiers en benthische soorten scoren anno 2025 hoger dan in 2024 zodat in deze zone een ‘matige kwaliteit’ wordt gehaald.
 
-In de zwak brakke zone vingen we in 2024, 16 referentie soorten, Het aantal gevangen individuen is toegenomen in vergelijking met die van 2023 (503 individuen per fuikdag in `r laatste_jaar` in vergelijking met 117 individuen per fuikdag in 2023), deze metriek scoort dan ook heel goed.
-De metriek intolerante species scoort anno 2024 het laagst maar haalt dezelfde score als in 2023.
-De overige metrieken scoren allemaal beter dan in 2023.
-De uiteindelijke EQR in 2024 is zo met een klasse verhoogd naar een ‘matige kwaliteit’.
+In de oligohaliene zone scoren de metrieken in 2025 zeer gelijkaardig als in 2024 met enkel een lichte daling in het  aantal migrerende soorten (MnsMns). De uiteindelijke EQR in 2025 blijft zo een ‘matige kwaliteit’.
 
-In de zone met hoge saliniteitsgradieënt scoren de metrieken diadrome soorten en intolerante scoren een ‘ontoereikende kwaliteit’.
-De overige metrieken scoren iets beter maar toch wordt in deze zone maar een totale EQR gehaald van 0,46 en blijft de evaluatie indicatief voor een ‘ontoereikende kwaliteit’.
+In de zone met een hoge saliniteitsgradiënt scoren alle deelmetrieken in 2025 gelijk aan of hoger dan vorig jaar. De EQR voor deze zone wordt verhoogd naar een ‘matige kwaliteit’.
 
 ```{r 092-tabel-visindex}
 
 tabel_visindex <-
   read_excel(paste0(maak_pad(hoofdstuk, "tabellen"), "visindexreeks.xlsx"),
-             sheet = "tabel1995_2024",
+             sheet = "Visindex",
              skip = 1)
 
 cap_visindex <-
@@ -598,7 +591,7 @@ knitr::include_graphics(str_c(maak_pad(hoofdstuk, "figuren/EQR"), "visindex_EQR.
 ```{r 092-figuur-spindiagram, fig.cap=cap_spindiagram, out.width="70%", fig.show="hold", fig.fullwidth=TRUE}
 
 cap_spindiagram <-
-  str_c("Metriek scores en EQR voor de verschillende saliniteitszones van de Zeeschelde in ",laatste_jaar,". Zie tabel 1.2 voor betekenis metrieken")
+  str_c("EQR en metriek scores voor de verschillende saliniteitszones van de Zeeschelde in ",laatste_jaar,". Zie tabel 1.2 voor betekenis metrieken")
 
 figs_spin <- 
   list.files(maak_pad(hoofdstuk, "figuren/EQR"), full.names = TRUE) %>% 
