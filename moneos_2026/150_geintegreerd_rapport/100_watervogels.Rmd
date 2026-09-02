@@ -57,7 +57,7 @@ for(i in 1:nrow(meta_data)){
 
 Fichenummer: FICHE S-DS-V-007a -- Maandelijkse vogeltellingen\
 Fichenummer: FICHE S-DS-V-007b -- Vogeltellingen zijrivieren\
-Fichenummer: FICHE S-DS-V-007c -- Vogeltellingen sigmagebieden (estuarien) **(Sigma is niet opgenomen \> verwijderen?)**
+Fichenummer: FICHE S-DS-V-007c -- Vogeltellingen sigmagebieden (estuarien) **(Sigma is niet opgenomen, verwijderen?)**
 
 **Nicolas Vanermen**, Gunther Van Ryckegem, Jan Soors, Nico De Regge
 
@@ -66,9 +66,9 @@ Fichenummer: FICHE S-DS-V-007c -- Vogeltellingen sigmagebieden (estuarien) **(Si
 ## Inleiding
 
 De aantallen van overwinterende en doortrekkende watervogels kunnen indicatief zijn voor de toestand van het estuariene ecosysteem.
-Tegelijk kunnen veranderingen in aantallen watervogels veroorzaakt worden door factoren van zowel binnen als buiten het estuarium.
+Tegelijk kunnen veranderingen in aantallen watervogels door zowel interne als externe factoren worden veroorzaakt.
 Bij interne factoren denken we bijvoorbeeld aan wijzigingen in het voedselaanbod, het areaal aan geschikte foerageergebieden of antropogene verstoring.
-Buiten het estuarium spelen factoren op ruimere geografische schaal zoals klimaatverandering en Europese populatietrends.
+Buiten het estuarium spelen factoren op ruimere geografische schaal zoals klimaatverandering of Europese populatietrends.
 De waargenomen trends in het Schelde-estuarium moeten dus steeds in dit bredere kader gezien worden, en met de nodige omzichtigheid worden geëvalueerd.
 
 <br/>
@@ -82,7 +82,7 @@ De voorliggende eerstelijnsrapportage beschrijft de beschikbare telgegevens voor
 De aantallen watervogels in estuariene natuurontwikkelingsprojecten werden niet meegenomen in deze rapportage.
 Ook de Getijdenetes vallen buiten de scope van dit rapport omdat deze geen aparte telgebieden vormen in de INBO watervogeldatabank.
 
-De evaluaties in dit rapport gebeuren op basis van de aantallen watervogels per maand (**per telseizoen?**) en per deelzone op niveau 2 of niveau 3.
+De evaluaties in dit rapport gebeuren op basis van de aantallen watervogels per maand, per telseizoen en per deelzone op niveau 2 of niveau 3.
 Hierbij staat niveau 2 gelijk aan de opdeling 'Zeeschelde' en 'Zijrivieren' en komt niveau 3 neer op een doorvertaling van de KRW-indeling (EMSE, 2021).
 Voor niveau 3 wordt de KRW-zone 'Zeeschelde III + Rupel' echter opgedeeld in de 2 deelzones 'Oligohalien' en 'Rupel'.
 
@@ -244,7 +244,9 @@ tabel_ontbrekende_data %>%
 
 <br/>
 
-### Winterkarakteristiek telseizoen 2025/26 ([Ukkel - winter 2026](https://www.meteo.be/resources/climatology/pdf/klimatologisch_seizoenoverzicht_2026_S1.pdf)):
+### Winterkarakteristiek telseizoen 2025/26
+
+Bron: [Klimatologisch overzicht Ukkel - winter 2026](https://www.meteo.be/resources/climatology/pdf/klimatologisch_seizoenoverzicht_2026_S1.pdf)
 
 December 2025 was een zeer droge maand (tweede droogste voor de huidige referentieperiode), terwijl januari maar net iets droger was dan gemiddeld.
 De zeer natte maand februari (vijfde natste voor de huidige referentieperiode) kon niet verhinderen dat de winter met 208,9 mm iets droger was dan normaal (228,6 mm).
@@ -425,7 +427,7 @@ tabel_rtrim %>%
                linesep = c("", "", "\\addlinespace"),
                align = c("l", "l", "c", "c", "l")) %>%
   kableExtra::kable_styling(latex_options = c("scale_down"),
-                            font_size = 12)
+                            font_size = 10)
 
 ```
 
@@ -565,7 +567,7 @@ tabel_rtrim_trof %>%
                linesep = c("", "", "\\addlinespace"),
                align = c("l", "l", "c", "c", "l")) %>%
   kableExtra::kable_styling(latex_options = c("scale_down"),
-                font_size = 12)
+                font_size = 10)
 
 ```
 
