@@ -1,0 +1,136 @@
+---
+params:
+  hoofdstuk: "100_watervogels"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          )})
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output")
+title: "30_moneos_ontbrekende_tellingen"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+date: "2026-09-01"
+---
+
+
+```{r setup}
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, cache = FALSE)
+
+```
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+library(inbodb) 
+library(writexl)
+### Read data from INBO databases (SQL Server) with R - see https://tutorials.inbo.be/tutorials/r_database_access/
+library(DBI) 
+### A database interface definition for communication between R and relational database management systems. 
+library(rprojroot)
+# library(openxlsx)
+# library(waldo)
+library(conflicted)
+conflict_prefer("filter", "dplyr")
+
+```
+
+```{r paden}
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+```{r ontbrekende tellingen / nultellingen MIDMA & ZS}
+
+con <- inbodb::connect_inbo_dbase("W0004_00_Waterbirds")
+
+WV_DB_missing_MIDMA <- dbGetQuery(con, "
+SELECT s.SampleKey
+, s.SampleDate
+, l.LocationWVCode
+, l.LocationWVNaam
+FROM DimSample s
+  INNER JOIN FactAnalyseSetOccurrence f   ON f.SampleKey = s.SampleKey
+  INNER JOIN DimLocationWV l              ON l.LocationWVKey = s.LocationWVKey
+  WHERE l.LocationWVCode IN 
+  ('3120101', '3121003', '3121303', '3121412', '3153801', '2050810', '2051504', '2080605', '2091301', '2091305')
+  AND s.CoverageCode = 'N'
+GROUP BY s.SampleKey
+, s.SampleDate
+, l.LocationWVCode
+, l.LocationWVNaam
+")
+
+WV_DB_zeros_MIDMA <- dbGetQuery(con, "
+SELECT f.SampleKey
+, s.SampleDate
+, e.EventLabel
+, l.LocationWVCode
+, l.LocationWVNaam
+FROM FactAnalyseSetOccurrence f
+  INNER JOIN DimSample s      
+    ON s.SampleKey = f.SampleKey
+  INNER JOIN DimEvent E
+    ON F.eventkey = E.eventkey
+  INNER JOIN DimLocationWV l  
+    ON l.LocationWVKey = s.LocationWVKey
+  WHERE l.LocationWVCode IN 
+  ('3120101', '3121003', '3121303', '3121412', '3153801', '2050810', '2051504', '2080605', '2091301', '2091305')
+GROUP BY f.SampleKey
+, s.SampleDate
+, e.EventLabel
+, l.LocationWVCode
+, l.LocationWVNaam
+HAVING SUM(TaxonCount) = 0
+")
+
+max(WV_DB_missing_MIDMA$SampleDate)
+max(WV_DB_zeros_MIDMA$SampleDate)
+# conclusie: voor MIDMA geen ontbrekende tellingen noch nultellingen in 2025/26; dus om de één of andere reden komen deze er zo niet uit
+
+# oplossing: we trekken wel alle nultellingen uit de databank op de manier voorgesteld door FP, en gaan deze meenemen in het scripten van de tabellen met ontbrekende data!
+
+# MIDMA zeros hebben we al, nu nog de ZS zeros
+WV_DB_zeros_ZS <- dbGetQuery(con, "
+SELECT f.SampleKey
+, s.SampleDate
+, e.EventLabel
+, l.LocationWVCode
+, l.LocationWVNaam
+FROM FactAnalyseSetOccurrence f
+  INNER JOIN (
+      SELECT LocationWVKey
+ 		  FROM [dbo].[FactLocationGroup]
+ 		  WHERE 1 = 1
+ 		    AND IsDeleted = 0
+ 		    AND LocationGroupCode in ('ZS','ZR')
+ 		  ) LOC
+ 		ON LOC.LocationWVKey = F.LocationWVKey
+  INNER JOIN DimSample S        
+    ON F.samplekey = S.samplekey
+  INNER JOIN DimEvent E
+    ON F.eventkey = E.eventkey
+  INNER JOIN DimLocationWV L    
+    ON S.LocationWVKey = L.LocationWVKey
+GROUP BY f.SampleKey
+, s.SampleDate
+, e.EventLabel
+, l.LocationWVCode
+, l.LocationWVNaam
+HAVING SUM(TaxonCount) = 0
+")
+
+dbDisconnect(con)
+
+# we schrijven deze weg:
+write_xlsx(WV_DB_zeros_MIDMA, paste0(pad_tabellen, paste0("100_0a_WV_DB_zeros_MIDMA.xlsx")))
+write_xlsx(WV_DB_zeros_ZS, paste0(pad_tabellen, paste0("100_0b_WV_DB_zeros_ZS.xlsx")))
+
+```

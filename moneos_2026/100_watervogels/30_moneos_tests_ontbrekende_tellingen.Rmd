@@ -1,0 +1,326 @@
+---
+params:
+  hoofdstuk: "100_watervogels"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          )})
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output")
+title: "30_moneos_ontbrekende_tellingen"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+date: "2026-09-01"
+---
+
+
+```{r setup}
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, cache = FALSE)
+
+```
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+library(inbodb) 
+library(writexl)
+### Read data from INBO databases (SQL Server) with R - see https://tutorials.inbo.be/tutorials/r_database_access/
+library(DBI) 
+### A database interface definition for communication between R and relational database management systems. 
+library(rprojroot)
+# library(openxlsx)
+# library(waldo)
+library(conflicted)
+conflict_prefer("filter", "dplyr")
+
+```
+
+```{r paden}
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+```{r exploratie nultellingen MIDMA}
+
+### Connectie met WV databank:
+con <- inbodb::connect_inbo_dbase("W0004_00_Waterbirds")
+
+### Watervogeldata opvragen:
+WV_DB <- dbGetQuery(con, "
+WITH MIDMA AS (
+  SELECT
+    SU.SurveyCode               AS ProjectCode
+    , SU.SurveyNaam             AS Project
+    , L.RegioWVCode             AS RegioCode
+    , L.RegioWVNaam             AS Regio
+    , L.LocationWVCode          AS GebiedsCode
+    , L.LocationWVNaam          AS Gebied
+    , SS.Seasonname             AS Telseizoen
+    , E.EventCode               AS TellingCode
+    , E.EventLabel              AS Telling
+    , E.SortOrder               AS TellingSortOrder
+    , S.sampleDate              AS Teldatum
+    , S.CoverageCode            AS Telvolledigheid
+    , T.TaxonGroupCode
+    , T.TaxonGroupDescription
+    , T.Commonname              AS NedNaam
+    , T.scientificname          AS WetNaam
+    , F.Taxoncount              AS Aantal
+  FROM FactAnalyseSetOccurrence F
+
+  INNER JOIN DimSurvey SU       ON SU.surveykey = F.surveykey
+  INNER JOIN DimSeason SS       ON SS.Seasonkey = F.seasonkey
+  INNER JOIN DimEvent E         ON E.eventkey = F.eventkey
+  INNER JOIN DimSample S        ON F.samplekey = S.samplekey
+  INNER JOIN DimLocationWV L    ON L.locationwvkey = S.locationwvkey 
+  INNER JOIN DimTaxonWV T       ON T.taxonwvkey = F.taxonwvkey
+  WHERE 1 = 1
+    AND L.LocationWVCode in (3120101,3121003,3121303,3121412,3153801,2050810,2051504,2080605,2091301,2091305)
+    AND S.samplestatus = 'CHECKED'               /**alleen gevalideerde records**/
+    AND S.coveragecode NOT in ('-', 'N')         /**niet getelde tellingen zijn irrelevant**/
+    /**AND F.taxoncount > 0**/
+    AND F.Analysesetkey in (2, 3, 4)
+)
+SELECT * FROM MIDMA
+")
+
+# dbDisconnect(con)
+
+summary(WV_DB)
+# nogal wat NA waarden... die worden er best uitgefilterd
+
+test1 <- WV_DB %>%
+  filter(!is.na(Aantal)) %>% 
+  group_by(GebiedsCode, Teldatum) %>%
+  summarise(N = n_distinct(Aantal)) %>% 
+  filter(N == 1)
+# 39 combinaties Datum-Gebied: enkel nullen?
+
+# deze combinatie kwam er in een eerdere oefening niet uit...?
+test2 <- WV_DB %>% filter(Teldatum == ymd("2023-01-14"), GebiedsCode == "3153801")
+# nullen én NA's voor Meeuwen en Sternen... (zodoende N == 2)
+
+test3 <- WV_DB %>% 
+  right_join(test1) %>% 
+  group_by(Aantal) %>% 
+  summarise(n = n())
+# meeste zijn idd nullen en NA waarden, maar 4 keer toch een positieve telling??
+
+test4 <- WV_DB %>% 
+  right_join(test1) %>% 
+  filter(!is.na(Aantal) & Aantal > 0)
+# tellingen uit de jaren 80... anecdotische waarnemingen?
+
+test5 <- WV_DB %>% 
+  right_join(test4 %>% head(1) %>% select(Teldatum, GebiedsCode))
+summary(test5)
+# inderdaad: 210 NA en 1 positieve telling...
+# deze moeten dus ook vermeden worden!
+
+# en dus:
+test_final_zero <- WV_DB %>%
+  filter(!is.na(Aantal)) %>% 
+  group_by(GebiedsCode, Teldatum) %>%
+  filter(all(Aantal == 0)) %>%
+  distinct(GebiedsCode, Teldatum) %>%
+  ungroup()
+# 35 datum-gebied combinaties... periodes 1967-1991 & 2010-2023
+
+test_final_NA <- WV_DB %>%
+  group_by(GebiedsCode, Teldatum) %>%
+  filter(all(is.na(Aantal))) %>%
+  distinct(GebiedsCode, Teldatum) %>%
+  ungroup()
+# 50 combinaties! periode 1979-1991
+# en betekent dit dan ook "niet geteld"? 
+# doet er eigenlijk niet toe want buiten de scope van de MONEOS rapportage (1991-2026)...
+
+WV_DB %>% right_join(test_final_zero) %>% distinct(Telvolledigheid)
+WV_DB %>% right_join(test_final_NA) %>% distinct(Telvolledigheid)
+# telvolledigheid is telkens gelijk aan "V"
+
+# conclusie: test_final_zero toont geen nultellingen voor de voorbije 2 telseizoenen, zodoende zijn de FALSE waarden in onze tabel wel degelijk als ontbrekende tellingen te beschouwen;
+
+
+# OPLOSSING FP:
+
+# con <- inbodb::connect_inbo_dbase("W0004_00_Waterbirds")
+
+WV_DB_zeros_FP <- dbGetQuery(con, "
+SELECT f.SampleKey
+, s.SampleDate
+, l.LocationWVCode
+, l.LocationWVNaam
+FROM FactAnalyseSetOccurrence f
+  INNER JOIN DimSample s      ON s.SampleKey = f.SampleKey
+  INNER JOIN DimLocationWV l  ON l.LocationWVKey = s.LocationWVKey
+  WHERE l.LocationWVCode IN ('3120101', '3121003', '3121303', '3121412', '3153801', '2050810', '2051504', '2080605', '2091301', '2091305')
+GROUP BY f.SampleKey
+, s.SampleDate
+, l.LocationWVCode
+, l.LocationWVNaam
+HAVING SUM(TaxonCount) = 0
+")
+# dbDisconnect(con)
+
+sum(sort(WV_DB_zeros_FP$SampleDate) ==  sort(test_final_zero$Teldatum))
+# perfect match!
+
+```
+
+```{r exploratie ontbrekende MIDMA tellingen}
+
+### Connectie met WV databank:
+# con <- inbodb::connect_inbo_dbase("W0004_00_Waterbirds")
+
+### Watervogeldata opvragen:
+WV_DB_missing <- dbGetQuery(con, "
+WITH MIDMA AS (
+  SELECT
+    SU.SurveyCode               AS ProjectCode
+    , SU.SurveyNaam             AS Project
+    , L.RegioWVCode             AS RegioCode
+    , L.RegioWVNaam             AS Regio
+    , L.LocationWVCode          AS GebiedsCode
+    , L.LocationWVNaam          AS Gebied
+    , SS.Seasonname             AS Telseizoen
+    , E.EventCode               AS TellingCode
+    , E.EventLabel              AS Telling
+    , E.SortOrder               AS TellingSortOrder
+    , S.sampleDate              AS Teldatum
+    , S.CoverageCode            AS Telvolledigheid
+    , T.TaxonGroupCode
+    , T.TaxonGroupDescription
+    , T.Commonname              AS NedNaam
+    , T.scientificname          AS WetNaam
+    , F.Taxoncount              AS Aantal
+  FROM FactAnalyseSetOccurrence F
+
+  INNER JOIN DimSurvey SU       ON SU.surveykey = F.surveykey
+  INNER JOIN DimSeason SS       ON SS.Seasonkey = F.seasonkey
+  INNER JOIN DimEvent E         ON E.eventkey = F.eventkey
+  INNER JOIN DimSample S        ON F.samplekey = S.samplekey
+  INNER JOIN DimLocationWV L    ON L.locationwvkey = S.locationwvkey
+  INNER JOIN DimTaxonWV T       ON T.taxonwvkey = F.taxonwvkey
+  WHERE 1 = 1
+    AND L.LocationWVCode in (3120101,3121003,3121303,3121412,3153801,2050810,2051504,2080605,2091301,2091305)
+    AND S.coveragecode in ('N')
+)
+SELECT * FROM MIDMA
+")
+
+# dbDisconnect(con)
+
+summary(WV_DB_missing)
+# 1278 NA's in Aantal-kolom!
+# 1278 rijen
+
+test6 <- WV_DB_missing %>%
+  group_by(GebiedsCode, Teldatum) %>%
+  summarise(N = n(), 
+            Nsoorten = n_distinct(NedNaam))
+# 5 x 213 soorten
+# 1 combinatie gebied-datum komt 2 maal voor... Vreemd.
+
+WV_DB_missing %>% distinct(Teldatum) %>% pull()
+
+# OPLOSSING FP:
+
+# con <- inbodb::connect_inbo_dbase("W0004_00_Waterbirds")
+
+WV_DB_missing_FP <- dbGetQuery(con, "
+SELECT s.SampleKey
+, s.SampleDate
+, l.LocationWVCode
+, l.LocationWVNaam
+FROM DimSample s
+  INNER JOIN FactAnalyseSetOccurrence f   ON f.SampleKey = s.SampleKey
+  INNER JOIN DimLocationWV l              ON l.LocationWVKey = s.LocationWVKey
+  WHERE l.LocationWVCode IN ('3120101', '3121003', '3121303', '3121412', '3153801', '2050810', '2051504', '2080605', '2091301', '2091305')
+  AND s.CoverageCode = 'N'
+GROUP BY s.SampleKey
+, s.SampleDate
+, l.LocationWVCode
+, l.LocationWVNaam
+")
+# dbDisconnect(con)
+
+sum(sort(WV_DB_missing_FP$SampleDate) ==  sort(test6$Teldatum))
+# perfect match!
+
+```
+
+
+```{r exploratie ontbrekende MONEOS tellingen}
+
+# con <- inbodb::connect_inbo_dbase("W0004_00_Waterbirds")
+
+WV_DB_missing_ZS <- dbGetQuery(con, "
+SELECT 
+  S.SampleKey
+  , S.SampleDate
+  , L.LocationWVCode
+  , L.LocationWVNaam
+FROM FactAnalyseSetOccurrence F
+  INNER JOIN (
+      SELECT LocationWVKey
+ 		  FROM [dbo].[FactLocationGroup]
+ 		  WHERE 1 = 1
+ 		    AND IsDeleted = 0
+ 		    AND LocationGroupCode in ('ZS')
+ 		  ) LOC
+ 		ON LOC.LocationWVKey = F.LocationWVKey
+  INNER JOIN DimSample S        
+    ON F.samplekey = S.samplekey
+  INNER JOIN DimLocationWV L    
+    ON S.LocationWVKey = L.LocationWVKey
+WHERE 1 = 1
+  AND S.CoverageCode = 'N'
+GROUP BY
+  S.SampleKey
+  , S.SampleDate
+  , L.LocationWVCode
+  , L.LocationWVNaam
+")
+
+# 28 datum-gebied combinaties; enkel 28/05/2018 lijkt een niet geteld boottraject
+
+WV_DB_zeros_ZS <- dbGetQuery(con, "
+SELECT f.SampleKey
+, s.SampleDate
+, e.EventLabel
+, l.LocationWVCode
+, l.LocationWVNaam
+FROM FactAnalyseSetOccurrence f
+  INNER JOIN (
+      SELECT LocationWVKey
+ 		  FROM [dbo].[FactLocationGroup]
+ 		  WHERE 1 = 1
+ 		    AND IsDeleted = 0
+ 		    AND LocationGroupCode in ('ZS','ZR')
+ 		  ) LOC
+ 		ON LOC.LocationWVKey = F.LocationWVKey
+  INNER JOIN DimSample S        
+    ON F.samplekey = S.samplekey
+  INNER JOIN DimEvent E
+    ON F.eventkey = E.eventkey
+  INNER JOIN DimLocationWV L    
+    ON S.LocationWVKey = L.LocationWVKey
+GROUP BY f.SampleKey
+, s.SampleDate
+, e.EventLabel
+, l.LocationWVCode
+, l.LocationWVNaam
+HAVING SUM(TaxonCount) = 0
+")
+
+dbDisconnect(con)
+
+```
