@@ -25,6 +25,7 @@ library(tidyverse)
 library(lubridate)
 library(INBOtheme)
 library(writexl)
+library(readxl)
 library(rprojroot)
 library(RcppRoll)
 library(rtrim)
@@ -48,6 +49,8 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 WV_DB <- read_delim(paste0(pad_data, "WV_DB_ready.csv"), delim = ";")
 Gebieden_ZS <- read_delim(paste0(pad_data, "Gebieden_ZS_ready.csv"), delim = ";")
+WV_DB_zeros_MIDMA <- read_xlsx(paste0(pad_tabellen, paste0("100_2a_WV_DB_zeros_MIDMA.xlsx")))
+WV_DB_zeros_ZS <- read_xlsx(paste0(pad_tabellen, paste0("100_2b_WV_DB_zeros_ZS.xlsx")))
 
 ```
 
@@ -248,23 +251,75 @@ alle_combinaties <- expand_grid(
   telling = unique(data_available$telling)) %>% 
   inner_join(data_available %>% distinct(gebied, rivier))
 
+WV_DB_zeros_MIDMA_edit <- WV_DB_zeros_MIDMA %>% 
+  filter(SampleDate > "2025-09-30", SampleDate < "2026-04-01") %>%
+  rename(telling = EventLabel,
+         gebied = LocationWVNaam) %>% 
+  mutate(nultelling = TRUE) %>% 
+  distinct(telling, gebied, nultelling)
+# geen nultellingen!
+
 tabel_ontbrekende_data <- left_join(alle_combinaties, data_available) %>% 
-  mutate(data_available = coalesce(data_available, FALSE)) %>% 
+  left_join(WV_DB_zeros_MIDMA_edit) %>% 
+  mutate(data_available = coalesce(data_available, FALSE),
+         nultelling = coalesce(nultelling, FALSE),
+         count_available = data_available | nultelling) %>% 
+  select(rivier, gebied, telling, count_available) %>% 
   pivot_wider(
     names_from = telling,
-    values_from = data_available,
+    values_from = count_available,
     values_fill = FALSE) %>% 
   select("Riviertraject" = rivier, 
          "Gebied" = gebied, 
          "Oktober", "November", "December", "Januari", "Februari", "Maart") %>% 
   cbind(., Som = rowSums(.[,3:8])) %>% 
-  mutate(Telgebied = hernoem_telgebieden(Gebied)) %>% 
-  relocate(Telgebied, .before = "Oktober") %>% 
+  mutate(Telgebied = hernoem_telgebieden(Gebied)) %>%
+  relocate(Telgebied, .before = "Oktober") %>%
   arrange(Riviertraject, Som) %>% 
   select(-Gebied)
 
 write_xlsx(tabel_ontbrekende_data, paste0(pad_tabellen, paste0("100_1c_watervogels_ontbrekende_MIDMA_data.xlsx")))
 
+# overzichtstabel van ontbrekende ZS tellingen 2025-2026
+data_available_ZS <- WV_DB %>% 
+  filter(projectcode == "ZSCH",
+         telseizoen =="2025/26",
+         analyse_MONEOS == TRUE,
+         maand %in% c(10:12, 1:3)) %>% 
+  distinct(rivier, gebied, telling) %>% 
+  mutate(data_available = TRUE)
+  
+alle_combinaties_ZS <- expand_grid(
+  gebied = unique(data_available_ZS$gebied),
+  telling = unique(data_available_ZS$telling)) %>% 
+  inner_join(data_available_ZS %>% distinct(gebied, rivier))
+
+WV_DB_zeros_ZS_edit <- WV_DB_zeros_ZS %>% 
+  filter(SampleDate > "2025-09-30", SampleDate < "2026-04-01") %>%
+  rename(telling = EventLabel,
+         gebied = LocationWVNaam) %>% 
+  mutate(nultelling = TRUE) %>% 
+  distinct(telling, gebied, nultelling)
+# 31 nultellingen!
+
+tabel_ontbrekende_data_ZS <- left_join(alle_combinaties_ZS, data_available_ZS) %>% 
+  left_join(WV_DB_zeros_ZS_edit) %>% 
+  mutate(data_available = coalesce(data_available, FALSE),
+         nultelling = coalesce(nultelling, FALSE),
+         count_available = data_available | nultelling) %>% 
+  select(rivier, gebied, telling, count_available) %>% 
+  pivot_wider(
+    names_from = telling,
+    values_from = count_available,
+    values_fill = FALSE) %>% 
+  select("Riviertraject" = rivier, 
+         "Gebied" = gebied, 
+         "Oktober", "November", "December", "Januari", "Februari", "Maart") %>% 
+  cbind(., Som = rowSums(.[,3:8])) %>% 
+  arrange(Riviertraject, Som) 
+
+summary(tabel_ontbrekende_data_ZS)
+# alle tellingen zijn uitgevoerd in 2025/26!
 
 # overzichtstabel van de opgenomen soorten en trofische groepen
 tabel_trofische_groep_overzicht <- Tellingen_MONEOS_niv3 %>%
