@@ -49,8 +49,8 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 
 WV_DB <- read_delim(paste0(pad_data, "WV_DB_ready.csv"), delim = ";")
 Gebieden_ZS <- read_delim(paste0(pad_data, "Gebieden_ZS_ready.csv"), delim = ";")
-WV_DB_zeros_MIDMA <- read_xlsx(paste0(pad_tabellen, paste0("100_2a_WV_DB_zeros_MIDMA.xlsx")))
-WV_DB_zeros_ZS <- read_xlsx(paste0(pad_tabellen, paste0("100_2b_WV_DB_zeros_ZS.xlsx")))
+WV_DB_zeros_MIDMA <- read_xlsx(paste0(pad_tabellen, paste0("100_0a_WV_DB_zeros_MIDMA.xlsx")))
+WV_DB_zeros_ZS <- read_xlsx(paste0(pad_tabellen, paste0("100_0b_WV_DB_zeros_ZS.xlsx")))
 
 ```
 
@@ -145,12 +145,26 @@ overzichtsoorten_analyse <- Tellingen_MONEOS_niv3 %>%
   filter(aantal > 30) %>% 
   select(nednaam) %>% 
   ungroup()
-# 73 soorten met meer dan 30 waarnemingen
+# 73 soorten met meer dan 30 getelde individuen (excl morinelplevier)
+
+overzichtsoorten_analyse_B <- WV_DB %>%
+  filter(analyse_MONEOS == TRUE) %>% 
+  group_by(nednaam) %>% 
+  summarise(aantal = n()) %>%
+  filter(aantal > 30)
+# 62 soorten met meer dan 30 waarnemingen
+
+ontbrekende_soorten <- anti_join(overzichtsoorten_analyse, overzichtsoorten_analyse_B) %>% pull(nednaam)
+WV_DB %>% 
+  filter(analyse_MONEOS == TRUE,
+         nednaam %in% ontbrekende_soorten) %>% 
+  nrow()
+# 11 soorten met 175 records vallen zo uit de boot
 
 ### Alle soorten verwijderen die niet voldoen aan het criterium van minimaal 30 waarnemigen (EMSE)
 Tellingen_MONEOS_niv3 <- Tellingen_MONEOS_niv3 %>%
-    filter(nednaam %in% overzichtsoorten_analyse$nednaam)
-# 164.323
+    filter(nednaam %in% overzichtsoorten_analyse_B$nednaam)
+# 139.562
 
 geen_trofische_groep <- Tellingen_MONEOS_niv3 %>%
   filter(is.na(trofische_groep)) %>%
@@ -202,12 +216,13 @@ gebieden_MIDMA <- WV_DB %>%
   filter((projectcode == "MIDMA" &
          analyse_MONEOS == TRUE &
          telseizoen == "2025/26") |
-         (gebiedscode == "2091301")) %>% 
-  distinct(gebiedscode, gebied)
-# ik snap niet waarom het traject Wintam-sas tot brug Boom hier niet in zit... 
-# is dit agv nultellingen??
-# durme + oude durme actief toegevoegd! 
-# buitenschoor??
+           (gebiedscode == "2091301") |
+           (gebiedscode == "4140206")) %>% 
+  distinct(rivier, gebiedscode, gebied)
+# zouden 11 gebieden moeten zijn
+# daarom trajecten "wintam-sas tot brug boom" & "durme + oude durme" actief toegevoegd! 
+# geen tellingen beschikbaar voor "wintam-sas tot brug boom" dus deze zit niet vervat in WV_DB...
+# geen waterdicht systeem met andere woorden!
 
 gebieden_MIDMA_yrs <- WV_DB %>% 
   filter(gebied %in% gebieden_MIDMA$gebied,
@@ -247,9 +262,9 @@ data_available <- WV_DB %>%
   mutate(data_available = TRUE)
   
 alle_combinaties <- expand_grid(
-  gebied = unique(data_available$gebied),
-  telling = unique(data_available$telling)) %>% 
-  inner_join(data_available %>% distinct(gebied, rivier))
+  gebied = unique(gebieden_MIDMA$gebied),
+  telling = c("Oktober", "November", "December", "Januari", "Februari", "Maart")) %>% 
+  inner_join(gebieden_MIDMA %>% distinct(gebied, rivier))
 
 WV_DB_zeros_MIDMA_edit <- WV_DB_zeros_MIDMA %>% 
   filter(SampleDate > "2025-09-30", SampleDate < "2026-04-01") %>%
@@ -276,14 +291,16 @@ tabel_ontbrekende_data <- left_join(alle_combinaties, data_available) %>%
   mutate(Telgebied = hernoem_telgebieden(Gebied)) %>%
   relocate(Telgebied, .before = "Oktober") %>%
   arrange(Riviertraject, Som) %>% 
-  select(-Gebied)
+  select(-Gebied) %>% 
+  filter(Telgebied != "Oude Durme + Durme Hamme")
 
 write_xlsx(tabel_ontbrekende_data, paste0(pad_tabellen, paste0("100_1c_watervogels_ontbrekende_MIDMA_data.xlsx")))
 
 # overzichtstabel van ontbrekende ZS tellingen 2025-2026
+# opgelet: onderstaande scriptflow is niet waterdicht; indien bepaalde gebieden de ganse winter lang niet zijn geteld OF indien er nul vogels geteld zijn, dan zijn deze niet vervat in WV_DB en komen ze dus ook niet in 'data_available_ZS'; in geval van de boottellingen kunnen we er echter wel van uit gaan dat er voldoende regelmatig geteld is geweest
 data_available_ZS <- WV_DB %>% 
   filter(projectcode == "ZSCH",
-         telseizoen =="2025/26",
+         telseizoen == "2025/26",
          analyse_MONEOS == TRUE,
          maand %in% c(10:12, 1:3)) %>% 
   distinct(rivier, gebied, telling) %>% 
@@ -291,7 +308,7 @@ data_available_ZS <- WV_DB %>%
   
 alle_combinaties_ZS <- expand_grid(
   gebied = unique(data_available_ZS$gebied),
-  telling = unique(data_available_ZS$telling)) %>% 
+  telling = c("Oktober", "November", "December", "Januari", "Februari", "Maart")) %>% 
   inner_join(data_available_ZS %>% distinct(gebied, rivier))
 
 WV_DB_zeros_ZS_edit <- WV_DB_zeros_ZS %>% 
@@ -841,7 +858,11 @@ Data_watervogels_MONEOS_index_trof <- Tellingen_MONEOS_niv3 %>%
 
 # figuur:
 Data_watervogels_MONEOS_index_trof %>%
-  filter(telseizoen_yr > 2008) %>% 
+  filter(telseizoen_yr > 2008) %>%
+  mutate(trofische_groep = case_when(trofische_groep == "Npisc" ~ "Piscivoor",
+                                     trofische_groep == "Nbenth" ~ "Benthivoor",
+                                     trofische_groep == "Nomn" ~ "Omnivoor",
+                                     trofische_groep == "Nherb" ~ "Herbivoor"))  %>% 
   
   ggplot(aes(telseizoen_yr, rel_aantal))+
   geom_line(linewidth = 0.5, color = "red") +
@@ -861,6 +882,10 @@ Data_watervogels_MONEOS_index_trof %>%
           maand %in% c(10:12, 1:3),
           !is.na(trofische_groep),
           rivier == "Zeeschelde") %>% 
+   mutate(trofische_groep = case_when(trofische_groep == "Npisc" ~ "Piscivoor",
+                                     trofische_groep == "Nbenth" ~ "Benthivoor",
+                                     trofische_groep == "Nomn" ~ "Omnivoor",
+                                     trofische_groep == "Nherb" ~ "Herbivoor")) %>% 
    
    group_by(niveau3, telseizoen_yr, maand, trofische_groep) %>%
    summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
@@ -900,7 +925,7 @@ ggsave(paste0(pad_figuren, "100_9c_index_excl_MS_winter_ZS_facet_trofniv3.jpg"),
 # index wintermaxima per niveau2-zone
 Data_watervogels_MONEOS_index_niv2 <- Tellingen_MONEOS_niv3 %>%
   filter(taxongroupcode != "MS", # zonder meeuwen en sternen
-         maand %in% c(10:12, 1:3)) %>%
+         maand %in% c(10:12, 1:3)) %>% 
   
   group_by(niveau2, telseizoen_yr, maand) %>%
   summarise(maand_som = sum(aantal, na.rm = TRUE)) %>% 
