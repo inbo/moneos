@@ -57,7 +57,7 @@ for(i in 1:nrow(meta_data)){
 
 Fichenummer: FICHE S-DS-V-007a -- Maandelijkse vogeltellingen\
 Fichenummer: FICHE S-DS-V-007b -- Vogeltellingen zijrivieren\
-Fichenummer: FICHE S-DS-V-007c -- Vogeltellingen sigmagebieden (estuarien) **(Sigma is niet opgenomen, verwijderen?)**
+(Bron: [datafiches](https://www.scheldemonitor.org/datafiches/) Scheldemonitor)
 
 **Nicolas Vanermen**, Gunther Van Ryckegem, Jan Soors, Nico De Regge
 
@@ -96,12 +96,12 @@ Deze bevat de volgende informatievelden:
 - nednaam: Nederlandse soortnaam
 - wetnaam: wetenschappelijke soortnaam
 - trofische_groep: de toegepaste trofische categorie in de Zeeschelde
-  - Nbeth = benthoseters
-  - Npisc = viseters
+  - Nbeth = benthivoren
+  - Npisc = piscivoren
   - Nherb = herbivoren
   - Nomn = omnivoren
 - exoot: exoten krijgen de waarde TRUE
-- ruimtelijke niveaus 1, 2 en 3: indeling volgens **Tabel 1.1 en Figuur 1.1 (kruisverwijzing goed zetten)**
+- ruimtelijke niveaus 1, 2 en 3: indeling volgens Tabel 1.1 en Figuur 1.1
 - aantal: som van het aantal getelde vogels per soort, telseizoen en maand op niveau 3
 
 <!-- <br/> -->
@@ -206,10 +206,6 @@ gebieden_MIDMA_yrs %>%
 
 <br/>
 
-**Te verifiëren: ik snap niet wat Groot Buitenschoor hier tussen staat te doen, komt om de één of andere reden mee met de bevraging; voorts begrijp ik niet waarom het traject Wintam-sas tot Boom hier niet tussen staat.**
-
-<br/>
-
 ### Ontbrekende data
 
 Deze eerstelijnsrapportage werkt met de effectief getelde aantallen.
@@ -270,31 +266,22 @@ Hieronder worden de belangrijkste aspecten van de gevolgde methodiek uitgelicht.
 
 #### Voedselgroepen
 
-De weerhouden vogelsoorten (met meer dan 30 getelde individuen sinds 1991) **(Opgelet: voor EMSE ligt de grens op 30 waarnemingen, pas ik dit aan?)** worden ingedeeld in vier categorieën: benthoseters, viseters, herbivoren en omnivoren (zie Tabel \@ref(tab:100-tabel-trofischegroepsoorten) in Bijlage).
-Benthoseters hebben in het Schelde-estuarium een dieet van schelpdieren, wormen, hyperbenthos en epibenthos.
+De weerhouden vogelsoorten (met meer dan 30 afzonderlijke waarnemingen sinds 1991) worden ingedeeld in vier categorieën: benthivoren, piscivoren, herbivoren en omnivoren (zie Tabel \@ref(tab:100-tabel-trofischegroepsoorten) in Bijlage).
+Benthivoren hebben in het Schelde-estuarium een dieet van schelpdieren, wormen, hyperbenthos en epibenthos.
 Omnivoren vertonen doorgaans een opportunistisch dieet, waarvan Oligochaeta een groot aandeel vormen.
 Zo worden de meeste eendensoorten bij de omnivoren ingedeeld.
 
 #### Sleutelsoorten
 
 Dit zijn soorten met instandhoudingsdoelstellingen ([S-IHD](https://www.natura2000.vlaanderen.be/sites/default/files/publicaties/36_zeeschelde_sigma_mp-1.0.pdf)).
-Deze doelstellingen zijn gebaseerd op de gemiddelde aantallen overwinteraars in de estuariene delen van de Zeeschelde en haar zijrivieren binnen een afgebakende, soortspecifieke referentieperiode.
-Specifiek voor EMSE wordt gefocust op soorten die een sterke connectie hebben met estuariene habitats (kleine zwaan, slobeend en kokmeeuw laten we daarom buiten beschouwing): **(Opgelet: tussen haakjes de waarden berekend in het analysescript, deze wijken lichtjes af van de waarden in de tabel en het rapport van vorig jaar // aantallen gelijk maken met Sigma-evaluatie rapportage : daar afgerond)**
+Deze doelstellingen zijn gebaseerd op de gemiddelde aantallen overwinteraars in de estuariene delen van de Zeeschelde en haar zijrivieren binnen een afgebakende, soortspecifieke referentieperiode (Van Hecke *et al.* 2026).
+Specifiek voor EMSE wordt gefocust op soorten die een sterke connectie hebben met estuariene habitats (kleine zwaan, slobeend en kokmeeuw laten we daarom buiten beschouwing):
 
-- pijlstaart: seizoensgemiddelde winter 2000/01 tot 2005/06: 487 ex.
-  **(490)** **sigma doel: 500**
-
-- wintertaling: seizoensgemiddelde winter 1998/99 tot 2005/06: 14.584 ex.
-  **(14.630)** **sigma doel: 14200 //berekeningsperiode aan te passen 1 seizoen langer**
-
-- krakeend: seizoensgemiddelde winter 2002/03 tot 2006/07: 2408 ex.
-  **(2414)** **sigma doel: 2400**
-
-- tafeleend: seizoensgemiddelde winter 2001/02 tot 2006/07: 3864 ex.
-  **(3864)** **sigma doel: 3900**
-
-- bergeend: seizoensgemiddelde winter 1992/93 tot 2006/07: 1272 ex.
-  **(1320)** **sigma doel: 1300**
+- pijlstaart: seizoensgemiddelde winter 2000/01 tot 2005/06: 500 ex.
+- wintertaling: seizoensgemiddelde winter 1998/99 tot 2006/07: 14.200 ex.
+- krakeend: seizoensgemiddelde winter 2002/03 tot 2006/07: 2.400 ex.
+- tafeleend: seizoensgemiddelde winter 2001/02 tot 2006/07: 3.900 ex.
+- bergeend: seizoensgemiddelde winter 1992/93 tot 2006/07: 1.300 ex.
 
 #### Rekenparameters
 
@@ -313,7 +300,7 @@ De index is telkens gebaseerd op het gemiddelde van het totaal aantal getelde vo
 
 *Trend-index wintermaxima*
 
-Om de algemene trends in aantallen overwinterende watervogels te evalueren wordt ook een index berekend gebaseerd op de maximale winteraantallen van alle weerhouden soorten (minimaal 30 waargenomen individuen sinds winterseizoen 1991/92).
+Om de algemene trends in aantallen overwinterende watervogels te evalueren wordt ook een index berekend gebaseerd op de maximale winteraantallen van alle weerhouden soorten (minimaal 30 afzonderlijke waarnemingen sinds winterseizoen 1991/92).
 Als referentie-winterseizoen werd 2009/10 gekozen omdat er sindsdien voor alle deelzones gegevens voorhanden zijn.
 Bovendien valt dit jaar na de systeemomslag.
 Deze index wordt berekend per deelzone op niveau 2 en 3, en voor de Zeeschelde (exclusief zijrivieren) ook per trofische groep.
@@ -448,9 +435,8 @@ Dit slikrijke gebied trekt heel veel overwinterende watervogels aan, en deze vog
 Het voorbije telseizoen lagen de aantallen er evenwel terug wat lager.
 
 Een positieve index-evolutie voltrekt zich al sinds 2019/20 in de zone 'saliniteitsgradiënt'.
-Deze trend correleert ook met een algemeen toenemende biomassa aan bodemdieren in 2023 (zie hoofdstuk Macrozoöbenthos).
+Deze trend correleert ook met een algemeen toenemende biomassa aan bodemdieren (zie hoofdstuk Macrozoöbenthos).
 De laatste jaren kreeg deze positieve trend nog meer wind in de zeilen via de inrichting van de Hedwige-Prosperpolder.
-**Te verifiëren: zet de macrobenthos-trend zich door tot 2025/26??**
 
 De watervogels op de Rupel volgen sinds 2009 een dalende trend met een absoluut dieptepunt in het winterseizoen 2019/20.
 De voorbije drie winters lijken de aantallen opnieuw stabiel en op het niveau van de periode 2010-2015.
@@ -525,8 +511,8 @@ knitr::include_graphics(paste0(pad_figuren, "100_9c_index_excl_MS_winter_ZS_face
 
 De trends in aantallen per trofische groep werden verder onderzocht met behulp van het 'rtrim' R-package en zijn weergegeven in Tabel \@ref(tab:100-tabel-rtrim-analyse-trofische-groepen).
 
-Over de lange termijn vertonen alle groepen een matige afname, met uitzondering van de viseters die een matige toename tonen.
-Op de middellange termijn is er enkel een matige afname voor herbivoren en omnivoren, en zijn de aantallen benthos- en viseters stabiel.
+Over de lange termijn vertonen alle groepen een matige afname, met uitzondering van de piscivoren die een matige toename tonen.
+Op de middellange termijn is er enkel een matige afname voor herbivoren en omnivoren, en zijn de aantallen benthi- en piscivoren stabiel.
 
 Focussen we op de recente periode, dan valt vooral de sterke toename van benthivore soorten op.
 Dit betreft voornamelijk steltlopers, en deze toename gebeurde onder impuls van de ontwikkelingen in de zone 'saliniteitsgradiënt' (zie Figuur \@ref(fig:100-figuur-aantallen-steltlopers)).
@@ -542,8 +528,8 @@ tabel_rtrim_trof <- read_xlsx(paste0(pad_tabellen, "trend_rtrim_trof_groep_winte
          `P-waarde` = p,
          Symbool = symbol,
          Toelichting = toelichting) %>% 
-  mutate(Soort = case_when(Soort == "Npisc" ~ "Viseter",
-                           Soort == "Nbenth" ~ "Benthoseter",
+  mutate(Soort = case_when(Soort == "Npisc" ~ "Piscivoor",
+                           Soort == "Nbenth" ~ "Benthivoor",
                            Soort == "Nomn" ~ "Omnivoor",
                            Soort == "Nherb" ~ "Herbivoor")) %>% 
   mutate(Termijn = case_when(from == 1992 ~ "LT",
@@ -641,7 +627,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_14a_wintergemiddelde_ZS_RUP_fac
 
 ### Exoten
 
-Er zijn negen exoten of verwilderde soorten waarvan meer dan 30 individuen werden geteld sinds de start van de tellingen langs de Zeeschelde en haar zijrivieren.
+Er zijn acht exoten of verwilderde soorten met meer dan 30 afzonderlijke waarnemingen sinds de start van de tellingen langs de Zeeschelde en haar zijrivieren.
 Hun procentueel aandeel is klein, maar de totale aantallen zijn licht stijgend, vooral onder impuls van een toenemend aantal nijlganzen.
 Het verloop van de aantallen van de meest talrijke exotische overwinterende vogelsoorten is weergegeven in Figuur \@ref(fig:100-figuur-exotentrends).
 De hoogste aantallen van de nijlgans worden geteld in de oligohaliene zone, terwijl de brandgans voornamelijk gebonden is aan de zones 'oligohalien' en 'saliniteitsgradiënt'.
@@ -669,7 +655,7 @@ De bijdrage van Sigmagebieden aan de aantallen overwinterende watervogels in het
 
 Hoewel de meeste overwinterende sleutelsoorten over de lange en middellange termijn een afnemende trend vertonen, is er **de laatste zes telseizoenen** een kentering merkbaar met **een significante toename van** de **bergeend**, de **krakeend** en de **wintertaling**.
 Voor de tafeleend en de pijlstaart kon geen significante trend worden aangetoond op de korte termijn.
-Beschouwen we de trends per trofische groep, dan valt vooral de **sterke toename van benthosetende soorten** op (in de eerste plaats steltlopers).
+Beschouwen we de trends per trofische groep, dan valt vooral de **sterke toename van benthivore soorten** op (in de eerste plaats steltlopers).
 Ten opzichte van de winter van 2009/10 is deze toename het **meest uitgesproken voor de scholekster**.
 Mogelijk houdt dit verband met een biomassatoename aan schelpdieren (zie hoofdstuk Macrozoöbenthos).
 De algemene toename van overwinterende watervogels op de slikken van de Zeeschelde is eveneens veroorzaakt door de recente inrichting van twee Sigmagebieden die hoge aantallen watervogels aantrekken: Groot Schoor Hamme in de zone 'zoet lang verblijf' en de Hedwige-Prosperpolder in de zone 'saliniteitsgradiënt'.
@@ -679,8 +665,12 @@ De algemene toename van overwinterende watervogels op de slikken van de Zeeschel
 ## Referenties
 
 EMSE (2021).
-Evaluatiemethodiek Schelde‐estuarium: Update 2021.
-Antea, Bureau Waardenburg, Deltares, UAntwerpen, UGent, INBO en NIOZ.
+Evaluatiemethodiek Schelde-estuarium. Update 2021. Consortium Schelde in Beeld. 
+HKV, Universiteit Gent, Bureau Waardenburg en Antea Group.
+
+Van Hecke, F., Van Ryckegem, G. & Mertens, W. (2026).
+Evaluatie Geactualiseerde Sigmaplan ter voorbereiding van Sigma 3.0 - Afstand tot de doelstellingen en oplossingsscenario’s.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek.
 
 <br/>
 
@@ -690,7 +680,7 @@ Antea, Bureau Waardenburg, Deltares, UAntwerpen, UGent, INBO en NIOZ.
 
 tabel_trofische_groep <- read_xlsx(paste0(pad_tabellen, "100_1d_watervogels_tabel_trofische_groep.xlsx"))
 
-cap_trofischegroepsoorten <- "Overzicht van de indeling van de watervogelsoorten in vier trofische groepen: benthoseters (NBenth), viseters (NPisc), herbivoren (Nherb) en omnivoren (Nomn); de tabel duidt ook aan welke soorten als exoot of verwilderd worden beschouwd."
+cap_trofischegroepsoorten <- "Overzicht van de indeling van de weerhouden watervogelsoorten in vier trofische groepen: benthivoren (NBenth), piscivoren (NPisc), herbivoren (Nherb) en omnivoren (Nomn); de tabel duidt ook aan welke soorten als exoot of verwilderd worden beschouwd."
 
 tabel_trofische_groep  %>%
   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
