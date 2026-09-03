@@ -283,6 +283,7 @@ dbDisconnect(con)
 # hoeveel records?
 nrow(WV_DB)
 # 1.102.316
+# bij een nieuwe databevraging (3/09/2026) zijn het er 1.102.310
 
 # hoeveel parameters?
 ncol(WV_DB)
@@ -292,30 +293,44 @@ ncol(WV_DB)
 WV_DB %>% filter(Teldatum > "2022-09-30") %>% 
   group_by(Telseizoen) %>% 
   summarise(N = n()) 
+# zelfde grootte-orde aantal rijen voor seizoen 2025/26 als voorbije telseizoenen
 
-# gebieden:
+# GroupTypeCode Gebieden_ZS?
 Gebieden_ZS %>% distinct(LocationGroupTypeCode, LocationGroupTypeNaam)
+# 1 GroupType: Estuaria Winterstatistieken (analyse)
 
 # welke gebiedsgroepen zitten hier allemaal onder behalve deze die werden geselecteerd?
-Gebieden %>% filter(LocationGroupTypeNaam == "Estuaria Imputatie (analyse)") %>% 
+Gebieden %>% filter(LocationGroupTypeNaam == "Estuaria Winterstatistieken (analyse)") %>% 
   distinct(LocationGroupCode, LocationGroupNaam)
+# enkele bijkomende groepen: SESTONT & SESTGGG zijn onderverdelingen van SEST, maar ook RO & LO blijken te bestaan
 
 # dataselectie voorgesteld door FP:
 Gebieden %>% filter(LocationGroupCode %in% c('ZS','ZR','ZSVAL','SEST','SWETL','NOH','BW','DM','DU','KM','KBR','NG','OV','WZ')) %>% 
   distinct(LocationGroupTypeNaam, LocationGroupTypeCode)
+# 2 GroupTypes: Estuaria Winterstatistieken (analyse) & Sigma-clusters
 
 # aantal gebieden in selectie FP?
 Gebieden %>% filter(LocationGroupCode %in% c('ZS','ZR','ZSVAL','SEST','SWETL','NOH','BW','DM','DU','KM','KBR','NG','OV','WZ')) %>% 
   distinct(LocationWVNaam) %>% nrow()
-# 303: dit is krak hetzelfde aantal gebieden als via c('ZS','ZR','ZSVAL','SEST','SWETL','NOH')!
-
-Gebieden_ZS_FP <- Gebieden %>% filter(LocationGroupCode %in% c('ZS','ZR','ZSVAL','SEST','SWETL','NOH','BW','DM','DU','KM','KBR','NG','OV','WZ')) %>% 
-  distinct(LocationWVNaam) %>% arrange(LocationWVNaam)
+# 303: dit is krak hetzelfde aantal gebieden als via c('ZS','ZR','ZSVAL','SEST','SWETL','NOH')
 
 # is het ook krak dezelfde selectie?
+Gebieden_ZS_FP <- Gebieden %>% filter(LocationGroupCode %in% c('ZS','ZR','ZSVAL','SEST','SWETL','NOH','BW','DM','DU','KM','KBR','NG','OV','WZ')) %>% 
+  distinct(LocationWVNaam) %>% arrange(LocationWVNaam)
 sum(Gebieden_ZS_FP == 
       Gebieden_ZS %>% select(LocationWVNaam) %>% arrange(LocationWVNaam))
 # 303? Yes!
+
+# aantal gebieden in selectie ZS & ZR?
+Gebieden %>% filter(LocationGroupCode %in% c('ZS','ZR')) %>% 
+  distinct(LocationWVNaam) %>% nrow()
+# zelfde aantal gebieden als KRW selectie
+
+# is het ook krak dezelfde selectie?
+sum(Gebieden_ZS_KRW  %>% distinct(LocationWVNaam) %>% arrange(LocationWVNaam) == 
+      Gebieden %>% filter(LocationGroupCode %in% c('ZS','ZR')) %>% distinct(LocationWVNaam) %>% arrange(LocationWVNaam))
+# 113? Yes!
+
 rm(Gebieden, Gebieden_ZS_FP)
 
 ```
