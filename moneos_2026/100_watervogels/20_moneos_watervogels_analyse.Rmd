@@ -1698,75 +1698,75 @@ meta_data %>%
 #               (niet gespecifieerd in S-IHD rapport maar hier verondersteld)
 
 # doelstellingen op basis van Zeeschelde + zijrivieren
-doelpijlstaart <- Tellingen_MONEOS_niv3 %>%
-  filter(nednaam == "Pijlstaart",
-         telseizoen_yr %in% c(2000:2005),
-         maand %in% c(10:12, 1:3)) %>% 
-  group_by(telseizoen_yr, maand) %>% 
-  summarise(som_aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen_yr) %>% 
-  summarise(gem_telseizoen_yr = mean(som_aantal)) %>% 
-  ungroup() %>% 
-  summarise(doel = mean(gem_telseizoen_yr)) %>% 
-  round(digits = 0) %>% 
-  pull()
-
-doelwintertaling <- Tellingen_MONEOS_niv3 %>% 
-  filter(nednaam == "Wintertaling",
-         telseizoen_yr %in% c(1998:2005),
-         maand %in% c(10:12, 1:3)) %>% 
-  group_by(telseizoen_yr, maand) %>% 
-  summarise(som_aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen_yr) %>% 
-  summarise(gem_telseizoen_yr = mean(som_aantal)) %>% 
-  ungroup() %>% 
-  summarise(doel = mean(gem_telseizoen_yr)) %>% 
-  round(digits = 0) %>% 
-  pull()
-
-doelkrakeend <- Tellingen_MONEOS_niv3 %>%
-  filter(nednaam == "Krakeend",
-         telseizoen_yr %in% c(2002:2006),
-         maand %in% c(10:12, 1:3)) %>% 
-  group_by(telseizoen_yr, maand) %>% 
-  summarise(som_aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen_yr) %>% 
-  summarise(gem_telseizoen_yr = mean(som_aantal)) %>% 
-  ungroup() %>% 
-  summarise(doel = mean(gem_telseizoen_yr)) %>% 
-  round(digits = 0) %>% 
-  pull()
-
-doeltafeleend <- Tellingen_MONEOS_niv3 %>% 
-  filter(nednaam == "Tafeleend",
-         telseizoen_yr %in% c(2001:2006),
-         maand %in% c(10:12, 1:3)) %>% 
-  group_by(telseizoen_yr, maand) %>% 
-  summarise(som_aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen_yr) %>% 
-  summarise(gem_telseizoen_yr = mean(som_aantal)) %>% 
-  ungroup() %>% 
-  summarise(doel = mean(gem_telseizoen_yr)) %>% 
-  round(digits = 0) %>% 
-  pull()
-
-doelbergeend <- Tellingen_MONEOS_niv3 %>% 
-  filter(nednaam == "Bergeend",
-         telseizoen_yr %in% c(1992:2006),
-         maand %in% c(10:12, 1:3)) %>%
-  group_by(telseizoen_yr,maand) %>% 
-  summarise(som_aantal = sum(aantal, na.rm = TRUE)) %>% 
-  ungroup() %>% 
-  group_by(telseizoen_yr) %>% 
-  summarise(gem_telseizoen_yr = mean(som_aantal)) %>% 
-  ungroup() %>% 
-  summarise(doel = mean(gem_telseizoen_yr)) %>% 
-  round(digits = 0) %>% 
-  pull()
+# doelpijlstaart <- Tellingen_MONEOS_niv3 %>%
+#   filter(nednaam == "Pijlstaart",
+#          telseizoen_yr %in% c(2000:2005),
+#          maand %in% c(10:12, 1:3)) %>% 
+#   group_by(telseizoen_yr, maand) %>% 
+#   summarise(som_aantal = sum(aantal, na.rm = TRUE)) %>% 
+#   ungroup() %>% 
+#   group_by(telseizoen_yr) %>% 
+#   summarise(gem_telseizoen_yr = mean(som_aantal)) %>% 
+#   ungroup() %>% 
+#   summarise(doel = mean(gem_telseizoen_yr)) %>% 
+#   round(digits = 0) %>% 
+#   pull()
+# 
+# doelwintertaling <- Tellingen_MONEOS_niv3 %>% 
+#   filter(nednaam == "Wintertaling",
+#          telseizoen_yr %in% c(1998:2005),
+#          maand %in% c(10:12, 1:3)) %>% 
+#   group_by(telseizoen_yr, maand) %>% 
+#   summarise(som_aantal = sum(aantal, na.rm = TRUE)) %>% 
+#   ungroup() %>% 
+#   group_by(telseizoen_yr) %>% 
+#   summarise(gem_telseizoen_yr = mean(som_aantal)) %>% 
+#   ungroup() %>% 
+#   summarise(doel = mean(gem_telseizoen_yr)) %>% 
+#   round(digits = 0) %>% 
+#   pull()
+# 
+# doelkrakeend <- Tellingen_MONEOS_niv3 %>%
+#   filter(nednaam == "Krakeend",
+#          telseizoen_yr %in% c(2002:2006),
+#          maand %in% c(10:12, 1:3)) %>% 
+#   group_by(telseizoen_yr, maand) %>% 
+#   summarise(som_aantal = sum(aantal, na.rm = TRUE)) %>% 
+#   ungroup() %>% 
+#   group_by(telseizoen_yr) %>% 
+#   summarise(gem_telseizoen_yr = mean(som_aantal)) %>% 
+#   ungroup() %>% 
+#   summarise(doel = mean(gem_telseizoen_yr)) %>% 
+#   round(digits = 0) %>% 
+#   pull()
+# 
+# doeltafeleend <- Tellingen_MONEOS_niv3 %>% 
+#   filter(nednaam == "Tafeleend",
+#          telseizoen_yr %in% c(2001:2006),
+#          maand %in% c(10:12, 1:3)) %>% 
+#   group_by(telseizoen_yr, maand) %>% 
+#   summarise(som_aantal = sum(aantal, na.rm = TRUE)) %>% 
+#   ungroup() %>% 
+#   group_by(telseizoen_yr) %>% 
+#   summarise(gem_telseizoen_yr = mean(som_aantal)) %>% 
+#   ungroup() %>% 
+#   summarise(doel = mean(gem_telseizoen_yr)) %>% 
+#   round(digits = 0) %>% 
+#   pull()
+# 
+# doelbergeend <- Tellingen_MONEOS_niv3 %>% 
+#   filter(nednaam == "Bergeend",
+#          telseizoen_yr %in% c(1992:2006),
+#          maand %in% c(10:12, 1:3)) %>%
+#   group_by(telseizoen_yr,maand) %>% 
+#   summarise(som_aantal = sum(aantal, na.rm = TRUE)) %>% 
+#   ungroup() %>% 
+#   group_by(telseizoen_yr) %>% 
+#   summarise(gem_telseizoen_yr = mean(som_aantal)) %>% 
+#   ungroup() %>% 
+#   summarise(doel = mean(gem_telseizoen_yr)) %>% 
+#   round(digits = 0) %>% 
+#   pull()
 
 ```
 
