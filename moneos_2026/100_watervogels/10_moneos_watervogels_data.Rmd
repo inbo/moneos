@@ -139,11 +139,10 @@ WITH MIDMA AS (
   FROM FactAnalyseSetOccurrence F
   
   INNER JOIN DimSurvey SU       ON SU.surveykey = F.surveykey
-  --INNER JOIN DimLocationWV L    ON L.locationwvkey = F.locationwvkey    /** ... gedeactiveerd ten voordele van ... **/
   INNER JOIN DimSeason SS       ON SS.Seasonkey = F.seasonkey
   INNER JOIN DimEvent E         ON E.eventkey = F.eventkey
   INNER JOIN DimSample S        ON F.samplekey = S.samplekey
-  INNER JOIN DimLocationWV L    ON L.locationwvkey = S.locationwvkey      /** ... deze lijn - dit lost de mismatch in nieuwe gebieden op! **/
+  INNER JOIN DimLocationWV L    ON L.locationwvkey = S.locationwvkey     
   INNER JOIN DimTaxonWV T       ON T.taxonwvkey = F.taxonwvkey
   WHERE 1 = 1
     AND S.samplestatus = 'CHECKED'               /**alleen gevalideerde records**/
@@ -174,11 +173,10 @@ ZSCH AS (
     , F.Taxoncount              AS Aantal
   FROM FactAnalyseSetOccurrence F
   INNER JOIN DimSurvey SU       ON SU.surveykey = F.surveykey 
-  --INNER JOIN DimLocationWV L    ON L.locationwvkey = F.locationwvkey  /** ... gedeactiveerd ten voordele van ... **/
   INNER JOIN DimSeason SS       ON SS.Seasonkey = F.seasonkey
   INNER JOIN DimEvent E         ON E.eventkey = F.eventkey
   INNER JOIN DimSample S        ON F.samplekey = S.samplekey 
-  INNER JOIN DimLocationWV L    ON L.locationwvkey = S.locationwvkey    /** ... deze lijn - dit lost de mismatch in nieuwe gebieden op! **/
+  INNER JOIN DimLocationWV L    ON L.locationwvkey = S.locationwvkey    
   INNER JOIN DimTaxonWV T       ON T.taxonwvkey = F.taxonwvkey
   WHERE 1 = 1
    AND S.samplestatus = 'CHECKED'               /**alleen gevalideerde records**/
