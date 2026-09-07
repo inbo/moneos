@@ -1,0 +1,509 @@
+---
+params:
+  hoofdstuk: "100_watervogels"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding=encoding,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output")
+                          )})
+                          
+
+title: "check trends"
+author: "Gunther"
+date: "2026-09-05"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+```{r setup}
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, cache = FALSE)
+
+```
+
+## vergelijking trends
+
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+library(INBOtheme)
+library(writexl)
+library(rprojroot)
+library(RcppRoll)
+library(rtrim)
+library(scales)
+library(conflicted)
+conflict_prefer("filter", "dplyr")
+
+
+library(readxl)
+library(writexl)
+library(ggpubr)
+library(stringr)
+library(lubridate)
+library(ragg)
+library(vegan)
+library(ggpubr)
+library(scales)
+library(ggeffects)
+library(mgcv)
+library(fuzzyjoin)
+library(purrr)
+library(MASS)
+
+```
+
+```{r paden}
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+```{r data watervogels inlezen}
+
+WV_DB <- read_delim(paste0(pad_data, "WV_DB_ready.csv"), delim = ";")
+Gebieden_ZS <- read_delim(paste0(pad_data, "Gebieden_ZS_ready.csv"), delim = ";")
+
+```
+
+
+```{r data voorbereiden voor analyse}
+
+# voorbereiding analyse; selectie data vanaf telseizoen 1991-1992
+WV_DB <- WV_DB %>% 
+  mutate(telseizoen_yr = as.numeric(str_sub(telseizoen, 1, 4)),
+         jaar = year(teldatum),
+         maand = month(teldatum)) %>% 
+  filter(telseizoen_yr > 1990, 
+         telseizoen_yr < 2026) 
+# 1.102.000 rijen
+
+# enkele nieuwe objecten aanmaken
+vroegste_telseizoen <- WV_DB %>% 
+  pull(telseizoen) %>% 
+  sort() %>% 
+  first()
+
+laatste_telseizoen <- WV_DB %>% 
+  pull(telseizoen) %>% 
+  sort() %>% 
+  last()
+
+vroegste_jaar <- WV_DB %>% 
+  pull(jaar) %>% 
+  min()
+
+laatste_jaar <- WV_DB %>% 
+  pull(jaar) %>% 
+  max()
+
+# welke rivieren?
+knitr::kable(
+  WV_DB %>%
+  distinct(rivier) %>% 
+  filter(!is.na(rivier)))
+
+```
+
+### Dataset aanmaken voor MONEOS rapportage
+
+```{r dataset maken voor trends volledige Zeeschelde alluvium - NOPzoneplus}
+
+### Selecteren watervogels Zeeschelde MONEOS-rapport
+Tellingen_MONEOS <- WV_DB %>% 
+  filter(analyse_MONEOS == TRUE)
+# 164.035
+
+# aantallen sommeren over niveau 3 en telmaand
+Tellingen_MONEOS_niv3 <- 
+  Tellingen_MONEOS %>% 
+  group_by(locationgroupcode, locationgroupnaam, niveau2, rivier, krwcode, krwzone, niveau3, 
+           telseizoen, telseizoen_yr, jaar, maand, nednaam, taxongroupcode, exoot, trofische_groep) %>% 
+  summarise(aantal = sum(aantal)) %>% 
+  ungroup()
+
+### Toevoegen nultellingen dataset watervogels Zeeschelde MONEOSrapport
+Tellingen_MONEOS_niv3 <- 
+  Tellingen_MONEOS_niv3 %>% 
+  complete(nesting(locationgroupcode, locationgroupnaam, niveau2, rivier, krwcode, krwzone, niveau3, 
+                   telseizoen, telseizoen_yr, jaar, maand),
+           nesting(nednaam, taxongroupcode, exoot, trofische_groep),
+           fill = list(0))  
+# 279.124 records
+
+# volgorde factor niveau's vastleggen & telseizoen_yr definiëren
+Tellingen_MONEOS_niv3 <- Tellingen_MONEOS_niv3 %>% 
+  mutate(niveau3 = factor(Tellingen_MONEOS_niv3$niveau3, 
+                          levels = c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf",
+                                     "Zoet kort verblijf", "Rupel", "Durme", "Zoet zijrivier")))
+
+```
+
+
+```{r benthos}
+
+bestand_macrobenthos <- "G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2026/070_macrozoobenthos/data/Macrobenthos2008_2024_ANALYSE_rapportage2026.xlsx"
+
+data_macrobenthos <-
+  read_excel(
+    bestand_macrobenthos,
+    sheet = "macrobenthos"
+  ) %>%
+  dplyr::mutate(
+    niveau3_hybr = dplyr::recode(
+      waterloop2,
+      "Zeeschelde IV"  = "Saliniteitsgradient",
+      "Zeeschelde III" = "Oligohalien",
+      "Zeeschelde II"  = "Zoet lang verblijf",
+      "Zeeschelde I"   = "Zoet kort verblijf"
+    ),
+    fysiotoop = dplyr::case_when(
+      fysiotoop %in% "diep subtidaal" ~
+        "diep subtidaal",
+
+      fysiotoop %in% "matig diep subtidaal" ~
+        "matig diep subtidaal",
+
+      fysiotoop %in% "ondiep subtidaal" ~
+        "ondiep subtidaal",
+
+      fysiotoop %in% c(
+        "subtidaal",
+        "nog te bepalen - sub",
+        "nog te bepalen - subtidaal"
+      ) ~
+        "subtidaal indet.",
+
+      fysiotoop %in% c(
+        "lage slikzone",
+        "laag slik",
+        "laag intertidaal (75-100%)"
+      ) ~
+        "laag intertidaal",
+
+      fysiotoop %in% c(
+        "middelhoge slikzone",
+        "hoge slikzone",
+        "hoog intertidaal (0-25%)",
+        "middelhoog slik",
+        "middelhoog/hoog slik",
+        "midden intertidaal (25-75%)"
+      ) ~
+        "middelhoog/hoog intertidaal",
+
+      fysiotoop %in% c(
+        "hard substraat",
+        "hard antropogeen"
+      ) ~
+        "hard substraat",
+
+      fysiotoop %in% c(
+        "nog te bepalen - inter",
+        "onbepaald",
+        "slik",
+        "slik onbepaald"
+      ) ~
+        "intertidaal indet.",
+
+      TRUE ~ fysiotoop
+    )
+  ) %>%
+  dplyr::filter(!is.na(tidaal)) %>%
+  dplyr::mutate(
+    fysiotoop = dplyr::case_when(
+      locatie %in% c(
+        "ZE23_03",
+        "ZE23_04",
+        "NE23_30",
+        "NE23_33"
+      ) ~
+        "laag intertidaal",
+
+      locatie == "NE23_29" ~
+        "middelhoog/hoog intertidaal",
+
+      TRUE ~ fysiotoop
+    )
+  ) %>%
+  droplevels()
+
+
+# Eerste en laatste jaar in de volledige tijdreeks
+
+vroegste_jaar <-
+  data_macrobenthos %>%
+  dplyr::pull(jaar) %>%
+  min()
+
+laatste_jaar <-
+  data_macrobenthos %>%
+  dplyr::pull(jaar) %>%
+  max()
+
+
+# Volgorde van zones en waterlopen voor tabellen en figuren
+
+zeeschelde_order <-
+  c(
+    "Zeeschelde IV",
+    "Zeeschelde III",
+    "Zeeschelde II",
+    "Zeeschelde I"
+  )
+
+zeeschelde_order2022 <-
+  c(
+    "Saliniteitsgradient",
+    "Oligohalien",
+    "Zoet lang verblijf",
+    "Zoet kort verblijf"
+  )
+
+zeeschelde_order2022tot.1 <-
+  c(
+    "Saliniteitsgradient",
+    "Oligohalien",
+    "Zoet lang verblijf",
+    "Zoet kort verblijf",
+    "ZEESCHELDE"
+  )
+
+zijrivieren_order <-
+  c(
+    "Rupel",
+    "Durme",
+    "Nete",
+    "Dijle",
+    "Zenne"
+  )
+
+waterlopen_order <-
+  c(
+    zeeschelde_order,
+    zijrivieren_order
+  )
+
+waterlopen_order2022 <-
+  c(
+    zeeschelde_order2022,
+    zijrivieren_order
+  )
+
+fysiotoop_order <-
+  c(
+    "diep subtidaal",
+    "matig diep subtidaal",
+    "ondiep subtidaal",
+    "laag intertidaal",
+    "middelhoog/hoog intertidaal",
+    "hard substraat"
+  )
+
+
+# Verdeling van de staalnamelocaties binnen Zoet kort verblijf
+#
+# Vanaf 2014 wordt Gentbrugge-Melle afzonderlijk onderscheiden.
+# Vanaf 2017 wordt ook Tijarm Zwijnaarde afzonderlijk onderscheiden.
+#
+# Deze zones bevatten relatief veel benthos. De verdeling van de
+# staalnamelocaties kan daardoor invloed hebben op gemiddelden en medianen.
+
+Zkv.verdeling <-
+  data_macrobenthos %>%
+  dplyr::filter(
+    niveau3_hybr == "Zoet kort verblijf"
+  ) %>%
+  dplyr::group_by(
+    jaar,
+    fysiotoop
+  ) %>%
+  dplyr::summarise(
+    N.stalen = dplyr::n_distinct(locatie),
+
+    N.GMstalen = dplyr::n_distinct(
+      locatie[stringr::str_detect(locatie, "GM")]
+    ),
+
+    N.TZstalen = dplyr::n_distinct(
+      locatie[stringr::str_detect(locatie, "TZ")]
+    ),
+
+    N.outsideGMstalen = N.stalen - N.GMstalen,
+
+    .groups = "drop"
+  )
+
+#Controle
+bestand_macrobenthos
+dim(data_macrobenthos)
+range(data_macrobenthos$jaar)
+laatste_jaar
+sort(unique(data_macrobenthos$fysiotoop))
+
+```
+
+### Themes & labels
+
+```{r themes & labels definiëren voor grafieken}
+
+theme_with_legend <- theme(
+  axis.text.x = element_text(size = 8, angle = 45, hjust = 1, vjust = 1),
+  axis.text.y = element_text(size = 8),
+  legend.title = element_blank())
+
+theme_with_legend_2 <- theme(
+  axis.text.x = element_text(size = 8),
+  axis.text.y = element_text(size = 8),
+  legend.title = element_blank())
+
+theme_with_title <- theme(
+  axis.text.x = element_text(size = 8, angle = 45, hjust = 1, vjust = 1),
+  axis.text.y = element_text(size = 8),
+  plot.title = element_text(hjust = 0, size = 12))
+
+label_marks <- label_number(big.mark = ".", decimal.mark = ",")
+
+skip_every_second_label <- function(x){
+  x[seq(2, length(x), by = 2)] <- ""
+  return(x)}
+
+```
+
+
+## trends oligohaline
+
+You can also embed plots, for example:
+
+```{r oligohaline trend, echo=FALSE}
+
+table(data_macrobenthos$systeem)
+table(data_macrobenthos$waterloop)
+table(data_macrobenthos$waterloop2)
+
+## te melden aan Merlijn : probleem in classificatie 2024
+
+data_macrobenthos_totaal <-
+  data_macrobenthos %>%
+  dplyr::group_by(
+    jaar,
+    waterlichaam,
+    waterloop,
+    niveau3_hybr,
+    systeem,
+    tidaal,
+    ) %>%
+  dplyr::summarise(
+    dplyr::across(
+      c(densiteit, biomassa),
+      ~ sum(.x, na.rm = TRUE)
+    ),
+    .groups = "drop"
+  )
+
+
+
+##selectie benthos oligohalien Zeeschelde
+
+data_MB_ZS_Oligo <- data_macrobenthos_totaal |> 
+  filter(waterloop == "Oligohalien") |>
+  filter(tidaal == "intertidaal")
+
+##selectie wintervogeltotalen oligohalien Zeeschelde
+
+data_vogels_ZS_Oligo <- Tellingen_MONEOS_niv3 %>%
+  filter(niveau3 == "Oligohalien",
+         maand %in% c(10:12, 1:3),
+         taxongroupcode != "MS") |> 
+  group_by(niveau3, telseizoen_yr) %>% 
+  summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+  ungroup()  
+  
+data_vogels_ZS_Oligo |>   
+ggplot(aes(telseizoen_yr, aantal)) + 
+  geom_col() +
+  geom_smooth(aes(), color = "red", fill = "red", linewidth = 0.5) + 
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0.02, 0.02)) +
+  scale_y_continuous(labels = label_marks) +
+  labs(x = "Jaar", 
+       y = "Aantal watervogels", 
+       title = "Maandelijkse wintertotalen (Zeeschelde)") +
+  theme_with_title
+
+dataset_oligo <- data_MB_ZS_Oligo |>
+  rename(telseizoen_yr = jaar) |> 
+  left_join(data_vogels_ZS_Oligo, by = "telseizoen_yr") |> 
+  rename(som_vogels = aantal) |> 
+  filter(telseizoen_yr > 2012,
+         telseizoen_yr != 2020) ## winterinflux jaar geen relatie met benthos te verwachten
+
+compare the trends between densiteit, biomassa en som_vogels in a graph and do a suggestion how to test if  there are different trend patterns in these variables
+
+```
+
+```{r figuur}
+
+dataset_oligo_long <- dataset_oligo |>
+  mutate(
+    across(c(densiteit, biomassa, som_vogels),
+           ~ as.numeric(scale(.x)),
+           .names = "z_{.col}")
+  ) |>
+  select(telseizoen_yr, starts_with("z_")) |>
+  pivot_longer(cols = starts_with("z_"),
+               names_to = "variabele",
+               values_to = "waarde",
+               names_prefix = "z_")
+
+dataset_oligo_long |>
+  ggplot(aes(telseizoen_yr, waarde, color = variabele)) +
+  geom_line(linewidth = 0.8) +
+  geom_smooth(se = FALSE, linewidth = 0.5, method = "loess") +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  labs(x = "Jaar", y = "Gestandaardiseerde waarde (z-score)",
+       title = "Vergelijking trends Oligohalien: densiteit benthos, biomassa benthos, totaal wintervogels") +
+  theme_with_title +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+##laatste periode lijkt me toch afwijkend
+
+dataset_oligo_long <- dataset_oligo_long |>
+  mutate(
+    periode = if_else(telseizoen_yr < 2020, "voor_2020", "na_2020"),
+    periode = factor(periode, levels = c("voor_2020", "na_2020"))
+  )
+
+dataset_oligo_long |>
+  ggplot(aes(telseizoen_yr, waarde, color = variabele)) +
+  geom_line(alpha = 0.4) +
+  geom_smooth(aes(group = interaction(variabele, periode)),
+              method = "lm", se = TRUE, linewidth = 0.8) +
+  geom_vline(xintercept = 2020, linetype = "dashed", color = "grey40") +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + 
+  labs(x = "Jaar", y = "Gestandaardiseerde waarde (z-score)",
+       title = "Trends voor vs. na 2020 Oligohalien: densiteit benthos, biomassa benthos, totaal wintervogels") +
+  theme_with_title
+
+```
+
+```{r statistiek}
+library(Kendall)
+
+MannKendall(dataset_oligo$densiteit)
+MannKendall(dataset_oligo$biomassa)
+MannKendall(dataset_oligo$som_vogels)
+
+model <- lm(waarde ~ telseizoen_yr * variabele, data = dataset_oligo_long)
+summary(model)
+anova(model)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
