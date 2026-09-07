@@ -4,8 +4,8 @@ params:
 knit: (function(inputFile, encoding) {
         rmarkdown::render(inputFile,
                           encoding=encoding,
-                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output")
                           )})
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output")
                           
 
 title: "check trends"
@@ -34,27 +34,10 @@ library(lubridate)
 library(INBOtheme)
 library(writexl)
 library(rprojroot)
-library(RcppRoll)
-library(rtrim)
 library(scales)
+library(readxl)
 library(conflicted)
 conflict_prefer("filter", "dplyr")
-
-
-library(readxl)
-library(writexl)
-library(ggpubr)
-library(stringr)
-library(lubridate)
-library(ragg)
-library(vegan)
-library(ggpubr)
-library(scales)
-library(ggeffects)
-library(mgcv)
-library(fuzzyjoin)
-library(purrr)
-library(MASS)
 
 ```
 
@@ -86,25 +69,6 @@ WV_DB <- WV_DB %>%
   filter(telseizoen_yr > 1990, 
          telseizoen_yr < 2026) 
 # 1.102.000 rijen
-
-# enkele nieuwe objecten aanmaken
-vroegste_telseizoen <- WV_DB %>% 
-  pull(telseizoen) %>% 
-  sort() %>% 
-  first()
-
-laatste_telseizoen <- WV_DB %>% 
-  pull(telseizoen) %>% 
-  sort() %>% 
-  last()
-
-vroegste_jaar <- WV_DB %>% 
-  pull(jaar) %>% 
-  min()
-
-laatste_jaar <- WV_DB %>% 
-  pull(jaar) %>% 
-  max()
 
 # welke rivieren?
 knitr::kable(
@@ -236,79 +200,6 @@ data_macrobenthos <-
   ) %>%
   droplevels()
 
-
-# Eerste en laatste jaar in de volledige tijdreeks
-
-vroegste_jaar <-
-  data_macrobenthos %>%
-  dplyr::pull(jaar) %>%
-  min()
-
-laatste_jaar <-
-  data_macrobenthos %>%
-  dplyr::pull(jaar) %>%
-  max()
-
-
-# Volgorde van zones en waterlopen voor tabellen en figuren
-
-zeeschelde_order <-
-  c(
-    "Zeeschelde IV",
-    "Zeeschelde III",
-    "Zeeschelde II",
-    "Zeeschelde I"
-  )
-
-zeeschelde_order2022 <-
-  c(
-    "Saliniteitsgradient",
-    "Oligohalien",
-    "Zoet lang verblijf",
-    "Zoet kort verblijf"
-  )
-
-zeeschelde_order2022tot.1 <-
-  c(
-    "Saliniteitsgradient",
-    "Oligohalien",
-    "Zoet lang verblijf",
-    "Zoet kort verblijf",
-    "ZEESCHELDE"
-  )
-
-zijrivieren_order <-
-  c(
-    "Rupel",
-    "Durme",
-    "Nete",
-    "Dijle",
-    "Zenne"
-  )
-
-waterlopen_order <-
-  c(
-    zeeschelde_order,
-    zijrivieren_order
-  )
-
-waterlopen_order2022 <-
-  c(
-    zeeschelde_order2022,
-    zijrivieren_order
-  )
-
-fysiotoop_order <-
-  c(
-    "diep subtidaal",
-    "matig diep subtidaal",
-    "ondiep subtidaal",
-    "laag intertidaal",
-    "middelhoog/hoog intertidaal",
-    "hard substraat"
-  )
-
-
 # Verdeling van de staalnamelocaties binnen Zoet kort verblijf
 #
 # Vanaf 2014 wordt Gentbrugge-Melle afzonderlijk onderscheiden.
@@ -327,18 +218,10 @@ Zkv.verdeling <-
     fysiotoop
   ) %>%
   dplyr::summarise(
-    N.stalen = dplyr::n_distinct(locatie),
-
-    N.GMstalen = dplyr::n_distinct(
-      locatie[stringr::str_detect(locatie, "GM")]
-    ),
-
-    N.TZstalen = dplyr::n_distinct(
-      locatie[stringr::str_detect(locatie, "TZ")]
-    ),
-
+        N.stalen = dplyr::n_distinct(locatie),
+    N.GMstalen = dplyr::n_distinct(locatie[stringr::str_detect(locatie, "GM")]),
+    N.TZstalen = dplyr::n_distinct(locatie[stringr::str_detect(locatie, "TZ")]),
     N.outsideGMstalen = N.stalen - N.GMstalen,
-
     .groups = "drop"
   )
 
@@ -346,7 +229,6 @@ Zkv.verdeling <-
 bestand_macrobenthos
 dim(data_macrobenthos)
 range(data_macrobenthos$jaar)
-laatste_jaar
 sort(unique(data_macrobenthos$fysiotoop))
 
 ```
@@ -368,7 +250,8 @@ theme_with_legend_2 <- theme(
 theme_with_title <- theme(
   axis.text.x = element_text(size = 8, angle = 45, hjust = 1, vjust = 1),
   axis.text.y = element_text(size = 8),
-  plot.title = element_text(hjust = 0, size = 12))
+  plot.title = element_text(hjust = 0, size = 12),
+  legend.title = element_blank())
 
 label_marks <- label_number(big.mark = ".", decimal.mark = ",")
 
@@ -378,10 +261,7 @@ skip_every_second_label <- function(x){
 
 ```
 
-
-## trends oligohaline
-
-You can also embed plots, for example:
+### trends oligohaline
 
 ```{r oligohaline trend, echo=FALSE}
 
@@ -422,7 +302,8 @@ data_MB_ZS_Oligo <- data_macrobenthos_totaal |>
 data_vogels_ZS_Oligo <- Tellingen_MONEOS_niv3 %>%
   filter(niveau3 == "Oligohalien",
          maand %in% c(10:12, 1:3),
-         taxongroupcode != "MS") |> 
+         taxongroupcode != "MS",
+         telseizoen_yr > 2007) |> 
   group_by(niveau3, telseizoen_yr) %>% 
   summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
   ungroup()  
@@ -431,25 +312,24 @@ data_vogels_ZS_Oligo |>
 ggplot(aes(telseizoen_yr, aantal)) + 
   geom_col() +
   geom_smooth(aes(), color = "red", fill = "red", linewidth = 0.5) + 
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y", expand = c(0.02, 0.02)) +
   scale_y_continuous(labels = label_marks) +
   labs(x = "Jaar", 
        y = "Aantal watervogels", 
-       title = "Maandelijkse wintertotalen (Zeeschelde)") +
+       title = "Wintertotalen (Zeeschelde - oligohalien)") +
   theme_with_title
 
 dataset_oligo <- data_MB_ZS_Oligo |>
   rename(telseizoen_yr = jaar) |> 
-  left_join(data_vogels_ZS_Oligo, by = "telseizoen_yr") |> 
+  right_join(data_vogels_ZS_Oligo, by = "telseizoen_yr") |> 
   rename(som_vogels = aantal) |> 
-  filter(telseizoen_yr > 2012,
+  filter(# telseizoen_yr > 2012,
          telseizoen_yr != 2020) ## winterinflux jaar geen relatie met benthos te verwachten
 
-compare the trends between densiteit, biomassa en som_vogels in a graph and do a suggestion how to test if  there are different trend patterns in these variables
+# waarom wordt hierboven gefilterd op > 2012?
 
 ```
 
-```{r figuur}
+```{r figuren}
 
 dataset_oligo_long <- dataset_oligo |>
   mutate(
@@ -457,24 +337,30 @@ dataset_oligo_long <- dataset_oligo |>
            ~ as.numeric(scale(.x)),
            .names = "z_{.col}")
   ) |>
-  select(telseizoen_yr, starts_with("z_")) |>
+  dplyr::select(telseizoen_yr, starts_with("z_")) |>
   pivot_longer(cols = starts_with("z_"),
                names_to = "variabele",
                values_to = "waarde",
-               names_prefix = "z_")
+               names_prefix = "z_") %>% 
+  mutate(variabele = case_when(variabele == "densiteit" ~ "Benthos (densiteit)",
+                               variabele == "biomassa" ~ "Benthos (biomassa)",
+                               variabele == "som_vogels" ~ "Vogels (som wintertellingen)"))
 
+# trends 2008 - 2026
 dataset_oligo_long |>
   ggplot(aes(telseizoen_yr, waarde, color = variabele)) +
-  geom_line(linewidth = 0.8) +
-  geom_smooth(se = FALSE, linewidth = 0.5, method = "loess") +
+  geom_line(alpha = 0.5) +
+  geom_smooth(se = FALSE, method = "lm", linewidth = 0.8) +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
   labs(x = "Jaar", y = "Gestandaardiseerde waarde (z-score)",
-       title = "Vergelijking trends Oligohalien: densiteit benthos, biomassa benthos, totaal wintervogels") +
+       title = "Trends Oligohalien") +
   theme_with_title +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-##laatste periode lijkt me toch afwijkend
+ggsave(paste0(pad_figuren, "100_20a_trends_oligohalien.jpg"), 
+       width = 8, height = 5, dpi = 300)
 
+# trends 2008 - 2026 (opgesplitst voor vs na 2020)
 dataset_oligo_long <- dataset_oligo_long |>
   mutate(
     periode = if_else(telseizoen_yr < 2020, "voor_2020", "na_2020"),
@@ -483,27 +369,67 @@ dataset_oligo_long <- dataset_oligo_long |>
 
 dataset_oligo_long |>
   ggplot(aes(telseizoen_yr, waarde, color = variabele)) +
-  geom_line(alpha = 0.4) +
+  geom_line(alpha = 0.5) +
   geom_smooth(aes(group = interaction(variabele, periode)),
-              method = "lm", se = TRUE, linewidth = 0.8) +
+              se =  FALSE, method = "lm", linewidth = 0.8) +
   geom_vline(xintercept = 2020, linetype = "dashed", color = "grey40") +
   scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + 
   labs(x = "Jaar", y = "Gestandaardiseerde waarde (z-score)",
-       title = "Trends voor vs. na 2020 Oligohalien: densiteit benthos, biomassa benthos, totaal wintervogels") +
+       title = "Trends Oligohalien (pre- vs. post-2020)") +
   theme_with_title
 
+ggsave(paste0(pad_figuren, "100_20b_trends_oligohalien.jpg"), 
+       width = 8, height = 5, dpi = 300)
+
+
+# trends 2008 - 2026 (opgesplitst voor vs na 2020, zonder benthos densiteit)
+dataset_oligo_long |>
+  mutate(waarde = case_when(variabele == "Benthos (densiteit)" ~ NA,
+                               .default = waarde)) %>% 
+  ggplot(aes(telseizoen_yr, waarde, color = variabele)) +
+  geom_line(alpha = 0.5) +
+  geom_smooth(aes(group = interaction(variabele, periode)),
+              se =  FALSE, method = "lm", linewidth = 0.8) +
+  geom_vline(xintercept = 2020, linetype = "dashed", color = "grey40") +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + 
+  labs(x = "Jaar", y = "Gestandaardiseerde waarde (z-score)",
+       title = "Trends Oligohalien (pre- vs. post-2020)") +
+  theme_with_title
+
+ggsave(paste0(pad_figuren, "100_20c_trends_oligohalien.jpg"), 
+       width = 8, height = 5, dpi = 300)
+
+
+# trends 2008 - 2024 (opgesplitst voor vs na 2020, zonder benthos densiteit, tot 2024)
+dataset_oligo_long |>
+  filter(telseizoen_yr < 2024) %>%
+  mutate(waarde = case_when(variabele == "Benthos (densiteit)" ~ NA,
+                               .default = waarde)) %>% 
+  ggplot(aes(telseizoen_yr, waarde, color = variabele)) +
+  geom_line(alpha = 0.5) +
+  geom_smooth(aes(group = interaction(variabele, periode)),
+              se =  FALSE, method = "lm", linewidth = 0.8) +
+  geom_vline(xintercept = 2020, linetype = "dashed", color = "grey40") +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + 
+  labs(x = "Jaar", y = "Gestandaardiseerde waarde (z-score)",
+       title = "Trends Oligohalien (pre- vs. post-2020)") +
+  theme_with_title
+
+ggsave(paste0(pad_figuren, "100_20d_trends_oligohalien.jpg"), 
+       width = 8, height = 5, dpi = 300)
+
 ```
 
-```{r statistiek}
-library(Kendall)
+<!-- ```{r statistiek} -->
+<!-- library(Kendall) -->
 
-MannKendall(dataset_oligo$densiteit)
-MannKendall(dataset_oligo$biomassa)
-MannKendall(dataset_oligo$som_vogels)
+<!-- MannKendall(dataset_oligo$densiteit) -->
+<!-- MannKendall(dataset_oligo$biomassa) -->
+<!-- MannKendall(dataset_oligo$som_vogels) -->
 
-model <- lm(waarde ~ telseizoen_yr * variabele, data = dataset_oligo_long)
-summary(model)
-anova(model)
-```
+<!-- model <- lm(waarde ~ telseizoen_yr * variabele, data = dataset_oligo_long) -->
+<!-- summary(model) -->
+<!-- anova(model) -->
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+<!-- ``` -->
+
