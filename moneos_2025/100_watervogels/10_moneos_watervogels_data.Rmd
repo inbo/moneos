@@ -46,8 +46,9 @@ pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
 ###Databank bevragen
 
 ```{r inlezen alle data Watervogeldatabank}
-#new procedure based on script N. Vanermen 'Watervogels_analyse_2025 - see amazon PRJ-Watervogels
-#aangepast om Zeeschelde analyseset correct te bevragen en aan te vullen met MIDMA
+##new procedure based on script N. Vanermen 'Watervogels_analyse_2025 - see amazon PRJ-Watervogels
+##aangepast om Zeeschelde analyseset correct te bevragen en aan te vullen met MIDMA
+##aangepast aan de opmerking van F. Piesschaert: alleen opgesplitste tellingen meenemen: inner join DimSample sa on sa.samplekey = ##f.SampleKey where 1=1 and sa.Samplestatus <> 'REJECTED' mail 5 dec 2025.
 
 
 
@@ -138,6 +139,7 @@ FROM FactAnalyseSetOccurrence F
     inner join DimTaxonWV T on T.taxonwvkey = F.taxonwvkey
 WHERE 1=1
     AND S.samplestatus = 'CHECKED' /**alleen gevalideerde records**/
+    AND S.samplestatus <> 'REJECTED' /**alleen de records van de opgesplitste tellingen bv Prosperpolder deelgebieden**/
     AND S.coveragecode not in ('-', 'N')  /**niet getelde tellingen zijn irrelevant**/
     AND F.taxoncount > 0
     AND F.Analysesetkey in (2, 3, 4)
@@ -171,6 +173,7 @@ FROM FactAnalyseSetOccurrence F
    inner join DimTaxonWV T on T.taxonwvkey = F.taxonwvkey
 WHERE 1=1
    AND S.samplestatus = 'CHECKED' /**alleen gevalideerde records**/
+   AND S.samplestatus <> 'REJECTED' /**alleen de records van de opgesplitste tellingen bv Prosperpolder deelgebieden**/
    AND S.coveragecode not in ('-', 'N')  /**niet getelde tellingen zijn irrelevant**/
    AND F.taxoncount > 0
    AND F.Analysesetkey in (1)
@@ -466,7 +469,7 @@ WV_DB <-
   
    
 WV_DB %>% 
-  distinct(niveau3)
+  distinct(gebiedsklasse)
 
 
 
@@ -611,7 +614,8 @@ Aantaltellingenpergebied0 <- WV_DB %>%
   distinct(krwzone, gebiedscode, gebied, telseizoen, teldatum) %>% 
   count(krwzone,gebiedscode, gebied, telseizoen)
 
-# aantal tellingen per telseizoen ingevoerd 
+## aantal tellingen per telseizoen ingevoerd 
+## Hoe weten we wanneer geen data = nultelling of wanneer niet geteld is?
 
 
 knitr::kable(Aantaltellingenpergebied0)
@@ -662,7 +666,7 @@ Clusters_Sigma %>%
   summarise(aantal = sum(aantal)) %>% 
   ungroup() %>% 
   dplyr::select(-wetnaam)%>% 
-  write_delim(paste0(pad_data, "Watervogels_ZeescheldeVLIZ.csv"),
+  write_delim(paste0(pad_data, "Watervogels_ZeescheldeVLIZcheck.csv"),
               delim = ";")
 
 

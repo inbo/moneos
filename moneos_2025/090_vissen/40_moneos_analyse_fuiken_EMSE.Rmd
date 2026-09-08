@@ -14,7 +14,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, dpi = 200)
 
 ```
 
@@ -500,6 +500,7 @@ aantal_soorten_seizoen_locatie %>%
   theme(strip.text = element_text(size = 12))
 
 ggsave(paste0(pad_figuren, "aantal_soorten_seizoen_locatie.jpg"), width = 10, height = 8)
+ggsave(paste0(pad_figuren, "aantal_soorten_seizoen_locatie.png"), width = 10, height = 8)
 
 
 aantal_soorten_seizoen <- 
@@ -535,6 +536,7 @@ aantal_soorten_seizoen %>%
        color = "jaar")
 
 ggsave(paste0(pad_figuren, "aantal_soorten_seizoen.jpg"), width = 10, height = 5)
+ggsave(paste0(pad_figuren, "aantal_soorten_seizoen.png"), width = 10, height = 5)
 
 
 aantal_soorten_locatie <- 
@@ -586,6 +588,7 @@ aantal_soorten_locatie %>%
        color = "jaar")
 
 ggsave(paste0(pad_figuren, "aantal_soorten_locatie.jpg"), width = 12, height = 5)
+ggsave(paste0(pad_figuren, "aantal_soorten_locatie.png"), width = 12, height = 5)
 
 
 aantal_soorten_totaal <- 
@@ -611,6 +614,7 @@ aantal_soorten_totaal %>%
          color = "none")
 
 ggsave(paste0(pad_figuren, "aantal_soorten_totaal.jpg"), width = 6, height = 4)
+ggsave(paste0(pad_figuren, "aantal_soorten_totaal.png"), width = 6, height = 4)
 
 
 sheets_figuren[["aantal_soorten_seizoen_locatie"]] <- 
@@ -813,6 +817,7 @@ relatief_aantal_laatste_jaar %>%
         legend.title = element_blank())
 
 ggsave(str_c(pad_figuren, "relatief_aantal_gevangen_individuen.jpg"), width = 6, height = 8)
+ggsave(str_c(pad_figuren, "relatief_aantal_gevangen_individuen.png"), width = 6, height = 8)
 
 ```
 
@@ -877,6 +882,7 @@ relatief_gewicht_laatste_jaar %>%
         legend.title = element_blank())
 
 ggsave(paste0(pad_figuren, "relatieve_biomassa_gevangen_individuen.jpg"), width = 6, height = 8)
+ggsave(paste0(pad_figuren, "relatieve_biomassa_gevangen_individuen.png"), width = 6, height = 8)
 
 ```
 
@@ -955,6 +961,7 @@ gemiddeld_diversiteit_EMSE %>%
   theme(axis.text = element_text(size = 8))
 
 ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_marien.jpg"), width = 10, height = 6)
+ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_marien.png"), width = 10, height = 6)
 
 
 gemiddeld_diversiteit_EMSE %>% 
@@ -979,6 +986,7 @@ gemiddeld_diversiteit_EMSE %>%
   theme(axis.text = element_text(size = 8))
 
 ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_diadroom.jpg"), width = 10, height = 6)
+ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_diadroom.png"), width = 10, height = 6)
 
 
 gemiddeld_diversiteit_EMSE %>% 
@@ -1003,6 +1011,7 @@ gemiddeld_diversiteit_EMSE %>%
   theme(axis.text = element_text(size = 8))
 
 ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_zoet.jpg"), width = 10, height = 6)
+ggsave(paste0(pad_figuren, "diversiteit_S_D_EMSE_zoet.png"), width = 10, height = 6)
 
 ```
 
@@ -1109,6 +1118,7 @@ plot_grid(ggp_all,
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
 ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_marien.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_marien.png"), width = 14, height = 7, bg = "white")
 
 
 data_split <-
@@ -1168,6 +1178,7 @@ plot_grid(ggp_all,
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
 ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_diadroom.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_diadroom.png"), width = 14, height = 7, bg = "white")
 
 
 data_split <-
@@ -1227,6 +1238,7 @@ plot_grid(ggp_all,
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
 ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_zoet.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_zoet.png"), width = 14, height = 7, bg = "white")
 
 ```
 
@@ -1378,6 +1390,7 @@ plot_grid(ggp_all,
           ncol = 3, rel_widths = c(1.2,0.02,0.9))
 
 ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_saliniteitsgradient.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_aantallen_tot_aantal_EMSE_saliniteitsgradient.png"), width = 14, height = 7, bg = "white")
 
 ```
 
@@ -1444,6 +1457,7 @@ plot_grid(ggp_all,
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
 ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_marien.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_marien.png"), width = 14, height = 7, bg = "white")
 
 
 data_split <-
@@ -1504,6 +1518,7 @@ plot_grid(ggp_all,
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
 ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_diadroom.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_diadroom.png"), width = 14, height = 7, bg = "white")
 
 
 data_split <-
@@ -1564,6 +1579,7 @@ plot_grid(ggp_all,
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
 ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_zoet.jpg"), width = 14, height = 7, bg = "white")
+ggsave(paste0(pad_figuren, "relatieve_biomassa_tot_biomassa_EMSE_zoet.png"), width = 14, height = 7, bg = "white")
 
 ```
 
@@ -1625,6 +1641,7 @@ data_sleutelsoorten_EMSE %>%
         legend.position = "top")
 
 ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marien.jpg"), width = 6, height = 8)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_marien.png"), width = 6, height = 8)
 
 
 data_sleutelsoorten_EMSE %>% 
@@ -1644,6 +1661,7 @@ data_sleutelsoorten_EMSE %>%
         legend.position = "top")
 
 ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadroom.jpg"), width = 7, height = 7)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_diadroom.png"), width = 7, height = 7)
 
 
 data_sleutelsoorten_EMSE %>% 
@@ -1664,6 +1682,7 @@ data_sleutelsoorten_EMSE %>%
         legend.position = "top")
 
 ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.jpg"), width = 6, height = 8)
+ggsave(paste0(pad_figuren, "aantallen_sleutelsoorten_EMSE_zoet.png"), width = 6, height = 8)
 
 ```
 
@@ -1687,6 +1706,7 @@ data_sleutelsoorten_EMSE %>%
         legend.position = "top")
 
 ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_marien.jpg"), width = 6, height = 8)
+ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_marien.png"), width = 6, height = 8)
 
 
 data_sleutelsoorten_EMSE %>% 
@@ -1706,6 +1726,7 @@ data_sleutelsoorten_EMSE %>%
         legend.position = "top")
 
 ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_diadroom.jpg"), width = 7, height = 7)
+ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_diadroom.png"), width = 7, height = 7)
 
 
 data_sleutelsoorten_EMSE %>% 
@@ -1726,6 +1747,7 @@ data_sleutelsoorten_EMSE %>%
         legend.position = "top")
 
 ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_zoet.jpg"), width = 6, height = 8)
+ggsave(paste0(pad_figuren, "biomassa_sleutelsoorten_EMSE_zoet.png"), width = 6, height = 8)
 
 ```
 
@@ -1840,6 +1862,8 @@ plot_grid(ggp_all,
 
 ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_salgroep.jpg"), width = 15, height = 8, bg = "white",
        create.dir = TRUE)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_salgroep.png"), width = 15, height = 8, bg = "white",
+       create.dir = TRUE)
 
 
 ggp_all <-
@@ -1872,6 +1896,8 @@ plot_grid(ggp_all,
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
 ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_salgroep.jpg"), width = 15, height = 8, bg = "white",
+       create.dir = TRUE)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_salgroep.png"), width = 15, height = 8, bg = "white",
        create.dir = TRUE)
 
 ```
@@ -2006,6 +2032,8 @@ plot_grid(ggp_all,
 
 ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_dieet.jpg"), width = 14, height = 8, bg = "white",
        create.dir = TRUE)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_dieet.png"), width = 14, height = 8, bg = "white",
+       create.dir = TRUE)
 
 
 ggp_all <-
@@ -2038,6 +2066,8 @@ plot_grid(ggp_all,
           ncol = 3, rel_widths = c(1.4,0.05,0.6))
 
 ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 14, height = 8, bg = "white",
+       create.dir = TRUE)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_dieet.png"), width = 14, height = 8, bg = "white",
        create.dir = TRUE)
 
 ```
@@ -2092,6 +2122,8 @@ gemiddeld_diversiteit_salgroep %>%
 
 ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_salgroep.jpg"), width = 10, height = 7,
        create.dir = TRUE)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_salgroep.png"), width = 10, height = 7,
+       create.dir = TRUE)
 
 ```
 
@@ -2143,6 +2175,8 @@ gemiddeld_diversiteit_dieet %>%
         axis.text.x = element_text(angle = 90, vjust = 0.5))
 
 ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_dieet.jpg"), width = 7, height = 6,
+       create.dir = TRUE)
+ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_dieet.png"), width = 7, height = 6,
        create.dir = TRUE)
 
 ```

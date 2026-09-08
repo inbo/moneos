@@ -16,26 +16,21 @@ branches <-
     "130_raaien",
     "140_slik_schorrand")
 
-update_main <-
+merge_main_to_branch <-
   function(branches) {
     current <- system("git branch --show-current", intern = TRUE)
-    for (i in c(1,2)) {
-      for(branch in branches) {
-        # system("git checkout main")
-        system("git pull origin main")
-        system(stringr::str_c("git checkout ", branch))
-        system(stringr::str_c("git pull origin ", branch))
-        system("git merge main")
-        system(stringr::str_c("git push origin ", branch))
-        system("git checkout main")
-        system(stringr::str_c("git merge ", branch))
-        system("git push origin main")
-      }
+    for(branch in branches) {
+      # system("git checkout main")
+      system("git pull origin main")
+      system(stringr::str_c("git checkout ", branch))
+      system(stringr::str_c("git pull origin ", branch))
+      system("git merge main")
+      system(stringr::str_c("git push origin ", branch))
     }
     system(stringr::str_c("git checkout ", current))
   }
 
-update_main(branches)
+merge_main_to_branch(branches)
 # update_main("010_inleiding_en_overzicht")
 
 
