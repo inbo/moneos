@@ -78,7 +78,7 @@ for(i in 1:nrow(meta_data)){
 
 **Fichenummer: S-DH-V-004 - Ecotopen**
 
-**Robrecht Debbaut,** **Amber Mertens, Joost Vanoverbeke & Alexander Van Braeckel**
+**Robrecht Debbaut,** **, Joost Vanoverbeke & Alexander Van Braeckel**
 
 ## Inleiding
 
@@ -94,9 +94,10 @@ Deze nieuwe indeling van de ecotopen weerspiegelt beter de leefgebieden van vers
 Het wordt uitgebreid besproken in Van Braeckel et al. (2018) voor de sublitorale zone en in Van Braeckel et al. (2020) voor de litorale zone.
 
 In deze rapportage worden de ecotopenkaarten voor de Zeeschelde vooralsnog volgens beide ecotopenstelsels voorgesteld.
-De kaart van het ecotopenstelsel *Zeeschelde 1.0* bestaat van `r vroegste_jaar` tot `r laatste_jaar`, terwijl de kaart van het ecotopenstelsel *Zeeschelde 2.0* teruggerekend is tot en met 2019.
+De kaart van het ecotopenstelsel *Zeeschelde 1.0* bestaat van `r vroegste_jaar` tot `r laatste_jaar`, terwijl de kaart van het ecotopenstelsel *Zeeschelde 2.0* teruggerekend is tot en met 2019. <!--# Deze zijn volledig teruggerekend #### voor volgende rapportage aan te passen? -->
 De ecotopenkaart Zeeschelde 2.0 werd voor de Beneden-Zeeschelde voor het eerst gerapporteerd in het MONEOS rapport van 2022 (kaart van toestand 2020) (Mertens & Van Braeckel, 2022).
-Voor de Boven-Zeeschelde is dit de eerste rapportage.
+Voor de Boven-Zeeschelde is dit de eerste rapportage. <!--# De eerste kaart M2 dateert toch uit 2019 voor BEZ en BOZ? -->
+
 
 In dit MONEOSrapport wordt de ecotopenkaart van `r laatste_jaar` van de Beneden-Zeeschelde besproken.
 Ook de kaarten van de Boven-Zeeschelde van `r laatste_jaar - 1` worden hier gerapporteerd.
@@ -120,7 +121,7 @@ De geomorfologische kaart onderscheidt volgende subtraattypes:
 
 De kaart wordt gemaakt aan de hand van false colour beelden bij laagwater, die eens in de drie jaar gemaakt worden in opdracht van De Vlaamse Waterweg.
 Voor de tussenliggende jaren wordt ook gebruik gemaakt van orthofotomozaïeken van Vlaanderen, die echter niet altijd bij laag water genomen zijn.
-Voor de huidige Beneden-Zeeschelde kaart is gebruikt gemaakt van het meest recente false color beeld van 2022 en 2025 en de orthofotomozaïek van `r laatste_jaar`.
+De meest recente kaart voor de Beneden-Zeeschelde is opgesteld aan de hand van de false-colorbeelden van 2022 en 2025, in combinatie met de orthofotomozaïek van `r laatste_jaar`.
 De grenzen worden hierop ingetekend door personen met een uitgebreide terreinkennis, vertrekkende van de grenzen van het voorgaande jaar.
 Figuur \@ref(fig:030-figuur-geomorfkaart) toont een voorbeeld van de geomorfologische kaart uit 2021 ter hoogte van schor Ouden Doel met links het false color beeld van 2019 bij laag water en rechts de orthofotomozaïek van 2021.
 
@@ -166,7 +167,9 @@ Voor de jaren 2019 - 2021 is steeds hetzelfde Scaldis 2019 model gebruikt.
 In 2022 werd een nieuwe model-run uitgevoerd met de bathymetrie van 2022 als input.
 Deze modeloutput wordt gebruikt voor de ecotopenkaarten van 2022 tem 2024.
 
-De grenswaarden zijn gebaseerd op het voorkomen van ongewervelde bodemdiergemeenschappen (Van Braeckel et al, 2018) en verschillen per diepteklasse (Tabel \@ref(tab:030-tabel-dynamiek-ecotopen) <!--# laagdynamisch is het ecotoop waarin we het meest geïnteresseerd zijn, ik zou dan ook een tabel maken met ook een plaats voor laagdynamisch ecotoop, of het > teken omkeren naar < en een tabel met hoofding 'afbakening van laagdynamisch habitat' maken -->).
+De grenswaarden zijn gebaseerd op het voorkomen van ongewervelde bodemdiergemeenschappen (Van Braeckel et al, 2018) en verschillen per diepteklasse (Tabel \@ref(tab:030-tabel-dynamiek-ecotopen) <!--# laagdynamisch is het ecotoop waarin we het meest geïnteresseerd zijn, ik zou dan ook een tabel maken met ook een plaats voor laagdynamisch ecotoop, of het > teken omkeren naar < en een tabel met hoofding 'afbakening van laagdynamisch habitat' maken 
+=> Suggestie > pas de titel aan van de tabel naar: Afbakening van hoog/laagdynamisch habitat +++?
+-->).
 In het ondiep subtidaal is de maximale stroomsnelheid voor laagdynamisch habitat 1.01 m/s.
 In het matig diep subtidaal is dit 0.92 m/s en in het diep subtidaal wordt 0.83 m/s gehanteerd.
 Het zeer diep subtidaal (\> 10 m onder LW30) wordt volledig als hoogdynamisch geklasseerd.
@@ -221,7 +224,8 @@ figtab(knitr::opts_current$get()$label,
 De **supralitorale zone** is de zone boven het referentieniveau van de 85e percentiel van alle hoogwaters (HW85).
 Stroomafwaarts Dendermonde komt dat overeen met het gemiddeld hoogwater bij doodtij.
 De bovengrens van deze zone is ook de bovengrens van het estuarium en werd theoretisch vastgelegd als de hoogte die op basis van tijdata gemiddeld vier maal per jaar overspoelt.
-Deze buitengrens wordt in principe niet steeds aangepast, tenzij de estuariene grens door ingrepen is verlegd.
+Deze buitengrens wordt in principe niet steeds aangepast, tenzij de estuariene grens door ingrepen is verlegd. <!--# na te zien -> in workflow hoog supralitoraal wordt Q:\Projects\PRJ_Schelde\Ecotoop\Ecotoopkaart\2022\hoog_supralitoraal.gdb\BOZ_mask_62m_taw /64m_taw gebruikt als clipmask
+voor BEZ => gebaseerd op contour van Fysio kaarten -> er is geen éénduidige clipmask voor BEZ die gebruikt wordt! -->
 
 In het supralitoraal worden twee fysiotopen onderscheiden:
 
@@ -260,12 +264,17 @@ Deze worden niet als apart ecotoop gekarteerd, maar de oppervlaktes worden wel b
 In de **supralitorale zone** worden volgende ecotopen onderscheiden:
 
 - Potentiële pionierzone: de onbegroeide zone op zacht substraat boven HW85. In deze zone zou, op basis van de hoogteligging in het getijvenster, schoruitbreiding met kenmerkende schorvegetatie mogelijk zijn. Aangezien deze zone onbegroeid blijft, zijn de hydrodynamische omstandigheden en/of de waterverzadiging er niet geschikt voor vegetatievestiging;
-- Schor: zone boven HW85, maar lager dan de grens voor het hoog supralitoraal, begroeid met vegetatie kenmerkend voor estuariene of fluviatiele omstandigheden; <!--# eigenlijk moet hier een soort grenswaarde voor % begroeiing aangegeven worden om potentiële pionierzone van schor te onderscheiden -->
-- Getijdeplas: grote waterplas binnen de schorzone; <!--# in GGG's zijn die toch ook in het slik te vinden? Getijdeplassen in GGG's bevinden zich ook effectief in het supralitoraal voor BEZ, ecotoopgrenzen zijn appart bepaald voor GGG's dus klopt deze definitie ook hier. Andere watervlakken in laag gelegen zones zijn aangegeven als subtidaal. Voor BOZ klopt dit niet > 2 plassen in slikzone => aan te passen naar subtidaal?  -->
+- Schor: zone boven HW85, maar lager dan de grens voor het hoog supralitoraal, begroeid met vegetatie kenmerkend voor estuariene of fluviatiele omstandigheden; <!--# eigenlijk moet hier een soort grenswaarde voor % begroeiing aangegeven worden om potentiële pionierzone van schor te onderscheiden 
+=> snap ik niet goed - is het criterium niet gewoon aan/afwezigheid van vegetatie?
+-->
+<!--#Dienen we deze formulering (in de toekomst) niet aan te passen daar de opdeling in schor en hoog supralitoraal gebaseerd zal zijn op de tweedeling van schorvegetaties en eerder rivierbegleidende (ofwel fluviatiele) vegetaties  -->
+- Getijdeplas: grote waterplas binnen de schorzone; <!--# in GGG's zijn die toch ook in het slik te vinden? Getijdeplassen in GGG's bevinden zich ook effectief in het supralitoraal voor BEZ, ecotoopgrenzen zijn appart bepaald voor GGG's dus klopt deze definitie ook hier. Andere watervlakken in laag gelegen zones zijn aangegeven als subtidaal. Voor BOZ klopt dit niet > 2 plassen in slikzone => aan te passen naar subtidaal?  
+=> te bespreken - historische ecotopen aan te passen op basis van "Ecotoop = 'getijdeplas' AND Fysiotoop<> 'supralitoraal' => in ecotopen uit 2021 werd ook fysiotoop = getijdeplas toegekend"
+-->
 - Supralitoraal (s.s.) hard natuurlijk: zone van klei of veen, vaak door erosie vrijgekomen, gelegen tussen HW85 en de ondergrens van het hoog supralitoraal;
 - Supralitoraal (s.s.) hard antropogeen: zone tussen HW85 en de ondergrens van het hoog supralitoraal met antropogeen hard substraat, meestal breuksteen of schanskorven, waartussen beperkte vegetatieontwikkeling mogelijk is en dus ook met beperkt ecologisch potentieel;
 - Hoog supralitoraal (hoog supralitorale vegetatie): Met hogere planten begroeide zone boven de functionele schorren;
-- Antropogeen: Dit ecotoop beschrijft de volledig verharde zones zonder enige ecologische waarde (geen algen noch plantengroei). <!--# akkoord met deze indeling maar de benaming is zeer verwarrend, daar moet nog eens goed over nagedacht worden. -->
+- Antropogeen: Dit ecotoop beschrijft de volledig verharde zones zonder enige ecologische waarde (geen algen noch plantengroei). 
 
 In het verleden werd de categorie hoog supralitoraal ingevuld op basis van gekende hogere zones in combinatie met de vegetatiekaart.
 Vanaf 2019 tot en met `r laatste_jaar` is het hoog supralitoraal ingevuld op basis van hoogtewaarden in het DTM zoals hierboven bij het deel over fysiotopen vermeld (6,4/6,2/5,75 - 7m TAW).
@@ -286,6 +295,7 @@ figtab(knitr::opts_current$get()$label,
        caption_tab)
   
 ```
+<!--# Hoog supralitoraal hard antropogeen wordt niet meer gebruikt => dienen we deze categorie nog te behouden in tabellen M1 en M2? Is dit niet verwarrend -->
 
 <br/>
 
@@ -316,22 +326,32 @@ Tabel \@ref(tab:030-tabel-oppervlakte-BEZ) toont de oppervlaktes per ecotoop in 
 De korte en lange termijn evolutie van de ecotopen is beschreven in Tabel \@ref(tab:030-tabel-evolutie-BEZ) via de absolute verandering (ha) en de procentuele verandering (%) tussen de aangegeven jaren.
 Voor de korte termijn evolutie wordt het huidige jaar vergeleken met het jaar ervoor, terwijl voor de lange termijn evolutie de vergelijking van het huidig jaar gemaakt wordt met het eerste rapportage jaar (`r vroegste_jaar`).
 
-Ten opzichte van de vorige rapportage (Mertens & Van Braeckel, 2024) is het **sublitoraal** ecotoop in `r laatste_jaar` gedaald met 6,6 hectare (daling van 0,3 %; Tabel \@ref(tab:030-tabel-evolutie-BEZ)).
-Deze afname is te wijten aan afnames in oppervlakte van het diep subtidaal en het ondiep subtidaal.
-Het matig diep subtidaal is licht in oppervlakte toegenomen (Tabel \@ref(tab:030-tabel-oppervlakte-BEZ)).
+Ten opzichte van de vorige rapportage (Debbaut  *et al*, 2025) is het **sublitoraal** ecotoop in `r laatste_jaar` toegenomen met 16,8 hectare (toename van 0,6 %; Tabel \@ref(tab:030-tabel-evolutie-BEZ)).
+Deze stijging komt voor in het ondiep - , het matig diep - en het diep subtidaal.
+Respectievelijk met een toename van 11,4; 3,7 en 1,7 ha aan areaal (Tabel \@ref(tab:030-tabel-oppervlakte-BEZ)).
 
-In het **litoraal** is de totale oppervlakte aan zacht substraat met 140 hectare (34 %) gestegen sinds `r laatste_jaar - 1`.
-Deze sterke stijging heeft te maken met de nieuwe inrichting van Prosperpolder-Noord die werd ontpolderd in oktober 2022 (Figuur \@ref(fig:030-figuur-prosperpolder-2023)).
-Door deze ontpoldering is er een derde meer slik zacht substraat bijgekomen in de Beneden-Zeeschelde ten opzichte van voorgaande jaren.
+In het **litoraal** is de totale oppervlakte aan zacht substraat met 9,7 hectare (1,8 %) gedaald sinds `r laatste_jaar - 1`.
+Deze daling situeert zich in het laag- en middelhoog slik met een afname van 12,4 en 11,5 ha respectievelijk, terwijl het hoog slik met 14,2 ha is toegenomen.
 
-Ook in het **supralitoraal** is er voor alle ecotopen een belangrijke toename in oppervlakte in vergelijking met voorgaande jaren die kan worden toegeschreven aan de ontpoldering van Prosperpolder-Noord.
-Vooral de potentiële pionierzone (met in 2022 nog de laagste waarde sinds 2010) en het hoog supralitoraal kennen in `r laatste_jaar` een procentueel sterke toename.
-Het schor is verder blijven toenemen, in `r laatste_jaar` met 15,2 hectare ten opzichte van `r laatste_jaar - 1`.
-<!--# Er is opvallende geen verdere verschorring in Fort Filip, Lillo, Fasseit ten opzichte van 2022. -->
+In het **supralitoraal** is er voor het schorareaal een toename van 4,8 ha.
+Het areaal aan potentiële pionierzone is afgenomen met 9,4 ha en kan verklaard worden door natuurlijke successie waarbij er het voorgaande jaar een hoog aandeel was in ontpolderingen zoals in Lillo en het Paardenschor. 
+Het hoog supralitoraal is met 0,1 ha toegenomen en er is een daling van 0,4 ha aan getijdeplassen.
+<!--# Er is opvallend geen verdere verschorring in Fort Filip, Lillo, Fasseit ten opzichte van 2022. #### Klopt niet - er treedt duidelijk verschorring op in 2024 in die gebieden 
+#### Eventueel als extra een kaartuitsnede van één van de ontpolderingen laten zien om de successie te tonen?-->
 
-Het antropogeen hard substraat (breuksteen) is over alle ecotopen afgenomen met 1,2 hectare.
+Het antropogeen hard substraat (breuksteen) is over alle ecotopen toegenomen met 0,1 hectare.
 
-Door de ontpoldering van Prosperpolder-Noord is de totale oppervlakte estuarien gebied in de Beneden-Zeeschelde met 173 hectare (5 %) gestegen.
+De totale oppervlakte estuarien gebied in de Beneden-Zeeschelde is toegenomen met 0,5 hectare.
+
+Voor de huidige rapportage zijn enkele correcties (errata) doorgevoerd in de historische ecotopenkaarten. Deze aanpassingen hebben eveneens een weerslag op de oppervlakteboekhouding ten opzichte van voorgaande rapportages:
+
+- **Deurganckdok:** Ter hoogte van het Deurganckdok is het subtidaal areaal doorgetrokken tot aan het uiteinde van het dok. Dit leidt tot een structurele toename van ca. 5 ha diep subtidaal.
+- **Prosperpolder-Noord:** In de Prosperpolder-Noord was het hoog supralitoraal voorheen te ruim afgebakend doordat een deel van de dijk mee werd ingetekend. Na correctie hiervan neemt het areaal hoog supralitoraal met ca. 5,6 ha af.
+
+<!-- Ook andere ecotooparealen variëren lichtelijk (bv aandeel hoog supralitoraal uit oppervlaktetabellen van rapportage vorig jaar voor 2020 tov de opptabel van dit jaar) -> hoe kan dit? ####
+  Bij opbouw van de tabellen werd altijd verdergebouwd op de Moneos-oppervlaktetabel van het voorgaande jaar. Wanneer er na de rapportage wijzigingen in de ecotopen werden doorgevoerd stroomde dit niet door naar de oppervlaktetabel. Nu is deze tabel opnieuw gegenereerd op basis van de gdb/ecotopen -> een update is doorgevoerd. 
+  Het is me niet geheel duidelijk waar de lichte wijzigingen zijn doorgevoerd en deze dienen m.i. niet opgenomen te worden in de errata. Ofwel kort aanhalen als derde bullet point dat er diverse kleine aanpassingen zijn doorgevoerd? -->
+
 
 <br/>
 
@@ -366,9 +386,9 @@ cat(paste0(
   "\\end{landscape}\n"
 ))
 
-figtab(knitr::opts_current$get()$label, 
-       img_file,
-       caption_tab)
+#figtab(knitr::opts_current$get()$label, 
+#       img_file,
+#       caption_tab)
 
 
 
@@ -391,28 +411,22 @@ figtab(knitr::opts_current$get()$label,
 
 <br/>
 
-(ref:figff) Ecotopenkaart Zeeschelde 1.0 2023 rond Prosperpolder-Noord. Zie Figuur \@ref(fig:030-figuur-kaart-bez) voor legende.
-
-```{r 030-figuur-prosperpolder-2023, fig.cap='(ref:figff)', out.width="100%"}
-
-knitr::include_graphics(paste0(pad_figuren, "030_figuur_prosperpolder_2023.png"))
-
-```
-
-<br/>
-
 Om de veranderingen beschreven in Tabel \@ref(tab:030-tabel-oppervlakte-BEZ) en Tabel \@ref(tab:030-tabel-evolutie-BEZ) goed te begrijpen is het relevant om naast het bespreken van het geheel estuarien gebied met laterale uitbreidingen ook naar de 'enge' planimetrie van het estuarium te kijken (zie bijvoorbeeld Van Braeckel & Elsen, 2020), met name het estuariene deel van de Beneden-Zeeschelde zonder de laterale uitbreidingen van de natuurontwikkelingsprojecten.
 Deze aanpak beschrijft beter de evolutie van de ecotopen in de Beneden-Zeeschelde onder rechtstreekse invloed van veranderingen in de vaargeul en van het hydraulisch regime.
 De gebieden die dus niet in rekening worden gebracht onder de 'enge' planimetrie van de Beneden-Zeeschelde zijn nieuwe Sigmagebieden of natuurontwikkelingsprojecten in KRWzone IV en III tot aan de Rupelmonding.
 De oppervlaktes van de ecotopen binnen de 'enge' planimetrie zijn weergegeven in Tabel \@ref(tab:030-tabel-eng-BEZ) en het verschil in evolutie binnen het gehele estuarien gebied en enkel de 'enge' planimetrie is te zien in Figuur \@ref(fig:030-figuur-evolutie-bez).
 
-Wat meteen opvalt is dat in de enge planimetrie de sterke toenames in middelhoog en hoog slik zacht niet zijn waar te nemen, aangezien deze zijn toe te schrijven aan de recente ontpoldering van Doelpolder-Noord.
-Ook toenames in andere ecotopen in `r laatste_jaar` kunnen worden toegeschreven aan de uitbreiding van de laterale gebieden, met name Doelpolder-Noord.
-Over het algemene zijn er in de enge planimetrie geen sterke evoluties waar te nemen en behouden de ecotopen dezelfde oppervlakte als de voorgaande jaren.
-Enkel in het laag slik zacht is er in de enge planimetrie een toename te zien die parallel loopt met de planimetrie inclusief de laterale uitbreidingen.
-<!--# waar is dat aan te wijten? Slik aan Groot Buitenschoor? -->
+Over het algemeen zijn er in de enge planimetrie geen sterke evoluties waar te nemen en behouden de ecotopen dezelfde oppervlakte als de voorgaande jaren.
+Enkel het laag slik zacht substraat vertoont een uitgesproken afname in de enge planimietrie, waarmee het het areaal opnieuw op het niveau van `r laatste_jaar - 2`  komt.
+<!--# waar is dat aan te wijten? Slik aan Groot Buitenschoor? Of een fout in 2023? Communicerende vaten -> toename subtidaal/afname slik? -->
+
+
 
 <br/>
+
+\newpage
+
+<!--#Landscape gezet - werd anders moeilijk leesbaar -->
 
 ```{r 030-tabel-eng-BEZ, results="asis", fig.show='hide', out.width="100%"}
 
@@ -420,9 +434,17 @@ caption_tab <- str_c("Ecotooparealen  Zeeschelde 1.0 in de ‘enge planimetrie�
 
 img_file <- paste0(pad_tabellen, "030_tabel_Oppervlakte_EngePlanimetrie_BEZ_", vroegste_jaar, "_", laatste_jaar, "_10.PNG")
 
+# Open landscape
+cat("\\begin{landscape}\n")
+
+# Gegenereerde tabel via je functie
 figtab(knitr::opts_current$get()$label, 
        img_file,
        caption_tab)
+
+# Sluit landscape
+cat("\\end{landscape}\n")
+
 
 ```
 
@@ -433,6 +455,8 @@ figuur_evolutie_BOZ <- "Temporele evolutie van de oppervlakte van de ecologisch 
 knitr::include_graphics(paste0(pad_figuren, "030_figuur_Evolution_NOPs_BEZ_", laatste_jaar, "_10.png"))
 
 ```
+
+\newpage
 
 <br/>
 
@@ -448,19 +472,22 @@ Voor de korte termijn evolutie wordt het huidige jaar vergeleken met het jaar er
 In het **sublitoraal** is een onderverdeling gemaakt tussen hoog- en laagdynamisch subtidaal, op basis van de maximale stroomsnelheid bij vloed.
 De tabel toont dat de diepere delen (diep en matig diep subtidaal) grotendeels hoogdynamisch zijn.
 In het ondiep subtidaal is het aandeel laagdynamisch iets groter dan het aandeel hoogdynamisch.
-De tendens uit `r laatste_jaar - 1` dat er in alle diepteklassen een verschuiving heeft plaatsgevonden van hoogdynamisch naar laagdynamisch, zet zich voort in `r laatste_jaar`.
-<!--# wat kan deze verschuiving verklaren? --> Vooral in het diep subtidaal is er nog een verdere verschuiving van hoog naar laagdynamisch.
+De tendens uit `r laatste_jaar - 2` dat er in alle diepteklassen een verschuiving heeft plaatsgevonden van hoogdynamisch naar laagdynamisch, zet zich voort in `r laatste_jaar`.
+<!--# wat kan deze verschuiving verklaren? --> Vooral in het ondiep- en matig diep subtidaal is er nog een verdere verschuiving van hoog naar laagdynamisch.
 
 Bij de berekening van het **litoraal** zijn aangepaste grenzen gebruikt ten opzichte van ecotopen 1.0, afhankelijk van de saliniteitszone.
 Hierdoor is het aandeel middelhoog slik kleiner en het aandeel hoog slik groter dan bij het ecotopenstelsel 1.0.
 Hierdoor zijn de drie slikzones meer gelijk verdeeld in oppervlakte.
 De toename van middelhoog slik in ecotopen 1.0 door de ontpoldering Doelpolder-Noord is in ecotopen 2.0 volledig vervat in het hoog slik.
+In `r laatste_jaar` treedt er een verschuiving op van zacht substraat in het laag slik naar het middelhoog- en hoog slik, alsook naar het (ondiep) subtidaal."
 
 In de aangepaste methode wordt ook de helling van de slikken in rekening gebracht.
 De oppervlaktes per slikecotoop met een steile (\>25%) en zwakke (\<=25%) helling zijn beschreven in Tabel \@ref(tab:030-tabel-oppervlakte-helling-BEZ-20).
 Zowel het litoraal zacht substraat als het litoraal hard natuurlijk hebben vrijwel geen steile hellingen.
-In het litoraal antropogeen hard substraat is wel een redelijk aandeel steil, namelijk ongeveer 39% van het totaal oppervlak litoraal hard antropogeen, wat iets meer is dan in `r laatste_jaar-1` toen het ongeveer 33% was.
-De overige 61% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad van kleiner dan of gelijk aan 25%.
+In het litoraal antropogeen hard substraat is wel een redelijk aandeel steil, namelijk ongeveer 25% van het totaal oppervlak litoraal hard antropogeen, wat iets meer is dan in `r laatste_jaar-1` toen het ongeveer 39% was.
+De overige 75% litoraal hard antropogeen heeft dus nog steeds een hellingsgraad van kleiner dan of gelijk aan 25%.
+<!--# waar is dat aan te wijten? toename subtidaal/ minder slik -> afname breuksteenzones met steil slik en verschuiving naar subtidaal? -->
+
 
 De ecotopen in het **supralitoraal** zijn hetzelfde gedefinieerd in ecotopen 2.0 als in ecotopen 1.0.
 
@@ -469,7 +496,7 @@ De ecotopen in het **supralitoraal** zijn hetzelfde gedefinieerd in ecotopen 2.0
 \newpage
 
 ```{r 030-figuur-kaart-bez-20, fig.cap=figuur_ecotopenkaart_BEZ_20, out.width="100%"}
-# kaart wordt gemaakt in sjabloon_BOZ.mxd met schaal 1 : 97 000  
+# kaart wordt gemaakt in sjabloon_BEZ.mxd met schaal 1 : 97 000  
 
 figuur_ecotopenkaart_BEZ_20 <- str_c("Ecotopenkaart ", laatste_jaar, " Beneden-Zeeschelde 2.0")  
 
@@ -519,6 +546,14 @@ figtab(knitr::opts_current$get()$label,
 ## Referenties
 
 <!--# referenties sorteren op basis van 1e auteur, jaartal en aantal auteurs -->
+Debbaut, R., Mertens, A., Vanoverbeke, J. & Van Braeckel, A. 
+(2025).
+Ecotopen *in* Van Ryckegem, G., Vanoverbeke, J., Van de Meutter, F., Jocqué, M., Vandevoorde, B., Mertens, W., Debbaut, R., Van Praet, A., Van Braeckel, A., Organe, A., Mertens, A., Van Thyune, G., Maesele, R., Smeekens, V., Thibau, K., Buerms, D., Coudenys, A., De Regge, N., Hessel, K., Lefranc, C., Loos, B., Soors, J., Van Lierop, F. (2025). 
+MONEOS‐ Geïntegreerd datarapport INBO: Toestand Zeeschelde 2024. 
+Monitoringsoverzicht en 1ste lijnsrapportage Geomorfologie, diversiteit Habitats en diversiteit Soorten.
+Rapporten van het Instituut voor Natuur‐ en Bosonderzoek 2025 (Rapporten van het Instituut voor Natuur‐ en Bosonderzoek 2025 (73)). 
+Instituut voor Natuur‐ en Bosonderzoek, Brussel. 
+DOI: [https://doi.org/10.21436/inbor.135546610]{.uri}
 
 Mertens, A.
 & Van Braeckel A.
