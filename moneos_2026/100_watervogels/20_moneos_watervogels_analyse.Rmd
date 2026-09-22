@@ -214,11 +214,12 @@ hernoem_telgebieden <- function(x){
 # overzichtstabel van de gebieden geteld via MIDMA
 gebieden_MIDMA <- WV_DB %>% 
   filter((projectcode == "MIDMA" &
-         analyse_MONEOS == TRUE &
-         telseizoen == "2025/26") |
+         analyse_MONEOS == TRUE) |
            (gebiedscode == "2091301") |
            (gebiedscode == "4140206")) %>% 
-  distinct(rivier, gebiedscode, gebied)
+  group_by(rivier, gebiedscode, gebied) %>% 
+  summarise(n = n_distinct(teldatum)) %>% 
+  filter(n > 10)
 # zouden 11 gebieden moeten zijn
 # daarom trajecten "wintam-sas tot brug boom" & "durme + oude durme" actief toegevoegd! 
 # geen tellingen beschikbaar voor "wintam-sas tot brug boom" dus deze zit niet vervat in WV_DB...
@@ -234,23 +235,27 @@ gebieden_MIDMA_yrs <- WV_DB %>%
   
   group_by(rivier, gebied, gebiedscode) %>% 
   mutate(data_vanaf = min(telseizoen_yr),
-         data_tot = max(telseizoen_yr)) %>%
+         data_tot = max(telseizoen_yr),
+         periode = paste(data_vanaf, "-", data_tot),
+         aantal_jaar = 1 + data_tot - data_vanaf) %>%
   ungroup() %>% 
   
-  group_by(rivier, gebied, gebiedscode, data_vanaf, data_tot) %>% 
+  group_by(rivier, gebied, gebiedscode, periode, aantal_jaar) %>% 
   summarise(aantal_telseizoenen = n_distinct(telseizoen)) %>%
+  mutate(percentage = round(aantal_telseizoenen / aantal_jaar, digits = 2)) %>% 
   ungroup() %>% 
   
-  arrange(rivier, data_vanaf) %>% 
+  arrange(rivier, periode) %>% 
   
   rename("Riviertraject" = rivier,
-         "Gebiedsnaam" = gebied,
          "Gebiedscode" = gebiedscode,
-         "Eerste telseizoen" = data_vanaf,
-         "Laatste telseizoen" = data_tot,
-         "Aantal telseizoenen" = aantal_telseizoenen) %>% 
+         "Gebiedsnaam" = gebied,
+         "Periode" = periode,
+         "Aantal telseizoenen" = aantal_telseizoenen,
+         "Percentage (jaren geteld)" = percentage) %>% 
   
-  mutate(Telgebied = hernoem_telgebieden(Gebiedsnaam))
+  mutate(Telgebied = hernoem_telgebieden(Gebiedsnaam)) %>% 
+  select(Riviertraject, Gebiedscode, Gebiedsnaam, Periode, `Aantal telseizoenen`, `Percentage (jaren geteld)`)
 
 write_xlsx(gebieden_MIDMA_yrs, paste0(pad_tabellen, paste0("100_1b_watervogels_gebieden_MIDMA_yrs.xlsx")))
 
@@ -300,7 +305,7 @@ tabel_ontbrekende_data <- left_join(alle_combinaties, data_available) %>%
 write_xlsx(tabel_ontbrekende_data, paste0(pad_tabellen, paste0("100_1c_watervogels_ontbrekende_MIDMA_data.xlsx")))
 
 # overzichtstabel van ontbrekende ZS tellingen 2025-2026
-# opgelet: onderstaande scriptflow is niet waterdicht; indien bepaalde gebieden de ganse winter lang niet zijn geteld OF indien er nul vogels geteld zijn, dan zijn deze niet vervat in WV_DB en komen ze dus ook niet in 'data_available_ZS'; in geval van de boottellingen kunnen we er echter wel van uit gaan dat er voldoende regelmatig geteld is geweest
+# opgelet: onderstaande scriptflow is niet waterdicht; indien bepaalde gebieden de ganse winter lang niet zijn geteld OF indien er nul vogels geteld zijn, dan zijn deze niet vervat in WV_DB en komen ze dus ook niet in 'data_available_ZS'; in geval van de boottellingen kunnen we er van uitgaan dat er voldoende regelmatig geteld is geweest (~ minstens 1 telling per winter per telgebied)
 data_available_ZS <- WV_DB %>% 
   filter(projectcode == "ZSCH",
          telseizoen == "2025/26",
