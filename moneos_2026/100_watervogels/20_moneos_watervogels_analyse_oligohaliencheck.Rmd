@@ -357,7 +357,8 @@ dataset_oligo_long |>
   theme_with_title +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggsave(paste0(pad_figuren, "100_20a_trends_oligohalien.jpg"), 
+# ggsave(paste0(pad_figuren, "100_20a_trends_oligohalien.jpg"), 
+ggsave(paste0(pad_figuren, "100_20a_trends_oligohalien_post2008.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 # trends 2008 - 2026 (opgesplitst voor vs na 2020)
@@ -378,7 +379,8 @@ dataset_oligo_long |>
        title = "Trends Oligohalien (pre- vs. post-2020)") +
   theme_with_title
 
-ggsave(paste0(pad_figuren, "100_20b_trends_oligohalien.jpg"), 
+# ggsave(paste0(pad_figuren, "100_20b_trends_oligohalien.jpg"), 
+ggsave(paste0(pad_figuren, "100_20b_trends_oligohalien_post2008.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 
@@ -396,14 +398,14 @@ dataset_oligo_long |>
        title = "Trends Oligohalien (pre- vs. post-2020)") +
   theme_with_title
 
-ggsave(paste0(pad_figuren, "100_20c_trends_oligohalien.jpg"), 
+# ggsave(paste0(pad_figuren, "100_20c_trends_oligohalien.jpg"), 
+ggsave(paste0(pad_figuren, "100_20c_trends_oligohalien_post2008.jpg"), 
        width = 8, height = 5, dpi = 300)
 
 
-# trends 2008 - 2024 (opgesplitst voor vs na 2020, zonder benthos densiteit, tot 2024)
+# trends 2008 - 2026 (opgesplitst voor vs na 2020, zonder benthos biomassa)
 dataset_oligo_long |>
-  filter(telseizoen_yr < 2024) %>%
-  mutate(waarde = case_when(variabele == "Benthos (densiteit)" ~ NA,
+  mutate(waarde = case_when(variabele == "Benthos (biomassa)" ~ NA,
                                .default = waarde)) %>% 
   ggplot(aes(telseizoen_yr, waarde, color = variabele)) +
   geom_line(alpha = 0.5) +
@@ -415,8 +417,28 @@ dataset_oligo_long |>
        title = "Trends Oligohalien (pre- vs. post-2020)") +
   theme_with_title
 
-ggsave(paste0(pad_figuren, "100_20d_trends_oligohalien.jpg"), 
+# ggsave(paste0(pad_figuren, "100_20d_trends_oligohalien.jpg"), 
+ggsave(paste0(pad_figuren, "100_20d_trends_oligohalien_post2008.jpg"), 
        width = 8, height = 5, dpi = 300)
+
+# # trends 2008 - 2024 (opgesplitst voor vs na 2020, zonder benthos densiteit, tot 2024)
+# dataset_oligo_long |>
+#   filter(telseizoen_yr < 2024) %>%
+#   # mutate(waarde = case_when(variabele == "Benthos (densiteit)" ~ NA,
+#   #                              .default = waarde)) %>% 
+#   ggplot(aes(telseizoen_yr, waarde, color = variabele)) +
+#   geom_line(alpha = 0.5) +
+#   geom_smooth(aes(group = interaction(variabele, periode)),
+#               se =  FALSE, method = "lm", linewidth = 0.8) +
+#   geom_vline(xintercept = 2020, linetype = "dashed", color = "grey40") +
+#   scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) + 
+#   labs(x = "Jaar", y = "Gestandaardiseerde waarde (z-score)",
+#        title = "Trends Oligohalien (pre- vs. post-2020)") +
+#   theme_with_title
+# 
+# ggsave(paste0(pad_figuren, "100_20e_trends_oligohalien.jpg"), 
+# # ggsave(paste0(pad_figuren, "100_20e_trends_oligohalien_post2008.jpg"), 
+#        width = 8, height = 5, dpi = 300)
 
 ```
 
