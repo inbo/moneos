@@ -203,12 +203,19 @@ hernoem_telgebieden <- function(x){
     x == "Durme monding - Mira-brug TIELRODE" ~ "monding Durme - Mira-brug Tielrode",
     x == "Oude Durme + Durme HAMME" ~ "Oude Durme + Durme Hamme",
     x == "Durme brug Waasmunster - Mirabrug" ~ "brug Waasmunster - Mira-brug Tielrode",
+    x == "Rupelmonding tot Wintam-sas" ~ "monding Rupel tot Wintam-sas",
     x == "Rupel brug Boom - monding Dijle/Nete" ~ "brug Boom - monding Dijle/Nete",
-    x == "Tijarm (tot ringvaart) ZWIJNAARDE" ~  "tijarm Zwijnaarde - monding Ringvaart",
+    x == "Rupel Wintam-sas tot brug Boom" ~ "Wintam-sas tot brug Boom",
+    x == "Tijarm (tot ringvaart) ZWIJNAARDE" ~  "tijarm Zwijnaarde - monding Ringvaart", 
     x == "Tijgebonden Oude Schelde Gent - monding Ringvaart" ~ "tijgebonden Oude Schelde Gent - monding Ringvaart",
+    x == "Schelde grens - Kerncentrale Doel (Schor Ouden Doel, Paardeschor) (LO)" ~ "grens - Kerncentrale Doel (LO)",
+    x == "Galgenschoor (Schelde Lillo-Fort - Containerkaai) (RO)" ~ "Galgenschoor (Lillo-Fort - Containerkaai) (RO)",
+    x == "Groot Buitenschoor (Schelde Containerkaai - grens) (RO)" ~ "Groot Buitenschoor (Containerkaai - grens) (RO)",
     x == "Zenne Zennegat - Hombeekbrug MECHELEN" ~ "Zennegat - Hombeekbrug Mechelen",
-    x == "Zenne ZEMST(brug Brusselse Steenweg) - HOMBEEK (Eglegemvijver)" ~ "brug Brusselse Steenweg Zemst - Eglegemvijver Hombeek",
-    .default = x)
+    x == "Zenne ZEMST(brug Brusselse Steenweg) - HOMBEEK (Eglegemvijver)" ~ "Brusselse Steenweg Zemst - Eglegemvijver Hombeek",
+    x == "Zenne WEERDE - EPPEGEM" ~ "Weerde - Eppegem",
+    x == "Zenne ZEMST (Brusselse Steenweg) - WEERDE" ~ "Brusselse Steenweg Zemst - Weerde",
+   .default = x)
 }
 
 # overzichtstabel van de gebieden geteld via MIDMA
@@ -220,11 +227,6 @@ gebieden_MIDMA <- WV_DB %>%
   group_by(rivier, gebiedscode, gebied) %>% 
   summarise(n = n_distinct(teldatum)) %>% 
   filter(n > 10)
-# zouden 11 gebieden moeten zijn
-# daarom trajecten "wintam-sas tot brug boom" & "durme + oude durme" actief toegevoegd! 
-# geen tellingen beschikbaar voor "wintam-sas tot brug boom" dus deze zit niet vervat in WV_DB...
-# geen waterdicht systeem met andere woorden!
-
 
 gebieden_MIDMA_yrs <- WV_DB %>% 
   filter(gebied %in% gebieden_MIDMA$gebied,
@@ -243,7 +245,7 @@ gebieden_MIDMA_yrs <- WV_DB %>%
   mutate(percentage = round(aantal_telseizoenen / aantal_jaar, digits = 2)) %>% 
   ungroup() %>% 
   
-  arrange(rivier, periode) %>% 
+  arrange(rivier, gebiedscode) %>% 
   
   rename("Riviertraject" = rivier,
          "Gebiedscode" = gebiedscode,
@@ -253,7 +255,7 @@ gebieden_MIDMA_yrs <- WV_DB %>%
          "Percentage (jaren geteld)" = percentage) %>% 
   
   mutate(Telgebied = hernoem_telgebieden(Gebiedsnaam)) %>% 
-  select(Riviertraject, Gebiedscode, Gebiedsnaam, Periode, `Aantal telseizoenen`, `Percentage (jaren geteld)`)
+  select(Riviertraject, Gebiedscode, Telgebied, Periode, `Aantal telseizoenen`, `Percentage (jaren geteld)`)
 
 write_xlsx(gebieden_MIDMA_yrs, paste0(pad_tabellen, paste0("100_1b_watervogels_gebieden_MIDMA_yrs.xlsx")))
 
