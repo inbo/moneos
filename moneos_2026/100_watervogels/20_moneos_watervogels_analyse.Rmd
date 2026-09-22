@@ -226,8 +226,6 @@ gebieden_MIDMA <- WV_DB %>%
 # geen waterdicht systeem met andere woorden!
 
 
-# ik snap eigenlijk de opzet van onderstaande tabel uiteindelijk niet zo goed... de laatste 5 jaar zijn dat deze gebieden, maar als je de tijdsperiode uitbreidt komen er almaar meer gebieden bij
-# je zou kunnen zeggen: dit zijn de gebieden die de laatste 5 telseizoenen standaard aan de DB worden toegevoegd, maar dan is het niet logisch om wel actief de Oude Durme toe te voegen, daar zijn de tellingen al gestopt in 2012... Ik zou deze tabel en haar bespreking in het rapport daarom weglaten
 gebieden_MIDMA_yrs <- WV_DB %>% 
   filter(gebied %in% gebieden_MIDMA$gebied,
          telseizoen_yr > 1990,

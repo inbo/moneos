@@ -104,38 +104,6 @@ Deze bevat de volgende informatievelden:
 - ruimtelijke niveaus 1, 2 en 3: indeling volgens Tabel 1.1 en Figuur 1.1
 - aantal: som van het aantal getelde vogels per soort, telseizoen en maand op niveau 3
 
-<!-- <br/> -->
-
-<!-- ```{r 100-tabel-deelzones} -->
-
-<!-- tabel_deelzones <- read_xlsx(paste0(pad_tabellen, paste0("100_1a_watervogels_deelzones.xlsx")))   -->
-
-<!-- cap_tabel_deelzones <- "Indeling van het Schelde-estuarium in deelzones zoals toegepast in de evaluaties."  -->
-
-<!-- tabel_deelzones %>% -->
-
-<!--   # arrange(`Niveau 1`, `Niveau 2`, Rivier, desc(`KRW-zone`)) %>%  -->
-
-<!--   # mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%  -->
-
-<!--   # mutate(across(everything(), ~cell_spec(., color = "black")))  %>%  -->
-
-<!--   knitr::kable( -->
-
-<!--     # caption = cap_teltrajecten,                 -->
-
-<!--     # "html",                 -->
-
-<!--     booktabs = TRUE,                 -->
-
-<!--     escape = FALSE,                 -->
-
-<!--     caption = cap_tabel_deelzones) %>%    -->
-
-<!--   kableExtra::kable_styling(latex_options = c("scale_down"), font_size = 12) -->
-
-<!-- ``` -->
-
 <br/>
 
 ### Tellingen
@@ -160,60 +128,41 @@ Watervogels langs de zijrivieren (behalve van de Rupelmonding tot het sas van Wi
 Deze tellingen gebeuren vanaf de oever en vinden enkel plaats in de winter (oktober-maart).
 Meeuwen, sternen, steltlopers en rallen worden langs de zijrivieren pas meegeteld sinds oktober 1999.
 
-De voor 2025/26 toegevoegde teltrajecten zijn opgelijst in Tabel \@ref(tab:100-tabel-ontbrekendedataMIDMA). 
+De standaard toegevoegde teltrajecten zijn opgelijst in Tabel \@ref(tab:100-tabel-teltrajecten).
+Een aantal van deze teltrajecten werd maar gedurende een specifieke periode geteld, zoals 2 trajecten op de Zenne en het traject van de Rupelmonding tot het sas van Wintam.
+Ook zijn er verschillende teltrajecten waar lang niet elke winter geteld werd, zoals het traject op de Dijle en de Ringvaart.
 
 <br/>
 
-<!-- ### Ruimtelijke en temporele afbakening data -->
+```{r 100-tabel-teltrajecten}
 
-<!-- *Boottellingen* -->
+gebieden_MIDMA_yrs <- read_xlsx(paste0(pad_tabellen, paste0("100_1b_watervogels_gebieden_MIDMA_yrs.xlsx")))
 
-<!-- De opgevraagde data lopen van oktober `r vroegste_jaar` tot en met maart `r laatste_jaar` en omvatten de aantallen watervogels op de Zeeschelde en de Rupel (tot het sas van Wintam), geteld tijdens de boottellingen uitgevoerd door INBO. -->
+cap_teltrajecten <- "Overzicht van de telgebieden die standaard geteld worden tijdens de midmaandelijkse watervogeltellingen, en ter aanvulling van de boottellingen bij de analyse-dataset worden gevoegd."
 
-<!-- *Midmaandelijkse watervogeltellingen* -->
+footnote_text <- "Dit teltraject omvat data van zowel de getijgebonden Durme als van de afgesneden 'Oude Durme'; sinds oktober 2012 wordt de getijgebonden Durme afzonderlijk geteld."
 
-<!-- De resultaten van de boottellingen werden aangevuld met tellingen uitgevoerd vanaf de dijk tijdens de midmaandelijkse watervogeltellingen. -->
-<!-- Om de data voor de Rupel te vervolledigen zijn bijvoorbeeld de dijktellingen stroomopwaarts van het sas van Wintam toegevoegd aan de dataset.  -->
+gebieden_MIDMA_yrs %>%
+  {.[3,3] <- paste0(.[3,3],
+                    footnote_marker_number(1))
+  .} %>%
+  # mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
+  # mutate(across(everything(), ~cell_spec(., color = "black")))  %>%
+  knitr::kable(booktabs = TRUE,
+               escape = FALSE,
+               caption = cap_teltrajecten) %>%
 
-<!-- De aldus toegevoegde teltrajecten zijn weergegeven in Tabel \@ref(tab:100-tabel-teltrajecten), met aanduiding van het eerste en laatste telseizoen, alsook het aantal telseizoenen (met gegevens) sinds 1991. -->
-<!-- Hieruit blijkt dat nogal wat telgebieden lang niet jaarlijks werden geteld, en dan vooral langs de tijarm van Zwijnaarde en de Dijle. -->
+  kableExtra::kable_styling(latex_options = c("scale_down"),
+                            font_size = 12) %>%
+  footnote(number = footnote_text,
+           escape = FALSE,
+           threeparttable = TRUE)
 
-<!-- <br/> -->
-
-<!-- ```{r 100-tabel-teltrajecten} -->
-
-<!-- # ik snap eigenlijk de opzet van onderstaande tabel uiteindelijk niet zo goed... de laatste 5 jaar zijn dat deze gebieden, maar als je de tijdsperiode uitbreidt komen er almaar meer gebieden bij -->
-<!-- # je zou kunnen zeggen: dit zijn de gebieden die de laatste 5 telseizoenen standaard aan de DB worden toegevoegd, maar dan is het niet logisch om wel actief de Oude Durme toe te voegen, daar zijn de tellingen al gestopt in 2012... Ik zou deze tabel en haar bespreking in het rapport daarom weglaten -->
-<!-- gebieden_MIDMA_yrs <- read_xlsx(paste0(pad_tabellen, paste0("100_1b_watervogels_gebieden_MIDMA_yrs.xlsx"))) %>%  -->
-<!--   select("Riviertraject","Telgebied","Gebiedscode","Eerste telseizoen","Laatste telseizoen","Aantal telseizoenen") -->
-
-<!-- cap_teltrajecten <- "Overzicht van de telgebieden die geteld werden tijdens de midmaandelijkse watervogeltellingen en de laatste jaren standaard mee opgenomen worden in de MONEOS rapportage." -->
-
-<!-- footnote_text <- "Dit teltraject omvat data van zowel de getijgebonden Durme als van de afgesneden 'Oude Durme'; sinds oktober 2012 wordt de getijgebonden Durme afzonderlijk geteld." -->
-
-<!-- # DUS: dat betekent dat de Oude Durme sinds 2012 niet meer mee in de databevraging zit? -->
-
-<!-- gebieden_MIDMA_yrs %>% -->
-<!--   {.[3,2] <- paste0(.[3,2], -->
-<!--                     footnote_marker_number(1)) -->
-<!--   .} %>% -->
-<!--   # mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>% -->
-<!--   # mutate(across(everything(), ~cell_spec(., color = "black")))  %>% -->
-<!--   knitr::kable(booktabs = TRUE, -->
-<!--                escape = FALSE, -->
-<!--                caption = cap_teltrajecten) %>% -->
-
-<!--   kableExtra::kable_styling(latex_options = c("scale_down"), -->
-<!--                             font_size = 12) %>%  -->
-<!--   footnote(number = footnote_text,  -->
-<!--            escape = FALSE, -->
-<!--            threeparttable = TRUE) -->
-
-<!-- ``` -->
+```
 
 <br/>
 
-### Ontbrekende data
+### Ontbrekende data 2025/26
 
 Deze eerstelijnsrapportage werkt met de effectief getelde aantallen.
 Er gebeurde dus geen imputatie van ontbrekende data.
