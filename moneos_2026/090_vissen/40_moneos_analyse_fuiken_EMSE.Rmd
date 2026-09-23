@@ -293,11 +293,12 @@ load(file = str_c(pad_data, "soorten_kleur.RData"))
 
 my_pal_wes <-
   c(soorten_indeling_kleur$kleur, 
+    "darkseagreen",
     "khaki2",
     "azure",
     "darkslategrey")
 names(my_pal_wes) <-
-  c(soorten_indeling_kleur$soort, "grondel sp", "haringachtigen", "rest")
+  c(soorten_indeling_kleur$soort, "congeraal", "grondel sp", "haringachtigen", "rest")
 
 colorKey = data.frame(colorName=names(my_pal_wes))
 ggplot(data=colorKey, aes(x=1:nrow(colorKey), y = 1, fill=colorName, label=colorName)) +

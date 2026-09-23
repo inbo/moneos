@@ -275,11 +275,12 @@ load(file = str_c(pad_data, "soorten_kleur.RData"))
 
 my_pal_wes <-
   c(soorten_indeling_kleur$kleur, 
+    "darkseagreen",
     "khaki2",
     "azure",
     "darkslategrey")
 names(my_pal_wes) <-
-  c(soorten_indeling_kleur$soort, "grondel sp", "haringachtigen", "rest")
+  c(soorten_indeling_kleur$soort, "congeraal", "grondel sp", "haringachtigen", "rest")
 
 colorKey = data.frame(colorName=names(my_pal_wes))
 ggplot(data=colorKey, aes(x=1:nrow(colorKey), y = 1, fill=colorName, label=colorName)) +
@@ -927,6 +928,10 @@ sheets_figuren[["relatief_gewicht_laatste_jaar"]] <-
 
 gemiddeld_diversiteit_EMSE <- 
   data_ankerkuil %>% 
+
+  #### in 2025 een net zonder volume in najaar Antwerpen
+  filter(!is.na(volume)) |>
+  
   left_join(locatie_scheldezone) %>% 
   filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   filter(in_indeling) %>% 
@@ -1870,6 +1875,10 @@ ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_die
 
 gemiddeld_diversiteit_salgroep <- 
   data_ankerkuil %>% 
+
+  #### in 2025 een net zonder volume in najaar Antwerpen
+  filter(!is.na(volume)) |>
+  
   left_join(locatie_scheldezone) %>% 
   filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   filter(aantal > 0) %>% 
@@ -1922,6 +1931,10 @@ ggsave(paste0(pad_figuren, "EMSE_alternatief/diversiteit_S_D_salgroep.png"), wid
 
 gemiddeld_diversiteit_dieet <- 
   data_ankerkuil %>% 
+
+  #### in 2025 een net zonder volume in najaar Antwerpen
+  filter(!is.na(volume)) |>
+  
   left_join(locatie_scheldezone) %>% 
   filter(!(soort %in% soorten_niet_in_aantal)) %>% 
   filter(aantal > 0,
