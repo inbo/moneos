@@ -60,7 +60,7 @@ FROM DimSample s
   INNER JOIN FactAnalyseSetOccurrence f   ON f.SampleKey = s.SampleKey
   INNER JOIN DimLocationWV l              ON l.LocationWVKey = s.LocationWVKey
   WHERE l.LocationWVCode IN 
-  ('3120101', '3121003', '3121303', '3121412', '3153801', '2050810', '2051504', '2080605', '2091301', '2091305')
+  ('3120101', '3121003', '3121303', '3121412', '3153801', '2050810', '2051504', '2080605', '2091301', '2091305', '4140206')
   AND s.CoverageCode = 'N'
 GROUP BY s.SampleKey
 , s.SampleDate
@@ -82,7 +82,7 @@ FROM FactAnalyseSetOccurrence f
   INNER JOIN DimLocationWV l  
     ON l.LocationWVKey = s.LocationWVKey
   WHERE l.LocationWVCode IN 
-  ('3120101', '3121003', '3121303', '3121412', '3153801', '2050810', '2051504', '2080605', '2091301', '2091305')
+  ('3120101', '3121003', '3121303', '3121412', '3153801', '2050810', '2051504', '2080605', '2091301', '2091305','4140206')
 GROUP BY f.SampleKey
 , s.SampleDate
 , e.EventLabel

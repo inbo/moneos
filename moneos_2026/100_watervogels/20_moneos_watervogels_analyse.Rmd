@@ -210,7 +210,7 @@ hernoem_telgebieden <- function(x){
     x == "Tijgebonden Oude Schelde Gent - monding Ringvaart" ~ "tijgebonden Oude Schelde Gent - monding Ringvaart",
     x == "Schelde grens - Kerncentrale Doel (Schor Ouden Doel, Paardeschor) (LO)" ~ "grens - Kerncentrale Doel (LO)",
     x == "Galgenschoor (Schelde Lillo-Fort - Containerkaai) (RO)" ~ "Galgenschoor (Lillo-Fort - Containerkaai) (RO)",
-    x == "Groot Buitenschoor (Schelde Containerkaai - grens) (RO)" ~ "Groot Buitenschoor (Containerkaai - grens) (RO)",
+    x == "Groot Buitenschoor (Schelde Containerkaai - grens)  (RO)" ~ "Groot Buitenschoor (Containerkaai - grens) (RO)",
     x == "Zenne Zennegat - Hombeekbrug MECHELEN" ~ "Zennegat - Hombeekbrug Mechelen",
     x == "Zenne ZEMST(brug Brusselse Steenweg) - HOMBEEK (Eglegemvijver)" ~ "Brusselse Steenweg Zemst - Eglegemvijver Hombeek",
     x == "Zenne WEERDE - EPPEGEM" ~ "Weerde - Eppegem",
@@ -220,24 +220,26 @@ hernoem_telgebieden <- function(x){
 
 # overzichtstabel van de gebieden geteld via MIDMA
 gebieden_MIDMA <- WV_DB %>% 
-  filter((projectcode == "MIDMA" &
-         analyse_MONEOS == TRUE) |
-           (gebiedscode == "2091301") |
-           (gebiedscode == "4140206")) %>% 
+  filter(projectcode == "MIDMA",
+         analyse_MONEOS == TRUE) %>% 
   group_by(rivier, gebiedscode, gebied) %>% 
   summarise(n = n_distinct(teldatum)) %>% 
   filter(n > 10)
+# 16 gebieden waarvoor op meer dan 10 data MIDMA tellingen gebeurden
 
+# verder exploreren:
 gebieden_MIDMA_yrs <- WV_DB %>% 
   filter(gebied %in% gebieden_MIDMA$gebied,
+         projectcode == "MIDMA",
+         analyse_MONEOS == TRUE,
          telseizoen_yr > 1990,
          maand %in% c(1:3, 10:12)) %>% 
   
   group_by(rivier, gebied, gebiedscode) %>% 
   mutate(data_vanaf = min(telseizoen_yr),
-         data_tot = max(telseizoen_yr),
+         data_tot = max(telseizoen_yr) + 1,
          periode = paste(data_vanaf, "-", data_tot),
-         aantal_jaar = 1 + data_tot - data_vanaf) %>%
+         aantal_jaar = data_tot - data_vanaf) %>%
   ungroup() %>% 
   
   group_by(rivier, gebied, gebiedscode, periode, aantal_jaar) %>% 
@@ -255,10 +257,13 @@ gebieden_MIDMA_yrs <- WV_DB %>%
          "Percentage (jaren geteld)" = percentage) %>% 
   
   mutate(Telgebied = hernoem_telgebieden(Gebiedsnaam)) %>% 
-  select(Riviertraject, Gebiedscode, Telgebied, Periode, `Aantal telseizoenen`, `Percentage (jaren geteld)`)
+  select(Riviertraject, Gebiedscode, Gebiedsnaam, Telgebied, Periode, `Aantal telseizoenen`, `Percentage (jaren geteld)`)
 
 write_xlsx(gebieden_MIDMA_yrs, paste0(pad_tabellen, paste0("100_1b_watervogels_gebieden_MIDMA_yrs.xlsx")))
-
+# dit is interessant als verkennende tabel, maar niet als absoluut te interpreteren omdat ook nu weer geen onderscheid gemaakt kan worden tussen niet geteld, of wel geteld maar geen vogels waargenomen
+# ook het percentage geteld geeft een wat vertekend beeld omdat niet duidelijk is of start- en eindtijd van de tellingen in een welbepaald gebied bewust zo gekozen werden, dan wel net het gevolg van het niet-tellen (cfr sas van Wintam tot Boom)
+# daarom nu finaal beslist om deze tabel niet mee op te nemen in de rapportage
+# voor een volgende keer kan overwogen worden om in script 15_... voor deze 16 gebieden de nultellingen op te vragen en te joinen met bovenstaande tabel om een vollediger en juister beeld te bekomen
 
 # overzichtstabel van ontbrekende MIDMA tellingen 2025-2026
 data_available <- WV_DB %>% 
@@ -268,11 +273,14 @@ data_available <- WV_DB %>%
          maand %in% c(10:12, 1:3)) %>% 
   distinct(rivier, gebied, telling) %>% 
   mutate(data_available = TRUE)
-  
+ 
+gebieden_MIDMA_2025_26 <- gebieden_MIDMA_yrs %>% 
+  filter(`Aantal telseizoenen` > 10)
+ 
 alle_combinaties <- expand_grid(
-  gebied = unique(gebieden_MIDMA$gebied),
+  gebied = unique(gebieden_MIDMA_2025_26$Gebiedsnaam),
   telling = c("Oktober", "November", "December", "Januari", "Februari", "Maart")) %>% 
-  inner_join(gebieden_MIDMA %>% distinct(gebied, rivier))
+  inner_join(gebieden_MIDMA_2025_26 %>% distinct(gebied = Gebiedsnaam, rivier = Riviertraject))
 
 WV_DB_zeros_MIDMA_edit <- WV_DB_zeros_MIDMA %>% 
   filter(SampleDate > "2025-09-30", SampleDate < "2026-04-01") %>%
