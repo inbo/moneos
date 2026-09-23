@@ -79,8 +79,8 @@ De waargenomen trends in het Schelde-estuarium moeten dus steeds in dit bredere 
 
 De data zijn afkomstig uit de INBO-watervogeldatabank en lopen van oktober `r vroegste_jaar` tot en met maart `r laatste_jaar`.
 De voorliggende eerstelijnsrapportage beschrijft de beschikbare telgegevens voor de Zeeschelde en haar getijgebonden zijrivieren.
-De aantallen watervogels in estuariene natuurontwikkelingsprojecten werden niet meegenomen in deze rapportage.
-Ook de getijgebonden delen van de Kleine en Grote Nete vallen buiten de scope van dit rapport omdat hiervoor geen aparte telgebieden beschikbaar zijn in de INBO-watervogeldatabank.
+De aantallen watervogels in estuariene natuurontwikkelingsprojecten vallen buiten de scope van dit rapport.
+Ook de getijgebonden delen van de Kleine en Grote Nete werden niet meegenomen in deze rapportage omdat hiervoor geen aparte telgebieden beschikbaar zijn in de INBO-watervogeldatabank.
 
 De evaluaties in dit rapport gebeuren op basis van de aantallen watervogels per maand, per telseizoen en per deelzone op niveau 2 of niveau 3.
 Hierbij staat niveau 2 gelijk aan de opdeling 'Zeeschelde' en 'Zijrivieren' en komt niveau 3 neer op een doorvertaling van de KRW-indeling (EMSE, 2021).
@@ -116,9 +116,8 @@ De tellingen gebeuren vanaf een boot en bij laagwater.
 Omdat het niet haalbaar is om het volledige studiegebied grondig te tellen tijdens één laag tij, worden de tellingen verspreid over drie dagen uitgevoerd langs de deeltrajecten grens-Antwerpen, Antwerpen-Dendermonde en Dendermonde-Gent.
 De teldagen worden steeds gegroepeerd in het midden van de maand om zo nauw mogelijk aan te sluiten bij de midmaandelijkse watervogeltellingen (zie volgende paragraaf).
 Oorspronkelijk werd enkel tijdens de winter (oktober-maart) geteld op de Zeeschelde, maar sinds 1993 wordt ook tijdens de zomer geteld (maandelijks van april tot en met september).
-Sinds het telseizoen 2018/19 zijn deze maandelijkse zomertellingen echter beperkt tot het traject grens-Antwerpen en wordt enkel in juni nog het volledige traject van de grens tot in Gent geteld.
-Duikers, futen, aalscholvers, reigers, zwanen, ganzen, eenden, steltlopers en rallen worden geteld sinds het begin van de tellingen.
-Sinds oktober 1999 worden ook de meeuwen en sternen geteld.
+Sinds het telseizoen 2018/19 zijn de maandelijkse zomertellingen echter beperkt tot het traject grens-Antwerpen en wordt enkel in juni het volledige traject van de grens tot in Gent geteld.
+Duikers, futen, aalscholvers, reigers, zwanen, ganzen, eenden, steltlopers en rallen worden geteld sinds het begin van de tellingen, en sinds oktober 1999 worden ook de meeuwen en sternen geteld.
 
 [^100_watervogels-1]: Voor de fusie in 2006 werden de tellingen uitgevoerd door medewerkers van het toenmalige Instituut voor Natuurbehoud (IN).
 
@@ -126,39 +125,13 @@ Sinds oktober 1999 worden ook de meeuwen en sternen geteld.
 
 Watervogels langs de zijrivieren (behalve van de Rupelmonding tot het sas van Wintam) en de trajecten Melle-Gentbrugge en Ringvaart-Zwijnaarde worden door vrijwilligers geteld als onderdeel van de midmaandelijkse watervogeltellingen, een langlopend [project](https://www.vlaanderen.be/inbo/projecten/monitoring-overwinterende-watervogels) gecoördineerd door INBO.
 Deze tellingen gebeuren vanaf de oever en vinden enkel plaats in de winter (oktober-maart).
-Meeuwen, sternen, steltlopers en rallen worden langs de zijrivieren pas meegeteld sinds oktober 1999.
+Meeuwen, sternen, steltlopers en rallen worden langs de zijrivieren meegeteld sinds oktober 1999.
 
-De standaard toegevoegde teltrajecten zijn opgelijst in Tabel \@ref(tab:100-tabel-teltrajecten).
-Een aantal van deze teltrajecten werd maar gedurende een specifieke periode geteld, zoals 2 trajecten op de Zenne en het traject van de Rupelmonding tot het sas van Wintam.
-Ook zijn er verschillende teltrajecten waar lang niet elke winter geteld werd, zoals het traject op de Dijle en de Ringvaart.
+De aldus toegevoegde teltrajecten worden opgelijst in Tabel \@ref(tab:100-tabel-ontbrekendedataMIDMA).
+Dit zijn telgebieden die standaard door vrijwilligers worden geteld en daarom jaarlijks toegevoegd worden aan de MONEOS-dataset.
 
-<br/>
-
-```{r 100-tabel-teltrajecten}
-
-gebieden_MIDMA_yrs <- read_xlsx(paste0(pad_tabellen, paste0("100_1b_watervogels_gebieden_MIDMA_yrs.xlsx")))
-
-cap_teltrajecten <- "Overzicht van de telgebieden die standaard geteld worden tijdens de midmaandelijkse watervogeltellingen, en ter aanvulling van de boottellingen bij de analyse-dataset worden gevoegd."
-
-footnote_text <- "Dit teltraject omvat data van zowel de getijgebonden Durme als van de afgesneden 'Oude Durme'; sinds oktober 2012 wordt de getijgebonden Durme afzonderlijk geteld."
-
-gebieden_MIDMA_yrs %>%
-  {.[3,3] <- paste0(.[3,3],
-                    footnote_marker_number(1))
-  .} %>%
-  # mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
-  # mutate(across(everything(), ~cell_spec(., color = "black")))  %>%
-  knitr::kable(booktabs = TRUE,
-               escape = FALSE,
-               caption = cap_teltrajecten) %>%
-
-  kableExtra::kable_styling(latex_options = c("scale_down"),
-                            font_size = 12) %>%
-  footnote(number = footnote_text,
-           escape = FALSE,
-           threeparttable = TRUE)
-
-```
+Boottellingen krijgen altijd voorrang op midmaandelijkse tellingen in hetzelfde gebied.
+Maar indien een teltraject langs de Zeeschelde door omstandigheden niet geteld kon worden vanaf de boot, wordt de analyse-dataset indien mogelijk aangevuld met een midmaandelijkse telling vanaf de oever.
 
 <br/>
 
@@ -169,11 +142,12 @@ Er gebeurde dus geen imputatie van ontbrekende data.
 
 *Boottellingen 2025/26*
 
-De boottellingen op de Zeeschelde zijn volledig uitgevoerd zoals gepland.
+De boottellingen op de Zeeschelde werden volledig uitgevoerd zoals gepland.
 
 *Midmaandelijkse watervogeltellingen 2025/26*
 
-In vier van de negen telgebieden werden alle wintertellingen uitgevoerd, terwijl in het Zennegat slechts drie tellingen plaatsvonden en langs de tijarmen stroomopwaarts van de monding van de Ringvaart telkens vier (Tabel \@ref(tab:100-tabel-ontbrekendedataMIDMA)).
+In vier van de tien telgebieden werden alle wintertellingen uitgevoerd, terwijl in het Zennegat slechts drie tellingen plaatsvonden en langs de tijarmen stroomopwaarts van de monding van de Ringvaart richting Zwijnaarde en Gent telkens vier.
+Het telgebied op de Rupel tussen het sas van Wintam en Boom werd de voorbije winter niet geteld (Tabel \@ref(tab:100-tabel-ontbrekendedataMIDMA)).
 
 <br/>
 
@@ -181,10 +155,10 @@ In vier van de negen telgebieden werden alle wintertellingen uitgevoerd, terwijl
 
 tabel_ontbrekende_data <- read_xlsx(paste0(pad_tabellen, "100_1c_watervogels_ontbrekende_MIDMA_data.xlsx"))
 
-cap_ontbrekendedata <- "Overzicht van de uitgevoerde midmaandelijkse tellingen door vrijwilligers in telseizoen 2025/26 (FALSE = geen data beschikbaar; TRUE = data beschikbaar)"
+cap_ontbrekendedata <- "Overzicht van de uitgevoerde midmaandelijkse tellingen door vrijwilligers in telseizoen 2025/26 (TRUE = telling uitgevoerd)"
 
 tabel_ontbrekende_data %>%
-  mutate(across(everything(), ~ ifelse(. == FALSE, "", as.character(.)))) %>%
+  mutate(across(c(3:8), ~ ifelse(. == FALSE, "", as.character(.)))) %>%
   knitr::kable(booktabs = TRUE,
                escape = FALSE,
                caption = cap_ontbrekendedata) %>%
@@ -199,19 +173,18 @@ tabel_ontbrekende_data %>%
 
 Bron: [Klimatologisch overzicht Ukkel - winter 2026](https://www.meteo.be/resources/climatology/pdf/klimatologisch_seizoenoverzicht_2026_S1.pdf)
 
-December 2025 was een zeer droge maand (tweede droogste voor de huidige referentieperiode), terwijl januari maar net iets droger was dan gemiddeld.
+December 2025 was een uitzonderlijk droge maand, terwijl januari maar net iets droger was dan gemiddeld.
 De zeer natte maand februari (vijfde natste voor de huidige referentieperiode) kon niet verhinderen dat de winter met 208,9 mm iets droger was dan normaal (228,6 mm).
 
-Er viel tijdens zeven dagen neerslag die geheel of gedeeltelijk uit sneeuw bestond (normaal: 12,6 dagen).
+Er viel op zeven dagen neerslag die geheel of gedeeltelijk uit sneeuw bestond (normaal: 12,6 dagen).
 Dit zorgde voor een maximale sneeuwdikte van 7 cm op 8 januari.
 
-In Ukkel werd een zeer zonnige december gevolgd door een nog iets zonnigere maand januari en een net iets meer sombere februari.
-De winter in zijn totaal was hierdoor ook zonniger dan gemiddeld: 194u43' (normaal: 180u17').
+De winter van 2025/26 was in zijn totaal zonniger dan gemiddeld: 194u43' (normaal: 180u17').
 
-Het grootste deel van de winter lagen de temperaturen boven hun respectievelijke normalen.
-Enkel rond de jaarwisseling was er een duidelijke koudere periode met de koudste Kerstdag sinds 2010.
+Het grootste deel van de winter lagen de temperaturen boven hun normale waarden.
+Enkel rond de jaarwisseling was er een koudere periode met de koudste Kerstdag sinds 2010.
 Er werden slechts twee winterse dagen (max \< 0°C, normaal: 5,6 dagen) en 22 vorstdagen geregistreerd (min \< 0°C, normaal: 29,7 dagen).
-De uiteindelijke gemiddelde temperatuur (5,8°C) van de voorbije winter lag ruim boven de normale waarde (4,1°C).
+De uiteindelijke gemiddelde temperatuur (5,8°C) lag ruim boven de normale waarde (4,1°C).
 
 <br/>
 
@@ -231,7 +204,7 @@ Zo worden de meeste eendensoorten bij de omnivoren ingedeeld.
 
 Dit zijn soorten met instandhoudingsdoelstellingen ([S-IHD](https://www.natura2000.vlaanderen.be/sites/default/files/publicaties/36_zeeschelde_sigma_mp-1.0.pdf)).
 Deze doelstellingen zijn gebaseerd op de gemiddelde aantallen overwinteraars in de estuariene delen van de Zeeschelde en haar zijrivieren binnen een afgebakende, soortspecifieke referentieperiode (Van Hecke *et al.,* in voorbereiding).
-Specifiek voor EMSE wordt gefocust op soorten die een sterke connectie hebben met estuariene habitats (kleine zwaan, slobeend en kokmeeuw laten we daarom buiten beschouwing):
+Specifiek voor EMSE wordt gefocust op soorten die een sterke connectie hebben met estuariene habitats (kleine zwaan, slobeend en kokmeeuw blijven daarom buiten beschouwing):
 
 - pijlstaart: seizoensgemiddelde winter 2000/01 tot 2005/06: 500 ex.
 - wintertaling: seizoensgemiddelde winter 1998/99 tot 2006/07: 14.200 ex.
@@ -273,6 +246,7 @@ In deze rapportage wordt de index gebruikt voor de evaluatie van algemene patron
 ### Globale patroon
 
 Het globale patroon in de maandelijkse wintervogelaantallen op de slikken van de Zeeschelde (exclusief Sigmagebieden en zijrivieren) toont een sterke afname in vogelaantallen tussen 2002 en 2008.
+Deze afname kadert binnen de veelbesproken ecosysteemshift (Van de Meutter *et al*., 2025).
 In het winterseizoen 2020/21 is er een kleine piek in aantallen, als gevolg van een vorstinflux.
 Na een dieptepunt in globale aantallen in de winter van 2022/23 is er de laatste drie telseizoenen opnieuw een gestage toename merkbaar (Figuur \@ref(fig:100-figuur-maandelijkse-totalen-winter-Zeeschelde)).
 Deze toegenomen aantallen zijn ten minste deels het gevolg van nieuwe ontpolderingen die zeer veel vogels aantrekken (Hedwige-Prosperpolder en Groot Schoor Hamme), vogels die geregeld ook op de Zeeschelde zelf verblijven.
@@ -285,7 +259,7 @@ Recente winterseizoenen met een opvallend hoog aandeel in deze zone (meer bepaal
 ```{r 100-figuur-maandelijkse-totalen-winter-Zeeschelde, fig.cap = cap_maandelijkse_totalen, out.width = "80%"}
 
 cap_maandelijkse_totalen <- paste0(
-  "Maandelijkse totalen van overwinterende watervogels langs de Zeeschelde sinds oktober 1991 tot ", 
+  "Maandelijkse totalen van overwinterende watervogels langs de Zeeschelde tussen oktober 1991 tot maart ", 
   laatste_jaar,
   " (exclusief zijrivieren, exclusief meeuwen en sternen).")
 
@@ -300,7 +274,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_2a_maandelijkse_totalen_excl_MS
 cap_verhouding_aantallen <- paste0(
   "De verhouding per saliniteitszone (niveau 3) van de totale aantallen watervogels geteld langs de Zeeschelde (winters 1991/92 - ",
   laatste_telseizoen,
-  ").")
+  "; exclusief zijrivieren, exclusief meeuwen en sternen).")
 
 knitr::include_graphics(paste0(pad_figuren, "100_5a_verhouding_aantallen_excl_MS_winter_ZS.jpg"))
 
@@ -313,7 +287,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_5a_verhouding_aantallen_excl_MS
 De resultaten van de standaard-index berekening zijn weergegeven in Tabel \@ref(tab:100-tabel-rtrim).
 
 De bergeend vertoont een matige afname over de lange termijn, een stabiele trend sinds 2009 en een matig toenemende trend over de korte termijn.
-Deze recente toename is te wijten aan de hoge aantallen die geteld worden op de Zeeschelde ter hoogte van de nieuwe ontpolderingen (Groot Schoor Hamme en Hedwige-Prosperpolder).
+De recente toename is te wijten aan de hoge aantallen die geteld worden op de Zeeschelde ter hoogte van de nieuwe ontpolderingen (Groot Schoor Hamme en Hedwige-Prosperpolder).
 
 De krakeend is stabiel over de lange en middellange termijn en matig toenemend over de korte termijn.
 
@@ -324,7 +298,7 @@ Ook de wintertaling vertoont een significante afname over de lange en middellang
 Net als voor bergeend kan deze toename worden toegeschreven aan de hoge aantallen die geteld worden op de Zeeschelde ter hoogte van de recente ontpolderingen.
 
 Voor de tafeleend zijn de trendstatistieken inconclusief.
-In die zin dient wel benadrukt te worden dat de tafeleend op de lange termijn enorm achteruit is gegaan, gezien de soort voor de ecosysteemshift in 2007 (Van de Meutter *et al*., 2025) bijna jaarlijks met meerdere duizenden vogels aanwezig was op de Zeeschelde.
+Het dient wel benadrukt te worden dat de tafeleend op de lange termijn enorm achteruit is gegaan, gezien de soort voor de ecosysteemshift in 2007 (Van de Meutter *et al*., 2025) bijna jaarlijks met meerdere duizenden vogels aanwezig was op de Zeeschelde.
 
 <br/>
 
@@ -392,7 +366,7 @@ Dit slikrijke gebied trekt heel veel overwinterende watervogels aan, en deze vog
 Het voorbije telseizoen lagen de aantallen er evenwel terug wat lager.
 
 Een positieve index-evolutie voltrekt zich al sinds 2019/20 in de zone 'saliniteitsgradiënt'.
-Deze trend correleert ook met een algemeen toenemende biomassa aan bodemdieren (zie hoofdstuk Macrozoöbenthos).
+Deze trend correleert met een algemeen toenemende biomassa aan bodemdieren (zie hoofdstuk Macrozoöbenthos).
 De laatste jaren kreeg deze positieve trend nog meer wind in de zeilen via de inrichting van de Hedwige-Prosperpolder.
 
 De watervogels op de Rupel volgen sinds 2009 een dalende trend met een absoluut dieptepunt in het winterseizoen 2019/20.
@@ -409,7 +383,7 @@ De trend voor de Durme wordt hier niet weergegeven en besproken, aangezien deze 
 
 ```{r 100-figuur-index-niveau2, fig.cap = cap_index_niveau2, out.width = "80%"}
 
-cap_index_niveau2 <- "Index van de maximale wintervogelaantallen in de Zeeschelde en op de zijrivieren, met winterseizoen 2009/10 als referentie (telseizoen X = winterseizoen X/X+1)."
+cap_index_niveau2 <- "Index van de maximale wintervogelaantallen op de Zeeschelde en de zijrivieren, met winterseizoen 2009/10 als referentie (telseizoen X = winterseizoen X/X+1)."
 
 knitr::include_graphics(paste0(pad_figuren, "100_9d_index_excl_MS_winter_facet_niv2.jpg"))
 
@@ -419,7 +393,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_9d_index_excl_MS_winter_facet_n
 
 ```{r 100-figuur-index-niveau3, fig.cap = cap_index_niveau3, out.width = "80%"}
 
-cap_index_niveau3 <- "Index van de maximale wintervogelaantallen in de deelzones op niveau 3, met winterseizoen 2009/10 als referentie (telseizoen X = winterseizoen X/X+1)."
+cap_index_niveau3 <- "Index van de maximale wintervogelaantallen in de verschillende deelzones op niveau 3, met winterseizoen 2009/10 als referentie (telseizoen X = winterseizoen X/X+1)."
 
 knitr::include_graphics(paste0(pad_figuren, "100_9a_index_excl_MS_winter_facet_niv3.jpg"))
 
