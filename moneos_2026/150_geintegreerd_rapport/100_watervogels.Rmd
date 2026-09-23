@@ -57,7 +57,7 @@ for(i in 1:nrow(meta_data)){
 
 Fichenummer: FICHE S-DS-V-007a -- Maandelijkse vogeltellingen\
 Fichenummer: FICHE S-DS-V-007b -- Vogeltellingen zijrivieren\
-(Bron: [datafiches](https://www.scheldemonitor.org/datafiches/) Scheldemonitor)
+(Bron: [datafiches](https://www.scheldemonitor.org/datafiches/) ScheldeMonitor)
 
 **Nicolas Vanermen**, Nico De Regge, Jan Soors, Gunther Van Ryckegem
 
@@ -86,7 +86,7 @@ De evaluaties in dit rapport gebeuren op basis van de aantallen watervogels per 
 Hierbij staat niveau 2 gelijk aan de opdeling 'Zeeschelde' en 'Zijrivieren' en komt niveau 3 neer op een doorvertaling van de KRW-indeling (EMSE, 2021).
 Voor niveau 3 wordt de KRW-zone 'Zeeschelde III + Rupel' echter opgedeeld in de 2 deelzones 'Oligohalien' en 'Rupel'.
 
-Samen met deze rapportage wordt ook een dataset opgeleverd aan Scheldemonitor.
+Samen met deze rapportage wordt ook een dataset opgeleverd aan de [ScheldeMonitor](https://www.scheldemonitor.be/nl).
 Deze bevat de volgende informatievelden:
 
 - krwzone: naam van het KRW-waterlichaam
@@ -131,7 +131,7 @@ De aldus toegevoegde teltrajecten worden opgelijst in Tabel \@ref(tab:100-tabel-
 Dit zijn telgebieden die standaard door vrijwilligers worden geteld en daarom jaarlijks toegevoegd worden aan de MONEOS-dataset.
 
 Boottellingen krijgen altijd voorrang op midmaandelijkse tellingen in hetzelfde gebied.
-Maar indien een teltraject langs de Zeeschelde door omstandigheden niet geteld kon worden vanaf de boot, wordt de analyse-dataset indien mogelijk aangevuld met een midmaandelijkse telling vanaf de oever.
+Maar indien een teltraject langs de Zeeschelde door omstandigheden niet geteld kon worden vanaf de boot, wordt de MONEOS-dataset indien mogelijk aangevuld met een midmaandelijkse telling vanaf de oever.
 
 <br/>
 
@@ -202,7 +202,7 @@ Zo worden de meeste eendensoorten bij de omnivoren ingedeeld.
 
 #### Sleutelsoorten
 
-Dit zijn soorten met instandhoudingsdoelstellingen ([S-IHD](https://www.natura2000.vlaanderen.be/sites/default/files/publicaties/36_zeeschelde_sigma_mp-1.0.pdf)).
+Dit zijn soorten met specifieke instandhoudingsdoelstellingen ([S-IHD](https://www.natura2000.vlaanderen.be/sites/default/files/publicaties/36_zeeschelde_sigma_mp-1.0.pdf)).
 Deze doelstellingen zijn gebaseerd op de gemiddelde aantallen overwinteraars in de estuariene delen van de Zeeschelde en haar zijrivieren binnen een afgebakende, soortspecifieke referentieperiode (Van Hecke *et al.,* in voorbereiding).
 Specifiek voor EMSE wordt gefocust op soorten die een sterke connectie hebben met estuariene habitats (kleine zwaan, slobeend en kokmeeuw blijven daarom buiten beschouwing):
 
@@ -362,12 +362,12 @@ Het aantal wilde eenden bereikte dat seizoen bijvoorbeeld een historisch laagtep
 Het lage aantal watervogels van 2022/23 valt samen met een lage biomassa aan macrozoöbenthos vastgesteld in 2022.
 Anderzijds was deze biomassa niet voldoende laag om de grote daling in watervogels volledig te helpen verklaren.
 De index nam de daaropvolgende twee telseizoenen sterk toe in de zone 'zoet lang verblijf', onder impuls van de ontpoldering van Groot Schoor Hamme.
-Dit slikrijke gebied trekt heel veel overwinterende watervogels aan, en deze vogels verblijven tijdens laag water ook tijdelijk op de Zeeschelde.
+Dit slikrijke gebied trekt heel veel overwinterende watervogels aan, die tijdens laag water ook tijdelijk op de Zeeschelde verblijven.
 Het voorbije telseizoen lagen de aantallen er evenwel terug wat lager.
 
 Een positieve index-evolutie voltrekt zich al sinds 2019/20 in de zone 'saliniteitsgradiënt'.
 Deze trend correleert met een algemeen toenemende biomassa aan bodemdieren (zie hoofdstuk Macrozoöbenthos).
-De laatste jaren kreeg deze positieve trend nog meer wind in de zeilen via de inrichting van de Hedwige-Prosperpolder.
+De laatste jaren kreeg deze positieve trend nog meer wind in de zeilen door de inrichting van de Hedwige-Prosperpolder.
 
 De watervogels op de Rupel volgen sinds 2009 een dalende trend met een absoluut dieptepunt in het winterseizoen 2019/20.
 De voorbije drie winters lijken de aantallen opnieuw stabiel en op het niveau van de periode 2010-2015.
@@ -412,7 +412,8 @@ Met name scholeksters lijken er met de brakwaterkorfschelp *Potamocorbula amuren
 Het aantal omnivore soorten is globaal licht afnemend in alle zones.
 Uit de figuur komt een dieptepunt in de aantallen omnivoren naar voor in 2022/23, in de zone 'zoet lang verblijf'.
 Dit was zoals hierboven reeds vermeld mede het gevolg van een sterke afname van wilde eenden (Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten-ZS)).
-De laatste jaren lijkt er een voorzichtig herstel aan de gang. Dit is deels te danken aan de hoge aantallen bergeenden en wintertalingen ter hoogte van de ontpoldering van Groot Schoor Hamme, maar merk op dat de aantallen eenden het voorbije telseizoen opnieuw een terugval kenden (Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten-ZS)).
+De laatste jaren lijkt er een voorzichtig herstel aan de gang.
+Dit is deels te danken aan de hoge aantallen bergeenden en wintertalingen ter hoogte van de ontpoldering van Groot Schoor Hamme, maar merk op dat deze aantallen het voorbije telseizoen opnieuw een terugval kenden (Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten-ZS)).
 
 Het aantal visetende vogels varieert sterk met de jaren en de index schommelt de laatste jaren rond de referentiewaarde van 2009/10.
 
@@ -493,7 +494,8 @@ tabel_rtrim_trof %>%
 
 De diversiteitsindex is traditioneel het hoogst in de zone 'saliniteitsgradiënt' (Figuur \@ref(fig:100-figuur-ShannonDiversity-metmeeuwen)).
 Ook op de Rupel en in het 'oligohalien' is de diversiteit algemeen genomen hoog, hoewel er de laatste twee telseizoenen in beide deelzones een index-daling merkbaar is.
-In de zone 'zoet lang verblijf' nam de diversiteitsindex heel sterk toe in de periode 2019/20 tot 2022/23, en de zone lijkt dat hoge niveau ook de laatste jaren verder te handhaven. De diversiteitstoename  in het 'zoet lang' correleert met de index van benthivore soorten (Figuur \@ref(fig:100-figuur-aantallen-trofische-groep-index-niv3)).
+In de zone 'zoet lang verblijf' nam de diversiteitsindex heel sterk toe in de periode 2019/20 tot 2022/23, en de zone lijkt dat hoge niveau ook de laatste jaren te handhaven.
+De diversiteitstoename in het 'zoet lang' correleert met de index van benthivore soorten (Figuur \@ref(fig:100-figuur-aantallen-trofische-groep-index-niv3)).
 In vergelijking met de andere deelzones heeft de Durme een opvallend lagere diversiteit aan overwinterende watervogels.
 
 <br/>
@@ -512,10 +514,11 @@ knitr::include_graphics(paste0(pad_figuren, "100_1a_Shannon_incl_MS_winter_niv3.
 
 Voor een aantal van de meest algemene soorten wordt het verloop van de aantallen doorheen de periode 2009-`r laatste_jaar` getoond in Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten-ZS) en Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten-ZR).
 
-Wintertaling, bergeend en krakeend namen tot voor kort heel sterk toe in de zone 'zoet lang verblijf', maar hun aantallen vielen in het voorbije telseizoen sterk terug. In het 'oligohalien' kenden de aantallen bergeend en krakeend in de winter van 2024/25 een hoogtepunt, maar ook hier namen de aantallen het afgelopen telseizoen opnieuw sterk af.
+Wintertaling, bergeend en krakeend namen tot voor kort heel sterk toe in de zone 'zoet lang verblijf', maar hun aantallen liepen in het voorbije telseizoen stevig terug.
+In het 'oligohalien' kenden de aantallen bergeend en krakeend in de winter van 2024/25 een hoogtepunt, maar ook hier namen de aantallen het afgelopen telseizoen sterk af.
 In de zone 'saliniteitsgradiënt' tot slot namen wintertaling, bergeend en krakeend de voorbije 6 à 7 jaar gestaag toe.
 
-Een andere opvallende trend is te zien bij wilde eend, een soort waarvan de aantallen sinds 2009 heel sterk en om onbekende redenen zijn afgenomen, vooral in de zone 'zoet lang verblijf'. 
+Een andere opvallende trend is te zien bij wilde eend, een soort waarvan de aantallen sinds 2009 heel sterk en om onbekende redenen zijn afgenomen, vooral in de zone 'zoet lang verblijf'.
 Hoewel de aantallen na het dieptepunt in 2022/23 weer lichtjes toenemen, liggen deze nog heel ver af van het niveau van voor 2015.
 Ook in de zone 'zoet zijrivier' (Zenne en Dijle) komt de algemene afname van wilde eend duidelijk naar voor.
 
@@ -544,11 +547,11 @@ Op de Rupel en de Durme lagen de aantallen bergeend het voorbije telseizoen dan 
 
 Behalve kievit zijn de hieronder uitgelichte steltlopers sterk gebonden aan de zone 'saliniteitsgradiënt' (zie Figuur \@ref(fig:100-figuur-aantallen-steltlopers)).
 Alle steltlopersoorten zijn doorheen het voorbije decennium duidelijk toegenomen, met uitzondering van wulp.
-De gemiddelde winteraantallen van bonte strandloper en kievit lagen sinds 2009/10 zelfs nooit zo hoog als in het voorbije telseizoen. In het geval van kievit is deze opvallende piek in aantallen enkel te zien in de zone 'saliniteitsgradiënt'.
+De gemiddelde winteraantallen van bonte strandloper en kievit lagen sinds 2009/10 zelfs nooit zo hoog als in het voorbije telseizoen.
 
 Het is onduidelijk of de afname van wulp het gevolg is van een verschuiving richting nieuw ingerichte gebieden, dan wel een werkelijke afname in aantallen op de schaal van het estuarium reflecteert.
 Ook de sterk dalende Europese populatietrend van deze soort kan een rol spelen.
-Tot slot is het interessant om te melden dat er in de zone 'saliniteitsgradiënt' een sterke toename in bodemdierbiomassa werd vastgesteld (zie hoofdstuk Macrozoöbenthos), dewelke moeilijk los te zien is van de toename aan steltlopers.
+Tot slot is het interessant om te melden dat er in de zone 'saliniteitsgradiënt' een sterke toename in bodemdierbiomassa werd vastgesteld (zie hoofdstuk Macrozoöbenthos), wat moeilijk los te zien is van de toename aan steltlopers.
 
 <br/>
 
@@ -564,9 +567,11 @@ knitr::include_graphics(paste0(pad_figuren, "100_14a_wintergemiddelde_ZS_RUP_fac
 
 ### Exoten
 
-Er zijn acht exoten of verwilderde soorten met meer dan 30 afzonderlijke waarnemingen sinds de start van de tellingen langs de Zeeschelde en haar zijrivieren. Het verloop van de aantallen van de meest talrijke  overwinterende exoten is weergegeven in Figuur \@ref(fig:100-figuur-exotentrends).
-Hun procentueel aandeel is klein, en ook de absolute aantallen zijn bescheiden. Enkel voor grote canadese gans worden in sommige jaren meer dan 100 overwinterende vogels per deelzone op niveau 3 geteld.
-De hoogste aantallen van de nijlgans worden geteld in de oligohaliene zone en nemen daar gestaag toe. 
+Er zijn acht exoten of verwilderde soorten met meer dan 30 afzonderlijke waarnemingen sinds de start van de tellingen langs de Zeeschelde en haar zijrivieren.
+Het verloop van de aantallen van de meest talrijke overwinterende exoten is weergegeven in Figuur \@ref(fig:100-figuur-exotentrends).
+Hun procentueel aandeel is klein, en ook de absolute aantallen zijn bescheiden.
+Enkel voor grote canadese gans worden in sommige jaren meer dan 100 overwinterende vogels per deelzone op niveau 3 geteld.
+De hoogste aantallen van de nijlgans worden geteld in de oligohaliene zone en nemen daar gestaag toe.
 
 <br/>
 
@@ -593,7 +598,7 @@ Hoewel de meeste overwinterende sleutelsoorten over de lange en middellange term
 Voor de tafeleend en de pijlstaart kon geen significante trend worden aangetoond op de korte termijn.
 Beschouwen we de trends per trofische groep, dan valt vooral de **sterke toename** van **benthivore soorten** op (in de eerste plaats steltlopers).
 Ten opzichte van de winter van 2009/10 is deze toename het meest uitgesproken en consistent voor de scholekster.
-Mogelijk houdt dit verband met een **biomassa-toename** van **schelpdieren**, meer bepaald de **brakwaterkorfschelp** (een invasieve exoot, zie hoofdstuk Macrozoöbenthos).
+Mogelijk houdt dit verband met een **biomassatoename** van **schelpdieren**, meer bepaald de **brakwaterkorfschelp** (een invasieve exoot, zie hoofdstuk Macrozoöbenthos).
 De waargenomen algemene toename van overwinterende watervogels op de slikken van de Zeeschelde is op zijn minst deels veroorzaakt door de **recente inrichting** van twee **Sigmagebieden** die hoge aantallen watervogels aantrekken - vogels die bij laagwater ook tijdelijk op de slikken van de Zeeschelde vertoeven.
 We dienen hierbij wel te benadrukken dat dit eerder lokale effecten zijn, en zeer waarschijnlijk ook tijdelijk van aard.
 De nieuw ingerichte gebieden zullen op termijn namelijk 'verschorren', en een daling in slikoppervlakte zal zich onvermijdelijk vertalen in lagere aantallen watervogels.
