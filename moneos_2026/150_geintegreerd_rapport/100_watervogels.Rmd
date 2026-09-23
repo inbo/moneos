@@ -125,7 +125,7 @@ Duikers, futen, aalscholvers, reigers, zwanen, ganzen, eenden, steltlopers en ra
 
 Watervogels langs de zijrivieren (behalve van de Rupelmonding tot het sas van Wintam) en de trajecten Melle-Gentbrugge en Ringvaart-Zwijnaarde worden door vrijwilligers geteld als onderdeel van de midmaandelijkse watervogeltellingen, een langlopend [project](https://www.vlaanderen.be/inbo/projecten/monitoring-overwinterende-watervogels) gecoördineerd door INBO.
 Deze tellingen gebeuren vanaf de oever en vinden enkel plaats in de winter (oktober-maart).
-Meeuwen, sternen, steltlopers en rallen worden langs de zijrivieren meegeteld sinds oktober 1999.
+Meeuwen, sternen, steltlopers en rallen worden langs de zijrivieren pas geteld sinds oktober 1999.
 
 De aldus toegevoegde teltrajecten worden opgelijst in Tabel \@ref(tab:100-tabel-ontbrekendedataMIDMA).
 Dit zijn telgebieden die standaard door vrijwilligers worden geteld en daarom jaarlijks toegevoegd worden aan de MONEOS-dataset.
@@ -259,7 +259,7 @@ Recente winterseizoenen met een opvallend hoog aandeel in deze zone (meer bepaal
 ```{r 100-figuur-maandelijkse-totalen-winter-Zeeschelde, fig.cap = cap_maandelijkse_totalen, out.width = "80%"}
 
 cap_maandelijkse_totalen <- paste0(
-  "Maandelijkse totalen van overwinterende watervogels langs de Zeeschelde tussen oktober 1991 tot maart ", 
+  "Maandelijkse totalen van overwinterende watervogels langs de Zeeschelde tussen oktober 1991 en maart ", 
   laatste_jaar,
   " (exclusief zijrivieren, exclusief meeuwen en sternen).")
 
@@ -272,9 +272,9 @@ knitr::include_graphics(paste0(pad_figuren, "100_2a_maandelijkse_totalen_excl_MS
 ```{r 100-figuur-verhouding-aantallen, fig.cap = cap_verhouding_aantallen, out.width = "80%"}
 
 cap_verhouding_aantallen <- paste0(
-  "De verhouding per saliniteitszone (niveau 3) van de totale aantallen watervogels geteld langs de Zeeschelde (winters 1991/92 - ",
+  "De verhouding per saliniteitszone (niveau 3) van de totale aantallen watervogels geteld langs de Zeeschelde (winters 1991/92 tot en met ",
   laatste_telseizoen,
-  "; exclusief zijrivieren, exclusief meeuwen en sternen).")
+  ", exclusief zijrivieren, exclusief meeuwen en sternen).")
 
 knitr::include_graphics(paste0(pad_figuren, "100_5a_verhouding_aantallen_excl_MS_winter_ZS.jpg"))
 
@@ -383,7 +383,7 @@ De trend voor de Durme wordt hier niet weergegeven en besproken, aangezien deze 
 
 ```{r 100-figuur-index-niveau2, fig.cap = cap_index_niveau2, out.width = "80%"}
 
-cap_index_niveau2 <- "Index van de maximale wintervogelaantallen op de Zeeschelde en de zijrivieren, met winterseizoen 2009/10 als referentie (telseizoen X = winterseizoen X/X+1)."
+cap_index_niveau2 <- "Index van de maximale wintervogelaantallen op de Zeeschelde en de zijrivieren, met telseizoen 2009 als referentie (telseizoen X = winterseizoen X/X+1)."
 
 knitr::include_graphics(paste0(pad_figuren, "100_9d_index_excl_MS_winter_facet_niv2.jpg"))
 
@@ -393,7 +393,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_9d_index_excl_MS_winter_facet_n
 
 ```{r 100-figuur-index-niveau3, fig.cap = cap_index_niveau3, out.width = "80%"}
 
-cap_index_niveau3 <- "Index van de maximale wintervogelaantallen in de verschillende deelzones op niveau 3, met winterseizoen 2009/10 als referentie (telseizoen X = winterseizoen X/X+1)."
+cap_index_niveau3 <- "Index van de maximale wintervogelaantallen in de verschillende deelzones op niveau 3, met telseizoen 2009 als referentie (telseizoen X = winterseizoen X/X+1)."
 
 knitr::include_graphics(paste0(pad_figuren, "100_9a_index_excl_MS_winter_facet_niv3.jpg"))
 
@@ -410,19 +410,19 @@ Deze stijging is het meest uitgesproken (zeker in absolute zin) in de zone 'sali
 Met name scholeksters lijken er met de brakwaterkorfschelp *Potamocorbula amurensis* een nieuwe voedselbron aan te boren (veldobservaties).
 
 Het aantal omnivore soorten is globaal licht afnemend in alle zones.
-Uit de figuur komt een dieptepunt van omnivoren naar voor in 2022/23, in de zone 'zoet lang verblijf'.
+Uit de figuur komt een dieptepunt in de aantallen omnivoren naar voor in 2022/23, in de zone 'zoet lang verblijf'.
 Dit was zoals hierboven reeds vermeld mede het gevolg van een sterke afname van wilde eenden (Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten-ZS)).
-De laatste jaren lijkt er een voorzichtig herstel aan de gang met dank aan de hoge aantallen bergeenden en wintertalingen ter hoogte van de ontpoldering van Groot Schoor Hamme.
+De laatste jaren lijkt er een voorzichtig herstel aan de gang. Dit is deels te danken aan de hoge aantallen bergeenden en wintertalingen ter hoogte van de ontpoldering van Groot Schoor Hamme, maar merk op dat de aantallen eenden het voorbije telseizoen opnieuw een terugval kenden (Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten-ZS)).
 
 Het aantal visetende vogels varieert sterk met de jaren en de index schommelt de laatste jaren rond de referentiewaarde van 2009/10.
 
-De trend-index voor planteneters ligt sinds 2009/10 vrijwel constant onder de referentiewaarde, al lijkt dit vooral gestuurd door de lage index in de deelzone 'saliniteitsgradiënt', allicht omdat daar de hoogste absolute aantallen vertoeven.
+De trend-index voor planteneters ligt sinds 2009/10 vrijwel constant onder de referentiewaarde, al lijkt het patroon sterk gestuurd door de lage index in de deelzone 'saliniteitsgradiënt', allicht omdat daar de hoogste absolute aantallen vertoeven.
 
 <br/>
 
 ```{r 100-figuur-aantallen-trofische-groep-index-ZS, fig.cap = cap_aantallen_trofische_groep_index_ZS, out.width = "80%"}
 
-cap_aantallen_trofische_groep_index_ZS <- "Index van de maximale wintervogelaantallen op de Zeeschelde (exclusief zijrivieren) per trofische groep, met winterseizoen 2009/10 als referentie (telseizoen X = winterseizoen X/X+1)."
+cap_aantallen_trofische_groep_index_ZS <- "Index van de maximale wintervogelaantallen op de Zeeschelde (exclusief zijrivieren) per trofische groep, met telseizoen 2009 als referentie (telseizoen X = winterseizoen X/X+1)."
 
 knitr::include_graphics(paste0(pad_figuren, "100_9b_index_excl_MS_winter_ZS_facet_trof.jpg"))
 
@@ -432,7 +432,7 @@ knitr::include_graphics(paste0(pad_figuren, "100_9b_index_excl_MS_winter_ZS_face
 
 ```{r 100-figuur-aantallen-trofische-groep-index-niv3, fig.cap = cap_aantallen_trofische_groep_index, out.width = "80%"}
 
-cap_aantallen_trofische_groep_index <- "Index van de maximale wintervogelaantallen op de Zeeschelde (exclusief zijrivieren) per trofische groep en per saliniteitszone (niveau 3), met winterseizoen 2009/10 als referentie (telseizoen X = winterseizoen X/X+1)."
+cap_aantallen_trofische_groep_index <- "Index van de maximale wintervogelaantallen op de Zeeschelde (exclusief zijrivieren) per trofische groep en per saliniteitszone (niveau 3), met telseizoen 2009 als referentie (telseizoen X = winterseizoen X/X+1)."
 
 knitr::include_graphics(paste0(pad_figuren, "100_9c_index_excl_MS_winter_ZS_facet_trofniv3.jpg"))
 
@@ -446,7 +446,7 @@ Over de lange termijn vertonen alle groepen een matige afname, met uitzondering 
 Op de middellange termijn is er enkel een matige afname voor herbivoren en omnivoren, en zijn de aantallen benthi- en piscivoren stabiel.
 
 Focussen we op de recente periode, dan valt vooral de sterke toename van benthivore soorten op.
-Dit betreft voornamelijk steltlopers, en deze toename gebeurde onder impuls van de ontwikkelingen in de zone 'saliniteitsgradiënt' (zie Figuur \@ref(fig:100-figuur-aantallen-steltlopers)).
+Dit betreft voornamelijk steltlopers, en deze toename is wellicht gerelateerd aan de toename in benthos in de zone 'saliniteitsgradiënt' (zie Figuur \@ref(fig:100-figuur-aantallen-steltlopers)).
 De overige trofische groepen vertonen over de laatste zes jaar beschouwd geen duidelijke trends.
 
 <br/>
@@ -493,7 +493,7 @@ tabel_rtrim_trof %>%
 
 De diversiteitsindex is traditioneel het hoogst in de zone 'saliniteitsgradiënt' (Figuur \@ref(fig:100-figuur-ShannonDiversity-metmeeuwen)).
 Ook op de Rupel en in het 'oligohalien' is de diversiteit algemeen genomen hoog, hoewel er de laatste twee telseizoenen in beide deelzones een index-daling merkbaar is.
-In de zone 'zoet lang verblijf' nam de diversiteitsindex heel sterk toe in de periode 2019/20 tot 2022/23, en de zone lijkt dat hoge niveau ook de laatste jaren verder te handhaven.
+In de zone 'zoet lang verblijf' nam de diversiteitsindex heel sterk toe in de periode 2019/20 tot 2022/23, en de zone lijkt dat hoge niveau ook de laatste jaren verder te handhaven. De diversiteitstoename  in het 'zoet lang' correleert met de index van benthivore soorten (Figuur \@ref(fig:100-figuur-aantallen-trofische-groep-index-niv3)).
 In vergelijking met de andere deelzones heeft de Durme een opvallend lagere diversiteit aan overwinterende watervogels.
 
 <br/>
@@ -511,19 +511,19 @@ knitr::include_graphics(paste0(pad_figuren, "100_1a_Shannon_incl_MS_winter_niv3.
 ### Abundante soorten
 
 Voor een aantal van de meest algemene soorten wordt het verloop van de aantallen doorheen de periode 2009-`r laatste_jaar` getoond in Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten-ZS) en Figuur \@ref(fig:100-figuur-aantallen-abundante-soorten-ZR).
-Wintertaling, bergeend en krakeend namen tot voor kort heel sterk toe in de zone 'zoet lang verblijf', maar hun aantallen vielen in het voorbije telseizoen sterk terug.
-In de zone 'saliniteitsgradiënt' namen deze soorten de voorbije 6 à 7 jaar gestaag toe.
-In het 'oligohalien' kenden de aantallen bergeend en krakeend vorig telseizoen een absoluut hoogtepunt, maar deze namen het afgelopen telseizoen terug af tot hun oude niveau .
 
-Een andere opvallende trend is die van wilde eend, waarvan de aantallen sinds 2009 heel sterk zijn afgenomen (vooral dan in de zone 'zoet lang verblijf').
-Hoewel de aantallen na het reeds genoemde dieptepunt in 2022/23 weer lichtjes toenemen, liggen deze nog heel ver af van het niveau van voor 2015.
-Ook op de zijrivieren komt de algemene afname van wilde eend duidelijk naar voor.
+Wintertaling, bergeend en krakeend namen tot voor kort heel sterk toe in de zone 'zoet lang verblijf', maar hun aantallen vielen in het voorbije telseizoen sterk terug. In het 'oligohalien' kenden de aantallen bergeend en krakeend in de winter van 2024/25 een hoogtepunt, maar ook hier namen de aantallen het afgelopen telseizoen opnieuw sterk af.
+In de zone 'saliniteitsgradiënt' tot slot namen wintertaling, bergeend en krakeend de voorbije 6 à 7 jaar gestaag toe.
+
+Een andere opvallende trend is te zien bij wilde eend, een soort waarvan de aantallen sinds 2009 heel sterk en om onbekende redenen zijn afgenomen, vooral in de zone 'zoet lang verblijf'. 
+Hoewel de aantallen na het dieptepunt in 2022/23 weer lichtjes toenemen, liggen deze nog heel ver af van het niveau van voor 2015.
+Ook in de zone 'zoet zijrivier' (Zenne en Dijle) komt de algemene afname van wilde eend duidelijk naar voor.
 
 <br/>
 
 ```{r 100-figuur-aantallen-abundante-soorten-ZS, fig.cap = cap_aantallen_abundante_soorten, out.width = "80%"}
 
-cap_aantallen_abundante_soorten <- "Trends in het gemiddelde aantal overwinteraars voor vier abundante eendensoorten per deelzone (niveau 3) op de Zeeschelde (exclusief zijrivieren)."
+cap_aantallen_abundante_soorten <- "Trends in het gemiddelde aantal overwinteraars voor vier abundante eendensoorten per deelzone (niveau 3) op de Zeeschelde."
 
 knitr::include_graphics(paste0(pad_figuren, "100_12a_wintergemiddelde_ZS_facet_abundante_soorten.jpg"))
 
@@ -542,12 +542,13 @@ knitr::include_graphics(paste0(pad_figuren, "100_12b_wintergemiddelde_ZR_facet_a
 Op de Rupel neemt de krakeend sinds 2019/20 heel sterk toe, en ook de aantallen wintertaling zijn daar sinds 2019/20 meer dan verdubbeld.
 Op de Rupel en de Durme lagen de aantallen bergeend het voorbije telseizoen dan weer vrij laag, na opvallend hoge gemiddelde aantallen in 2024/25.
 
-Behalve kievit zijn de hier uitgelichte steltlopers voornamelijk gebonden aan de zone 'saliniteitsgradiënt' (zie Figuur \@ref(fig:100-figuur-aantallen-steltlopers)).
-Alle steltlopersoorten zijn doorheen het voorbije decennium sterk toegenomen, met uitzondering van wulp.
-De gemiddelde winteraantallen van bonte strandloper en kievit lagen sinds 2009/10 nooit zo hoog als in het voorbije telseizoen.
-Onderzoek moet verder uitmaken of de afname van wulp het gevolg is van een verschuiving richting nieuw ingerichte gebieden, dan wel een werkelijke afname in aantallen op de schaal van het estuarium reflecteert.
+Behalve kievit zijn de hieronder uitgelichte steltlopers sterk gebonden aan de zone 'saliniteitsgradiënt' (zie Figuur \@ref(fig:100-figuur-aantallen-steltlopers)).
+Alle steltlopersoorten zijn doorheen het voorbije decennium duidelijk toegenomen, met uitzondering van wulp.
+De gemiddelde winteraantallen van bonte strandloper en kievit lagen sinds 2009/10 zelfs nooit zo hoog als in het voorbije telseizoen. In het geval van kievit is deze opvallende piek in aantallen enkel te zien in de zone 'saliniteitsgradiënt'.
+
+Het is onduidelijk of de afname van wulp het gevolg is van een verschuiving richting nieuw ingerichte gebieden, dan wel een werkelijke afname in aantallen op de schaal van het estuarium reflecteert.
 Ook de sterk dalende Europese populatietrend van deze soort kan een rol spelen.
-Tot slot is het interessant om te melden dat er in de zone met een sterke saliniteitsgradiënt een sterke toename in bodemdierbiomassa werd vastgesteld (zie hoofdstuk Macrozoöbenthos).
+Tot slot is het interessant om te melden dat er in de zone 'saliniteitsgradiënt' een sterke toename in bodemdierbiomassa werd vastgesteld (zie hoofdstuk Macrozoöbenthos), dewelke moeilijk los te zien is van de toename aan steltlopers.
 
 <br/>
 
@@ -563,10 +564,9 @@ knitr::include_graphics(paste0(pad_figuren, "100_14a_wintergemiddelde_ZS_RUP_fac
 
 ### Exoten
 
-Er zijn acht exoten of verwilderde soorten met meer dan 30 afzonderlijke waarnemingen sinds de start van de tellingen langs de Zeeschelde en haar zijrivieren.
-Hun procentueel aandeel is klein, maar de totale aantallen zijn licht stijgend, vooral onder impuls van een toenemend aantal nijlganzen.
-Het verloop van de aantallen van de meest talrijke exotische overwinterende vogelsoorten is weergegeven in Figuur \@ref(fig:100-figuur-exotentrends).
-De hoogste aantallen van de nijlgans worden geteld in de oligohaliene zone, terwijl de brandgans voornamelijk gebonden is aan de zones 'oligohalien' en 'saliniteitsgradiënt'.
+Er zijn acht exoten of verwilderde soorten met meer dan 30 afzonderlijke waarnemingen sinds de start van de tellingen langs de Zeeschelde en haar zijrivieren. Het verloop van de aantallen van de meest talrijke  overwinterende exoten is weergegeven in Figuur \@ref(fig:100-figuur-exotentrends).
+Hun procentueel aandeel is klein, en ook de absolute aantallen zijn bescheiden. Enkel voor grote canadese gans worden in sommige jaren meer dan 100 overwinterende vogels per deelzone op niveau 3 geteld.
+De hoogste aantallen van de nijlgans worden geteld in de oligohaliene zone en nemen daar gestaag toe. 
 
 <br/>
 
@@ -589,16 +589,16 @@ De bijdrage van Sigmagebieden aan de aantallen overwinterende watervogels in het
 
 ## Conclusie
 
-Hoewel de meeste overwinterende sleutelsoorten over de lange en middellange termijn een afnemende trend vertonen, is er **de laatste zes telseizoenen** een kentering merkbaar met **een significante toename van** de **bergeend**, de **krakeend** en de **wintertaling**.
+Hoewel de meeste overwinterende sleutelsoorten over de lange en middellange termijn een afnemende trend vertonen, is er **de laatste zes telseizoenen** een kentering merkbaar met **een significante toename** van de **bergeend**, de **krakeend** en de **wintertaling**.
 Voor de tafeleend en de pijlstaart kon geen significante trend worden aangetoond op de korte termijn.
-Beschouwen we de trends per trofische groep, dan valt vooral de **sterke toename van benthivore soorten** op (in de eerste plaats steltlopers).
+Beschouwen we de trends per trofische groep, dan valt vooral de **sterke toename** van **benthivore soorten** op (in de eerste plaats steltlopers).
 Ten opzichte van de winter van 2009/10 is deze toename het meest uitgesproken en consistent voor de scholekster.
-Mogelijk houdt dit verband met een **biomassa-toename aan schelpdieren**, meer bepaald de brakwaterkorfschelp (een invasieve exoot, zie hoofdstuk Macrozoöbenthos).
-De waargenomen algemene toename van overwinterende watervogels op de slikken van de Zeeschelde is hoe dan ook en op zijn minst deels veroorzaakt door de **recente inrichting van twee Sigmagebieden** die hoge aantallen watervogels aantrekken, vogels die bij laagwater ook tijdelijk op de slikken van de Zeeschelde verblijven.
-We dienen hierbij te benadrukken dat dit lokale effecten zijn die zeer waarschijnlijk ook tijdelijk zijn van aard.
+Mogelijk houdt dit verband met een **biomassa-toename** van **schelpdieren**, meer bepaald de **brakwaterkorfschelp** (een invasieve exoot, zie hoofdstuk Macrozoöbenthos).
+De waargenomen algemene toename van overwinterende watervogels op de slikken van de Zeeschelde is op zijn minst deels veroorzaakt door de **recente inrichting** van twee **Sigmagebieden** die hoge aantallen watervogels aantrekken - vogels die bij laagwater ook tijdelijk op de slikken van de Zeeschelde vertoeven.
+We dienen hierbij wel te benadrukken dat dit eerder lokale effecten zijn, en zeer waarschijnlijk ook tijdelijk van aard.
 De nieuw ingerichte gebieden zullen op termijn namelijk 'verschorren', en een daling in slikoppervlakte zal zich onvermijdelijk vertalen in lagere aantallen watervogels.
-Het voorbije telseizoen liepen de aantallen in de zones 'oligohalien' en 'zoet lang verblijf' alvast weer wat terug.
-Enkel in de zone 'saliniteitsgradiënt' hield de toename dus aan, onder impuls van grote aantallen steltlopers zoals bijvoorbeeld de hoogste gemiddelde winteraantallen in 15 jaar van bonte strandlopers en kieviten.
+Het voorbije telseizoen liepen de aantallen van met name bergeend, krakeend en wintertaling in de zones 'oligohalien' en 'zoet lang verblijf' alvast weer wat terug.
+Enkel in de zone 'saliniteitsgradiënt' hield de algemene toename aan, onder impuls van grote aantallen steltlopers zoals bijvoorbeeld de hoogste gemiddelde winteraantallen in 15 jaar van bonte strandlopers en kieviten.
 
 <br/>
 
@@ -633,7 +633,7 @@ Instituut voor Natuur- en Bosonderzoek, Brussel.
 
 tabel_trofische_groep <- read_xlsx(paste0(pad_tabellen, "100_1d_watervogels_tabel_trofische_groep.xlsx"))
 
-cap_trofischegroepsoorten <- "Overzicht van de indeling van de weerhouden watervogelsoorten in vier trofische groepen: benthivoren (NBenth), piscivoren (NPisc), herbivoren (Nherb) en omnivoren (Nomn); de tabel duidt ook aan welke soorten als exoot of verwilderd worden beschouwd."
+cap_trofischegroepsoorten <- "Overzicht van de indeling van de weerhouden watervogelsoorten in vier trofische groepen: benthivoren (NBenth), piscivoren (NPisc), herbivoren (Nherb) en omnivoren (Nomn); de tabel duidt bovendien aan welke soorten als exoot of verwilderd worden beschouwd."
 
 tabel_trofische_groep  %>%
   mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
