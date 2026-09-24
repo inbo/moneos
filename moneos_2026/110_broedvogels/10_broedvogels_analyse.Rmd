@@ -88,7 +88,7 @@ cap_zeldzame_soorten <-
   "Evoluties in de broedvogelaantallen voor een selectie van soorten waarvoor de data-inzameling representatief is binnen IHD-gebied. Loess-smoother weergegeven. Rode horizontale lijn geeft de tot doel gestelde aantallen."
 
 Terr_Sigma_BB %>% 
-  filter(Soort != "Purperreiger") %>% 
+  filter(!Soort %in% c("Purperreiger", "Wespendief")) %>% 
   ggplot() +
   geom_point(aes(x = Jaar, y = Aantal))+
   geom_smooth(aes(x = Jaar, y = Aantal), span = 0.6)+

@@ -41,6 +41,11 @@ library(kableExtra)
 library(leaflet)
 library(htmltools)
 conflicted::conflicts_prefer(dplyr::filter)
+#voor gebruik van OSM in leaflet
+mijn_sleutel <- Sys.getenv("CARTO_KEY")
+urlTemplate  <-  str_c("https://cartocdn.com{z}/{x}/{y}.png?key=",
+                    mijn_sleutel)
+attribution <- '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
 ```
 
 
@@ -149,7 +154,7 @@ broedvogel_2025_sf <-
 #   set_names(sort(unique(broedvogel_sf$naam_nl))) |> 
 #   map(\(df_soort) {
 #     leaflet(df_soort) |> 
-#       addTiles() |> 
+#       addTiles(urlTemplate = urlTemplate,  attribution = attribution   ) |> 
 #       addCircleMarkers(popup = ~naam_nl)
 #   })
 kaarten_per_soort <- 
@@ -157,7 +162,7 @@ kaarten_per_soort <-
   group_split(naam_nl2) |> 
   set_names(sort(unique(broedvogel_2025_sf$naam_nl2))) |> 
   map(~ leaflet(.x) |> 
-      addTiles() |> 
+      addProviderTiles(providers$OpenStreetMap.DE) |> 
       addCircleMarkers(radius = 3,
                        label = ~datum)
   )
@@ -182,7 +187,7 @@ soorten <- sort(unique(broedvogel_2025_sf$naam_nl2))
 
 # 2. Bouw de basiskaart op
 kaart <- leaflet() |> 
-  addTiles()
+  addProviderTiles(providers$OpenStreetMap.DE)
 
 # 3. Voeg in een loop elke soort toe als aparte laag
 for (s in soorten) {
@@ -194,6 +199,9 @@ for (s in soorten) {
       label = ~lapply(info_label, HTML) # Zorgt dat Leaflet de <br> en <b> tags netjes rendert
     )
 }
+
+
+
 
 # 4. Voeg het menu toe en zet alle lagen uit, behalve de eerste
 jaar_titel <- "wnm_2025"
@@ -242,8 +250,9 @@ broedvogel_2024_sf <-
   )
 
 # 2. Bouw de basiskaart op
-kaart <- leaflet() |> 
-  addTiles()
+kaart <- 
+  leaflet() |> 
+  addProviderTiles(providers$OpenStreetMap.DE)
 
 # 3. Voeg in een loop elke soort toe als aparte laag
 # Filter de data vooraf per soort
@@ -309,7 +318,7 @@ broedvogel_2023_sf <- broedvogeldata_2023 |>
   )
 # 2. Bouw de basiskaart op
 kaart <- leaflet() |> 
-  addTiles()
+  addProviderTiles(providers$OpenStreetMap.DE)
 # 3. Voeg in een loop elke soort toe als aparte laag
 # Filter de data vooraf per soort
   sub_data <- broedvogel_2023_sf |> 
