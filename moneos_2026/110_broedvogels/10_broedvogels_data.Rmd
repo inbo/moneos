@@ -41,11 +41,7 @@ library(kableExtra)
 library(leaflet)
 library(htmltools)
 conflicted::conflicts_prefer(dplyr::filter)
-#voor gebruik van OSM in leaflet
-mijn_sleutel <- Sys.getenv("CARTO_KEY")
-urlTemplate  <-  str_c("https://cartocdn.com{z}/{x}/{y}.png?key=",
-                    mijn_sleutel)
-attribution <- '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+
 ```
 
 
@@ -570,8 +566,22 @@ data %>%
   arrange(Jaar, Soort))
 
 Terr_Sigma %>% 
-  write_csv(str_c(pad_data, "Territoria_totalen_1995_2024.csv"))
+  write_csv(str_c(pad_data, "Territoria_totalen_1995_2025.csv"))
 ```
+
+<!-- ```{r data_totaal} -->
+
+<!-- (Terr_Sigmass <-  -->
+<!--   data |>  -->
+<!--   left_join(gebied) |>  -->
+<!--   filter(str_starts(TypeGebied, "Sigma")) |>  -->
+<!--   summarise(.by = c(Jaar, Soort),  -->
+<!--             Aantal = ceiling((sum(minimum) + sum(maximum))/2))  |>   # aantal is het naar boven afgerond gemiddelde van min en max -->
+<!--   arrange(Jaar, Soort)) -->
+
+<!-- Terr_Sigmass %>%  -->
+<!--   write_csv(str_c(pad_data, "Territoria_Sigmagebieden_1995_2025.csv")) -->
+<!-- ``` -->
 
 # Bijzondere broedvogels
 De dataset is verre van volledig voor de algemene soorten (niet elk gebied wordt elk jaar geteld). Voor de bijzondere broedvogels gaan we er van uit dat de gegevens (nagenoeg) volledig zijn omdat:
