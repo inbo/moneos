@@ -1,0 +1,664 @@
+---
+params:
+  hoofdstuk: "100_watervogels"
+knit: (function(inputFile, encoding) {
+        rmarkdown::render(inputFile,
+                          encoding = encoding,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output")
+                          )})
+                          
+title: "Watervogels - data - MONEOS 2026 - Nicolas Vanermen"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+  
+```{r setup}
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, cache = FALSE)
+
+```
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+library(inbodb) 
+### Read data from INBO databases (SQL Server) with R - see https://tutorials.inbo.be/tutorials/r_database_access/
+library(DBI) 
+### A database interface definition for communication between R and relational database management systems. 
+library(rprojroot)
+library(openxlsx)
+library(waldo)
+library(conflicted)
+conflict_prefer("filter", "dplyr")
+
+```
+
+```{r paden}
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+### Databank bevraging
+```{r inlezen data Watervogeldatabank}
+
+# - indien data download eerder is uitgevoerd en de basisfiles dus al opgeslaan werden, kan je de data ook 
+#   via de chunk {r alternatief voor het bevragen van de Watervogeldatabank: basisfiles inlezen uit pad_data}
+
+########## QUERY TOELICHTING ########## 
+
+# Je ziet deze globale structuur:
+#
+#   with MIDMA AS ()
+#   ,
+#   ZSCH AS ()
+#   , 
+#   BASE AS (
+#             SELECT * FROM MIDMA 
+#             UNION
+#             SELECT * FROM ZSCH
+#           )
+# 
+# In het eerste deel creëer je eigenlijk twee tijdelijke tabellen MIDMA en ZSCH 
+# (via een sql-structuur die gekend is als een Common Table Expression ofwel CTE)
+# 
+# In het tweede deel voeg je die datasets samen met de UNION operator. 
+# UNION verwijdert automatisch duplicaten (itt UNION ALL die alle records behoudt)
+# 
+# Met een UNION haal je er alleen de echte duplicaten uit (dus 1 telling die 
+# voor twee analysesets gebruikt wordt). 
+#
+# Er zijn echter ook gevallen waarbij er twee aparte tellingen zijn voor één 
+# gebied en waarbij in de ene analyseset de ene en in de andere analyseset de 
+# andere telling gebruikt wordt. In die gevallen krijgt de ZSCH-telling de 
+# voorkeur en wordt de MIDMA-telling uit de dataset verwijderd. Dat gebeurt in
+# het laatste deel van de query met de LEFT JOIN op de BASE-dataset.
+#
+# Meer detail over het MIDMA-deel:
+# - dit zijn de tellingen van de MIDMA-analysesets
+# - bemerk dat ik de taxongroupcode ook heb toegevoegd aan de basisdataset
+# - de wintertellingen van de Zeeschelde worden ook beschouwd als 
+#   midmaandelijkse tellingen en leiden dus tot dubbels als we de data 
+#   samenvoegen met de ZSCH-analyseset. Maar met die UNION lossen we dat dus op
+# 
+# Meer detail over het ZSCH-deel:
+# - dit zijn de tellingen van de ZSCH-analyseset
+# - bevat dus ook de zomertellingen
+#
+# Optioneel voor MIDMA-deel:
+# - hieronder extra join toegevoegd op een subquery "loc" waarmee de 
+#   locaties beperkt worden tot deze die relevant zijn voor Schelde/Sigma; je 
+#   kan dat uiteraard ook achteraf in R zelf doen, maar hiermee wordt het aantal
+#   records dat binnengehaald wordt met 2/3 verkleind en het gaat ook veel 
+#   sneller; als je extra locatiegroepen of -groeptypes wil toevoegen moet je 
+#   dat dus hier in de query zelf doen (zie invoeging vanaf line 139)
+#     INNER JOIN (SELECT LocationWVKey
+# 				FROM [dbo].[FactLocationGroup]
+# 				WHERE 1 = 1
+# 					AND IsDeleted = 0
+# 					AND (LocationGroupCode in ('ZS','ZR','ZSVAL','SEST','SWETL','NOH',
+#                               'BW','DM','DU','KM','KBR','NG','OV','WZ')
+# 					OR LocationGroupTypeCode in ('SCLUS')))loc on loc.LocationWVKey = f.LocationWVKey
+#
+# - 14/08/2026: met bovenstaande join worden inderdaad veel minder data binnengehaald
+# - 18/08/2026: de selectie zoals ze nu gebeurd wordt voorlopig als 'veiliger' beschouwd gezien de 
+#   onduidelijkheden rond het al dan niet up-to-date zijn van de gebiedsindelingen
+
+########## EINDE TOELICHTING ##########
+
+### Connectie met WV databank:
+con <- inbodb::connect_inbo_dbase("W0004_00_Waterbirds")
+
+### Watervogeldata opvragen:
+WV_DB <- dbGetQuery(con, "
+WITH MIDMA AS (
+  SELECT 
+    SU.SurveyCode               AS ProjectCode
+    , SU.SurveyNaam             AS Project
+    , L.RegioWVCode             AS RegioCode
+    , L.RegioWVNaam             AS Regio
+    , L.LocationWVCode          AS GebiedsCode
+    , L.LocationWVNaam          AS Gebied
+    , SS.Seasonname             AS Telseizoen
+    , E.EventCode               AS TellingCode
+    , E.EventLabel              AS Telling
+    , E.SortOrder               AS TellingSortOrder
+    , S.sampleDate              AS Teldatum
+    , S.CoverageCode            AS Telvolledigheid
+    , T.TaxonGroupCode
+    , T.TaxonGroupDescription
+    , T.Commonname              AS NedNaam
+    , T.scientificname          AS WetNaam
+    , F.Taxoncount              AS Aantal
+  FROM FactAnalyseSetOccurrence F
+  
+  INNER JOIN DimSurvey SU       ON SU.surveykey = F.surveykey
+  INNER JOIN DimSeason SS       ON SS.Seasonkey = F.seasonkey
+  INNER JOIN DimEvent E         ON E.eventkey = F.eventkey
+  INNER JOIN DimSample S        ON F.samplekey = S.samplekey
+  INNER JOIN DimLocationWV L    ON L.locationwvkey = S.locationwvkey     
+  INNER JOIN DimTaxonWV T       ON T.taxonwvkey = F.taxonwvkey
+  WHERE 1 = 1
+    AND S.samplestatus = 'CHECKED'               /**alleen gevalideerde records**/
+    /**AND S.samplestatus <> 'REJECTED'**/       /**inclusief data met status 'NEW' (nog niet gevalideerde tellingen)**/
+    AND S.coveragecode not in ('-', 'N')         /**niet getelde tellingen zijn irrelevant**/
+    AND F.taxoncount > 0
+    AND F.Analysesetkey in (2, 3, 4)
+),
+
+ZSCH AS (
+  SELECT 
+    SU.SurveyCode               AS ProjectCode
+    , SU.SurveyNaam             AS Project
+    , L.RegioWVCode             AS RegioCode
+    , L.RegioWVNaam             AS Regio
+    , L.LocationWVCode          AS GebiedsCode
+    , L.LocationWVNaam          AS Gebied
+    , SS.Seasonname             AS Telseizoen
+    , E.EventCode               AS TellingCode
+    , E.EventLabel              AS Telling
+    , E.SortOrder               AS TellingSortOrder
+    , S.sampleDate              AS Teldatum
+    , S.CoverageCode            AS Telvolledigheid
+    , T.TaxonGroupCode
+    , T.TaxonGroupDescription
+    , T.Commonname              AS NedNaam
+    , T.scientificname          AS WetNaam
+    , F.Taxoncount              AS Aantal
+  FROM FactAnalyseSetOccurrence F
+  INNER JOIN DimSurvey SU       ON SU.surveykey = F.surveykey 
+  INNER JOIN DimSeason SS       ON SS.Seasonkey = F.seasonkey
+  INNER JOIN DimEvent E         ON E.eventkey = F.eventkey
+  INNER JOIN DimSample S        ON F.samplekey = S.samplekey 
+  INNER JOIN DimLocationWV L    ON L.locationwvkey = S.locationwvkey    
+  INNER JOIN DimTaxonWV T       ON T.taxonwvkey = F.taxonwvkey
+  WHERE 1 = 1
+   AND S.samplestatus = 'CHECKED'               /**alleen gevalideerde records**/
+   /**AND S.samplestatus <> 'REJECTED'**/       /**inclusief data met status 'NEW' (nog niet gevalideerde tellingen)**/
+   AND S.coveragecode not in ('-', 'N')         /**niet getelde tellingen zijn irrelevant**/
+   AND F.taxoncount > 0
+   AND F.Analysesetkey in (1)
+),
+
+BASE AS (
+  SELECT * FROM MIDMA 
+  UNION                                         /**UNION removes only true duplicates (one sample used in multiple analysis sets)**/
+  SELECT * FROM ZSCH
+)
+
+/**the subquery below checks for locations with two distinct samples in the BASE-data - these are not duplicates in the strict sense, but for analysis only the ZSCH-sample should be used, the MIDMA-sample is dropped**/
+
+SELECT b.*
+FROM BASE b
+LEFT JOIN (
+  SELECT DISTINCT
+      m.GebiedsCode
+    , m.Gebied
+    , m.Teldatum
+  FROM MIDMA m
+  FULL JOIN ZSCH z 
+    ON  m.GebiedsCode = z.GebiedsCode 
+    AND m.Telseizoen = z.Telseizoen
+    AND m.Telling = z.Telling
+  WHERE m.ProjectCode <> z.ProjectCode
+)tmp 
+  ON  tmp.Gebiedscode = b.GebiedsCode 
+  AND tmp.Teldatum = b.Teldatum 
+  AND b.ProjectCode = 'MIDMA'
+WHERE tmp.Gebied IS NULL
+")
+
+### Watervogelgroepen opvragen
+WVgroep <- dbGetQuery(con, "
+  SELECT 
+     TW.commonname              AS NedNaam
+    ,TW.TaxonGroupCode          AS Groepscode
+    ,TW.TaxonGroupDescription   AS Groep
+  FROM DimTaxonWV TW
+")
+
+### Gebieden opvragen
+Gebieden_ZS <- dbGetQuery(con, "
+  SELECT 
+      LocationGroupCode
+    , LocationGroupNaam
+    , LocationGroupTypeCode
+    , LocationGroupTypeNaam
+    , LocationWVCode
+    , LocationWVNaam
+    , StartDate
+    , EndDate
+  FROM [dbo].[FactLocationGroup]
+  WHERE 1 = 1
+    AND IsDeleted = 0
+    AND LocationGroupCode in ('ZS','ZR','ZSVAL','SEST','SWETL','NOH')
+")
+
+### Gebieden opvragen uit KRW-zones Zeeschelde (analyse)
+Gebieden_ZS_KRW <- dbGetQuery(con, "
+  SELECT 
+      LocationGroupCode
+    , LocationGroupNaam
+    , LocationGroupTypeNaam
+    , LocationGroupTypeCode
+    , LocationWVCode
+    , LocationWVNaam
+    , StartDate
+    , EndDate
+  FROM [dbo].[FactLocationGroup]
+  WHERE 1 = 1
+    AND IsDeleted = 0
+    AND LocationGroupTypeNaam in ('KRW-zones Zeeschelde (analyse)')
+")
+
+Gebieden <- dbGetQuery(con, "
+  SELECT 
+      LocationGroupCode
+    , LocationGroupNaam
+    , LocationGroupTypeCode
+    , LocationGroupTypeNaam
+    , LocationWVCode
+    , LocationWVNaam
+    , StartDate
+    , EndDate
+  FROM [dbo].[FactLocationGroup]
+  WHERE 1 = 1
+    AND IsDeleted = 0
+")
+
+dbDisconnect(con)
+
+```
+
+```{r snelle verkenning}
+
+# hoeveel records?
+nrow(WV_DB)
+# 1.102.316
+# bij een nieuwe databevraging (3/09/2026) zijn het er 1.102.310
+
+# hoeveel parameters?
+ncol(WV_DB)
+# 17
+
+# teldatums:
+WV_DB %>% filter(Teldatum > "2022-09-30") %>% 
+  group_by(Telseizoen) %>% 
+  summarise(N = n()) 
+# zelfde grootte-orde aantal rijen voor seizoen 2025/26 als voorbije telseizoenen
+
+# GroupTypeCode Gebieden_ZS?
+Gebieden_ZS %>% distinct(LocationGroupTypeCode, LocationGroupTypeNaam)
+# 1 GroupType: Estuaria Winterstatistieken (analyse)
+
+# welke gebiedsgroepen zitten hier allemaal onder behalve deze die werden geselecteerd?
+Gebieden %>% filter(LocationGroupTypeNaam == "Estuaria Winterstatistieken (analyse)") %>% 
+  distinct(LocationGroupCode, LocationGroupNaam)
+# enkele bijkomende groepen: SESTONT & SESTGGG zijn onderverdelingen van SEST, maar ook RO & LO blijken te bestaan
+
+# dataselectie voorgesteld door FP:
+Gebieden %>% filter(LocationGroupCode %in% c('ZS','ZR','ZSVAL','SEST','SWETL','NOH','BW','DM','DU','KM','KBR','NG','OV','WZ')) %>% 
+  distinct(LocationGroupTypeNaam, LocationGroupTypeCode)
+# 2 GroupTypes: Estuaria Winterstatistieken (analyse) & Sigma-clusters
+
+# aantal gebieden in selectie FP?
+Gebieden %>% filter(LocationGroupCode %in% c('ZS','ZR','ZSVAL','SEST','SWETL','NOH','BW','DM','DU','KM','KBR','NG','OV','WZ')) %>% 
+  distinct(LocationWVNaam) %>% nrow()
+# 303: dit is krak hetzelfde aantal gebieden als via c('ZS','ZR','ZSVAL','SEST','SWETL','NOH')
+
+# is het ook krak dezelfde selectie?
+Gebieden_ZS_FP <- Gebieden %>% filter(LocationGroupCode %in% c('ZS','ZR','ZSVAL','SEST','SWETL','NOH','BW','DM','DU','KM','KBR','NG','OV','WZ')) %>% 
+  distinct(LocationWVNaam) %>% arrange(LocationWVNaam)
+sum(Gebieden_ZS_FP == 
+      Gebieden_ZS %>% select(LocationWVNaam) %>% arrange(LocationWVNaam))
+# 303? Yes!
+
+# aantal gebieden in selectie ZS & ZR?
+Gebieden %>% filter(LocationGroupCode %in% c('ZS','ZR')) %>% 
+  distinct(LocationWVNaam) %>% nrow()
+# zelfde aantal gebieden als KRW selectie
+
+# is het ook krak dezelfde selectie?
+sum(Gebieden_ZS_KRW  %>% distinct(LocationWVNaam) %>% arrange(LocationWVNaam) == 
+      Gebieden %>% filter(LocationGroupCode %in% c('ZS','ZR')) %>% distinct(LocationWVNaam) %>% arrange(LocationWVNaam))
+# 113? Yes!
+
+rm(Gebieden, Gebieden_ZS_FP)
+
+```
+
+```{r basisfiles opslaan} 
+
+write_delim(WV_DB, file.path(pad_data, "WV_DB_prep.csv"), delim = ";")
+write_delim(WVgroep, file.path(pad_data, "WVgroep_prep.csv"), delim = ";")
+write_delim(Gebieden_ZS, file.path(pad_data, "Gebieden_ZS_prep.csv"), delim = ";")
+write_delim(Gebieden_ZS_KRW, file.path(pad_data, "Gebieden_ZS_KRW_prep.csv"), delim = ";")
+
+```
+
+### Basisdata inlezen
+```{r alternatief voor het bevragen van de Watervogeldatabank: basisfiles inlezen uit pad_data}
+
+# WV_DB <- read_delim(file.path(pad_data, "WV_DB_prep.csv"), delim = ";")
+# WVgroep <- read_delim(file.path(pad_data, "WVgroep_prep.csv"), delim = ";")
+# Gebieden_ZS <- read_delim(file.path(pad_data, "Gebieden_ZS_prep.csv"), delim = ";")
+# Gebieden_ZS_KRW <- read_delim(file.path(pad_data, "Gebieden_ZS_KRW_prep.csv"), delim = ";")
+
+```
+
+### Trofische groep koppelen
+```{r data trofische groep koppelen voor MONEOSrapport}
+
+### Join met WVgroep
+WV_DB <- WV_DB %>% left_join(WVgroep)
+
+data_trofische_groep <- read_delim(paste0(pad_data, "Voedselgilde_exoten_Moneosrapport.csv"), delim = ";")  
+
+data_trofische_groep <- data_trofische_groep %>% 
+              rename_all(tolower) %>% 
+              rename(nednaam = species)
+
+
+### Toevoegen trofisch groep aan dataset
+WV_DB <- WV_DB %>% 
+  left_join(data_trofische_groep, by = c("NedNaam" = "nednaam"))
+# join resulteert in 21 kolommen
+
+
+### Lijst van soorten niet opgenomen in de trofische analyse van MONEOS 
+listspecies <- WV_DB %>%
+  filter(is.na(trofische_groep)) %>%
+  distinct(NedNaam)
+# 95 soorten die in lage aantallen voorkomen en niet bepalend zijn voor de trofische trends
+
+```
+
+### Gebiedsinfo toevoegen aan gebiedstabel & watervogeldata
+```{r join voorbereiden van WV_DB met gebiedsindeling T2021}
+
+# gebiedsindeling inlezen
+Gebiedsindeling_T2021 <- read_delim(paste0(pad_data, "Gebiedsindeling_T2021.csv"), delim = ";")  
+
+# 'rivier' definiëren en aggregeren van gebiedsindeling:
+Gebiedsindeling_ltd <-
+  Gebiedsindeling_T2021 %>% 
+  mutate(rivier = case_when(
+    niveau4 == "Rupel" ~ "Rupel",
+    niveau4 == "GetijdeDurme" ~ "Durme",
+    niveau4 == "GetijdeDijle" ~ "Dijle",
+    niveau4 == "GetijdeZenne" ~ "Zenne",
+    niveau4 == "Monding" ~ "Monding",
+    niveau2 == "Westerschelde" ~ "Westerschelde",
+    .default = "Zeeschelde")) %>% 
+  filter(krw != "Getijdenete") %>% 
+  select("niveau1", "niveau2", "niveau3", "rivier") %>% 
+  distinct() 
+
+view(Gebiedsindeling_ltd)
+
+# 'rivier' definiëren voor gebieden MONEOS
+Gebieden_ZS_MONEOS <- Gebieden_ZS_KRW %>% 
+  mutate(rivier = case_when(
+    LocationWVCode == "3121303" ~ "Rupel",
+    LocationWVCode == "4140216" ~ "Rupel",
+    LocationWVCode == "4140205" ~ "Rupel",
+    LocationWVCode == "4140217" ~ "Rupel",
+    LocationWVCode == "4140206" ~ "Rupel",
+    LocationWVCode == "2091301" ~ "Durme",
+    LocationWVCode == "2091305" ~ "Durme",
+    LocationWVCode == "2080605" ~ "Durme",
+    LocationWVCode == "3121003" ~ "Dijle",
+    LocationWVCode == "3120101" ~ "Zenne",
+    LocationWVCode == "3120104" ~ "Zenne",
+    LocationWVCode == "3121412" ~ "Zenne",
+    LocationWVCode == "3120103" ~ "Zenne",
+    .default = "Zeeschelde")) 
+
+# de KRW selectie zou dezelfde moeten zijn als de selectie van ZS & ZR uit Gebieden_ZS
+# testen!
+Gebieden_ZS_MONEOS_controle1 <- Gebieden_ZS %>% 
+  filter(LocationGroupCode %in% c("ZS", "ZR")) %>% 
+  distinct(LocationWVNaam) %>% arrange(LocationWVNaam)
+
+Gebieden_ZS_MONEOS_controle2 <- Gebieden_ZS_MONEOS %>% 
+  distinct(LocationWVNaam) %>% arrange(LocationWVNaam)
+
+sum(Gebieden_ZS_MONEOS_controle1 == Gebieden_ZS_MONEOS_controle2)
+# uit deze 1 op 1 match blijkt inderdaad dat de selectie via 'KRW-zones Zeeschelde (analyse)' 
+# dezelfde gebieden oplevert als 'ZS' & 'ZR'
+rm(Gebieden_ZS_MONEOS_controle1, Gebieden_ZS_MONEOS_controle2)
+
+# niveau 3 definiëren in Gebieden_ZS_MONEOS
+Gebieden_ZS_MONEOS <- Gebieden_ZS_MONEOS %>% 
+  mutate(niveau3 = case_when (
+     rivier == "Rupel" ~ "Rupel",
+     rivier == "Durme" ~ "Durme",
+     rivier == "Zenne"~ "Zoet zijrivier",
+     rivier == "Dijle"~ "Zoet zijrivier",
+     LocationGroupCode == "ZS4" ~ "Saliniteitsgradient",
+     LocationGroupCode == "ZS3" ~ "Oligohalien",
+     LocationGroupCode == "ZS2" ~ "Zoet lang verblijf",
+     LocationGroupCode == "ZS1" ~ "Zoet kort verblijf",
+     .default = "NVT"))
+
+# join van Gebieden_ZS_MONEOS met gebiedsindeling (niveau 1 & 2!) via rivier & niveau3
+Gebieden_ZS_MONEOS <- Gebieden_ZS_MONEOS %>% 
+  left_join(Gebiedsindeling_ltd) 
+
+
+###  Gebieden_ZS_MONEOS finaliseren & opkuisen
+Gebieden_ZS_MONEOS <- Gebieden_ZS_MONEOS %>% 
+  rename_all(tolower) %>% 
+  rename(gebiedscode = locationwvcode,
+         krwcode = locationgroupcode,
+         krwzone = locationgroupnaam) %>% 
+  mutate(analyse_MONEOS = "TRUE") %>% 
+  select(gebiedscode, krwcode, krwzone, rivier, niveau1, niveau2, niveau3, analyse_MONEOS)
+
+
+### Gebieden_ZS opkuisen (en nieuwe naam geven zodat chunk onafhankelijk is van basisfiles)
+Gebieden_ZS_clean <- Gebieden_ZS %>%
+  rename_all(tolower) %>% 
+  rename(gebiedscode = locationwvcode,
+         gebied = locationwvnaam) %>% 
+  mutate(analyse_ZS = "TRUE") %>% 
+  select(locationgroupcode, locationgroupnaam, gebiedscode, gebied, startdate, enddate, analyse_ZS)
+
+
+### Samenvoegen van Gebieden_ZS met Gebieden_ZS_MONEOS voor alle gebiedsinfo
+Gebieden_ZS_clean <- Gebieden_ZS_clean %>% 
+  left_join(Gebieden_ZS_MONEOS)
+# OPGELET: alle 303 gebieden blijven behouden!
+# de niet-MONEOS gebieden krijgen een NA waarde in kolommen 8 tot 14; 
+
+
+### Check gebieden:
+check_gebieden <- Gebieden_ZS_clean %>%
+  anti_join(., WV_DB, by = c("gebied" = "Gebied")) %>%
+  select(gebied) %>%
+  pull()
+knitr::kable(check_gebieden)
+# 2 mismatches! 
+# Prosperpolder Zuid DOEL & Prosperpolder Rest DOEL; dit zijn recent opgesplitste gebieden waar nog geen data aan vast hangen
+
+```
+
+```{r join doorvoeren}
+
+WV_DB <- WV_DB %>% 
+  rename_all(tolower) %>% 
+  left_join(Gebieden_ZS_clean) %>% 
+  mutate(niveau3 = fct_relevel(niveau3, c("Saliniteitsgradient", "Oligohalien", "Zoet lang verblijf",
+                                          "Zoet kort verblijf", "Rupel", "Durme", "Zoet zijrivier")),
+         analyse_ZS = case_when(is.na(analyse_ZS) ~ "FALSE", .default = "TRUE"),
+         analyse_MONEOS = case_when(is.na(analyse_MONEOS) ~ "FALSE", .default = "TRUE"))   
+
+# join resulteert in 21 + (14 - 2) = 33 kolommen
+# OPGELET: alle data worden behouden, maar via analyse_ZS & analyse_MONEOS kan makkelijk gefilterd worden 4
+# op de juiste analyse-dataset
+WV_DB %>% count(analyse_ZS)
+WV_DB %>% count(analyse_MONEOS)
+
+```
+
+### Correcties op dataset
+```{r controle dubbels}
+
+### Checken voor dubbels in de dataset
+dubbels <- WV_DB  %>% 
+  group_by_at(vars(-aantal)) %>% 
+  mutate(n = n()) %>% 
+  ungroup() %>% 
+  filter(n > 1) %>% 
+  arrange(gebied, telseizoen, telling, teldatum, nednaam, projectcode)
+
+### Corrigeren voor dubbels
+WV_DB <- WV_DB  %>% 
+  group_by_at(vars(-aantal)) %>% 
+  summarise(aantal = max(aantal)) %>% # maximum van de dubbele tellingen
+  ungroup()
+# het aantal rijen zakt met 37 agv 35 dubbele & 1 driedubbele telling
+
+```
+
+### Controle op volledigheid
+```{r controle volledigheid}
+
+# aantal tellingen in winterseizoen in MONEOS gebieden
+aantal_tellingen_MONEOS <- WV_DB %>%
+  mutate(maand = month(teldatum)) %>%
+  filter(analyse_MONEOS == TRUE,
+         maand %in% c(10:12, 1:3),
+         telseizoen %in% c("2024/25", "2025/26")) %>%
+  distinct(krwzone, gebiedscode, gebied, telseizoen, teldatum) %>% 
+  count(krwzone, gebiedscode, gebied, telseizoen) %>% 
+  arrange(gebiedscode)
+
+aantal_tellingen_MONEOS %>% filter(telseizoen %in% c("2024/25"), n < 6) %>% nrow()
+# 19 gebieden 
+aantal_tellingen_MONEOS %>% filter(telseizoen %in% c("2025/26"), n < 6) %>% nrow()
+# 21 gebieden
+
+check_onvolledigheid <- aantal_tellingen_MONEOS %>% filter(n < 6) %>% 
+  distinct(gebied)
+# 29 gebieden, beperkte overlap dus
+
+
+# zelfde oefening maar voor ruimere selectie ZS
+aantal_tellingen_ZS <- WV_DB %>%
+  mutate(maand = month(teldatum)) %>%
+  filter(analyse_ZS == TRUE,
+         maand %in% c(10:12, 1:3),
+         telseizoen %in% c("2024/25", "2025/26")) %>%
+  distinct(locationgroupnaam, gebiedscode, gebied, telseizoen, teldatum) %>% 
+  count(locationgroupnaam, gebiedscode, gebied, telseizoen) %>% 
+  arrange(gebiedscode)
+
+aantal_tellingen_ZS %>% filter(telseizoen %in% c("2024/25"), n < 6) %>% nrow()
+# 48 gebieden 
+aantal_tellingen_ZS %>% filter(telseizoen %in% c("2025/26"), n < 6) %>% nrow()
+# 64 gebieden
+
+check_onvolledigheid_2 <- aantal_tellingen_ZS %>% filter(n < 6) %>% 
+  distinct(gebied)
+# 87 gebieden, vrij veel overlap
+
+
+### Open vraag: zijn dit niet getelde gebieden, of gebieden waar een nultelling plaatsvond???
+
+```
+
+### Datasets wegschrijven
+```{r volledige dataset wegschrijven}
+
+write_delim(WV_DB, file.path(pad_data, "WV_DB_ready.csv"), delim = ";")
+write_delim(Gebieden_ZS_clean, file.path(pad_data, "Gebieden_ZS_ready.csv"), delim = ";")
+
+### Dataset voor VLIZ
+# MONEOS inclusief meeuwen, data per maand
+
+WV_DB %>% 
+  mutate(maand = month(teldatum)) %>%
+  filter(analyse_MONEOS == TRUE) %>% 
+  group_by(krwzone,
+           rivier,
+           telseizoen,
+           maand,
+           nednaam,
+           wetnaam,
+           trofische_groep,
+           exoot,
+           niveau1,
+           niveau2,
+           niveau3) %>%
+  summarise(aantal = sum(aantal)) %>% 
+  ungroup() %>% 
+  write_delim(paste0(pad_data, "Watervogels_ZeescheldeVLIZcheck.csv"), delim = ";")
+
+```
+
+### Mogelijke issues:
+```{r}
+
+### 1. 
+### Lijn 162 & 196
+# AND S.samplestatus = 'CHECKED'         
+# AND S.samplestatus <> 'REJECTED'    
+# (2x)
+# Zo is de 2e lijn overbodig! Welke moet ik behouden? Ik denk obv de uitleg van FP de 2e.
+
+# 18/08: 
+# nog eens nagevraagd bij Jo Loos! -> enkel 3 mogelijke waarden voor SampleStatus: NEW, CHECKED & VALIDATED
+# wij doen verder met CHECKED
+
+
+
+### 2.
+### Lijn 375
+# filter(gebiedsgroep != "Getijdenetes")
+# Typo?? 
+# Gewijzigd naar:
+# filter(gebiedsgroep != "Getijdenete")
+
+# 18/08: 
+# wijziging is OK; getijdenete wordt maw al in een vroeg stadium uitgefilterd
+
+
+
+### 3.
+### Lijn 436
+# knitr::kable(table(Gebieden_ZS_clean$gebiedsklassecode, Gebieden_ZS_clean$gebiedsklasse))
+# Geen ‘WETL’? Correct?
+
+# 18/08: 
+# WETL moet nu uitgeselecteerd worden via SWETL (recente code-wijziging!) 
+
+
+
+### 4.
+### Lijn 438
+# check_gebieden <- Gebieden_ZS_clean %>%
+#   anti_join(., WV_DB, by = c("gebied" = "Gebied")) %>%
+#   select(gebied) %>%
+#   pull()
+# knitr::kable(check_gebieden)
+# 
+# 5 mismatches!
+# •	Ontpoldering Potpolder LILLO
+# •	Kruibeekse Kreek estuarien KRUIBEKE
+# •	...
+
+# 18/08: 
+# dit zijn alle nieuw aangemaakte gebieden, deze zitten dus in de gebiedentabel maar niet in de watervogeldata, foutje in de matrix!
+# opgelost door invoeging van: 
+# INNER JOIN DimLocationWV L    ON L.locationwvkey = S.locationwvkey ipv
+# INNER JOIN DimLocationWV L    ON L.locationwvkey = F.locationwvkey
+# let op: deze invoeging moet op de juiste plaats gebeuren (zie query zelf, en mail van FP naar Oberon op 24/06/2026)
+  
+```
