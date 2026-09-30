@@ -1,0 +1,2352 @@
+---
+params:
+  hoofdstuk: "070_macrozoobenthos"
+
+title: "Macrozoöbenthos data"
+author: "Merlijn Jocque, aangepast van script FVDM"
+
+output:
+  word_document:
+    toc: false
+
+knit: |
+  (function(input_file, ...) {
+
+    project_root <- rprojroot::find_root(
+      rprojroot::is_rstudio_project
+    )
+
+    hoofdstuk <- rmarkdown::yaml_front_matter(input_file)$params$hoofdstuk
+
+    output_directory <- file.path(
+      project_root,
+      hoofdstuk,
+      "output"
+    )
+
+    dir.create(
+      output_directory,
+      recursive = TRUE,
+      showWarnings = FALSE
+    )
+
+    rmarkdown::render(
+      input_file,
+      output_dir = output_directory,
+      ...
+    )
+  })
+
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  error = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE
+)
+
+```
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(writexl)
+library(rprojroot)
+library(janitor)
+library(ggpmisc)
+
+```
+
+```{r pad}
+
+project_root <- "G:/Gedeelde drives/PRJ_SCHELDE/MONEOS_rapportage/2026"
+
+pad_hoofdstuk <- file.path(
+  project_root,
+  params$hoofdstuk
+)
+
+pad_data <- file.path(
+  pad_hoofdstuk,
+  "data"
+)
+
+pad_figuren <- file.path(
+  pad_hoofdstuk,
+  "figuren"
+)
+
+pad_tabellen <- file.path(
+  pad_hoofdstuk,
+  "tabellen"
+)
+
+pad_output <- file.path(
+  pad_hoofdstuk,
+  "output"
+)
+
+dir.create(pad_figuren, recursive = TRUE, showWarnings = FALSE)
+dir.create(pad_tabellen, recursive = TRUE, showWarnings = FALSE)
+dir.create(pad_output, recursive = TRUE, showWarnings = FALSE)
+
+pad_data
+```
+
+```{r data-load}
+
+# ------------------------------------------------------------------
+# 1. BENTHOSDATA 2024 INLEZEN EN VOORBEREIDEN
+# Rapportagejaar: 2026
+# Dataverzamelingsjaar: 2024
+# ------------------------------------------------------------------
+
+# Bestanden
+bestand_benthos2024 <- file.path(
+  pad_data,
+  "Benthos2024_all.xlsx"
+)
+
+bestand_historisch <- file.path(
+  pad_data,
+  "Macrobenthos2008_heden_rapportage2025.xlsx"
+)
+
+bestand_analyse2026 <- file.path(
+  pad_data,
+  "Macrobenthos2008_2024_ANALYSE_rapportage2026.xlsx"
+)
+
+bestand_rapportage2026 <- file.path(
+  pad_data,
+  "Macrobenthos2008_heden_rapportage2026.xlsx"
+)
+
+# Controleren of het nieuwe databestand bestaat
+if (!file.exists(bestand_benthos2024)) {
+  stop(
+    "Het bestand werd niet gevonden: ",
+    bestand_benthos2024
+  )
+}
+
+# Data inlezen
+benthos2024 <- read_excel(
+  path = bestand_benthos2024,
+  sheet = "Sheet1"
+)
+
+# Controleren of alle noodzakelijke invoerkolommen aanwezig zijn
+vereiste_kolommen <- c(
+  "jaar",
+  "fysiotoop",
+  "locatie",
+  "soort",
+  "densiteit",
+  "biomassa",
+  "taxa_groep",
+  "KRWzone"
+)
+
+ontbrekende_kolommen <- setdiff(
+  vereiste_kolommen,
+  names(benthos2024)
+)
+
+if (length(ontbrekende_kolommen) > 0) {
+  stop(
+    "De volgende noodzakelijke kolommen ontbreken: ",
+    paste(
+      ontbrekende_kolommen,
+      collapse = ", "
+    )
+  )
+}
+
+# Data voorbereiden voor analyse
+benthos2024_analyt <- benthos2024 %>%
+  mutate(
+    jaar = as.integer(jaar),
+
+    soort = str_trim(
+      as.character(soort)
+    ),
+
+    soort = if_else(
+      str_to_lower(soort) == "geen",
+      "geen",
+      soort
+    ),
+
+    locatie = str_trim(
+      as.character(locatie)
+    ),
+
+    fysiotoop = str_trim(
+      as.character(fysiotoop)
+    ),
+
+    densiteit = as.numeric(densiteit),
+
+    biomassa = as.numeric(biomassa),
+
+    taxa_groep = str_trim(
+      as.character(taxa_groep)
+    ),
+
+    krwzone = str_trim(
+      as.character(KRWzone)
+    ),
+
+    # Tidaal type afleiden uit fysiotoop
+    tidaal = case_when(
+      str_detect(
+        str_to_lower(fysiotoop),
+        "sub"
+      ) ~ "subtidaal",
+
+      TRUE ~ "intertidaal"
+    ),
+
+    # KRW-zone omzetten naar analysebenaming
+    waterloop = recode(
+      krwzone,
+      "Zeeschelde IV" =
+        "Saliniteitsgradient",
+      "Zeeschelde III" =
+        "Oligohalien",
+      "Zeeschelde II" =
+        "Zoet lang verblijf",
+      "Zeeschelde I" =
+        "Zoet kort verblijf",
+      .default = krwzone
+    ),
+
+    # Waterlichaam afleiden uit locatiecode
+    waterlichaam = case_when(
+      str_starts(locatie, "DD") ~
+        "Zoet lang verblijf",
+
+      str_starts(locatie, "DG") ~
+        "Zoet kort verblijf",
+
+      str_detect(
+        locatie,
+        "^(DI|ZG|ZE)"
+      ) ~ "Getijdedijle en -zenne",
+
+      str_starts(locatie, "DU") ~
+        "Getijdedurme",
+
+      str_starts(locatie, "GK") ~
+        "Saliniteitsgradient",
+
+      str_detect(
+        locatie,
+        "^(KD|RU)"
+      ) ~ "Oligohalien",
+
+      str_starts(locatie, "NE") ~
+        "GetijdeNete",
+
+      str_detect(
+        locatie,
+        "^(TZ|GM)"
+      ) ~ "Zoet kort verblijf",
+
+      TRUE ~ NA_character_
+    ),
+
+    # Individuele waterloop afleiden
+    waterloop2 = case_when(
+      str_starts(locatie, "DD") ~
+        "Zeeschelde II",
+
+      str_starts(locatie, "DG") ~
+        "Zeeschelde I",
+
+      str_starts(locatie, "DI") ~
+        "Dijle",
+
+      str_starts(locatie, "ZG") ~
+        "Dijle",
+
+      str_starts(locatie, "ZE") ~
+        "Zenne",
+
+      str_starts(locatie, "DU") ~
+        "Durme",
+
+      str_starts(locatie, "GK") ~
+        "Zeeschelde IV",
+
+      str_starts(locatie, "KD") ~
+        "Zeeschelde III",
+
+      str_starts(locatie, "RU") ~
+        "Rupel",
+
+      str_starts(locatie, "NE") ~
+        "Nete",
+
+      str_detect(
+        locatie,
+        "^(TZ|GM)"
+      ) ~ "Zeeschelde I",
+
+      TRUE ~ NA_character_
+    ),
+
+    # Hoofdsysteem afleiden
+    systeem = case_when(
+      str_detect(
+        locatie,
+        "^(DD|DG|GK|KD|TZ|GM)"
+      ) ~ "Zeeschelde",
+
+      str_detect(
+        locatie,
+        "^(DI|ZG|DU|NE|RU|ZE)"
+      ) ~ "zijrivieren",
+
+      TRUE ~ NA_character_
+    ),
+
+    # Historische uitzonderingen uniform benoemen
+    waterloop = case_when(
+      str_detect(
+        waterloop,
+        "trj_Ml"
+      ) ~ "Zeeschelde I trj_Ml_Gb",
+
+      str_detect(
+        waterloop,
+        regex(
+          "tijarm Zw",
+          ignore_case = TRUE
+        )
+      ) ~ "Zeeschelde I tijarm Zwijnaarde",
+
+      TRUE ~ waterloop
+    )
+  ) %>%
+  select(
+    jaar,
+    waterlichaam,
+    waterloop,
+    waterloop2,
+    systeem,
+    tidaal,
+    fysiotoop,
+    locatie,
+    soort,
+    densiteit,
+    biomassa,
+    taxa_groep
+  )
+
+# ------------------------------------------------------------------
+# CONTROLES
+# ------------------------------------------------------------------
+
+glimpse(benthos2024)
+
+# Alleen datajaar 2024 verwacht
+onverwachte_jaren <- setdiff(
+  unique(benthos2024_analyt$jaar),
+  2024
+)
+
+if (length(onverwachte_jaren) > 0) {
+  warning(
+    "Er staan onverwachte jaren in Benthos2024_all.xlsx: ",
+    paste(
+      onverwachte_jaren,
+      collapse = ", "
+    )
+  )
+}
+
+# Samenvattende controle
+benthos2024_analyt %>%
+  summarise(
+    aantal_rijen = n(),
+    aantal_locaties = n_distinct(locatie),
+    aantal_soorten = n_distinct(soort),
+    ontbrekend_waterlichaam =
+      sum(is.na(waterlichaam)),
+    ontbrekend_waterloop =
+      sum(is.na(waterloop)),
+    ontbrekend_waterloop2 =
+      sum(is.na(waterloop2)),
+    ontbrekend_systeem =
+      sum(is.na(systeem))
+  ) %>%
+  print(width = Inf)
+
+# Locatiecodes die niet konden worden ingedeeld
+onbekende_locatiecodes <- benthos2024_analyt %>%
+  filter(
+    is.na(waterlichaam) |
+      is.na(waterloop) |
+      is.na(waterloop2) |
+      is.na(systeem)
+  ) %>%
+  distinct(
+    locatie,
+    waterlichaam,
+    waterloop,
+    waterloop2,
+    systeem
+  )
+
+if (nrow(onbekende_locatiecodes) > 0) {
+  warning(
+    nrow(onbekende_locatiecodes),
+    " locatiecode(s) konden niet automatisch worden ingedeeld."
+  )
+}
+
+onbekende_locatiecodes %>%
+  print(n = Inf)
+
+# Controle indeling per systeem en waterlichaam
+benthos2024_analyt %>%
+  count(
+    systeem,
+    waterlichaam,
+    waterloop2,
+    sort = TRUE
+  ) %>%
+  print(n = Inf)
+
+# Controle per locatie
+benthos2024_analyt %>%
+  distinct(
+    locatie,
+    waterlichaam,
+    waterloop,
+    waterloop2,
+    systeem
+  ) %>%
+  arrange(locatie) %>%
+  print(n = Inf)
+
+# Controle fysiotoop en tidaal type
+benthos2024_analyt %>%
+  count(
+    tidaal,
+    fysiotoop,
+    sort = TRUE
+  ) %>%
+  print(n = Inf)
+
+```
+
+```{r data-2024-analyseformaat}
+
+# ------------------------------------------------------------------
+# 2. DATA 2024 OMZETTEN NAAR ANALYSEFORMAAT
+# ------------------------------------------------------------------
+
+benthos2024_analyt <- benthos2024 %>%
+  mutate(
+    jaar = as.integer(jaar),
+
+    locatie = str_trim(
+      as.character(locatie)
+    ),
+
+    fysiotoop = str_trim(
+      as.character(fysiotoop)
+    ),
+
+    soort = str_trim(
+      as.character(soort)
+    ),
+
+    soort = if_else(
+      str_to_lower(soort) == "geen",
+      "geen",
+      soort
+    ),
+
+    densiteit = as.numeric(densiteit),
+    biomassa = as.numeric(biomassa),
+
+    taxa_groep = str_trim(
+      as.character(taxa_groep)
+    ),
+
+    krwzone = str_trim(
+      as.character(KRWzone)
+    ),
+
+    tidaal = case_when(
+      str_detect(
+        str_to_lower(fysiotoop),
+        "sub"
+      ) ~ "subtidaal",
+
+      TRUE ~ "intertidaal"
+    ),
+
+    waterloop = recode(
+      krwzone,
+      "Zeeschelde IV" =
+        "Saliniteitsgradient",
+      "Zeeschelde III" =
+        "Oligohalien",
+      "Zeeschelde II" =
+        "Zoet lang verblijf",
+      "Zeeschelde I" =
+        "Zoet kort verblijf",
+      .default = krwzone
+    ),
+
+    waterlichaam = case_when(
+      str_starts(locatie, "DD") ~
+        "Zoet lang verblijf",
+
+      str_starts(locatie, "DG") ~
+        "Zoet kort verblijf",
+
+      str_detect(
+        locatie,
+        "^(DI|ZG|ZE)"
+      ) ~ "Getijdedijle en -zenne",
+
+      str_starts(locatie, "DU") ~
+        "Getijdedurme",
+
+      str_starts(locatie, "GK") ~
+        "Saliniteitsgradient",
+
+      str_detect(
+        locatie,
+        "^(KD|RU)"
+      ) ~ "Oligohalien",
+
+      str_starts(locatie, "NE") ~
+        "GetijdeNete",
+
+      str_detect(
+        locatie,
+        "^(TZ|GM)"
+      ) ~ "Zoet kort verblijf",
+
+      TRUE ~ NA_character_
+    ),
+
+    waterloop2 = case_when(
+      str_starts(locatie, "DD") ~
+        "Zeeschelde II",
+
+      str_starts(locatie, "DG") ~
+        "Zeeschelde I",
+
+      str_starts(locatie, "DI") ~
+        "Dijle",
+
+      str_starts(locatie, "ZG") ~
+        "Dijle",
+
+      str_starts(locatie, "ZE") ~
+        "Zenne",
+
+      str_starts(locatie, "DU") ~
+        "Durme",
+
+      str_starts(locatie, "GK") ~
+        "Zeeschelde IV",
+
+      str_starts(locatie, "KD") ~
+        "Zeeschelde III",
+
+      str_starts(locatie, "RU") ~
+        "Rupel",
+
+      str_starts(locatie, "NE") ~
+        "Nete",
+
+      str_detect(
+        locatie,
+        "^(TZ|GM)"
+      ) ~ "Zeeschelde I",
+
+      TRUE ~ NA_character_
+    ),
+
+    systeem = case_when(
+      str_detect(
+        locatie,
+        "^(DD|DG|GK|KD|TZ|GM)"
+      ) ~ "Zeeschelde",
+
+      str_detect(
+        locatie,
+        "^(DI|ZG|DU|NE|RU|ZE)"
+      ) ~ "zijrivieren",
+
+      TRUE ~ NA_character_
+    ),
+
+    waterloop = case_when(
+      str_detect(
+        waterloop,
+        "trj_Ml"
+      ) ~ "Zeeschelde I trj_Ml_Gb",
+
+      str_detect(
+        waterloop,
+        regex(
+          "tijarm Zw",
+          ignore_case = TRUE
+        )
+      ) ~ "Zeeschelde I tijarm Zwijnaarde",
+
+      TRUE ~ waterloop
+    )
+  ) %>%
+  select(
+    jaar,
+    waterlichaam,
+    waterloop,
+    waterloop2,
+    systeem,
+    tidaal,
+    fysiotoop,
+    locatie,
+    soort,
+    densiteit,
+    biomassa,
+    taxa_groep
+  )
+
+```
+
+```{r controles-data-2024}
+
+# ------------------------------------------------------------------
+# 3. CONTROLES DATA 2024
+# ------------------------------------------------------------------
+
+onverwachte_jaren <- setdiff(
+  unique(benthos2024_analyt$jaar),
+  2024
+)
+
+if (length(onverwachte_jaren) > 0) {
+  warning(
+    "Er staan onverwachte jaren in de data van 2024: ",
+    paste(
+      onverwachte_jaren,
+      collapse = ", "
+    )
+  )
+}
+
+controle2024 <- benthos2024_analyt %>%
+  summarise(
+    aantal_rijen = n(),
+    aantal_locaties = n_distinct(locatie),
+    aantal_soorten = n_distinct(soort),
+    ontbrekend_waterlichaam =
+      sum(is.na(waterlichaam)),
+    ontbrekend_waterloop =
+      sum(is.na(waterloop)),
+    ontbrekend_waterloop2 =
+      sum(is.na(waterloop2)),
+    ontbrekend_systeem =
+      sum(is.na(systeem))
+  )
+
+controle2024 %>%
+  print(width = Inf)
+
+onbekende_locatiecodes2024 <-
+  benthos2024_analyt %>%
+  filter(
+    is.na(waterlichaam) |
+      is.na(waterloop2) |
+      is.na(systeem)
+  ) %>%
+  distinct(
+    locatie,
+    waterlichaam,
+    waterloop2,
+    systeem
+  )
+
+if (nrow(onbekende_locatiecodes2024) > 0) {
+  stop(
+    nrow(onbekende_locatiecodes2024),
+    " locatiecode(s) uit 2024 konden niet worden ingedeeld."
+  )
+}
+
+benthos2024_analyt %>%
+  count(
+    systeem,
+    waterlichaam,
+    waterloop2,
+    sort = TRUE
+  ) %>%
+  print(n = Inf)
+
+benthos2024_analyt %>%
+  distinct(
+    tidaal,
+    fysiotoop
+  ) %>%
+  arrange(
+    tidaal,
+    fysiotoop
+  ) %>%
+  print(n = Inf)
+
+```
+
+```{r historische-data-inlezen}
+# ------------------------------------------------------------------
+# 4. OPGESCHOONDE HISTORISCHE DATA INLEZEN
+# ------------------------------------------------------------------
+
+bestand_historisch <- file.path(
+  pad_data,
+  "Macrobenthos2008_heden_rapportage2025.xlsx"
+)
+
+if (!file.exists(bestand_historisch)) {
+  stop(
+    "Het historische rapportagebestand werd niet gevonden: ",
+    bestand_historisch
+  )
+}
+
+beschikbare_sheets_historisch <-
+  excel_sheets(bestand_historisch)
+
+vereiste_sheets_historisch <- c(
+  "macrobenthos",
+  "locaties"
+)
+
+ontbrekende_sheets_historisch <- setdiff(
+  vereiste_sheets_historisch,
+  beschikbare_sheets_historisch
+)
+
+if (length(ontbrekende_sheets_historisch) > 0) {
+  stop(
+    "De volgende sheets ontbreken in het historische bestand: ",
+    paste(
+      ontbrekende_sheets_historisch,
+      collapse = ", "
+    )
+  )
+}
+
+benthos_historisch_oplevering <- read_excel(
+  path = bestand_historisch,
+  sheet = "macrobenthos"
+)
+
+locaties_historisch <- read_excel(
+  path = bestand_historisch,
+  sheet = "locaties"
+)
+
+vereiste_kolommen_historisch <- c(
+  "jaar",
+  "fysiotoop",
+  "locatie",
+  "soort",
+  "densiteit",
+  "biomassa",
+  "Taxa_groep",
+  "KRWzone",
+  "KRW.waterlichaam"
+)
+
+ontbrekende_kolommen_historisch <- setdiff(
+  vereiste_kolommen_historisch,
+  names(benthos_historisch_oplevering)
+)
+
+if (length(ontbrekende_kolommen_historisch) > 0) {
+  stop(
+    "De volgende noodzakelijke kolommen ontbreken in het ",
+    "historische rapportagebestand: ",
+    paste(
+      ontbrekende_kolommen_historisch,
+      collapse = ", "
+    )
+  )
+}
+
+jaren_historisch <- sort(
+  unique(
+    benthos_historisch_oplevering$jaar
+  )
+)
+
+if (any(
+  jaren_historisch >= 2024,
+  na.rm = TRUE
+)) {
+  stop(
+    "Het historische bestand bevat al gegevens van 2024 of later. ",
+    "De nieuwe gegevens mogen dan niet opnieuw worden toegevoegd."
+  )
+}
+
+range(jaren_historisch)
+
+```
+
+```{r historische-data-analyseformaat}
+
+# ------------------------------------------------------------------
+# 5. HISTORISCHE DATA OMZETTEN NAAR ANALYSEFORMAAT
+#
+# De historische densiteit en biomassa worden niet opnieuw gecorrigeerd.
+# Het rapportagebestand van 2025 geldt als opgekuiste historische basis.
+# ------------------------------------------------------------------
+
+benthos_historisch_analyt <-
+  benthos_historisch_oplevering %>%
+  transmute(
+    jaar = as.integer(jaar),
+
+    fysiotoop = str_trim(
+      as.character(fysiotoop)
+    ),
+
+    locatie = str_trim(
+      as.character(locatie)
+    ),
+
+    soort = str_trim(
+      as.character(soort)
+    ),
+
+    soort = if_else(
+      str_to_lower(soort) == "geen",
+      "geen",
+      soort
+    ),
+
+    densiteit = as.numeric(densiteit),
+    biomassa = as.numeric(biomassa),
+
+    taxa_groep = str_trim(
+      as.character(Taxa_groep)
+    ),
+
+    krwzone = str_trim(
+      as.character(KRWzone)
+    ),
+
+    tidaal = case_when(
+      str_detect(
+        str_to_lower(fysiotoop),
+        "sub"
+      ) ~ "subtidaal",
+
+      TRUE ~ "intertidaal"
+    ),
+
+    waterloop = recode(
+      krwzone,
+      "Zeeschelde IV" =
+        "Saliniteitsgradient",
+      "Zeeschelde III" =
+        "Oligohalien",
+      "Zeeschelde II" =
+        "Zoet lang verblijf",
+      "Zeeschelde I" =
+        "Zoet kort verblijf",
+      .default = krwzone
+    ),
+
+    waterlichaam = case_when(
+      str_starts(locatie, "DD") ~
+        "Zoet lang verblijf",
+
+      str_starts(locatie, "DG") ~
+        "Zoet kort verblijf",
+
+      str_detect(
+        locatie,
+        "^(DI|ZG|ZE)"
+      ) ~ "Getijdedijle en -zenne",
+
+      str_starts(locatie, "DU") ~
+        "Getijdedurme",
+
+      str_starts(locatie, "GK") ~
+        "Saliniteitsgradient",
+
+      str_detect(
+        locatie,
+        "^(KD|RU)"
+      ) ~ "Oligohalien",
+
+      str_starts(locatie, "NE") ~
+        "GetijdeNete",
+
+      str_detect(
+        locatie,
+        "^(TZ|GM)"
+      ) ~ "Zoet kort verblijf",
+
+      TRUE ~ NA_character_
+    ),
+
+    waterloop2 = case_when(
+      str_starts(locatie, "DD") ~
+        "Zeeschelde II",
+
+      str_starts(locatie, "DG") ~
+        "Zeeschelde I",
+
+      str_starts(locatie, "DI") ~
+        "Dijle",
+
+      str_starts(locatie, "ZG") ~
+        "Dijle",
+
+      str_starts(locatie, "ZE") ~
+        "Zenne",
+
+      str_starts(locatie, "DU") ~
+        "Durme",
+
+      str_starts(locatie, "GK") ~
+        "Zeeschelde IV",
+
+      str_starts(locatie, "KD") ~
+        "Zeeschelde III",
+
+      str_starts(locatie, "RU") ~
+        "Rupel",
+
+      str_starts(locatie, "NE") ~
+        "Nete",
+
+      str_detect(
+        locatie,
+        "^(TZ|GM)"
+      ) ~ "Zeeschelde I",
+
+      TRUE ~ NA_character_
+    ),
+
+    systeem = case_when(
+      str_detect(
+        locatie,
+        "^(DD|DG|GK|KD|TZ|GM)"
+      ) ~ "Zeeschelde",
+
+      str_detect(
+        locatie,
+        "^(DI|ZG|DU|NE|RU|ZE)"
+      ) ~ "zijrivieren",
+
+      TRUE ~ NA_character_
+    ),
+
+    waterloop = case_when(
+      str_detect(
+        waterloop,
+        "trj_Ml"
+      ) ~ "Zeeschelde I trj_Ml_Gb",
+
+      str_detect(
+        waterloop,
+        regex(
+          "tijarm Zw",
+          ignore_case = TRUE
+        )
+      ) ~ "Zeeschelde I tijarm Zwijnaarde",
+
+      TRUE ~ waterloop
+    )
+  ) %>%
+  select(
+    jaar,
+    waterlichaam,
+    waterloop,
+    waterloop2,
+    systeem,
+    tidaal,
+    fysiotoop,
+    locatie,
+    soort,
+    densiteit,
+    biomassa,
+    taxa_groep
+  )
+
+```
+
+```{r controles-historische-data}
+
+# ------------------------------------------------------------------
+# 6. CONTROLES HISTORISCHE DATA
+# ------------------------------------------------------------------
+
+controle_historisch <-
+  benthos_historisch_analyt %>%
+  summarise(
+    eerste_jaar =
+      min(jaar, na.rm = TRUE),
+
+    laatste_jaar =
+      max(jaar, na.rm = TRUE),
+
+    aantal_rijen = n(),
+
+    aantal_locaties =
+      n_distinct(locatie),
+
+    negatieve_densiteit =
+      sum(
+        densiteit < 0,
+        na.rm = TRUE
+      ),
+
+    negatieve_biomassa =
+      sum(
+        biomassa < 0,
+        na.rm = TRUE
+      ),
+
+    nul_densiteit_met_biomassa =
+      sum(
+        densiteit == 0 &
+          biomassa > 0,
+        na.rm = TRUE
+      ),
+
+    densiteit_met_nul_biomassa =
+      sum(
+        densiteit > 0 &
+          biomassa == 0,
+        na.rm = TRUE
+      ),
+
+    ontbrekend_waterlichaam =
+      sum(is.na(waterlichaam)),
+
+    ontbrekend_waterloop =
+      sum(is.na(waterloop)),
+
+    ontbrekend_waterloop2 =
+      sum(is.na(waterloop2)),
+
+    ontbrekend_systeem =
+      sum(is.na(systeem))
+  )
+
+controle_historisch %>%
+  print(width = Inf)
+
+onbekende_locatiecodes_historisch <-
+  benthos_historisch_analyt %>%
+  filter(
+    is.na(waterlichaam) |
+      is.na(waterloop2) |
+      is.na(systeem)
+  ) %>%
+  distinct(
+    locatie,
+    waterlichaam,
+    waterloop2,
+    systeem
+  )
+
+if (nrow(onbekende_locatiecodes_historisch) > 0) {
+  warning(
+    nrow(onbekende_locatiecodes_historisch),
+    " historische locatiecode(s) konden niet automatisch worden ingedeeld."
+  )
+}
+
+onbekende_locatiecodes_historisch %>%
+  print(n = Inf)
+
+benthos_historisch_oplevering %>%
+  distinct(
+    KRWzone,
+    KRW.waterlichaam
+  ) %>%
+  arrange(
+    KRW.waterlichaam,
+    KRWzone
+  ) %>%
+  print(n = Inf)
+
+```
+
+```{r analysebestand-samenstellen}
+
+# ------------------------------------------------------------------
+# 7. HISTORISCHE EN NIEUWE DATA SAMENVOEGEN VOOR ANALYSE
+# ------------------------------------------------------------------
+
+verschil_kolommen_historisch <- setdiff(
+  names(benthos_historisch_analyt),
+  names(benthos2024_analyt)
+)
+
+verschil_kolommen2024 <- setdiff(
+  names(benthos2024_analyt),
+  names(benthos_historisch_analyt)
+)
+
+if (
+  length(verschil_kolommen_historisch) > 0 ||
+    length(verschil_kolommen2024) > 0
+) {
+  stop(
+    paste0(
+      "De historische en nieuwe analysetabellen hebben niet ",
+      "dezelfde kolommen.\n",
+      "Alleen historisch: ",
+      paste(
+        verschil_kolommen_historisch,
+        collapse = ", "
+      ),
+      "\nAlleen 2024: ",
+      paste(
+        verschil_kolommen2024,
+        collapse = ", "
+      )
+    )
+  )
+}
+
+# Dataset-indicator toevoegen vóór het samenvoegen
+benthos_analyt_gecombineerd <- bind_rows(
+  benthos_historisch_analyt %>%
+    mutate(dataset = "Historisch"),
+
+  benthos2024_analyt %>%
+    mutate(dataset = "2024")
+)
+
+# Volledige dubbele rijen controleren
+dubbele_rijen_analyse <- benthos_analyt_gecombineerd %>%
+  count(
+    across(everything()),
+    name = "aantal"
+  ) %>%
+  filter(aantal > 1)
+
+if (nrow(dubbele_rijen_analyse) > 0) {
+  warning(
+    nrow(dubbele_rijen_analyse),
+    " volledige dubbele rijcombinatie(s) gevonden in het analysebestand."
+  )
+}
+
+# Volledige dubbels verwijderen
+benthos2008_2024_analyt <- benthos_analyt_gecombineerd %>%
+  distinct()
+
+# Controleren of dataset correct aanwezig is
+benthos2008_2024_analyt %>%
+  count(
+    dataset,
+    name = "aantal_rijen"
+  ) %>%
+  print(n = Inf)
+
+# Controle per jaar
+benthos2008_2024_analyt %>%
+  count(
+    jaar,
+    dataset,
+    name = "aantal_rijen"
+  ) %>%
+  arrange(
+    jaar,
+    dataset
+  ) %>%
+  print(n = Inf)
+
+```
+
+```{r analysebestand-schrijven}
+
+# ------------------------------------------------------------------
+# 8. ANALYSEBESTAND WEGSCHRIJVEN
+# ------------------------------------------------------------------
+
+write_xlsx(
+  list(
+    macrobenthos =
+      benthos2008_2024_analyt
+  ),
+  path = bestand_analyse2026
+)
+
+if (!file.exists(bestand_analyse2026)) {
+  stop(
+    "Het analysebestand kon niet worden geschreven: ",
+    bestand_analyse2026
+  )
+}
+
+bestand_analyse2026
+
+```
+
+```{r biomassa-densiteit-controle, fig.height=5, fig.width=7}
+
+# ------------------------------------------------------------------
+# 9. VISUELE CONTROLE DENSITEIT EN BIOMASSA
+# ------------------------------------------------------------------
+
+# ------------------------------------------------------------------
+# VISUELE KWALITEITSCONTROLE
+# Historische data = grijs
+# 2024 = rood
+# ------------------------------------------------------------------
+
+ggplot(
+  benthos2008_2024_analyt %>%
+    filter(
+      !taxa_groep %in% c(
+        "Bivalvia",
+        "Amphipoda",
+        "Decapoda"
+      ),
+      densiteit > 0,
+      biomassa > 0
+    ),
+  aes(
+    x = densiteit,
+    y = biomassa
+  )
+) +
+
+  # Historische data
+  geom_point(
+    data = ~filter(.x, dataset == "Historisch"),
+    colour = "grey70",
+    alpha = 0.25,
+    size = 1
+  ) +
+
+  # Nieuwe data 2024
+  geom_point(
+    data = ~filter(.x, dataset == "2024"),
+    colour = "red",
+    alpha = 0.9,
+    size = 1.8
+  ) +
+
+  # Regressielijn op historische data
+  stat_poly_line(
+    data = ~filter(.x, dataset == "Historisch"),
+    colour = "black"
+  ) +
+
+  stat_poly_eq(
+    data = ~filter(.x, dataset == "Historisch"),
+    aes(label = after_stat(rr.label)),
+    colour = "black"
+  ) +
+
+  scale_x_log10() +
+  scale_y_log10() +
+
+  labs(
+    title = "Controle densiteit versus biomassa",
+    subtitle = "Historische data (grijs) en campagne 2024 (rood)",
+    x = "Densiteit",
+    y = "Biomassa"
+  ) +
+
+  theme_bw()
+
+```
+
+```{r data-2024-opleveringsformaat}
+
+# ------------------------------------------------------------------
+# 10. DATA 2024 OMZETTEN NAAR OPLEVERINGSFORMAAT
+# ------------------------------------------------------------------
+
+# Bestaande schrijfwijzen van KRW.waterlichaam inspecteren
+historische_krw_waterlichamen <-
+  benthos_historisch_oplevering %>%
+  distinct(KRW.waterlichaam) %>%
+  arrange(KRW.waterlichaam)
+
+historische_krw_waterlichamen %>%
+  print(n = Inf)
+
+benthos2024_oplevering <- benthos2024 %>%
+  transmute(
+    jaar = as.integer(jaar),
+
+    fysiotoop = str_trim(
+      as.character(fysiotoop)
+    ),
+
+    locatie = str_trim(
+      as.character(locatie)
+    ),
+
+    soort = str_trim(
+      as.character(soort)
+    ),
+
+    soort = if_else(
+      str_to_lower(soort) == "geen",
+      "geen",
+      soort
+    ),
+
+    densiteit = as.numeric(densiteit),
+    biomassa = as.numeric(biomassa),
+
+    Taxa_groep = str_trim(
+      as.character(taxa_groep)
+    ),
+
+    KRWzone = str_trim(
+      as.character(KRWzone)
+    ),
+
+    KRW.waterlichaam = case_when(
+      str_starts(locatie, "DD") ~
+        "Zeeschelde II",
+
+      str_detect(
+        locatie,
+        "^(DG|TZ|GM)"
+      ) ~ "Zeeschelde I",
+
+      str_starts(locatie, "GK") ~
+        "Zeeschelde IV",
+
+      str_detect(
+        locatie,
+        "^(KD|RU)"
+      ) ~ "Zeeschelde III",
+
+      str_detect(
+        locatie,
+        "^(DI|ZG|ZE)"
+      ) ~ "GetijdeDijle + GetijdeZenne",
+
+      str_starts(locatie, "NE") ~
+        "GetijdeNetes",
+
+      str_starts(locatie, "DU") ~
+        "GetijdeDurme",
+
+      TRUE ~ NA_character_
+    )
+  )
+
+onbekende_krw_indeling2024 <-
+  benthos2024_oplevering %>%
+  filter(
+    is.na(KRW.waterlichaam)
+  ) %>%
+  distinct(
+    locatie,
+    KRWzone
+  )
+
+if (nrow(onbekende_krw_indeling2024) > 0) {
+  stop(
+    nrow(onbekende_krw_indeling2024),
+    " locatiecode(s) uit 2024 hebben geen KRW.waterlichaam."
+  )
+}
+
+```
+
+```{r opleveringsdata-samenvoegen}
+
+# ------------------------------------------------------------------
+# 11. HISTORISCHE EN NIEUWE OPLEVERINGSDATA SAMENVOEGEN
+# ------------------------------------------------------------------
+
+verschil_oplevering_historisch <- setdiff(
+  names(benthos_historisch_oplevering),
+  names(benthos2024_oplevering)
+)
+
+verschil_oplevering2024 <- setdiff(
+  names(benthos2024_oplevering),
+  names(benthos_historisch_oplevering)
+)
+
+if (
+  length(verschil_oplevering_historisch) > 0 ||
+    length(verschil_oplevering2024) > 0
+) {
+  stop(
+    paste0(
+      "De historische en nieuwe opleveringstabellen hebben ",
+      "niet dezelfde kolommen.\n",
+      "Alleen historisch: ",
+      paste(
+        verschil_oplevering_historisch,
+        collapse = ", "
+      ),
+      "\nAlleen 2024: ",
+      paste(
+        verschil_oplevering2024,
+        collapse = ", "
+      )
+    )
+  )
+}
+
+macrobenthos_oplevering_gecombineerd <- bind_rows(
+  benthos_historisch_oplevering,
+  benthos2024_oplevering
+)
+
+dubbele_rijen_oplevering <-
+  macrobenthos_oplevering_gecombineerd %>%
+  count(
+    across(everything()),
+    name = "aantal"
+  ) %>%
+  filter(aantal > 1)
+
+if (nrow(dubbele_rijen_oplevering) > 0) {
+  warning(
+    nrow(dubbele_rijen_oplevering),
+    " volledige dubbele rijcombinatie(s) gevonden in de oplevering."
+  )
+}
+
+macrobenthos_oplevering2026 <-
+  macrobenthos_oplevering_gecombineerd %>%
+  distinct()
+
+macrobenthos_oplevering2026 %>%
+  count(jaar) %>%
+  arrange(jaar) %>%
+  print(n = Inf)
+
+```
+
+```{r locaties-2024-inlezen}
+
+# ------------------------------------------------------------------
+# 12. LOCATIEGEGEVENS 2024 INLEZEN EN CODES STANDAARDISEREN
+# ------------------------------------------------------------------
+
+bestand_locaties2024 <- file.path(
+  pad_data,
+  "RP_SP24_ecotoopgrenzen.xlsx"
+)
+
+if (!file.exists(bestand_locaties2024)) {
+  stop(
+    "Het locatiebestand van 2024 werd niet gevonden: ",
+    bestand_locaties2024
+  )
+}
+
+# Dezelfde opschoonfunctie als in het voorbereidingsscript
+clean_locatiecode <- function(x) {
+
+  x %>%
+    as.character() %>%
+    stringr::str_trim() %>%
+    stringr::str_replace_all(" ", "") %>%
+    stringr::str_replace_all("-", "_") %>%
+
+    # SP als afzonderlijk onderdeel verwijderen
+    stringr::str_replace_all(
+      stringr::regex(
+        "(^|_)sp(_|$)",
+        ignore_case = TRUE
+      ),
+      "_"
+    ) %>%
+
+    # Dubbele underscores opruimen
+    stringr::str_replace_all("_+", "_") %>%
+
+    # Underscore aan begin of einde verwijderen
+    stringr::str_remove("^_") %>%
+    stringr::str_remove("_$") %>%
+
+    # Eventuele suffix _knijt verwijderen
+    stringr::str_remove(
+      stringr::regex(
+        "_?knijt$",
+        ignore_case = TRUE
+      )
+    ) %>%
+
+    # Enkel cijfer aanvullen met voorloopnul:
+    # GK24_1 wordt GK24_01
+    stringr::str_replace(
+      "^([A-Za-z]+24)_([0-9])$",
+      "\\1_0\\2"
+    ) %>%
+
+    # Losse vangsten uitsluiten
+    stringr::str_replace(
+      stringr::regex(
+        "LV$",
+        ignore_case = TRUE
+      ),
+      NA_character_
+    )
+}
+
+locaties2024 <- readxl::read_excel(
+  path = bestand_locaties2024,
+  sheet = "RP_spatial_tijdata"
+) %>%
+  dplyr::transmute(
+    locatie = clean_locatiecode(Label_ID),
+    campagne = "spatial 2024",
+    X = as.numeric(POINT_X),
+    Y = as.numeric(POINT_Y)
+  ) %>%
+  dplyr::filter(
+    !is.na(locatie),
+    locatie != ""
+  ) %>%
+  dplyr::distinct(
+    locatie,
+    .keep_all = TRUE
+  )
+
+# Controle: er mogen geen enkelcijferige suffixen meer zijn
+codes_zonder_voorloopnul <- locaties2024 %>%
+  dplyr::filter(
+    stringr::str_detect(
+      locatie,
+      "_[0-9]$"
+    )
+  )
+
+if (nrow(codes_zonder_voorloopnul) > 0) {
+  warning(
+    nrow(codes_zonder_voorloopnul),
+    " locatiecodes hebben nog geen voorloopnul."
+  )
+}
+
+codes_zonder_voorloopnul
+
+```
+
+
+```{r locaties-controleren}
+
+# ------------------------------------------------------------------
+# 13. LOCATIES 2024 CONTROLEREN EN SAMENVOEGEN
+# ------------------------------------------------------------------
+
+locaties_in_benthos2024 <- benthos2024_oplevering %>%
+  dplyr::distinct(locatie)
+
+ontbrekende_locaties2024 <- locaties_in_benthos2024 %>%
+  dplyr::anti_join(
+    locaties2024 %>%
+      dplyr::distinct(locatie),
+    by = "locatie"
+  ) %>%
+  dplyr::arrange(locatie)
+
+if (nrow(ontbrekende_locaties2024) > 0) {
+  warning(
+    nrow(ontbrekende_locaties2024),
+    " benthoslocatie(s) uit 2024 hebben nog geen overeenkomst ",
+    "in het locatiebestand."
+  )
+}
+
+ontbrekende_locaties2024 %>%
+  print(n = Inf)
+
+# Alleen locaties meenemen die werkelijk in de benthosdata voorkomen
+locaties2024_relevant <- locaties2024 %>%
+  dplyr::semi_join(
+    locaties_in_benthos2024,
+    by = "locatie"
+  )
+
+# Controleren op meerdere regels per locatiecode
+dubbele_locaties2024 <- locaties2024_relevant %>%
+  dplyr::count(
+    locatie,
+    name = "aantal"
+  ) %>%
+  dplyr::filter(aantal > 1)
+
+if (nrow(dubbele_locaties2024) > 0) {
+  warning(
+    nrow(dubbele_locaties2024),
+    " locatiecode(s) uit 2024 komen meermaals voor."
+  )
+}
+
+dubbele_locaties2024 %>%
+  print(n = Inf)
+
+locaties2008_2024 <- dplyr::bind_rows(
+  locaties_historisch,
+  locaties2024_relevant
+) %>%
+  dplyr::distinct()
+
+```
+
+
+```{r rapportagebestand-schrijven}
+# ------------------------------------------------------------------
+# 14. DEFINITIEF RAPPORTAGEBESTAND 2026 WEGSCHRIJVEN
+# ------------------------------------------------------------------
+
+write_xlsx(
+  list(
+    macrobenthos =
+      macrobenthos_oplevering2026,
+
+    locaties =
+      locaties2008_2024
+  ),
+  path = bestand_rapportage2026
+)
+
+if (!file.exists(bestand_rapportage2026)) {
+  stop(
+    "Het rapportagebestand kon niet worden geschreven: ",
+    bestand_rapportage2026
+  )
+}
+
+bestand_rapportage2026
+```
+
+```{r eindcontrole}
+# ------------------------------------------------------------------
+# 15. EINDCONTROLE
+# ------------------------------------------------------------------
+
+eindcontrole <- tibble(
+  controle = c(
+    "Analysebestand bestaat",
+    "Rapportagebestand bestaat",
+    "Eerste jaar analyse",
+    "Laatste jaar analyse",
+    "Aantal rijen analyse",
+    "Aantal rijen oplevering",
+    "Aantal locaties historisch en 2024",
+    "Ontbrekende locaties 2024"
+  ),
+
+  resultaat = c(
+    file.exists(bestand_analyse2026),
+    file.exists(bestand_rapportage2026),
+
+    min(
+      benthos2008_2024_analyt$jaar,
+      na.rm = TRUE
+    ),
+
+    max(
+      benthos2008_2024_analyt$jaar,
+      na.rm = TRUE
+    ),
+
+    nrow(
+      benthos2008_2024_analyt
+    ),
+
+    nrow(
+      macrobenthos_oplevering2026
+    ),
+
+    nrow(
+      locaties2008_2024
+    ),
+
+    nrow(
+      ontbrekende_locaties2024
+    )
+  )
+)
+
+eindcontrole
+
+```
+
+
+
+
+
+
+
+
+# Enkele controles
+
+```{r jaar}
+
+# Recent dataverzamelingsjaar bepalen
+
+jaren_recent <- benthos2024_analyt %>%
+  distinct(jaar) %>%
+  arrange(jaar) %>%
+  pull(jaar)
+
+if (length(jaren_recent) != 1) {
+  stop(
+    "Er werd niet exact één meetjaar gevonden in benthos2024_analyt: ",
+    paste(jaren_recent, collapse = ", ")
+  )
+}
+
+jaar_recent <- jaren_recent
+
+```
+
+```{r controleren-fysiotoop}
+
+# Controle van de koppeling tussen tidaal type en fysiotoop
+
+controle_fysiotoop <- benthos2024_analyt %>%
+  distinct(
+    tidaal,
+    fysiotoop
+  ) %>%
+  arrange(
+    tidaal,
+    fysiotoop
+  )
+
+controle_fysiotoop
+
+```
+
+##### Aantal stalen
+
+```{r aantal-stalen}
+
+# Aantal unieke staalnamelocaties
+
+aantal_stalen <- benthos2024_analyt %>%
+  distinct(locatie) %>%
+  nrow()
+
+# Aantal unieke locaties per waterlichaam, tidaal type en fysiotoop
+
+aantal_stalen_waterlichaam_fysiotoop_data <-
+  benthos2024_analyt %>%
+  distinct(
+    locatie,
+    tidaal,
+    fysiotoop,
+    waterlichaam
+  ) %>%
+  count(
+    waterlichaam,
+    tidaal,
+    fysiotoop,
+    name = "aantal_stalen"
+  ) %>%
+  arrange(
+    waterlichaam,
+    tidaal,
+    fysiotoop
+  )
+
+aantal_stalen_waterlichaam_fysiotoop <-
+  aantal_stalen_waterlichaam_fysiotoop_data %>%
+  knitr::kable(
+    col.names = c(
+      "Waterlichaam",
+      "Tidaal type",
+      "Fysiotoop",
+      "Aantal stalen"
+    )
+  )
+
+aantal_stalen_waterlichaam_fysiotoop
+
+```
+
+- Er zijn `r aantal_stalen` unieke stalen in de dataset voor `r jaar_recent`.
+- Het aantal stalen per waterlichaam en fysiotoop is:
+
+`r aantal_stalen_waterlichaam_fysiotoop`
+
+##### Lege stalen
+
+```{r lege-stalen}
+
+# Lege stalen identificeren.
+# Een locatie geldt als leeg wanneer soort gelijk is aan "geen".
+
+lege_stalen <- benthos2024_analyt %>%
+  dplyr::filter(
+    stringr::str_to_lower(soort) == "geen"
+  ) %>%
+  dplyr::distinct(
+    locatie,
+    waterlichaam,
+    tidaal,
+    fysiotoop
+  ) %>%
+  dplyr::arrange(
+    waterlichaam,
+    tidaal,
+    fysiotoop,
+    locatie
+  )
+
+# Aantal lege stalen per waterlichaam, tidaal type en fysiotoop
+
+lege_stalen_waterlichaam_fysiotoop_data <-
+  lege_stalen %>%
+  dplyr::count(
+    waterlichaam,
+    tidaal,
+    fysiotoop,
+    name = "aantal_lege_stalen"
+  ) %>%
+  dplyr::arrange(
+    waterlichaam,
+    tidaal,
+    fysiotoop
+  )
+
+lege_stalen_waterlichaam_fysiotoop <-
+  lege_stalen_waterlichaam_fysiotoop_data %>%
+  knitr::kable(
+    col.names = c(
+      "Waterlichaam",
+      "Tidaal type",
+      "Fysiotoop",
+      "Aantal lege stalen"
+    )
+  )
+
+lege_stalen_waterlichaam_fysiotoop
+
+```
+
+- Er zijn `r nrow(lege_stalen)` lege stalen in de dataset.
+
+`r knitr::kable(
+  lege_stalen,
+  col.names = c(
+    "Locatie",
+    "Waterlichaam",
+    "Tidaal type",
+    "Fysiotoop"
+  )
+)`
+
+##### Aantal soorten
+
+```{r soorten-recent}
+
+# Records zonder waargenomen soort uitsluiten
+
+soortendata <- benthos2024_analyt %>%
+  dplyr::filter(
+    !is.na(soort),
+    stringr::str_to_lower(soort) != "geen"
+  )
+
+# Unieke soorten in 2024
+
+soorten <- soortendata %>%
+  dplyr::distinct(soort) %>%
+  dplyr::arrange(soort)
+
+aantal_soorten <- nrow(soorten)
+
+# Aantal unieke soorten per waterlichaam
+
+soorten_per_waterlichaam <- soortendata %>%
+  dplyr::distinct(
+    waterlichaam,
+    soort
+  ) %>%
+  dplyr::count(
+    waterlichaam,
+    name = "aantal_soorten"
+  ) %>%
+  dplyr::arrange(
+    waterlichaam
+  )
+
+soorten_per_waterlichaam
+
+```
+
+- Er werden `r aantal_soorten` verschillende soorten of soortgroepen aangetroffen in `r jaar_recent`.
+
+De aangetroffen soorten zijn:
+
+`r paste(soorten$soort, collapse = ", ")`
+
+Het aantal soorten per waterlichaam is:
+
+`r knitr::kable(
+  soorten_per_waterlichaam,
+  col.names = c(
+    "Waterlichaam",
+    "Aantal soorten"
+  )
+)`
+
+##### Biomassa versus densiteit in 2024
+
+```{r biomassa-vs-densiteit-2024, fig.height=5, fig.width=7}
+
+data_plot_2024 <- benthos2024_analyt %>%
+  dplyr::filter(
+    !is.na(biomassa),
+    !is.na(densiteit),
+    biomassa > 0,
+    densiteit > 0,
+    stringr::str_to_lower(soort) != "geen"
+  )
+
+ggplot2::ggplot(
+  data_plot_2024,
+  ggplot2::aes(
+    x = densiteit,
+    y = biomassa
+  )
+) +
+  ggplot2::geom_point(
+    alpha = 0.6
+  ) +
+  ggplot2::scale_x_log10() +
+  ggplot2::scale_y_log10() +
+  ggplot2::labs(
+    title = "Biomassa versus densiteit in 2024",
+    x = "Densiteit",
+    y = "Biomassa"
+  ) +
+  ggplot2::theme_bw()
+
+```
+
+##### Data samenvoegen met historische gegevens
+
+```{r inlezen-checken-historische-data}
+
+# De data van 2024 zijn eerder in het script reeds samengevoegd
+# met de historische gegevens in:
+#
+# benthos2008_2024_analyt
+
+```
+
+##### Biomassa versus densiteit: historische gegevens en 2024
+
+```{r biomassa-vs-densiteit-historisch, fig.height=6, fig.width=8}
+
+data_plot_alle_jaren <- benthos2008_2024_analyt %>%
+  dplyr::filter(
+    !is.na(biomassa),
+    !is.na(densiteit),
+    biomassa > 0,
+    densiteit > 0,
+    stringr::str_to_lower(soort) != "geen"
+  )
+
+ggplot2::ggplot(
+  data_plot_alle_jaren,
+  ggplot2::aes(
+    x = densiteit,
+    y = biomassa
+  )
+) +
+  ggplot2::geom_point(
+    data = data_plot_alle_jaren %>%
+      dplyr::filter(dataset == "Historisch"),
+    colour = "grey70",
+    alpha = 0.25,
+    size = 1
+  ) +
+  ggplot2::geom_point(
+    data = data_plot_alle_jaren %>%
+      dplyr::filter(dataset == "2024"),
+    colour = "red",
+    alpha = 0.85,
+    size = 1.6
+  ) +
+  ggplot2::scale_x_log10() +
+  ggplot2::scale_y_log10() +
+  ggplot2::labs(
+    title = "Biomassa versus densiteit",
+    subtitle = "Historische gegevens in grijs en 2024 in rood",
+    x = "Densiteit",
+    y = "Biomassa"
+  ) +
+  ggplot2::theme_bw()
+
+```
+
+##### Controle van nulwaarden, negatieve en extreme waarden
+
+```{r controles-biomassa-densiteit}
+
+zero_densiteit_nonzero_biomassa <-
+  benthos2008_2024_analyt %>%
+  dplyr::filter(
+    !is.na(densiteit),
+    !is.na(biomassa),
+    densiteit == 0,
+    biomassa != 0
+  ) %>%
+  dplyr::select(
+    jaar,
+    dataset,
+    locatie,
+    waterlichaam,
+    fysiotoop,
+    soort,
+    densiteit,
+    biomassa
+  ) %>%
+  dplyr::arrange(
+    jaar,
+    locatie,
+    soort
+  )
+
+zero_biomassa_nonzero_densiteit <-
+  benthos2008_2024_analyt %>%
+  dplyr::filter(
+    !is.na(densiteit),
+    !is.na(biomassa),
+    densiteit != 0,
+    biomassa == 0
+  ) %>%
+  dplyr::select(
+    jaar,
+    dataset,
+    locatie,
+    waterlichaam,
+    fysiotoop,
+    soort,
+    densiteit,
+    biomassa
+  ) %>%
+  dplyr::arrange(
+    jaar,
+    locatie,
+    soort
+  )
+
+negatieve_biomassa <-
+  benthos2008_2024_analyt %>%
+  dplyr::filter(
+    !is.na(biomassa),
+    biomassa < 0
+  ) %>%
+  dplyr::select(
+    jaar,
+    dataset,
+    locatie,
+    waterlichaam,
+    fysiotoop,
+    soort,
+    densiteit,
+    biomassa
+  ) %>%
+  dplyr::arrange(
+    biomassa
+  )
+
+extreme_biomassa <-
+  benthos2008_2024_analyt %>%
+  dplyr::filter(
+    !is.na(biomassa),
+    biomassa > 200
+  ) %>%
+  dplyr::select(
+    jaar,
+    dataset,
+    locatie,
+    waterlichaam,
+    fysiotoop,
+    soort,
+    densiteit,
+    biomassa
+  ) %>%
+  dplyr::arrange(
+    dplyr::desc(biomassa)
+  )
+
+controle_afwijkende_waarden <- tibble::tibble(
+  controle = c(
+    "Densiteit nul, biomassa niet nul",
+    "Biomassa nul, densiteit niet nul",
+    "Negatieve biomassa",
+    "Biomassa groter dan 200"
+  ),
+  aantal = c(
+    nrow(zero_densiteit_nonzero_biomassa),
+    nrow(zero_biomassa_nonzero_densiteit),
+    nrow(negatieve_biomassa),
+    nrow(extreme_biomassa)
+  )
+)
+
+controle_afwijkende_waarden
+
+zero_densiteit_nonzero_biomassa
+zero_biomassa_nonzero_densiteit
+negatieve_biomassa
+extreme_biomassa
+
+```
+
+Er zijn `r nrow(zero_densiteit_nonzero_biomassa)` records met densiteit gelijk aan 0 en biomassa groter dan 0.
+
+Er zijn `r nrow(zero_biomassa_nonzero_densiteit)` records met densiteit groter dan 0 en biomassa gelijk aan 0.
+
+<br/>
+
+Er zijn `r nrow(negatieve_biomassa)` records met een negatieve biomassa.
+
+> Negatieve biomassawaarden worden in dit rapport niet automatisch aangepast. Ze worden hieronder opgelijst voor controle.
+
+`r knitr::kable(negatieve_biomassa)`
+
+<br/>
+
+Er zijn `r nrow(extreme_biomassa)` records met een biomassa groter dan 200.
+
+`r knitr::kable(extreme_biomassa)`
+
+##### Controle op foutieve regels met soort "geen"
+
+```{r controle-foutieve-geen-records}
+
+# ------------------------------------------------------------------
+# Een regel met soort "geen" is alleen correct wanneer er op die
+# locatie geen enkele andere soort werd geregistreerd.
+# ------------------------------------------------------------------
+
+locaties_met_echte_soorten <- benthos2008_2024_analyt %>%
+  dplyr::filter(
+    !is.na(soort),
+    stringr::str_to_lower(soort) != "geen"
+  ) %>%
+  dplyr::distinct(
+    jaar,
+    locatie
+  )
+
+foutieve_geen_records <- benthos2008_2024_analyt %>%
+  dplyr::filter(
+    !is.na(soort),
+    stringr::str_to_lower(soort) == "geen"
+  ) %>%
+  dplyr::semi_join(
+    locaties_met_echte_soorten,
+    by = c(
+      "jaar",
+      "locatie"
+    )
+  ) %>%
+  dplyr::arrange(
+    jaar,
+    locatie
+  )
+
+aantal_foutieve_geen_records <- nrow(
+  foutieve_geen_records
+)
+
+foutieve_geen_records
+
+```
+
+Er zijn `r aantal_foutieve_geen_records` foutieve regels met soort `"geen"` op een locatie waar ook minstens één echte soort werd geregistreerd.
+
+```{r foutieve-geen-records-verwijderen}
+
+# Foutieve regels met "geen" uit de gecombineerde analysetabel verwijderen
+
+benthos2008_2024_analyt_schoon <- benthos2008_2024_analyt %>%
+  dplyr::anti_join(
+    foutieve_geen_records %>%
+      dplyr::select(
+        jaar,
+        locatie,
+        soort
+      ) %>%
+      dplyr::distinct(),
+    by = c(
+      "jaar",
+      "locatie",
+      "soort"
+    )
+  )
+
+# Dezelfde controle uitvoeren op de opleveringstabel
+
+locaties_met_echte_soorten_oplevering <-
+  macrobenthos_oplevering2026 %>%
+  dplyr::filter(
+    !is.na(soort),
+    stringr::str_to_lower(soort) != "geen"
+  ) %>%
+  dplyr::distinct(
+    jaar,
+    locatie
+  )
+
+foutieve_geen_records_oplevering <-
+  macrobenthos_oplevering2026 %>%
+  dplyr::filter(
+    !is.na(soort),
+    stringr::str_to_lower(soort) == "geen"
+  ) %>%
+  dplyr::semi_join(
+    locaties_met_echte_soorten_oplevering,
+    by = c(
+      "jaar",
+      "locatie"
+    )
+  )
+
+macrobenthos_oplevering2026_schoon <-
+  macrobenthos_oplevering2026 %>%
+  dplyr::anti_join(
+    foutieve_geen_records_oplevering %>%
+      dplyr::select(
+        jaar,
+        locatie,
+        soort
+      ) %>%
+      dplyr::distinct(),
+    by = c(
+      "jaar",
+      "locatie",
+      "soort"
+    )
+  )
+
+tibble::tibble(
+  controle = c(
+    "Rijen analyse vóór controle",
+    "Foutieve regels met geen",
+    "Rijen analyse na controle",
+    "Rijen oplevering vóór controle",
+    "Foutieve regels met geen in oplevering",
+    "Rijen oplevering na controle"
+  ),
+  aantal = c(
+    nrow(benthos2008_2024_analyt),
+    nrow(foutieve_geen_records),
+    nrow(benthos2008_2024_analyt_schoon),
+    nrow(macrobenthos_oplevering2026),
+    nrow(foutieve_geen_records_oplevering),
+    nrow(macrobenthos_oplevering2026_schoon)
+  )
+)
+
+```
+
+##### Jaren in de finale dataset
+
+```{r jaren}
+
+jaren <- benthos2008_2024_analyt_schoon %>%
+  dplyr::distinct(jaar) %>%
+  dplyr::arrange(jaar) %>%
+  dplyr::pull(jaar)
+
+jaar_range <- range(
+  jaren,
+  na.rm = TRUE
+)
+
+```
+
+De finale dataset bevat de jaren:
+
+`r paste(jaren, collapse = ", ")`
+
+##### Finale bestanden wegschrijven
+
+```{r filenames}
+
+bestand_analyse2026_definitief <- file.path(
+  pad_data,
+  paste0(
+    "Macrobenthos",
+    paste(
+      jaar_range,
+      collapse = "_"
+    ),
+    "_ANALYSE_rapportage2026.xlsx"
+  )
+)
+
+bestand_rapportage2026_definitief <- file.path(
+  pad_data,
+  "Macrobenthos2008_heden_rapportage2026.xlsx"
+)
+
+```
+
+Het definitieve analysebestand wordt geschreven naar:
+
+`r bestand_analyse2026_definitief`
+
+Het definitieve opleveringsbestand wordt geschreven naar:
+
+`r bestand_rapportage2026_definitief`
+
+```{r wegschrijven-data}
+
+writexl::write_xlsx(
+  list(
+    macrobenthos =
+      benthos2008_2024_analyt_schoon
+  ),
+  path = bestand_analyse2026_definitief
+)
+
+writexl::write_xlsx(
+  list(
+    macrobenthos =
+      macrobenthos_oplevering2026_schoon,
+
+    locaties =
+      locaties2008_2024
+  ),
+  path = bestand_rapportage2026_definitief
+)
+
+```
