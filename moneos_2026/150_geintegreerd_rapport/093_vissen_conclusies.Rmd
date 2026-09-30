@@ -1,0 +1,278 @@
+```{r 093-hoofdstuk, include=FALSE}
+
+hoofdstuk <- "090_vissen"
+
+```
+
+```{r 093-setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, fig.pos = "H")
+knitr::opts_knit$set(eval.after = "fig.cap")
+
+```
+
+```{r 093-libraries}
+
+library(tidyverse)
+library(readxl)
+library(kableExtra)
+library(rprojroot) ## workaround pad
+
+```
+
+```{r 093-pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(hoofdstuk, "data")
+pad_figuren <- maak_pad(hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(hoofdstuk, "tabellen")
+
+```
+
+```{r 093-table_from_figure-function}
+
+figtab <- 
+  function(label, image_file, caption=NULL) {
+    txt <- sprintf('\\begin{table}[H]\n\\caption{%s}\n\\label{tab:%s}\n\\includegraphics{%s}\n\\end{table}', 
+                   caption, 
+                   label, 
+                   image_file)
+    magick::image_read(image_file) %>% magick::image_ggplot() %>% print()
+    writeLines(txt)
+  }
+
+```
+
+```{r 093-meta-data}
+
+meta_data <- 
+  read_delim(paste0(pad_data, "vissen_meta_data.csv"),
+             delim = ";")
+
+for(i in 1:nrow(meta_data)){
+  ##first extract the object value
+  tempobj=meta_data$waarde[i]
+  ##now create a new variable with the original name of the list item
+  eval(parse(text=paste(meta_data$naam[i],"= tempobj")))
+}
+
+```
+
+## Algemene conclusies
+
+### Afvissingen in `r laatste_jaar`
+
+Na de dip in het aantal waargenomen soorten in 2024, lag de soortenrijkdom bij de ankerkuilvisserij in 2025 opnieuw rond het gemiddelde, met in totaal 42 waargenomen soorten.
+Vooral in de zone met een sterke saliniteitsgradiënt was de soortenrijkdom hoog.
+
+In 2025 blijven de aantallen spiering voor het vierde jaar op rij op een laag niveau in de Zeeschelde.
+Dit geldt zowel voor de ankerkuil- als voor de fuikvangsten.
+Sterke schommelingen in spieringaantallen werden vroeger al opgemerkt in andere gebieden en kunnen deels worden teruggebracht op lage densiteiten van één of twee jaarklassen (Belyanina, 1969), waarbij verschillen in leeftijdssamenstelling van populaties deels gelinkt zijn aan verschillen in groeisnelheid en maturatie van de verschillende jaarklassen (Lapin, 1960).
+Om hier beter zicht op te krijgen, zouden voor de Schelde ruimtelijke en seizoenale patronen per leeftijdsgroep over de jaren heen geanalyseerd moeten worden in relatie tot abiotiek en beheer.
+
+Na de piek van fint in 2024 is de soort in 2025 opnieuw slechts beperkt aanwezig.
+De oorzaken van deze schommelingen zijn nog onvoldoende duidelijk.
+Verdere en systematische opvolging van zowel paaitrek als rekruteringssucces is noodzakelijk om inzicht te krijgen in de dynamiek van de soort en om te kunnen beoordelen hoe duurzaam de hervestiging van fint in de Zeeschelde is.
+
+De visindex voor de zoete, oligohaliene en de zone met sterke saliniteitsgradiënt bereikte in 2025 een matige ecologische status.
+Opvallend is de sterke daling van de index voor de zoetwaterzone na 2020, al lijkt deze zich in het meest recente jaar enigszins te stabiliseren.
+Tegelijkertijd is een stijgende tendens zichtbaar in de oligohaliene zone en de zone met sterke saliniteitsgradiënt.
+Bij de interpretatie van deze trends moet rekening worden gehouden met de methodologische wijziging vanaf 2022, waarbij de bemonsteringsduur werd teruggebracht van twee naar één fuikdag per afvismoment.
+Deze wijziging heeft weinig invloed op de gemiddelde aantallen en biomassa per fuikdag, maar leidt wel tot een lager aantal waargenomen soorten en kan daardoor doorwerken in de visindex.
+Naast deze methodologische invloed verdient het aanbeveling om mogelijke relaties met weersomstandigheden en hydrologische variatie verder te onderzoeken.
+Variaties in neerslag en zoetwaterafvoer kunnen de positie van de saliniteitsgradiënt beïnvloeden en daarmee mogelijk ook de samenstelling en ruimtelijke verdeling van de visgemeenschappen in het estuarium.
+
+### Algemene kenmerken van de Zeeschelde populaties
+
+Wat het estuariene habitatgebruik betreft, zijn doorheen de tijd veranderingen zichtbaar in de samenstelling van de visgemeenschap van de Zeeschelde, zowel in aantallen als in biomassa.
+De sterke dominantie van diadrome soorten in bepaalde jaren, voornamelijk veroorzaakt door hoge aantallen spiering, is de laatste jaren afgenomen.
+Hierdoor is het relatieve belang van mariene en estuariene soorten toegenomen.
+
+Het blijft echter onduidelijk in welke mate de Zeeschelde haar functie als opgroei- en leefgebied vervult tijdens de verschillende levensstadia van diadrome soorten.
+Om deze functie en de duurzaamheid van de betrokken populaties beter te kunnen beoordelen, is een analyse van de verschillende leeftijds- of levensstadia in ruimte en tijd aangewezen.
+
+
+## Referenties
+
+Able K.
+(2005).
+A re-examination of fish estuarine dependence: Evidence for connectivity between estuarine and ocean habitats.
+Estuarine, Coastal and Shelf Science.
+64 (1): 5-17.
+
+Baldoa F.
+& Drake P. (2002).
+A multivariate approach to the feeding habits of small fishes in the Guadalquivir Estuary.
+Journal of Fish Biology.
+61: 21-32.
+
+Belyanina T. N. 
+(1969). 
+Synopsis of biological data on smelt *Osmerus eperlanus* (Linnaeus, 1758). 
+FAO Fisheries Synopsis.
+No. 78.
+
+Breine J.J., Maes J., Quataert, P., Van den Bergh, E., Simoens, I., Van Thuyne, G.
+& C.
+Belpaire (2007).
+A fish-based assessment tool for the ecological quality of the brackish Schelde estuary in Flanders (Belgium).
+Hydrobiologia, 575: 141-159.
+
+Breine, J., Quataert, P., Stevens, M., Ollevier, F., Volckaert, F.A.M., Van den Bergh, E.
+& J.
+Maes (2010).
+A zone-specific fish-based biotic index as a management tool for the Zeeschelde estuary (Belgium).
+Marine Pollution Bulletin, 60: 1099-1112.
+
+Breine J.
+& Van den Bergh E.
+(2022).
+Vissen in de Zeeschelde: vertellen ankerkuil en fuiken hetzelfde?
+Scheldesymposium Antwerpen.
+
+Brosens D., Breine J., Van Thuyne G., Belpaire C., Desmet P. & Verreycken H.
+(2015) VIS - A database on the distribution of fishes in inland and estuarine waters in Flanders, Belgium.
+ZooKeys 475: 119-145.
+doi: 10.3897/zookeys.475.8556
+
+de Boois I. J.
+& Couperus A.S.
+(2022).
+Ankerkuilbemonstering in de Westerschelde.
+Resultaten 2022 en meerjarenoverzichten.
+WUR rapport C071/22.
+39pp.
+Wageningen.
+
+Elliott M.
+& Hemingway K.L.
+(2002).
+In: Elliott, M.
+& Hemingway K.L.
+(Editors).
+Fishes in estuaries.
+Blackwell Science, London.
+577-579.
+
+EMSE (2021).
+Evaluatiemethodiek Schelde-estuarium: Update 2021.
+Antea, Bureau Waardenburg, Deltares, UAntwerpen, UGent, INBO en NIOZ.
+
+Lapin I.E. (1960).
+On peculiarities of population dynamics in short lived fishes (freshwater smelt 1960 as example).
+Zoologicheskii Zhurnal.
+39(9): 1371-83.
+
+Maes J., Stevens M.
+& Breine J.
+(2007).
+Modelling the migration opportunities of diadromous fish species along a gradient of dissolved oxygen concentration in a European tidal watershed.
+Estuarine, Coastal and Shelf Science.
+75: 151-162.
+
+Maes J., Stevens M.
+& Breine J.
+(2008).
+Poor water quality constrains the distribution and movements of twaite shad *Alosa fallax fallax* (Lacépède, 1803) in the watershed of river Scheldt.
+Hydrobiologia.
+602: 129-143.
+
+Maris T., Geerts L., & Meire P. (2011).
+Basiswaterkwaliteit In Maris T.
+& P.
+Meire (Eds) Onderzoek naar de gevolgen van het Sigmaplan, baggeractiviteiten en havenuitbreiding in de Zeeschelde op het milieu.
+Geïntegreerd eindverslag van het onderzoek verricht in 2009-2010.
+011-143 Universiteit Antwerpen, 169pp.
+
+Scholle J.
+& Schuchardt B.
+(2019).
+Analysis of longer-term data on the abundance of different age classen of stints (*Osmerus eperlanus*) in the Elbe estuary and the other Wadden Sea estuaries.
+Bioconsult Bremen.
+95pp.
+
+Scholle J.
+& Schuchardt B.
+(2020).
+Analysis of longer-term data on the abundance of different age classen of stints (*Osmerus eperlanus*) in the Elbe estuary.
+Part 2 possible influencing factors.
+Bioconsult Bremen.
+108 pp.
+
+Stevens M., Van den Neucker T., Mouton A., Buysse D., Martens S., Baeyens R., Jacobs Y., Gelaude E.
+& Coeck J.
+(2009).
+Onderzoek naar de trekvissoorten in het stroomgebied van de Schelde.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek 2009 (INBO.R.2009.9), 188pp.
+
+Van de Meutter F., De Regge N.
+& Bezdenjesnji O.
+(2021).
+Dieetanalyse van hogere trofische niveaus in de Zeeschelde: deel vissen.
+Resultaten van een studie met stabiele isotopen.
+Rapporten van het Instituut voor Natuur- en Bosonderzoek 2021 (41).
+Instituut voor Natuur- en Bosonderzoek, Brussel.
+DOI: doi.org/10.21436/inbor.44407431
+
+Van Der Meulen D., Walsh C., Taylor M.
+& Gray C.
+(2013).
+Habitat requirements and spawning strategy of an estuarine-dependent fish, *Percalates colonorum*.
+Marine and Freshwater Research.
+65 (3): 218-227.
+
+Verhelst P. & Verreycken H. 
+(2023). 
+First record in Europe of the Asian gobiid, shimofuri (marbled) goby *Tridentiger bifasciatus* Steindachner, 1881. 
+Journal of Fish Biology. 
+102 (5): 1253-1255. 
+DOI: doi.org/10.1111/jfb.15362
+
+\newpage
+
+## Bijlage
+
+```{r 093-tabel-zeeschelde-soorten}
+
+soortenlijst <- 
+  read_xlsx(str_c(pad_data, "soorten_Zeeschelde.xlsx"), 
+            sheet = "EMSE") %>% 
+  select(-inEMSE, -exoot, -opmerking) %>% 
+  rename(`Nederlandse naam` = soort, `Wetensch. naam` = wetensch_naam,
+         Saliniteitsgroep = salgroep, Dieet = dieet, 
+         Fuiken = fuiken, Ankerkuil = ankerkuil)
+
+sleutelsoorten_EMSE <-
+  read_xlsx(str_c(pad_data, "sleutelsoorten EMSE.xlsx"))
+
+cap_soortenlijst <-
+  paste0("Overzicht van alle waargenomen vissoorten tijdens de ankerkuilcampagnes en fuikvangsten in de Zeeschelde in de periode 2009-",
+         laatste_jaar,
+         ". Soorten in vet en cursief geven de sleutelsoorten weer uit de EMSE evaluatie.")
+
+soortenlijst %>% 
+  mutate(across(everything(), ~as.character(.) %>% replace_na(""))) %>%
+  mutate(`Wetensch. naam` = str_to_sentence(`Wetensch. naam`)) %>% 
+  mutate(across(c(-`Nederlandse naam`, -`Wetensch. naam`), ~cell_spec(., color = "black"))) %>%
+  # mutate(across(everything(), ~cell_spec(., , bold = TRUE, italic = TRUE, color = "black", background = "lightgreen"))) %>%
+  mutate(`Nederlandse naam` =
+           if_else(`Nederlandse naam` %in% sleutelsoorten_EMSE$soort,
+                   cell_spec(`Nederlandse naam`, bold = TRUE, italic = TRUE, color = "black"),
+                   cell_spec(`Nederlandse naam`, color = "black"))) %>%
+  mutate(`Wetensch. naam` = cell_spec(`Wetensch. naam`, italic = TRUE, color = "black")) %>% 
+  knitr::kable(escape = FALSE,
+               booktabs = TRUE,
+               longtable = TRUE,
+               caption = cap_soortenlijst,
+               align = c(rep("l", 4), rep("c", 2)),
+               linesep = "") %>%
+  kable_styling(latex_options = c("striped", "scale_down"),
+                font_size = 9)
+
+```
