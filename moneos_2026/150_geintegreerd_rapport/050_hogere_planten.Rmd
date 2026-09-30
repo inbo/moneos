@@ -122,7 +122,7 @@ Jaarlijks wordt een vegetatieopname gemaakt van een zesde van de plots.
 De eerste opnamereeks is afgewerkt.
 De vegetatieopnames van de 30 PQ's van de systeemmonitoring zijn reeds gepubliceerd in Van Ryckegem *et al*. (2020); de resterende 38 zijn gepubliceerd in Van Ryckegem *et al*. (2024).
 
-### Databankstructuur 'Vegetatieopnames2024_2025_Moneos2026.accdb' {#databankstructuur-vegetatieopnames2024_2025_moneos2026.accdb}
+### Databankstructuur 'Vegetatieopnames2024_2025_Moneos2026.accdb' {#DBstruct}
 
 De vegetatieopnames zijn opgeslagen in de INBO-databank INBOVEG onder de survey 'Schelde-estuarium'.
 
@@ -143,7 +143,7 @@ De naam van de overeenkomstige plantensoort is gegeven in de gekoppelde tabel 'i
 \newpage
 
 |   | Tabel 'ivRecording_2024_2025' |
-|----|:---|
+|-----------------|:------------------------------------------------------|
 | ID | Uniek volgnummer |
 | RecordingGivid | Unieke code van de vegetatieopname in de databank INBOVEG. |
 | LocationCode | Naam van het schor waar het PQ gelegen is |
@@ -157,7 +157,7 @@ De naam van de overeenkomstige plantensoort is gegeven in de gekoppelde tabel 'i
 : (#tab:Tabel3) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRecording_2024_2025' van de Access-databank Vegetatieopnames_2024_2025_Monoes2026.accdb.
 
 |   | Tabel 'ivRLQualifier_2024_2025' |
-|----|:---|
+|-----------------|:-----------------------------------------------------|
 | ID | Uniek volgnummer |
 | RecordingID | ID corresponderend met tabel 'ivRecording_2024_2025' |
 | QualifierCode | Nummer of code van het PQ waarvan de vegetatieopname is gemaakt. |
@@ -165,7 +165,7 @@ De naam van de overeenkomstige plantensoort is gegeven in de gekoppelde tabel 'i
 : (#tab:Tabel4) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRLQualifier_2024_2025' van de Access-databank Vegetatieopnames_2024_2025_Moneos2026.accdb.
 
 |   | Tabel 'ivRLLayer_2024_2025' |
-|----|:---|
+|-------------|:----------------------------------------------------------|
 | ID | Uniek volgnummer |
 | RecordingID | ID corresponderend met tabel 'ivRecording_2024_2025' |
 | LayerCode | Deze code verwijst naar de verschillende vegetatielagen binnen de vegetatieopname (TOT: totale bedekking; BH: boomlaag; SH: struiklaag; KH: kruidlaag; MO: moslaag; AL: algenlaag; STR: strooisellaag). |
@@ -174,7 +174,7 @@ De naam van de overeenkomstige plantensoort is gegeven in de gekoppelde tabel 'i
 : (#tab:Tabel5) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRLLayer_2024_2025' van de Access-databank Vegetatieopnames_2024_2025_Moneos2026.accdb.
 
 |   | Tabel 'ivRLTaxonOccurrence_2024_2025' |
-|----|:---|
+|---------------|:-------------------------------------------------------|
 | ID | Uniek volgnummer |
 | LayerID | ID corresponderend met tabel 'ivRLLayer_2024_2025' |
 | CoverageCode | Bedekkingen (Londo-schaal) van de verschillende plantensoorten die in de overeenkomstige lagen zijn aangetroffen. |
@@ -182,7 +182,7 @@ De naam van de overeenkomstige plantensoort is gegeven in de gekoppelde tabel 'i
 : (#tab:Tabel6) Overzicht met een beschrijving van de kolommen opgenomen in de tabel 'ivRLTaxonOccurrence_2024_2025' van de Access-databank Vegetatieopnames_2024_2025_Moneos2026.accdb.
 
 |               | Tabel 'ivRLIdentification_2024_2025'                        |
-|---------------|:------------------------------------------------------------|
+|------------------|:-----------------------------------------------------|
 | ID            | Uniek volgnummer                                            |
 | OccurrenceID  | ID corresponderend met tabel 'ivRLTaxonOccurence_2024_2025' |
 | TaxonFullText | Wetenschappelijke naam van de plantensoort                  |
@@ -200,7 +200,7 @@ Deze coördinaten worden aangeleverd als bijlage onder de vorm van een excel-bes
 
 - **PQnummer**: het unieke nummer van het permanent kwadraat.
   Het acroniem ZSC verwijst naar Zeeschelde, PQ verwijst naar permanent kwadraat en vervolgens is een nummer gegeven.
-  Dit nummer is ook aangegeven in de kolom 'QualifierCode' in tabel 'ivRLQualifier_2024_2025' (zie [2.2.2](#databankstructuur-vegetatieopnames2024_2025_moneos2026.accdb)).
+  Dit nummer is ook aangegeven in de kolom 'QualifierCode' in tabel 'ivRLQualifier_2024_2025' (zie \@ref(DBstruct)).
 
 - **Lam72-X-coördinaat**: de X-coördinaat in Lambert 72 van het middelpunt tussen de markeringspalen of van de diagonaal.
 
@@ -220,15 +220,15 @@ Deze coördinaten worden aangeleverd als bijlage onder de vorm van een excel-bes
 
 ## Referenties
 
-Meire P. & Maris T.
-(2008).
-MONEOS: Geïntegreerde monitoring van het Schelde‐estuarium.
-
 Leyssen A., Denys L., Schneiders A., Van Looy K., Packet J.
 & Vanhecke L.
 (2006).
 Afstemmen van referentiecondities en evaluatiesystemen voor de biologische kwaliteitselementen macrofyten en fytobenthos en uitwerken van een meetstrategie in functie van de Kaderrichtlijn Water.
 Rapport van het Instituut voor Natuurbehoud IN.R.2006.09 in opdracht van VMM, Brussel.
+
+Meire P. & Maris T.
+(2008).
+MONEOS: Geïntegreerde monitoring van het Schelde‐estuarium.
 
 Schaminée J.H.J., Stortelder A.H.F. & Westhoff V. (1995).
 De vegetatie van Nederland.
