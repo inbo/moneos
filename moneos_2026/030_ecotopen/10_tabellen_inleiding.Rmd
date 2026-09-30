@@ -1,0 +1,239 @@
+---
+params:
+  hoofdstuk: "030_ecotopen"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "Rmarkdown template MONEOS analyse"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(INBOtheme)
+library(rprojroot)
+library(readxl)
+library(writexl)
+library(flextable)
+library(officer)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+# Tabel ecotoopklassen obv fysiotoop en geomorf
+
+```{r 030-tabel-ecotoopklassen-1}
+
+geomorftype <- 
+  c("Onbepaald",
+    "Zacht substraat",
+    "Hard natuurlijk",
+    "Hard antropogeen (breuksteen)",
+    "Schor- en dijkvegetatie",
+    "Getijdeplas",
+    "Verhard"
+    )
+
+fysiotopen <- 
+  c("Zeer diep subtidaal",
+    "Diep subtidaal",
+    "Matig diep subtidaal",
+    "Ondiep subtidaal",
+    "Laag slik",
+    "Middelhoog slik",
+    "Hoog slik",
+    "Supralitoraal s.s.",
+    "Hoog supralitoraal"
+    )
+
+ecotopen <- 
+  c("Diep subtidaal",
+    "Matig diep subtidaal",
+    "Ondiep subtidaal",
+    "Laag slik zacht substraat",
+    "Middelhoog slik zacht substraat",
+    "Hoog slik zacht substraat",
+    "Laag slik hard natuurlijk",
+    "Middelhoog slik hard natuurlijk",
+    "Hoog slik hard natuurlijk",
+    "Laag slik hard antropogeen",
+    "Middelhoog slik hard antropogeen",
+    "Hoog slik hard antropogeen",
+    "Potentiële pionierzone",
+    "Schor",
+    "Supralitoraal s.s. hard natuurlijk",
+    "Supralitoraal s.s. hard antropogeen",
+    "Hoog supralitoraal (begroeid)",
+    "Hoog supralitoraal hard antropogeen",
+    "Getijdeplas",
+    "Antropogeen"
+    )
+
+ecotopen_df <- data.frame(ecotopen) %>% 
+  rename(Ecotoop = ecotopen) %>% 
+  mutate(
+    Getijdezone = case_when(
+      str_detect(Ecotoop, "subtidaal")                                        ~ "Sublitoraal",
+      str_detect(Ecotoop, "slik")                                             ~ "Litoraal",
+      TRUE                                                                    ~ "Supralitoraal"
+    ),
+    Geomorftype = case_when(
+      str_detect(Ecotoop, "Hoog supralitoraal hard antropogeen")              ~ "Hard antropogeen (breuksteen)",
+      str_detect(Ecotoop, "Schor|Hoog supralitoraal")                         ~ "Schor- en dijkvegetatie",
+      str_detect(Ecotoop, "subtidaal")                                        ~ "Onbepaald",
+      str_detect(Ecotoop, "zacht substraat|Potentiële pionierzone")           ~ "Zacht substraat",
+      str_detect(Ecotoop, "hard natuurlijk")                                  ~ "Hard natuurlijk",
+      str_detect(Ecotoop, "hard antropogeen")                                 ~ "Hard antropogeen (breuksteen)",
+      str_detect(Ecotoop, "Getijdeplas")                                      ~ "Getijdeplas",
+      str_detect(Ecotoop, "Antropogeen")                                      ~ "Verhard"
+           ),
+    Fysiotoop = case_when(
+      str_detect(Ecotoop, "subtidaal")                                               ~ Ecotoop,
+      str_detect(Ecotoop, "Laag slik")                                               ~ "Laag slik",
+      str_detect(Ecotoop, "Middelhoog slik")                                         ~ "Middelhoog slik",
+      str_detect(Ecotoop, "Hoog slik")                                               ~ "Hoog slik",
+      str_detect(Ecotoop, "Hoog supralitoraal")                                      ~ "Hoog supralitoraal",
+      str_detect(Ecotoop, "pionierzone|Supralitoraal|Schor")                         ~ "Supralitoraal s.s.",
+      str_detect(Ecotoop, "Getijdeplas|Antropogeen")                                 ~ ""
+      )
+    ) %>% 
+  bind_rows(data.frame(Getijdezone = "Sublitoraal",
+                       Ecotoop = "Diep subtidaal", 
+                       Geomorftype = "Onbepaald", 
+                       Fysiotoop = "Zeer diep subtidaal")) %>% 
+  mutate(Ecotoop = factor(Ecotoop, levels = ecotopen)) %>% 
+  arrange(Ecotoop, fct_relevel(Fysiotoop, 'Zeer diep subtidaal')) %>% 
+  relocate(Getijdezone, Geomorftype, Fysiotoop, Ecotoop)
+
+```
+
+```{r make flextable 1}
+#### E1 klassen tabel ####
+
+set_flextable_defaults(background.color = "white")
+
+row_div <- c(5:7, 11:13, 18:19)
+
+flt_klassen <- 
+  ecotopen_df %>% 
+    flextable() %>% 
+    merge_v() %>% 
+    bold(i = 1, part = "header") %>% 
+    width(j = "Fysiotoop", width = 40, unit = "mm") %>%
+    width(j = "Geomorftype", width = 45, unit = "mm") %>% 
+    width(j = "Ecotoop", width = 67, unit = "mm") %>% 
+    bg(i = row_div, j = 2:4, bg = "#D9D9D9", part = "body") %>% 
+    hline_bottom(part = "body", border = fp_border(color = "#D9D9D9", width = 1.5)) %>% 
+    rotate(j = "Getijdezone", rotation = "btlr", part = "body") %>% 
+    set_header_labels(Getijdezone = "") %>% 
+    width(j = 1, width = 10, unit = "mm") %>% 
+    hline(i = c(4, 13), part = "body") %>% 
+    vline(j = 1, part = "body")
+
+output_name_klassen <- "030_tabel_klassen_E1.png"
+flt_klassen %>% save_as_image(path = str_c(pad_tabellen, output_name_klassen))
+
+```
+
+```{r 030-tabel-ecotoopklassen-2}
+
+ecotopen_20_sublitoraal <- 
+  c("Hoogdynamisch diep subtidaal",
+    "Laagdynamisch diep subtidaal",
+    "Hoogdynamisch matig diep subtidaal", 
+    "Laagdynamisch matig diep subtidaal", 
+    "Hoogdynamisch ondiep subtidaal",
+    "Laagdynamisch ondiep subtidaal")
+
+snelheden_sublitoraal <- 
+  c("> 0,83 m/s",
+    "<= 0,83 m/s",
+    "> 0,92 m/s",
+    "<= 0,92 m/s",
+    "> 1,01 m/s",
+    "<= 1,01 m/s")
+
+df_sublit_20 <- data.frame("Ecotoop" = ecotopen_20_sublitoraal, "maxV" = snelheden_sublitoraal) %>% 
+  mutate(Getijdezone = "Sublitoraal", Geomorftype = "Onbepaald", Fysiotoop = Ecotoop)
+
+ecotopen_df_20 <- 
+  ecotopen_df %>% 
+  dplyr::filter(!str_detect(Ecotoop, "subtidaal")) %>% 
+  mutate(maxV = "") %>% 
+  bind_rows(df_sublit_20) %>% 
+  bind_rows(data.frame(Getijdezone = "Sublitoraal",
+                       Ecotoop = "Hoogdynamisch diep subtidaal", 
+                       Geomorftype = "Onbepaald", 
+                       Fysiotoop = "Zeer diep subtidaal",
+                       maxV = "----")) %>% 
+  mutate(Getijdezone = factor(Getijdezone, levels = c("Sublitoraal", "Litoraal", "Supralitoraal"))) %>% 
+  arrange(Getijdezone, fct_relevel(Fysiotoop, 'Zeer diep subtidaal')) %>% 
+  relocate(Getijdezone, Geomorftype, Fysiotoop, maxV, Ecotoop)
+
+movedown <- ecotopen_df_20 %>% 
+  dplyr::filter(Ecotoop %in% c("Hoog supralitoraal (begroeid)", "Hoog supralitoraal hard antropogeen", "Getijdeplas", "Antropogeen"))
+
+ecotopen_df_20 <- ecotopen_df_20 %>% 
+  dplyr::filter(!Ecotoop %in% c("Hoog supralitoraal (begroeid)", "Hoog supralitoraal hard antropogeen", "Getijdeplas", "Antropogeen")) %>% 
+  bind_rows(movedown %>% 
+              arrange(fct_relevel(Ecotoop, "Hoog supralitoraal (begroeid)", "Hoog supralitoraal hard antropogeen", "Getijdeplas", "Antropogeen"))) %>% 
+  rename("Max. snelheid (vloed)" = maxV)
+  
+  
+
+```
+
+
+```{r make flextable klassen 2}
+#### E2 klassen tabel ####
+
+set_flextable_defaults(background.color = "white")
+
+row_div_2 <- c(8:10, 14:16, 21:22)
+
+flt_klassen_2 <- 
+  ecotopen_df_20 %>% 
+    flextable() %>% 
+    merge_v(j = c(1:3, 5)) %>% 
+    bold(i = 1, part = "header") %>% 
+    width(j = "Fysiotoop", width = 40, unit = "mm") %>%
+    width(j = "Geomorftype", width = 45, unit = "mm") %>% 
+    width(j = "Ecotoop", width = 67, unit = "mm") %>% 
+    bg(i = row_div_2, j = 2:5, bg = "#D9D9D9", part = "body") %>% 
+    hline_bottom(part = "body", border = fp_border(color = "#D9D9D9", width = 1.5)) %>% 
+    rotate(j = "Getijdezone", rotation = "btlr", part = "body") %>% 
+    set_header_labels(Getijdezone = "") %>% 
+    width(j = 1, width = 10, unit = "mm") %>% 
+    hline(i = c(7, 16), part = "body") %>% 
+    vline(j = 1, part = "body")
+
+output_name_klasse_2 <- "030_tabel_klassen_E2.png"
+flt_klassen_2 %>% save_as_image(path = str_c(pad_tabellen, output_name_klasse_2))
+```
+

@@ -1,0 +1,672 @@
+---
+params:
+  hoofdstuk: "090_vissen"
+title: "visdata fuiken"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error = FALSE, warning = FALSE, message = FALSE, cache = FALSE)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(writexl)
+
+library(inbodb)
+
+library(rprojroot) ## workaround pad
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+
+```
+
+
+```{r variabelen}
+
+laatste_jaar <- as.numeric(jaar_moneos) - 1
+pad_data_historisch <- str_c(pad_prj_schelde, pad_moneos, as.numeric(jaar_moneos)-1, "/", params$hoofdstuk, "/data/")
+
+locaties_name <- "fuikvangsten_Zeeschelde_locaties"
+metadata_name <- "fuikvangsten_Zeeschelde_metadata"
+filename <- "fuikdata_Zeeschelde_VLIZ"
+
+locaties <-
+  read_xlsx(str_c(pad_data, "metadata VLIZ/", locaties_name, ".xlsx")) %>% 
+  mutate(locatiecode = as.character(locatiecode))
+
+```
+
+
+```{r inlezen historische data}
+
+filename_historisch <- 
+  list.files(path = pad_data_historisch,
+             pattern = "fuikdata_Zeeschelde_VLIZ")
+
+campagnes_historisch <- 
+  read_xlsx(str_c(pad_data_historisch, filename_historisch),
+            sheet = "campagnes")
+
+aantal_historisch <- 
+  read_xlsx(str_c(pad_data_historisch, filename_historisch),
+            sheet = "aantallen")
+
+gewicht_historisch <- 
+  read_xlsx(str_c(pad_data_historisch, filename_historisch),
+            sheet = "gewicht")
+
+```
+
+
+```{r inlezen recente data}
+
+data_recent <- 
+    read_xlsx(str_c(pad_data, "fuikdata_Zeeschelde_ruw_VIS_",
+                    laatste_jaar,
+                    ".xlsx"),
+             sheet = "data")
+
+data_recent <-
+  data_recent %>% 
+  filter(entry_type != "GROUP_LEN_IND")
+
+
+campagnes_recent <-
+  read_xlsx(str_c(pad_data, "fuikdata_Zeeschelde_ruw_VIS_",
+                  laatste_jaar,
+                  ".xlsx"),
+            sheet = "campagnes")
+
+
+locatie_nrs <- locaties$locatiecode
+locatie_namen <- locaties$locatie
+
+```
+
+
+```{r correcties soortnamen}
+
+data_recent <-
+  data_recent %>% 
+  mutate(soort = 
+           case_match(soort,
+                      "blauwband" ~ "blauwbandgrondel",
+                      .default = soort))
+
+```
+
+
+```{r controle verdunningfactor}
+
+dilution_NA <-
+  data_recent %>% 
+  filter(is.na(verdunningsfactor)) %>% 
+  select("meting_id", "entry_type", "waarneming_id", "gebiedcode", 
+         "locatie", 
+         "datum", "methode_code", 
+         "soort", 
+         "aantal", "gewicht", "lengte", "verdunningsfactor")
+
+dat_dil <-
+  data_recent %>% 
+  filter(gebiedcode %in% dilution_NA$gebiedcode,
+         waarneming_id %in% dilution_NA$waarneming_id)
+  
+
+data_recent <- 
+  data_recent %>% 
+  replace_na(list(verdunningsfactor = 1))
+
+```
+
+
+```{r controle uniek aantal of gewicht in ruwe data}
+
+aantal_NA_of_0_ruw <-
+  data_recent %>% 
+  filter(is.na(aantal) |
+           near(aantal, 0)) %>% 
+  select("meting_id", "waarneming_id", "gebiedcode", 
+         "locatie", 
+         "datum", "jaar", "methode_code", 
+         "effort", 
+         "soort", "meting_id", "entry_type",
+         "aantal", "gewicht", "lengte", "verdunningsfactor")
+
+gewicht_NA_of_0_ruw <-
+  data_recent %>% 
+  filter(is.na(gewicht) |
+           near(gewicht, 0)) %>% 
+  select("meting_id", "waarneming_id", "gebiedcode", 
+         "locatie", 
+         "datum", "jaar", "methode_code", 
+         "effort", 
+         "soort", "meting_id", "entry_type",
+         "aantal", "gewicht", "lengte", "verdunningsfactor")
+
+(soort_NA <-
+  gewicht_NA_of_0_ruw %>% 
+  filter(round(aantal/verdunningsfactor) == 1) %>% 
+  pull(soort) %>% 
+  unique())
+
+if (length(soort_NA) > 0) {
+  data_lengte <-
+    data_recent %>% 
+    filter(soort %in% soort_NA,
+           !is.na(lengte),
+           !is.na(gewicht)) %>% 
+    select(soort, aantal, gewicht, lengte, verdunningsfactor)
+  
+  {data_lengte %>% 
+    ggplot(aes(lengte, gewicht)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    scale_x_log10() +
+    scale_y_log10() +
+    facet_wrap(~soort)} %>% 
+    print()
+  
+  regressie_lengte <-
+    data_lengte %>% 
+    group_by(soort) %>% 
+    summarise(int = coef(lm(log(gewicht)~log(lengte)))[1],
+              slope = coef(lm(log(gewicht)~log(lengte)))[2]) %>% 
+    ungroup()
+  
+  datum_soort <-
+    data_recent %>% 
+    select(gebiedcode, locatie, datum, soort, aantal, gewicht) %>% 
+    filter(str_c(gebiedcode, datum, soort) %in% unique(str_c(gewicht_NA_of_0_ruw$gebiedcode, gewicht_NA_of_0_ruw$datum, gewicht_NA_of_0_ruw$soort))) %>% 
+    drop_na() %>% 
+    group_by(gebiedcode, locatie, datum, soort) %>% 
+    summarise(across(everything(), sum, .names = "{.col}_tot")) %>% 
+    ungroup()
+  
+  
+  gewicht_NA <-
+    gewicht_NA_of_0_ruw %>% 
+    select(gebiedcode, locatie, datum, jaar, methode_code, 
+           soort, meting_id, entry_type, aantal, gewicht, lengte, verdunningsfactor) %>% 
+    left_join(datum_soort) %>% 
+    left_join(regressie_lengte) %>% 
+    replace_na(list(aantal = 0, gewicht = 0)) %>% 
+    mutate(prop_aantal = aantal/aantal_tot,
+           gewicht_imputed = 
+             case_when(
+               (aantal > 1) | is.na(lengte) ~ gewicht_tot*prop_aantal,
+               TRUE ~ exp(int + slope*log(lengte))
+             ))
+  
+  if (!dir.exists(str_c(pad_data, "controle"))){
+    dir.create(str_c(pad_data, "controle"))
+  }
+  write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
+    # NA_aantal = aantal_NA_of_0_ruw,
+    NA_gewicht = gewicht_NA_of_0_ruw),
+    path = str_c(pad_data, "controle/controle_NA_aantal_of_gewicht_schietfuik.xlsx"))
+}
+
+```
+
+
+```{r toevoegen imputation aan ruwe data}
+
+if (length(soort_NA) > 0) {
+  keys <- gewicht_NA$meting_id
+  
+  dat_before <-
+    data_recent %>% 
+    filter(meting_id %in% keys)
+  
+  for (k in keys) {
+    data_recent$gewicht[data_recent$meting_id == k] <-
+      gewicht_NA$gewicht_imputed[gewicht_NA$meting_id == k]
+  }
+  
+  dat_after <-
+    data_recent %>% 
+    filter(meting_id %in% keys)
+}
+
+data_recent %>% 
+    filter(soort %in% soort_NA,
+           !is.na(lengte),
+           !is.na(gewicht)) %>% 
+    select(soort, aantal, gewicht, lengte, verdunningsfactor) %>% 
+    ggplot(aes(lengte, gewicht)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    scale_x_log10() +
+    scale_y_log10() +
+    facet_wrap(~soort)
+
+```
+
+
+```{r data per datum}
+
+data_per_datum <- 
+  data_recent %>% 
+  select(waarneming_id, locatiecode = gebiedcode, locatie, datum, 
+         soort, verdunningsfactor, aantal, gewicht) %>% 
+  mutate(datum = date(datum),
+         jaar = year(datum),
+         maand = month(datum),
+         seizoen = 
+           case_when(
+           maand %in% 3:5 ~ "voorjaar",
+           maand %in% 6:8 ~ "zomer",
+           maand %in% 9:11 ~ "najaar",
+           maand %in% 12:2 ~ "winter"),
+           # maand %in% 3:5 ~ "voorjaar",
+           # maand %in% 6:7 ~ "zomer",
+           # maand %in% 8:10 ~ "najaar",
+           # maand %in% 12:2 ~ "winter"),
+         soort = str_to_lower(soort)) %>% 
+  group_by(waarneming_id, locatiecode, locatie, datum, jaar, maand, seizoen, soort) %>% 
+  summarise(n = n(),
+            aantal = sum(verdunningsfactor*aantal, na.rm = FALSE),
+            gewicht = sum(verdunningsfactor*gewicht, na.rm = FALSE),
+            .groups = "drop")
+
+```
+
+
+```{r controle NA in aantal of gewicht in geaggregeerde data}
+
+dat_NA <-
+  data_per_datum %>% 
+  filter(is.na(aantal) | is.na(gewicht))
+
+# if (length(dat_NA) > 0) {
+#   if (!dir.exists(str_c(pad_data, "controle"))){
+#     dir.create(str_c(pad_data, "controle"))
+#   }
+#   write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
+#     # NA_aantal = aantal_NA_of_0_ruw,
+#     NA_impute = dat_NA),
+#     path = str_c(pad_data, "controle/controle_NA_na_imputation.xlsx"))
+# }
+
+```
+
+
+```{r controle ontbrekende campagnes}
+
+campagnes <- 
+  data_per_datum %>% 
+  select(locatie, jaar, maand, seizoen) %>% 
+  distinct()
+
+camp_tot <-
+  campagnes %>% 
+  expand(locatie = locaties %>% filter(locatie != "Zandvliet") %>% pull(locatie), jaar, seizoen)
+  
+campagnes_ontbrekend <-
+  camp_tot %>% 
+  anti_join(campagnes)
+
+write_xlsx(list(ontbrekende_campagnes = campagnes_ontbrekend),
+           path = str_c(pad_data, "controle/campagnes_ontbrekend_schietfuik.xlsx"))
+
+
+campagnes_NA_or_0 <-
+  data_per_datum %>% 
+  group_by(waarneming_id, locatiecode, locatie, datum, jaar, seizoen) %>% 
+  summarise(n = sum(n), aantal = sum(aantal, na.rm = TRUE), gewicht = sum(gewicht, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  arrange(datum, locatie) %>% 
+  filter(if_any(.cols = everything(), .fns = ~is.na(.)))
+
+campagnes_NA_or_0 <-
+  campagnes_recent %>% 
+  arrange(datum, locatie) %>% 
+  filter(if_any(.cols = c(aantal_dagen, aantal_fuiken, effort), \(x) is.na(x) | near(x, 0)))
+
+```
+
+
+```{r controle uniek aantal of gewicht}
+
+uniek_aantal_of_gewicht <-
+  data_per_datum %>% 
+  select(locatiecode, locatie, datum, jaar, maand, seizoen, soort, n, aantal, gewicht) %>% 
+  arrange(datum, locatie) %>% 
+  filter(if_any(c(aantal, gewicht), ~is.na(.)) |
+           (if_any(c(aantal, gewicht), ~near(., 0)) & !if_all(c(aantal, gewicht), ~near(., 0))))
+
+
+uniek_aantal_of_gewicht_vis <-
+  uniek_aantal_of_gewicht %>% 
+  filter(!str_detect(str_to_lower(soort), "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat"))
+
+uniek_aantal_of_gewicht_inv <-
+  uniek_aantal_of_gewicht %>% 
+  filter(str_detect(str_to_lower(soort), "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat"))
+
+
+if (!dir.exists(str_c(pad_data, "controle"))){
+  dir.create(str_c(pad_data, "controle"))
+}
+write_xlsx(list(#NA_aantal_of_gewicht = uniek_aantal_of_gewicht,
+                NA_impute = uniek_aantal_of_gewicht_vis),
+           path = str_c(pad_data, "controle/controle_schietfuik_NA_aantal_gewicht_na_imputation.xlsx"))
+
+
+(uniek_aantal_of_gewicht_historisch <-
+  symdiff(
+    aantal_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[is.na(.) | . > 0] %>% 
+      names(),
+    gewicht_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[is.na(.) | . > 0] %>% 
+      names()))
+
+```
+
+
+```{r vergelijking aanwezige soorten met historisch}
+
+(soorten_historisch_aanwezig <-
+  union(
+    aantal_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[. > 0] %>% 
+      names(),
+    gewicht_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[. > 0] %>% 
+      names()) %>% 
+    sort())
+
+(soorten_historisch_afwezig <-
+  intersect(
+    aantal_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[. == 0] %>% 
+      names(),
+    gewicht_historisch %>% 
+      select(-ID_afvissing) %>% 
+      colSums(na.rm = TRUE) %>% 
+      .[. == 0] %>% 
+      names()) %>% 
+    sort())
+
+intersect(soorten_historisch_aanwezig, soorten_historisch_afwezig)
+setdiff(aantal_historisch %>% 
+          select(-ID_afvissing) %>%
+          names(), 
+        union(soorten_historisch_aanwezig, soorten_historisch_afwezig))
+
+
+(soorten_recent_aanwezig <-
+    data_per_datum %>% 
+    group_by(soort) %>% 
+    summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+    ungroup() %>% 
+    filter(aantal > 0) %>% 
+    pull(soort) %>% 
+    sort())
+
+(soorten_recent_afwezig <-
+    data_per_datum %>% 
+    group_by(soort) %>% 
+    summarise(aantal = sum(aantal, na.rm = TRUE)) %>% 
+    ungroup() %>% 
+    filter(aantal == 0) %>% 
+    pull(soort) %>% 
+    sort())
+
+intersect(soorten_recent_aanwezig, soorten_recent_afwezig)
+setdiff(data_per_datum %>% 
+          distinct(soort) %>%
+          pull(), 
+        union(soorten_recent_aanwezig, soorten_recent_afwezig))
+
+
+(soorten_totaal_afwezig <-
+  setdiff(soorten_historisch_afwezig, soorten_recent_aanwezig) %>% 
+    sort())
+
+soorten_totaal_aanwezig <-
+  union(soorten_historisch_aanwezig, soorten_recent_aanwezig) %>% 
+    sort()
+
+(soorten_totaal_aanwezig_invertebraten <-
+  soorten_totaal_aanwezig %>% 
+  keep(~ str_detect(., "garnaal|garnalen|gammarus|krab|kreeft|inktvis|octopus|zeekat")) %>% 
+  sort())
+
+(soorten_totaal_aanwezig_vis <-
+    setdiff(soorten_totaal_aanwezig, soorten_totaal_aanwezig_invertebraten) %>% 
+    sort())
+
+(soorten_totaal_aanwezig <-
+  c(soorten_totaal_aanwezig_vis, soorten_totaal_aanwezig_invertebraten))
+
+
+(soorten_totaal <-
+    union(soorten_totaal_aanwezig, soorten_totaal_afwezig) %>% 
+    sort())
+
+(unieke_soorten_historisch_aanwezig <-
+    setdiff(soorten_historisch_aanwezig, 
+            soorten_recent_aanwezig) %>% 
+    sort())
+
+(unieke_soorten_historisch_totaal <-
+    setdiff(union(soorten_historisch_aanwezig, soorten_historisch_afwezig), 
+            soorten_recent_aanwezig) %>% 
+    sort())
+
+(unieke_soorten_recent_aanwezig <-
+    setdiff(soorten_recent_aanwezig, 
+            soorten_historisch_aanwezig) %>% 
+    sort())
+
+# haringachtigen <-
+#   data_per_datum %>% 
+#   filter(soort %in% c("haring", "sprot", "haringachtigen"))
+# 
+# grondel_sp <-
+#   data_per_datum %>% 
+#   filter(soort == "grondel sp")
+#   
+# zwemkrab <-
+#   data_per_datum %>% 
+#   filter(str_detect(soort, "zwemkrab"))
+
+write_xlsx(list(nieuwe_soorten = 
+                  data_per_datum %>% 
+                  filter(soort %in% unieke_soorten_recent_aanwezig)),
+           path = str_c(pad_data, "nieuwe_soorten_schietfuik.xlsx"))
+
+```
+
+
+<!-- ```{r correcties soortnamen recente data, eval=FALSE} -->
+
+<!-- data_per_datum <- -->
+<!--   data_per_datum %>%  -->
+<!--   mutate(soort =  -->
+<!--            case_match(soort, -->
+<!--                       "gewone zwemkrab" ~ "zwemkrab", -->
+<!--                       .default = soort)) -->
+
+<!-- ``` -->
+
+
+```{r sheets finale data recent}
+
+campagnes_recent <-
+  campagnes_recent %>% 
+  group_by(waarneming_id, locatie, datum, jaar, 
+         temperatuur, zuurstof,	zuurstof_perc, ph,	turbiditeit, conductiviteit) %>% 
+  summarise(effort = sum(effort),
+            .groups = "drop") %>% 
+  mutate(maand = month(datum),
+         seizoen = 
+           case_when(
+             # maand %in% 3:5 ~ "voorjaar",
+             # maand %in% 6:7 ~ "zomer",
+             # maand %in% 8:10 ~ "najaar",
+             # maand %in% 12:2 ~ "winter")) %>% 
+             maand %in% 3:5 ~ "voorjaar",
+             maand %in% 6:8 ~ "zomer",
+             maand %in% 9:11 ~ "najaar",
+             maand %in% 12:2 ~ "winter")) %>% 
+  arrange(datum, locatie) %>% 
+  mutate(ID_afvissing = 1:n()) %>% 
+  select(ID_afvissing, everything(), -maand, -waarneming_id) %>% 
+  rename(fuikdagen = effort) %>% 
+  relocate(seizoen, fuikdagen, .after = jaar) %>% 
+  arrange(ID_afvissing)
+
+aantallen_recent <-
+  data_per_datum %>% 
+  select(locatie, datum, soort, aantal) %>% 
+  pivot_wider(names_from = soort,
+              values_from = aantal,
+              names_sort = TRUE,
+              values_fill = 0) %>% 
+  arrange(datum, locatie) %>% 
+  mutate(ID_afvissing = 1:n()) %>% 
+  select(ID_afvissing, everything(), -locatie, -datum) %>% 
+  arrange(ID_afvissing)
+
+gewicht_recent <-
+  data_per_datum %>% 
+  select(locatie, datum, soort, gewicht) %>% 
+  pivot_wider(names_from = soort,
+              values_from = gewicht,
+              names_sort = TRUE,
+              values_fill = 0) %>% 
+  arrange(datum, locatie) %>% 
+  mutate(ID_afvissing = 1:n()) %>% 
+  select(ID_afvissing, everything(), -locatie, -datum) %>% 
+  arrange(ID_afvissing)
+
+```
+
+
+```{r samenvoegen recent met historisch}
+
+aantal_historisch_finaal <-
+  aantal_historisch %>% 
+  .[,names(aantal_historisch) %in% c("ID_afvissing", soorten_historisch_aanwezig)] %>% 
+  arrange(ID_afvissing) %>% 
+  add_column(matrix(data = 0, nrow = nrow(aantal_historisch), ncol = length(unieke_soorten_recent_aanwezig)) %>% 
+               as_tibble() %>% 
+               rename_at(., vars(names(.)), ~ unieke_soorten_recent_aanwezig))
+
+gewicht_historisch_finaal <-
+  gewicht_historisch %>% 
+  .[,names(aantal_historisch) %in% c("ID_afvissing", soorten_historisch_aanwezig)] %>% 
+  arrange(ID_afvissing) %>% 
+  add_column(matrix(data = 0, nrow = nrow(gewicht_historisch), ncol = length(unieke_soorten_recent_aanwezig)) %>% 
+               as_tibble() %>% 
+               rename_at(., vars(names(.)), ~ unieke_soorten_recent_aanwezig))
+
+
+start_ID <- max(campagnes_historisch$ID_afvissing)
+
+campagnes_recent_finaal <-
+  campagnes_recent %>% 
+  mutate(ID_afvissing = ID_afvissing + start_ID)
+
+aantal_recent_finaal <-
+  aantallen_recent %>% 
+  mutate(ID_afvissing = ID_afvissing + start_ID) %>% 
+  add_column(matrix(data = 0, nrow = nrow(aantallen_recent), ncol = length(unieke_soorten_historisch_aanwezig)) %>% 
+               as_tibble() %>% 
+               rename_at(., vars(names(.)), ~ unieke_soorten_historisch_aanwezig))
+
+gewicht_recent_finaal <-
+  gewicht_recent %>% 
+  mutate(ID_afvissing = ID_afvissing + start_ID) %>% 
+  add_column(matrix(data = 0, nrow = nrow(gewicht_recent), ncol = length(unieke_soorten_historisch_aanwezig)) %>% 
+               as_tibble() %>% 
+               rename_at(., vars(names(.)), ~ unieke_soorten_historisch_aanwezig))
+
+
+soorten_order <- 
+  soorten_totaal_aanwezig
+
+campagnes <-
+  campagnes_historisch %>% 
+  bind_rows(campagnes_recent_finaal) %>% 
+  mutate(datum = ymd(datum))
+
+
+aantallen <-
+  aantal_historisch_finaal %>% 
+  bind_rows(aantal_recent_finaal) %>% 
+  relocate(all_of(soorten_order), .after = ID_afvissing)
+
+gewicht <-
+  gewicht_historisch_finaal %>% 
+  bind_rows(gewicht_recent_finaal) %>% 
+  relocate(all_of(soorten_order), .after = ID_afvissing)
+
+```
+
+
+```{r wegschrijven data}
+
+# filename <- "schietfuik_Zeeschelde_VLIZ"
+
+jaar_range <-
+  campagnes %>% 
+  distinct(jaar) %>% 
+  pull(jaar) %>% 
+  range()
+
+locaties <-
+  read_xlsx(str_c(pad_data, "metadata VLIZ/fuikvangsten_Zeeschelde_locaties.xlsx"))
+  
+metadata <- 
+  read_xlsx(str_c(pad_data, "metadata VLIZ/fuikvangsten_Zeeschelde_metadata.xlsx"))
+
+write_xlsx(list(locaties = locaties,
+                campagnes = campagnes,
+                aantallen = aantallen,
+                gewicht = gewicht,
+                metadata = metadata),
+           path = str_c(pad_data, filename, "_", str_c(jaar_range, collapse = "_"), ".xlsx"))
+
+```
+
