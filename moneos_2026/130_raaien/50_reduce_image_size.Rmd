@@ -1,0 +1,87 @@
+---
+params:
+  hoofdstuk: "130_sedimentatie_erosie"
+knit: (function(inputFile, ...) {
+        rmarkdown::render(inputFile,
+                          output_dir = paste0(rmarkdown::yaml_front_matter(inputFile)$params$hoofdstuk, "/output"))})
+title: "reduce image size"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, error=FALSE, warning=FALSE, message=FALSE, cache=FALSE, dpi = 200)
+
+```
+
+
+```{r libraries}
+
+library(tidyverse)
+library(readxl)
+library(INBOtheme)
+library(rprojroot)
+library(magick)
+
+conflicted::conflicts_prefer(dplyr::filter)
+
+```
+
+
+```{r pad}
+
+# inlezen van variabelen
+# pad naar data : pad_data
+# pad naar tabellen : pad_tabellen
+# pad naar figuren : pad_figuren
+
+source(find_root_file("../pad.R", criterion = is_rstudio_project))
+
+pad_data <- maak_pad(params$hoofdstuk, "data")
+pad_figuren <- maak_pad(params$hoofdstuk, "figuren")
+pad_tabellen <- maak_pad(params$hoofdstuk, "tabellen")
+pad_fotos <- maak_pad(params$hoofdstuk, "fotos")
+
+```
+
+```{r optimize}
+
+# 1. Set your paths
+input_folder <- pad_fotos
+output_folder <- str_c(pad_fotos, "/optimized_fotos")
+
+# Create output folder if it doesn't exist
+if (!dir.exists(output_folder)) dir.create(output_folder)
+
+# 2. List all JPG files
+files <- list.files(input_folder, pattern = "\\.(jpg|jpeg|JPG|JPEG)$", full.names = TRUE)
+
+# 3. Loop through and process
+for (f in files) {
+  # Read image
+  img <- image_read(f)
+  
+  # Resize to a max width of 1200px (recommended for PDFs)
+  # Magick maintains aspect ratio automatically
+  img_resized <- image_resize(img, "1200x")
+  
+  # Convert/Save with compression
+  # Lowering 'quality' significantly reduces file size for JPGs
+  new_filename <- file.path(output_folder, paste0(tools::file_path_sans_ext(basename(f)), ".jpg"))
+  image_write(img_resized, path = new_filename, quality = 70) 
+}
+
+files <- list.files(input_folder, pattern = "\\.(png)$", full.names = TRUE)
+filenames <- list.files(input_folder, pattern = "\\.(png)$", full.names = FALSE)
+for (i in 1:length(files)) {
+  file.copy(files[i], str_c(output_folder, "/", filenames[i]))
+}
+
+message("Done! Optimized images are in: ", output_folder)
+
+```
+
+
