@@ -294,11 +294,12 @@ load(file = str_c(pad_data, "soorten_kleur.RData"))
 my_pal_wes <-
   c(soorten_indeling_kleur$kleur, 
     "darkseagreen",
+    "firebrick3",
     "khaki2",
     "azure",
     "darkslategrey")
 names(my_pal_wes) <-
-  c(soorten_indeling_kleur$soort, "congeraal", "grondel sp", "haringachtigen", "rest")
+  c(soorten_indeling_kleur$soort, "congeraal", "grauwe poon", "grondel sp", "haringachtigen", "rest")
 
 colorKey = data.frame(colorName=names(my_pal_wes))
 ggplot(data=colorKey, aes(x=1:nrow(colorKey), y = 1, fill=colorName, label=colorName)) +
@@ -2053,7 +2054,7 @@ plot_grid(ggp_all,
                     align = "h", ncol = 1),
                     NULL,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
-          ncol = 3, rel_widths = c(1.4,0.05,0.6))
+          ncol = 3, rel_widths = c(1.4,0.05,0.7))
 
 ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_aantallen_tot_aantal_dieet.jpg"), width = 14, height = 8, bg = "white",
        create.dir = TRUE)
@@ -2088,7 +2089,7 @@ plot_grid(ggp_all,
                     align = "h", ncol = 1),
                     NULL,
                     ncol = 1, rel_heights = c(0.07,1,0.1)),
-          ncol = 3, rel_widths = c(1.4,0.05,0.6))
+          ncol = 3, rel_widths = c(1.4,0.05,0.7))
 
 ggsave(paste0(pad_figuren, "EMSE_alternatief/relatieve_biomassa_tot_biomassa_dieet.jpg"), width = 14, height = 8, bg = "white",
        create.dir = TRUE)
