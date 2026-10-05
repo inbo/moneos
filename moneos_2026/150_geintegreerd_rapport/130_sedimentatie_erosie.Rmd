@@ -320,7 +320,7 @@ De patronen uit `r laatste_jaar` worden hier dan mee vergeleken om na te gaan of
 Om topografische metingen uit verschillende jaren met elkaar te kunnen vergelijken, worden de afstanden langsheen de raai op elkaar afgestemd.
 Dit gebeurt door de afstanden af te ronden naar een gegeven interval (verschillend voor elke raai) dat wordt bepaald als het gemiddelde interval tussen de metingen over de verschillende jaren.
 Indien voor een bepaald jaar na afronden meerdere hoogtemetingen binnen hetzelfde segment langs de lengte-as van de raai vallen, wordt het gemiddelde genomen over deze metingen.
-Vervolgens wordt voor elk gestandaardiseerd punt langs de raai de hoogteverandering ten opzichte van het referentiejaar (= eerste jaar in de reeks) berekend.
+Vervolgens wordt voor elk gestandaardiseerd punt langs de raai de hoogteverandering ten opzichte van het startjaar (= eerste jaar in de reeks) berekend.
 Voor elk jaar worden de hoogteveranderingen dan uitgemiddeld per ecotoop:
 
 - laag slik (inclusief metingen in het subtidaal)
@@ -333,7 +333,7 @@ Per raai en per ecotoop wordt de trend in sedimentatie/erosie berekend op basis 
 
 $$\Delta hoogte = 0 + \beta * \Delta jaar$$
 
-waarbij $\Delta jaar$ het verschil weergeeft tussen een gegeven jaar en het referentiejaar.
+waarbij $\Delta jaar$ het verschil weergeeft tussen een gegeven jaar en het startjaar.
 Om na te gaan of er in `r laatste_jaar` een trendbreuk optreedt ten opzichte voorgaande jaren, wordt de hoogteverandering uit `r laatste_jaar` vergeleken met de voorspelde 95% betrouwbaarheidsintervallen van de berekende trends.
 Indien de hoogteverandering buiten het betrouwbaarheidsinterval valt, wordt dit gezien als een trendbreuk.
 
@@ -645,10 +645,15 @@ res$fig
 
 ##### GW {.unnumbered}
 
-Het laag en middelhoog slik van raai GW (Galgenweel) is een morfologisch heel actieve zone.
-In het laag slik is de sterk erosieve trend uit afgelopen jaren niet meer zichtbaar maar is er in de plaats sedimentie opgetreden (Figuur \@ref(fig:130-figuur-GW-slik)).
-Hoewel de erosieve trend in het middelhoog slik behouden blijft is er ook daar in het onderste deel sedimentatie opgetreden zodat de erosieklif die de vorige jaren was ontstaan terug is verdwenen.
-De met breuksteen verdedigde hoge slikzone <!--# inderdaad volle breuksteen --> blijft stabiel.
+Het laag en middelhoog slik van raai GW (Galgenweel) is een morfologisch heel actieve zone. 
+In het laag slik is de sterk erosieve trend uit afgelopen jaren niet meer zichtbaar maar is er in de plaats sterke sedimentie opgetreden (0,5 meter) (Figuur \@ref(fig:130-figuur-GW-slik)). 
+Wegens het dynamisch karakter van het slik op deze raai, leidt dit niet tot een trendbreuk. 
+Ook in 2023 werd een plotse sedimentatie waargenomen op het laag slik. 
+In 2024 was die echter weer volledig geërodeerd. 
+Hoewel er in 'r laatse_jaar' beduidende sedimentatie is opgetreden ligt het niveau van het slik nog steeds tot 1 meter lager dan voor 2017 (zie Figuur  \@ref(fig:130-figuur-raaien-SG)). 
+De sedimentatie uit 'r laatse_jaar' betekent dus niet dat het slik zich heeft hersteld tot het oorspronkelijke niveau van voor 2017. 
+Tegen de met breuksteen verdedigde hoge slikzone aan de schorrand en in het bovenste deel van het middelhoog slik ligt het slik ook nog steeds op het lage niveau van de jaren voordien. 
+In het onderste deel van het middelhoog slik is wel sedimentatie opgetreden zodat de erosieklif die de vorige jaren was ontstaan terug is verdwenen. 
 Ook het schor blijft relatief stabiel.
 
 ```{r 130-figuur-GW-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
@@ -673,7 +678,7 @@ In de laatste jaren is deze trend op het laag en middelhoog slik afgeremd doorda
 In `r laatste_jaar` heeft de hoogteligging zich hersteld tot het niveau van twee jaar eerder.
 De erosie uit `r laatste_jaar - 1` is dus gecompenseerd met sedimentatie.
 Net onder de microklif op het laag slik zijn lokale afzettingen van zandig materiaal (met microribbels) terug te vinden (Figuur \@ref(fig:130-foto-HO-slik)).
-Het hoog slik heeft bestaat vooral uit breuksteen bestaat (Figuur \@ref(fig:130-foto-HO-schorrand)).
+Het hoog slik bestaat vooral uit breuksteen (Figuur \@ref(fig:130-foto-HO-schorrand)).
 
 ```{r 130-figuur-HO-slik, fig.cap=caption_fig, out.width="75%", fig.show="hold"}
 
@@ -784,7 +789,7 @@ res$fig
 In de binnenbocht op de rechteroever tegenover de KV-raai zien we op raai NOTb (Notelaer) dat het laag en middelhoog slik de laatste 3-4 jaren een erosieve trend vertoont (Figuur \@ref(fig:130-figuur-NOTb-slik)).
 In alle slikzones is er hier in `r laatste_jaar` een stabilisatie op het niveau uit `r laatste_jaar - 1`.
 In het laag en middelhoog slik leidt dit net (niet) tot een trendbreuk.
-Dit is ook zichtbaar op een grotere ruimtelijke schaal (Figuur \@ref(130-foto-batyverschil2421)) op basis van rivierbodemverschillen (bathymetrische data, data Vlaamse hydrografie).
+Dit is ook zichtbaar op een grotere ruimtelijke schaal (Figuur \@ref(fig:130-foto-batyverschil2421)) op basis van rivierbodemverschillen (bathymetrische data, data Vlaamse hydrografie).
 Ten opzichte van 2021 blijft het een opvallende erosie aan de randen van de vaargeul.
 Dit is deels een natuurlijk proces t.g.v. toename van hydrodynamiek, deels versterkt door bagger-/zandwinningactiviteiten op de lokale drempels in kader van de duurzame bathymetrie.
 Omwille van de grote effecten op de zandplaten lijkt een herevaluatie van deze activiteiten wenselijk.
@@ -1356,7 +1361,8 @@ Vermoedelijk is er in deze zone een verhoogde vloedstroom, waardoor verhoogde dr
 
 In de zone met sterke saliniteitsgradiënt is op veel plaatsen een stagnatie van de erosie/sedimentatie processen uit vorige jaren.
 Een uitzondering hierop is Lillo Haven (LH) waar in het laag en middelhoog slik een omslag is gebeurd met plotse sterke sedimentatie.
-Ook op raai GW aan het Galgenweel is sprake van een omslag met plots herstel (sedimentatie) na de sterke erosie uit voorgaande jaren.
+Ook op raai GW aan het Galgenweel is sprake van een omslag met deels herstel (sedimentatie) na de sterke erosie uit voorgaande jaren.
+Dit betekent niet dat het slik op deze locatie hersteld is naar het oorspronkeijke niveau van voor 2017. Het slik ligt nog steeds tot 1 meter lager dan toen.
 
 Enkel in het oligohalien blijven de slikevoluties wijzen op een aanhoudende hoge hydrodynamiek door uitruiming van de vaargeul tgv natuurlijke evolutie al dan niet versterkt door baggerwerken/zandwinning waardoor de druk op de slikplaten sterk toeneemt.
 Dit is vooral zichtbaar bij het slik aan Ballooi (BAL) waar de sedimentatie uit voorgaande jaren in het laag en middelhoog slik is omgeslaan naar sterke erosie.
@@ -1376,7 +1382,7 @@ Het ontstaan en verdwijnen van vloedgeulen, snelle zandafzettingen en schorklifv
 Deze processen lijken in `r laatste_jaar` op bepaalde locaties een stuk af te nemen.
 Tussen Temse en de Rupelmonding alsook ter hoogte van Branst blijft de uitbochting ten gevolge van toegenomen vloedstroming op het slik aanhouden.
 Op andere plekken stagneert het en in sommige gevallen is er zelfs herstel, met op een aantal plaatsen recente sedimentatie.
-De Zeeschelde lijkt naar een nieuw evenwicht te evolueren.
+De Zeeschelde lijkt naar een nieuw evenwicht (met verhoogde dynamiek?) te evolueren.
 
 Toch blijft het raadzaam om deze evoluties en de mogelijke link met de duurzame bathymetrie nauw op te volgen om sterke, mogelijks irreversibele, morfologische veranderingen op tijd te signaleren.
 We vragen dus ook een herevaluatie van deze duurzame bathymetrie niet alleen naar bevaarbaarheid maar ook naar ecologie en hydro- en morfodynamiek.
