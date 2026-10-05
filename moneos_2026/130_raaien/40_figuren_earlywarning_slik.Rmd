@@ -376,13 +376,13 @@ fig_raai <-
       ggplot(aes(distance_prof, HOOGTE__MT, group = Year, colour = Year)) +
       geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
                  aes(xintercept = grens_subtidaal),
-                 linetype = 2, color = "lightblue", linewidth = 1.5) + 
+                 linetype = 2, color = "steelblue2", linewidth = 1.5) + 
       geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
                  aes(xintercept = grens_schor),
                  linetype = 2, color = "darkgreen", linewidth = 1.5) +
       geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
                  aes(xintercept = grens_laag_middelhoog),
-                 linetype = 2, color = "darkorange3", linewidth = 1.5) +
+                 linetype = 2, color = "sandybrown", linewidth = 1.5) +
       geom_vline(data = ecotoopgrenzen %>% filter(REEKSCODE == RKSC),
                  aes(xintercept = grens_middelhoog_hoog),
                  linetype = 2, color = "darkorange3", linewidth = 1.5) +

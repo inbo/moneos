@@ -241,7 +241,8 @@ get_fig_recent <-
     
     caption_fig <-
       caption_fig %>% 
-      str_c(" Grenzen tussen schor (groen), hoog, middelhoog en laag slik (bruin) en subtidaal (blauw) worden weergegeven met vertikale stippellijnen (grenzen bepaald op basis van gegevens voor ", laatste_jaar, ").")
+      str_c(" Verticale stippellijnen: grens schor - hoog slik (groen); grens hoog slik - middelhoog slik (donker bruin); grens middelhoog slik - laag slik (licht bruin) en grens met ondiep subtidaal (blauw) (grenzen bepaald op basis van de hoogtemetingen voor ", laatste_jaar, " en ecotoopgrenzen 2.0).")
+    
     
     return(list(cap = caption_fig, fig = fig))
   }
